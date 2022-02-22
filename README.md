@@ -7,13 +7,13 @@
 
 - Create a new branch
 - Add Import repo URL to remote  
-`git remote add Import https://github.com/hotwax/import.git`
+`git remote add import https://github.com/hotwax/import.git`
 
 - Fetch Import branches
-`git fetch Import`
+`git fetch import`
 
 - Merge Import master to your branch with [--allow-unrelated-histories](https://git-scm.com/docs/git-merge#Documentation/git-merge.txt---allow-unrelated-histories) flag
-`git merge Import/main --allow-unrelated-histories`
+`git merge import/main --allow-unrelated-histories`
 
 - Resolve conflicts
 - Push your branch and create a PR
