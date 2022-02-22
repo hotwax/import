@@ -1,11 +1,15 @@
 <template>
-  <ion-app>
-    <ion-router-outlet />
-  </ion-app>
+  <IonApp>
+    <IonSplitPane content-id="main-content" when="lg">
+      <Menu />
+      <ion-router-outlet id="main-content"></ion-router-outlet>
+    </IonSplitPane>
+  </IonApp>
 </template>
 
 <script lang="ts">
-import { IonApp, IonRouterOutlet } from '@ionic/vue';
+import Menu from '@/components/Menu.vue';
+import { IonApp, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { loadingController, alertController } from '@ionic/vue';
 import { useStore } from "./store";
@@ -14,7 +18,9 @@ export default defineComponent({
   name: 'App',
   components: {
     IonApp,
-    IonRouterOutlet
+    IonRouterOutlet,
+    IonSplitPane,
+    Menu
   },
   data() {
     return {
