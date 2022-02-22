@@ -1,23 +1,4 @@
-# IonicSDK for Ionic 5.x/ Vue applications
-
-## How to use?
-
-- Clone your repository  
-`git clone <your repository url>`
-
-- Create a new branch
-- Add IonicSDK repo URL to remote  
-`git remote add ionicSDK https://github.com/hotwax/ionic-sdk.git`
-
-- Fetch IonicSDK branches  
-`git fetch ionicSDK`
-
-- Merge IonicSDK master to your branch with [--allow-unrelated-histories](https://git-scm.com/docs/git-merge#Documentation/git-merge.txt---allow-unrelated-histories) flag  
-`git merge ionicSDK/main --allow-unrelated-histories`
-
-- Resolve conflicts  
-- Push your branch and create a PR
-
+Import App
 # Prerequisite
 Ionic CLI - If you don't have the ionic CLI installed refer [official documentation](https://ionicframework.com/docs/intro/cli) for the installation instructions.
 
@@ -42,20 +23,20 @@ Ionic CLI - If you don't have the ionic CLI installed refer [official documentat
 5. Create a `.env` file by taking reference from the `.env.example`.
 6. To run the app in browser use the command: `ionic serve`
 
-# Firebase Hosting
+## Firebase Hosting
 
 We are using firebase hosting for the Ionic SDK app deployment
 Here are the steps to deploy app on firebase hosting
 
-## Prerequisite
+### Prerequisite
 
 - [Firebase Cli](https://firebase.google.com/docs/cli) should be installed
 - Firebase project should be created
 - You should have access to firebase project
 
-## Dev deployment
+## Deployment
 
-- Update the DEV instance url at .env.production file
+- Generate .env file from .env.example
 
 - Build the application using following command
   `ionic build`
@@ -64,7 +45,8 @@ Here are the steps to deploy app on firebase hosting
   `firebase login`
 
 - Run following command to deploy to firebase hosting
-  `firebase deploy --only hosting:<hosting url>`
+  `firebase deploy --only hosting:import`
+  `firebase deploy --only hosting:import-dev`
 
 ## How to build application in different environment or modes(staging, production, qa, etc)?
 
