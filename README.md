@@ -5,7 +5,7 @@ Ionic CLI - If you don't have the ionic CLI installed refer [official documentat
 
 # Build Notes (Users)
 
-1. Download the app from [release](https://github.com/hotwax/ionic-sdk/releases) page and extract it.
+1. Download the app from [release](https://github.com/hotwax/import/releases) page and extract it.
 2. Go to the app directory.
 3. Run following command to download dependencies  
     `npm i`
@@ -16,7 +16,7 @@ Ionic CLI - If you don't have the ionic CLI installed refer [official documentat
 # Build Notes (Contributors)
 
 1. Open a Terminal window
-2. Clone app using the command: `git clone https://github.com/hotwax/ionic-sdk.git <repository-name>`
+2. Clone app using the command: `git clone https://github.com/hotwax/import.git <repository-name>`
 3. Go to the <repository-name> directory using command: `cd <repository-name>`
 4. Run following command to download dependencies
     `npm i`
@@ -25,7 +25,7 @@ Ionic CLI - If you don't have the ionic CLI installed refer [official documentat
 
 ## Firebase Hosting
 
-We are using firebase hosting for the Ionic SDK app deployment
+We are using firebase hosting for the Import app deployment
 Here are the steps to deploy app on firebase hosting
 
 ### Prerequisite
@@ -67,11 +67,11 @@ Follow following instructions:
 # Contribution Guideline
 
 1. Fork the repository and clone it locally from the `main` branch. Before starting your work make sure it's up to date with current `main` branch.
-2. Pick an issue from [here](https://github.com/hotwax/ionic-sdk/issues). Write in the issue comment that you want to pick it, if you can't assign yourself. **Please stay assigned to one issue at a time to not block others**.
-3. Create a branch for your edits. Use the following branch naming conventions: **ionic-sdk/issue-number**.
+2. Pick an issue from [here](https://github.com/hotwax/import/issues). Write in the issue comment that you want to pick it, if you can't assign yourself. **Please stay assigned to one issue at a time to not block others**.
+3. Create a branch for your edits. Use the following branch naming conventions: **import/issue-number**.
 4. Please add issue number to your commit message.
 5. Propose a Pull Request to `main` branch containing issue number and issue title.
-6. Use [Pull Request template](https://github.com/hotwax/ionic-sdk/blob/main/.github/PULL_REQUEST_TEMPLATE.md) (it's automatically added to each PR) and fill as much fields as possible to describe your solution.
+6. Use [Pull Request template](https://github.com/hotwax/import/blob/main/.github/PULL_REQUEST_TEMPLATE.md) (it's automatically added to each PR) and fill as much fields as possible to describe your solution.
 7. Reference any relevant issues or other information in your PR.
 8. Wait for review and adjust your PR according to it.
 9. Congrats! Your PR should now me merged in!
@@ -95,4 +95,4 @@ If you have any questions or ideas feel free to join our <a href="https://discor
     
 # The license
 
-Ionic SDK app is completely free and released under the Apache v2.0 License. Check <a href="https://github.com/hotwax/ionic-sdk/blob/main/LICENSE" target="_blank">LICENSE</a> for more details.
+Import app is completely free and released under the Apache v2.0 License. Check <a href="https://github.com/hotwax/import/blob/main/LICENSE" target="_blank">LICENSE</a> for more details.
