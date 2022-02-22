@@ -70,16 +70,8 @@ export default defineComponent({
       }
     },
     methods: {
-      test() {
-        console.log("test");
-        const inputFile = document.getElementById('inputFile');
-        if (inputFile != null) {
-          inputFile.addEventListener("click", (event) => {console.log("click", event);});
-        }
-      },
       getFile(event) {
         const file = ref(null);
-        this.file = event.target.files[0];
         this.file = event.target.files[0];
         this.parseFile();
       },
