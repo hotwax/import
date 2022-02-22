@@ -11,9 +11,9 @@
       <div class="header">
         <div class="fileInput">
           <ion-item>
-            <ion-label for="inputFile">{{ $t("Purchase order") }}</ion-label>
-            <ion-input class="ion-hide" :placeholder="$t('Select CSV')" type="file" id="inputFile"/>
-            <ion-button slot="end" fill="outline">{{ $t("Upload") }}</ion-button>
+            <ion-label>{{ $t("Purchase order") }}</ion-label>
+            <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
+            <label for="inputFile">{{ $t("Upload") }}</label>
           </ion-item>
         </div>
         <div class="info">
@@ -44,9 +44,10 @@
     </ion-content>    
   </ion-page>
 </template>
-<script lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonInput, IonButton, IonSelect } from "@ionic/vue";
-import { defineComponent } from "vue";
+<script>
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect } from "@ionic/vue";
+import { defineComponent, ref } from "vue";
+import { parseCsv } from '@/utils'
 export default defineComponent({
     name: " purchase orders",
     components: {
@@ -58,11 +59,38 @@ export default defineComponent({
       IonContent,
       IonItem,
       IonLabel,
-      IonInput,
       IonButton,
       IonSelect,
       IonNote
-    }
+    },
+    data() {
+      return {
+        file: "",
+        content:[]
+      }
+    },
+    methods: {
+      test() {
+        console.log("test");
+        const inputFile = document.getElementById('inputFile');
+        if (inputFile != null) {
+          inputFile.addEventListener("click", (event) => {console.log("click", event);});
+        }
+      },
+      getFile(event) {
+        const file = ref(null);
+        this.file = event.target.files[0];
+        this.file = event.target.files[0];
+        this.parseFile();
+      },
+      async parseFile(){
+        await parseCsv(this.file).then(res => {
+          this.content = res;
+          console.log(res);
+        })
+      },
+    },
+    
 })
 </script>   
 <style scoped>
