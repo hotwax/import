@@ -58,16 +58,16 @@ const showToast = async (message: string) => {
 // ['Jake', '33', 'c'],
 // ['Jill', '30', 'd']]
 
-const parseCsv = async (file: File, options: any) => {
+const parseCsv = async (file: File, options?: any) => {
   return new Promise ((resolve, reject) => {
     Papa.parse(file, {
-      header: false,
+      header: true,
       skipEmptyLines: true,
       complete: function (results: any) {
         if (results.errors.length) {
           reject(results.error)
         } else {
-          resolve(results)
+          resolve(results.data)
         }
       },
       ...options
