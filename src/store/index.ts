@@ -6,6 +6,7 @@ import RootState from './RootState'
 import createPersistedState from "vuex-persistedstate";
 import userModule from './modules/user';
 import productModule from "./modules/product";
+import orderModule from "./modules/order";
 import SecureLS from "secure-ls";
 
 // We will be using secure-ls for secure localStorage data with high level of encryption and data compression.
@@ -60,7 +61,8 @@ const store = createStore<RootState>({
     plugins: [ persistState ],
     modules: { 
         'user': userModule,
-        'product': productModule
+        'product': productModule,
+        'order': orderModule
     },
 })
 
