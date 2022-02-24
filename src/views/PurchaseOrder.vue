@@ -102,40 +102,37 @@ export default defineComponent({
       async parseFile(){
         await parseCsv(this.file).then(res => {
           this.content = res;
-          console.log(res);
         })
       },
       mapFields() {
         this.csvParsed = [];
         this.content.map(item => {
-            this.csvObject.orderId = item[this.orderIdField];
-            this.csvObject.shopifyproductSKU = item[this.productSkuField];
-            this.csvObject.shopifyproductUPC = item[this.productUpcField];
-            this.csvObject.arrivalDate = item[this.dateField];
-            this.csvObject.quantityOrdered = item[this.quantityField];
-            this.csvParsed.push(this.csvObject);            
+          this.csvObject.orderId = item[this.orderIdField];
+          this.csvObject.shopifyproductSKU = item[this.productSkuField];
+          this.csvObject.shopifyproductUPC = item[this.productUpcField];
+          this.csvObject.arrivalDate = item[this.dateField];
+          this.csvObject.quantityOrdered = item[this.quantityField];
+          this.csvParsed.push(this.csvObject);            
         })
-        console.log(this.csvParsed);
         this.store.dispatch("order/uploadCsv", this.csvParsed);
         this.fetchProducts()
         this.router.push({
-            name:'Purchase Order Detail'
+          name:'Purchase Order Detail'
         })
       },
       async fetchProducts(vSize, vIndex) {
         const productIds = this.csvParsed.map(item => {
-           return item.shopifyproductSKU
+          return item.shopifyproductSKU
         })
-        console.log(productIds);
-      const viewSize = vSize ? vSize : process.env.VUE_APP_VIEW_SIZE;
-      const viewIndex = vIndex ? vIndex : 0;
-      const payload = {
-        viewSize,
-        viewIndex,
-        productIds
-      }
+        const viewSize = vSize ? vSize : process.env.VUE_APP_VIEW_SIZE;
+        const viewIndex = vIndex ? vIndex : 0;
+        const payload = {
+          viewSize,
+          viewIndex,
+          productIds
+        }
         await this.store.dispatch("product/fetchProducts", payload);
-    },
+      },
     }, 
     setup(){
     const router = useRouter();
