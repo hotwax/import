@@ -56,7 +56,7 @@
 </template>
 <script>
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect } from "@ionic/vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { parseCsv } from '@/utils';
 import { useStore } from "vuex";
@@ -96,7 +96,6 @@ export default defineComponent({
     },
     methods: {
       getFile(event) {
-        // const file = ref(null);
         this.file = event.target.files[0];
         this.parseFile();
       },
@@ -114,7 +113,6 @@ export default defineComponent({
             this.csvObject.shopifyproductUPC = item[this.productUpcField];
             this.csvObject.arrivalDate = item[this.dateField];
             this.csvObject.quantityOrdered = item[this.quantityField];
-            // console.log(this.csvObject);
             this.csvParsed.push(this.csvObject);            
         })
         console.log(this.csvParsed);
