@@ -117,10 +117,25 @@ export default defineComponent({
         })
         console.log(this.csvParsed);
         this.store.dispatch("order/uploadCsv", this.csvParsed);
+        this.fetchProducts()
         this.router.push({
             name:'Purchase Order Detail'
         })
+      },
+      async fetchProducts(vSize, vIndex) {
+        const productIds = this.csvParsed.map(item => {
+           return item.shopifyproductSKU
+        })
+        console.log(productIds);
+      const viewSize = vSize ? vSize : process.env.VUE_APP_VIEW_SIZE;
+      const viewIndex = vIndex ? vIndex : 0;
+      const payload = {
+        viewSize,
+        viewIndex,
+        productIds
       }
+        await this.store.dispatch("product/fetchProducts", payload);
+    },
     }, 
     setup(){
     const router = useRouter();

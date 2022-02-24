@@ -34,10 +34,10 @@
       <div class="list-item" v-for="(orderItem, index) in parsedCsv" :key="index" >
         <ion-item lines="none">
           <ion-thumbnail slot="start">
-            <Image src="" />
+            <Image :src="getProduct(orderItem.shopifyproductSKU).mainImageUrl" />
           </ion-thumbnail>
           <ion-label>
-            Product Internal name
+            {{ getProduct(orderItem.shopifyproductSKU).internalName }}
           </ion-label>
         </ion-item>
 
@@ -93,10 +93,11 @@ export default defineComponent({
       IonSelectOption
     },
     computed: {
-    ...mapGetters({
-      parsedCsv: 'order/getCsv'
-    })
-  },
+      ...mapGetters({
+        parsedCsv: 'order/getCsv',
+        getProduct: 'product/getProduct'
+      })
+    },
     setup() {
       const router = useRouter();
       const store = useStore();
