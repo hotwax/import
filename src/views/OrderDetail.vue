@@ -25,7 +25,7 @@
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
             <ion-select value="Backorder">
-                <ion-select-option>Backorder</ion-select-option>
+              <ion-select-option>Backorder</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-button expand="block" fill="outline">Apply</ion-button>
@@ -50,12 +50,10 @@
           <ion-label>300 {{ $t("Ordered") }}</ion-label>
         </ion-chip>
 
-        <!-- <div class="ion-text-center"> -->
-          <ion-chip outline>
-            <ion-icon :icon="sendOutline" />
-            <ion-label>12 Jan 2021</ion-label>
-          </ion-chip>
-        <!-- </div> -->
+        <ion-chip outline>
+          <ion-icon :icon="sendOutline" />
+          <ion-label>12 Jan 2021</ion-label>
+        </ion-chip>
 
         <ion-checkbox />
 
@@ -95,11 +93,11 @@ export default defineComponent({
       IonSelect,
       IonSelectOption
     },
-    data(){
-        return { 
-         parsedCsv: []
-        }
-    },  
+    data() {
+      return { 
+        parsedCsv: []
+      }
+    },
     setup() {
       const router = useRouter();
       const store = useStore();
@@ -121,7 +119,6 @@ export default defineComponent({
   grid-gap: 16px;
   padding: 16px;
   margin-bottom: 16px;
-  
 }
 
 .search {
@@ -132,9 +129,9 @@ export default defineComponent({
   grid-area: filters;
 }
 .list-item{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 </style>

@@ -4,7 +4,7 @@ import RootState from "../../RootState";
 
 const getters: GetterTree<OrderState, RootState> = {
   getCsv(state){
-      return state.order.originalCsv;
+    return state.order.originalCsv;
   }
 };
 export default getters;   

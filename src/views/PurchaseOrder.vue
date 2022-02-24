@@ -78,13 +78,13 @@ export default defineComponent({
     data() {
       return {
         file: "",
-        content:[],
+        content: [],
         orderIdField: "",
         productSkuField: "",
         productUpcField: "",
         dateField: "",
         quantityField: "",
-        csvParsed:[],
+        csvParsed: [],
         csvObject: {
           orderId: [],
           shopifyproductSKU: [],
@@ -145,6 +145,6 @@ export default defineComponent({
 }
 
 .info{
-    padding-top: 40px;
+  padding-top: 40px;
 }
 </style>

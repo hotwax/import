@@ -6,17 +6,16 @@ import OrderState from './OrderState'
 import RootState from '../../RootState'
 
 const productModule: Module<OrderState, RootState> = {
-    namespaced: true,
-    state: {
-      order:{
-          originalCsv: [],
-          modifiedCsv: []
-      }
-    },
-    actions,
-    getters,
-    mutations
-    
+  namespaced: true,
+  state: {
+    order: {
+      originalCsv: [],
+      modifiedCsv: []
+    }
+  },
+  actions,
+  getters,
+  mutations  
 }
 
 export default productModule;

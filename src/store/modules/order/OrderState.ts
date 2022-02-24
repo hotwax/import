@@ -1,5 +1,5 @@
 export default interface OrderState {
-    order:{
+    order: {
       originalCsv: any,
       modifiedCsv: any
     }
