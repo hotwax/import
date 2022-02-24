@@ -31,8 +31,7 @@
           <ion-button expand="block" fill="outline">Apply</ion-button>
         </div> 
       </div>  
-
-      <div class="list-item" v-for="(index, orderItem) in parsedCsv" :key="index" >
+      <div class="list-item" v-for="(orderItem, index) in parsedCsv" :key="index" >
         <ion-item lines="none">
           <ion-thumbnail slot="start">
             <Image src="" />
@@ -47,12 +46,12 @@
         </ion-chip>
 
         <ion-chip outline>
-          <ion-label>{{parsedCsv[orderItem].quantityOrdered}} {{ $t("Ordered") }}</ion-label>
+          <ion-label>{{ orderItem.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
         </ion-chip>
 
         <ion-chip outline>
           <ion-icon :icon="sendOutline" />
-          <ion-label>{{ parsedCsv[orderItem].arrivalDate }}</ion-label>
+          <ion-label>{{ orderItem.arrivalDate }}</ion-label>
         </ion-chip>
 
         <ion-checkbox />
@@ -92,14 +91,6 @@ export default defineComponent({
       IonCheckbox,
       IonSelect,
       IonSelectOption
-    },
-    mounted(){
-      console.log(this.parsedCsv[0].arrivalDate);
-    },
-    data() {
-      return { 
-        
-      }
     },
     computed: {
     ...mapGetters({
