@@ -32,7 +32,7 @@
         </div> 
       </div>  
 
-      <div class="list-item">
+      <div class="list-item" v-for="(index, orderItem) in parsedCsv" :key="index" >
         <ion-item lines="none">
           <ion-thumbnail slot="start">
             <Image src="" />
@@ -47,12 +47,12 @@
         </ion-chip>
 
         <ion-chip outline>
-          <ion-label>300 {{ $t("Ordered") }}</ion-label>
+          <ion-label>{{parsedCsv[orderItem].quantityOrdered}} {{ $t("Ordered") }}</ion-label>
         </ion-chip>
 
         <ion-chip outline>
           <ion-icon :icon="sendOutline" />
-          <ion-label>12 Jan 2021</ion-label>
+          <ion-label>{{ parsedCsv[orderItem].arrivalDate }}</ion-label>
         </ion-chip>
 
         <ion-checkbox />
@@ -68,7 +68,7 @@
 import Image from '@/components/Image.vue';
 
 import { defineComponent } from 'vue';
-import { useStore } from "vuex";
+import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline } from 'ionicons/icons'
@@ -93,11 +93,19 @@ export default defineComponent({
       IonSelect,
       IonSelectOption
     },
+    mounted(){
+      console.log(this.parsedCsv[0].arrivalDate);
+    },
     data() {
       return { 
-        parsedCsv: []
+        
       }
     },
+    computed: {
+    ...mapGetters({
+      parsedCsv: 'order/getCsv'
+    })
+  },
     setup() {
       const router = useRouter();
       const store = useStore();
