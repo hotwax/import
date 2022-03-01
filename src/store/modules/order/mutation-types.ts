@@ -1,2 +1,3 @@
 export const SN_ORDER = 'order'
-export const UPLOAD_CSV = SN_ORDER + '/UPLOAD_CSV'
+export const ORDER_LIST_UPDATED = SN_ORDER + '/LIST_UPDATED'
+export const MODIFY_CSV = SN_ORDER + '/MODIFY_CSV'

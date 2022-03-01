@@ -85,13 +85,7 @@ export default defineComponent({
         dateField: "",
         quantityField: "",
         csvParsed: [],
-        csvObject: {
-          orderId: [],
-          shopifyproductSKU: [],
-          shopifyproductUPC: [],
-          arrivalDate: [],
-          quantityOrdered: []
-        }
+        
       }
     },
     methods: {
@@ -102,36 +96,30 @@ export default defineComponent({
       async parseFile(){
         await parseCsv(this.file).then(res => {
           this.content = res;
+          console.log(res);
         })
       },
       mapFields() {
-        this.csvParsed = [];
-        this.content.map(item => {
-          this.csvObject.orderId = item[this.orderIdField];
-          this.csvObject.shopifyproductSKU = item[this.productSkuField];
-          this.csvObject.shopifyproductUPC = item[this.productUpcField];
-          this.csvObject.arrivalDate = item[this.dateField];
-          this.csvObject.quantityOrdered = item[this.quantityField];
-          this.csvParsed.push(this.csvObject);            
-        })
-        this.store.dispatch("order/uploadCsv", this.csvParsed);
-        this.fetchProducts()
-        this.router.push({
-          name:'Purchase Order Detail'
-        })
-      },
-      async fetchProducts(vSize, vIndex) {
-        const productIds = this.csvParsed.map(item => {
-          return item.shopifyproductSKU
-        })
-        const viewSize = vSize ? vSize : process.env.VUE_APP_VIEW_SIZE;
-        const viewIndex = vIndex ? vIndex : 0;
-        const payload = {
-          viewSize,
-          viewIndex,
-          productIds
+        console.log(this.csvParsed);
+        
+        this.csvParsed = this.content.map(item => {
+          const csvObject = {
+          orderId: [],
+          shopifyproductSKU: [],
+          shopifyproductUPC: [],
+          arrivalDate: [],
+          quantityOrdered: []
         }
-        await this.store.dispatch("product/fetchProducts", payload);
+          csvObject.orderId = item[this.orderIdField];
+          csvObject.shopifyproductSKU = item[this.productSkuField];
+          csvObject.shopifyproductUPC = item[this.productUpcField];
+          csvObject.arrivalDate = item[this.dateField];
+          csvObject.quantityOrdered = item[this.quantityField];
+          return csvObject      
+        })
+        console.log(this.csvParsed);
+         this.store.dispatch('order/groupProducts', this.csvParsed);
+          
       },
     }, 
     setup(){

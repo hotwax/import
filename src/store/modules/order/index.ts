@@ -10,6 +10,7 @@ const productModule: Module<OrderState, RootState> = {
   state: {
     order: {
       originalCsv: [],
+      grouped: [],
       modifiedCsv: []
     }
   },
