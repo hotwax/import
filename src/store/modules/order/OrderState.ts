@@ -4,8 +4,5 @@ export default interface OrderState {
         items: any,
         original: any
       }
-      originalCsv: any,
-      grouped: any,
-      modifiedCsv: any
     }
   }

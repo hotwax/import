@@ -13,9 +13,6 @@ const productModule: Module<OrderState, RootState> = {
         items: [],
         original: []
       },
-      originalCsv: [],
-      grouped: [],
-      modifiedCsv: []
     }
   },
   actions,

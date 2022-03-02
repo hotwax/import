@@ -4,10 +4,8 @@ import RootState from "../../RootState";
 
 const getters: GetterTree<OrderState, RootState> = {
   getOrderItems(state){
-    return state.order.originalCsv;
+    return state.order.list;
   },
-  getGroupedProducts(state){
-    return state.order.grouped;
-  }
+  
 };
 export default getters;   

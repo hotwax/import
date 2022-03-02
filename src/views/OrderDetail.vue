@@ -43,8 +43,8 @@
         </div> 
       </div>  
 
-      <div v-for="id in getGroupList(parsedCsv)" :key="id" >
-        <div v-for="item in getGroupItems(id, parsedCsv)" :key="item">
+      <div v-for="id in getGroupList(orderItems)" :key="id" >
+        <div v-for="item in getGroupItems(id, orderItems)" :key="item">
           <div class="list-header" >
             <ion-label>{{ item.parentProductName }}</ion-label>
             <ion-chip >
@@ -124,7 +124,7 @@ export default defineComponent({
     },
     computed: {
       ...mapGetters({
-        parsedCsv: 'order/getOrderItems',
+        orderItems: 'order/getOrderItems',
         getProduct: 'product/getProduct',
       }),
     },
@@ -147,7 +147,7 @@ export default defineComponent({
         }
       },
       apply() {
-        this.parsedCsv.map((item: any) => {
+        this.orderItems.map((item: any) => {
           if (this.listOfCheckedProducts.includes(item.shopifyproductSKU)) {
             item.quantityOrdered -= this.numberOfpieces;
             item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
@@ -155,7 +155,7 @@ export default defineComponent({
             else item.isNewProduct = false
           }
         })
-        this.store.dispatch("order/modifyCsv", this.parsedCsv);
+        this.store.dispatch("order/modifyCsv", this.orderItems);
       },
       getGroupList (items: any) {
         return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
@@ -164,12 +164,12 @@ export default defineComponent({
         return items.filter((item: any) => item.parentProductId == parentProductId)
       },
       checkAllProducts() {
-        this.parsedCsv.forEach((item: any) => {
+        this.orderItems.forEach((item: any) => {
           this.onChange(item.shopifyproductSKU);
         })
       },
       checkGroupedProducts(parentProductId: any){
-        const groupedProducts = this.parsedCsv.filter((item: any) => {
+        const groupedProducts = this.orderItems.filter((item: any) => {
            if(item.parentProductId == parentProductId){
              this.onChange(item.shopifyproductSKU);
            }
