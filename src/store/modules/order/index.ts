@@ -9,6 +9,10 @@ const productModule: Module<OrderState, RootState> = {
   namespaced: true,
   state: {
     order: {
+      list: {
+        items: [],
+        original: []
+      },
       originalCsv: [],
       grouped: [],
       modifiedCsv: []

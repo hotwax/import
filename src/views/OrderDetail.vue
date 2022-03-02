@@ -124,7 +124,7 @@ export default defineComponent({
     },
     computed: {
       ...mapGetters({
-        parsedCsv: 'order/getOrdeItems',
+        parsedCsv: 'order/getOrderItems',
         getProduct: 'product/getProduct',
       }),
     },
@@ -158,19 +158,19 @@ export default defineComponent({
         this.store.dispatch("order/modifyCsv", this.parsedCsv);
       },
       getGroupList (items: any) {
-        return Array.from(new Set(items.map((ele: any) => ele.groupId)))
+        return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
       },
-      getGroupItems(groupId: any, items: any) {
-        return items.filter((item: any) => item.groupId == groupId)
+      getGroupItems(parentProductId: any, items: any) {
+        return items.filter((item: any) => item.parentProductId == parentProductId)
       },
       checkAllProducts() {
         this.parsedCsv.forEach((item: any) => {
           this.onChange(item.shopifyproductSKU);
         })
       },
-      checkGroupedProducts(groupId: any){
+      checkGroupedProducts(parentProductId: any){
         const groupedProducts = this.parsedCsv.filter((item: any) => {
-           if(item.groupId == groupId){
+           if(item.parentProductId == parentProductId){
              this.onChange(item.shopifyproductSKU);
            }
         })

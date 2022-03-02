@@ -3,7 +3,7 @@ import OrderState from "./OrderState";
 import RootState from "../../RootState";
 
 const getters: GetterTree<OrderState, RootState> = {
-  getOrdeItems(state){
+  getOrderItems(state){
     return state.order.originalCsv;
   },
   getGroupedProducts(state){

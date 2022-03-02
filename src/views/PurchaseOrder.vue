@@ -84,8 +84,7 @@ export default defineComponent({
         productUpcField: "",
         dateField: "",
         quantityField: "",
-        csvParsed: [],
-        
+        orderItemsList: [],
       }
     },
     methods: {
@@ -96,14 +95,11 @@ export default defineComponent({
       async parseFile(){
         await parseCsv(this.file).then(res => {
           this.content = res;
-          // console.log(res);
         })
       },
       mapFields() {
-        // console.log(this.csvParsed);
-        
-        this.csvParsed = this.content.map(item => {
-          const csvObject = {
+        this.orderItemsList = this.content.map(item => {
+          const orderItem = {
           orderId: [],
           shopifyproductSKU: [],
           shopifyproductUPC: [],
@@ -115,10 +111,9 @@ export default defineComponent({
           csvObject.shopifyproductUPC = item[this.productUpcField];
           csvObject.arrivalDate = item[this.dateField];
           csvObject.quantityOrdered = item[this.quantityField];
-          return csvObject      
+          return orderItem
         })
-        // console.log(this.csvParsed);
-         this.store.dispatch('order/groupProducts', this.csvParsed);
+         this.store.dispatch('order/groupProducts', this.orderItemsList);
           
       },
     }, 
