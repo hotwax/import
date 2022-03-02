@@ -1,0 +1,32 @@
+{
+  "hosting": [
+    {
+      "target": "hotwax-import",
+      "public": "dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [ {
+        "source": "**",
+        "destination": "/index.html"
+      } ]
+
+    },
+    {
+      "target": "import-dev",
+      "public": "dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [ {
+        "source": "**",
+        "destination": "/index.html"
+      } ]
+
+    }
+  ]
+}
