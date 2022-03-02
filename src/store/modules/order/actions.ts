@@ -14,7 +14,7 @@ const actions: ActionTree<OrderState, RootState> = {
     const productIds = orderItems.map((item: any) => {
       return item.shopifyproductSKU
     })
-    const viewSize = productIds.length();
+    const viewSize = productIds.length;
     const viewIndex = 0;
     const payload = {
       viewSize,

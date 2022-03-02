@@ -106,11 +106,11 @@ export default defineComponent({
           arrivalDate: [],
           quantityOrdered: []
         }
-          csvObject.orderId = item[this.orderIdField];
-          csvObject.shopifyproductSKU = item[this.productSkuField];
-          csvObject.shopifyproductUPC = item[this.productUpcField];
-          csvObject.arrivalDate = item[this.dateField];
-          csvObject.quantityOrdered = item[this.quantityField];
+          orderItem.orderId = item[this.orderIdField];
+          orderItem.shopifyproductSKU = item[this.productSkuField];
+          orderItem.shopifyproductUPC = item[this.productUpcField];
+          orderItem.arrivalDate = item[this.dateField];
+          orderItem.quantityOrdered = item[this.quantityField];
           return orderItem
         })
          this.store.dispatch('order/groupProducts', this.orderItemsList);
