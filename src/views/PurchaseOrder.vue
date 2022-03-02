@@ -96,11 +96,11 @@ export default defineComponent({
       async parseFile(){
         await parseCsv(this.file).then(res => {
           this.content = res;
-          console.log(res);
+          // console.log(res);
         })
       },
       mapFields() {
-        console.log(this.csvParsed);
+        // console.log(this.csvParsed);
         
         this.csvParsed = this.content.map(item => {
           const csvObject = {
@@ -117,7 +117,7 @@ export default defineComponent({
           csvObject.quantityOrdered = item[this.quantityField];
           return csvObject      
         })
-        console.log(this.csvParsed);
+        // console.log(this.csvParsed);
          this.store.dispatch('order/groupProducts', this.csvParsed);
           
       },

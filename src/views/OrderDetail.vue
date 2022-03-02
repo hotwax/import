@@ -8,7 +8,7 @@
           <ion-button @click="checkAllProducts">
             <ion-icon :icon="checkboxOutline" />
           </ion-button>
-          <ion-button @click="revert">
+          <ion-button>
             <ion-icon :icon="arrowUndoOutline" />
           </ion-button>
         </ion-buttons>
@@ -35,71 +35,60 @@
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
             <ion-select v-model="catalog">
-              <ion-select-option>Backorder</ion-select-option>
-              <ion-select-option>Preorder</ion-select-option>
+              <ion-select-option>{{ $t("Backorder") }}</ion-select-option>
+              <ion-select-option>{{ $t("Preorder") }}</ion-select-option>
             </ion-select>
           </ion-item>
-          <ion-button expand="block" fill="outline" @click="apply">Apply</ion-button>
+          <ion-button expand="block" fill="outline" @click="apply">{{ $t("Apply") }}</ion-button>
         </div> 
       </div>  
 
-      <div v-for="id in getGroupList" :key="id">
-        <div  >
-          <ion-item class="list-header" >
-          <ion-label>{{}}</ion-label>
-           <ion-chip >
-          <ion-label></ion-label>
-        </ion-chip>
-
-        <ion-chip >
-          <ion-label></ion-label>
-        </ion-chip>
-
-        <ion-chip >
-          <ion-icon />
-          <ion-label></ion-label>
-        </ion-chip>
-          <ion-checkbox slot="end" />
-          <ion-button slot="end" fill="clear" color="medium">
-            <ion-icon  :icon="ellipsisVerticalOutline" />
-          </ion-button>
-     
-        </ion-item>
+      <div v-for="id in getGroupList(parsedCsv)" :key="id" >
+        <div v-for="item in getGroupItems(id, parsedCsv)" :key="item">
+          <div class="list-header" >
+            <ion-label>{{ item.parentProductName }}</ion-label>
+            <ion-chip >
+              <ion-label></ion-label>
+            </ion-chip>
+            <ion-chip >
+              <ion-label></ion-label>
+            </ion-chip>
+            <ion-chip >
+              <ion-icon />
+              <ion-label></ion-label>
+            </ion-chip>
+            <ion-checkbox @click="checkGroupedProducts(id)" />
+            <ion-button fill="clear" color="medium">
+              <ion-icon  :icon="ellipsisVerticalOutline" />
+            </ion-button>
+          </div>
+          <div class="list-item">
+            <ion-item  lines="none">
+              <ion-thumbnail>
+                <Image :src="item.imageUrl" />
+              </ion-thumbnail>
+              <ion-label>
+                {{ item.internalName }}
+              </ion-label>
+            </ion-item>
+            <ion-chip outline>
+              <ion-label>{{ item.isNewProduct? $t("Preorder") : $t("Backorder") }}</ion-label>
+            </ion-chip>
+            <ion-chip outline>
+              <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
+            </ion-chip>
+            <ion-chip outline>
+              <ion-icon :icon="sendOutline" />
+              <ion-label>{{ item.arrivalDate }}</ion-label>
+            </ion-chip>
+              <ion-checkbox v-if="listOfCheckedProducts.includes(item.shopifyproductSKU)" checked="true" @click="onChange(item.shopifyproductSKU)"/>
+            <ion-checkbox v-else @click="onChange(item.shopifyproductSKU)"/>
+            <ion-button fill="clear" color="medium">
+              <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
+            </ion-button>
+          </div>
         </div>
-        <div v-for="item in parsedCsv" :key="item"  >
-          <div v-if="item.groupId == id" class="list-item">
-        <ion-item  lines="none">
-      <!-- <p>{{item}}</p> -->
-          <ion-thumbnail>
-            <Image :src="item.imageUrl" />
-          </ion-thumbnail>
-          <ion-label>
-            {{ item.internalName }}
-          </ion-label>
-        </ion-item>
-
-        <ion-chip outline>
-          <ion-label>{{ $t("Backorder") }}</ion-label>
-        </ion-chip>
-
-        <ion-chip outline>
-          <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
-        </ion-chip>
-
-        <ion-chip outline>
-          <ion-icon :icon="sendOutline" />
-          <ion-label>{{ item.arrivalDate }}</ion-label>
-        </ion-chip>
-
-        <ion-checkbox v-if="listOfCheckedProducts.includes(item.shopifyproductSKU)" checked="true" @click="onChange(orderItem.shopifyproductSKU)"/>
-        <ion-checkbox v-else @click="onChange(item.shopifyproductSKU)"/>
-
-        <ion-button fill="clear" color="medium">
-          <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
-        </ion-button>
-        </div>
-        </div>
-      </div>   
+      </div>
     </ion-content>   
   </ion-page>
 </template>   
@@ -138,13 +127,6 @@ export default defineComponent({
         parsedCsv: 'order/getOrdeItems',
         getProduct: 'product/getProduct',
       }),
-       getGroupList: function () {
-        const list = (this as any).parsedCsv.map((item: any) => {
-          return item.groupId;
-        })
-        console.log(new Set([...list]), this.parsedCsv[0].shopifyproductSKU);
-        return new Set([...list])
-      }
     },
     data() {
       return {
@@ -155,15 +137,12 @@ export default defineComponent({
         originalCsv: {}
       }
     },
-    mounted(){
-      console.log(this.getGroupList, this.parsedCsv);
-    },
     methods: {
       onChange(productSku: string) {
-        if(this.listOfCheckedProducts.includes(productSku)){
+        if (this.listOfCheckedProducts.includes(productSku)) {
           this.listOfCheckedProducts.splice(this.listOfCheckedProducts.indexOf(productSku, 1));
         }
-        else{
+        else {
           this.listOfCheckedProducts.push(productSku);
         }
       },
@@ -172,19 +151,30 @@ export default defineComponent({
           if (this.listOfCheckedProducts.includes(item.shopifyproductSKU)) {
             item.quantityOrdered -= this.numberOfpieces;
             item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
+            if (this.catalog == "Preorder") item.isNewProduct = true
+            else item.isNewProduct = false
           }
         })
-        console.log(this.getGroupList);
         this.store.dispatch("order/modifyCsv", this.parsedCsv);
+      },
+      getGroupList (items: any) {
+        return Array.from(new Set(items.map((ele: any) => ele.groupId)))
+      },
+      getGroupItems(groupId: any, items: any) {
+        return items.filter((item: any) => item.groupId == groupId)
       },
       checkAllProducts() {
         this.parsedCsv.forEach((item: any) => {
           this.onChange(item.shopifyproductSKU);
         })
       },
-      revert(){
-        this.parsedCsv = this.originalCsv;
-      }
+      checkGroupedProducts(groupId: any){
+        const groupedProducts = this.parsedCsv.filter((item: any) => {
+           if(item.groupId == groupId){
+             this.onChange(item.shopifyproductSKU);
+           }
+        })
+      },
     },
     setup() {
       const router = useRouter();
@@ -226,8 +216,10 @@ export default defineComponent({
 }
 .list-header {
   display: flex;
-  align-items: center;
-  --background: #F4F5F8;
+  place-items: center;
+  justify-content: space-between;
+  background-color: #F4F5F8;
+  padding-left: 10px;
 }
 
 </style>

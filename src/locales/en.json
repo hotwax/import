@@ -1,6 +1,8 @@
 {
+  "Apply": "Apply",
   "Are you sure you want to change the time zone to?": "Are you sure you want to change the time zone to?",
   "Arrival date": "Arrival date",
+  "Backorder": "Backorder",
   "Blank": "Blank",
   "Cancel": "Cancel",
   "Change": "Change",
@@ -17,6 +19,7 @@
   "Order ID": "Order ID",
   "Ordered quantity": "Ordered quantity",
   "Password":  "Password",
+  "Preorder": "Preorder",
   "Purchase order": "Purchase order",
   "Purchase orders": "Purchase orders",
   "Ready to create an app?": "Ready to create an app?",

@@ -25,28 +25,18 @@ const actions: ActionTree<OrderState, RootState> = {
       productIds
     }
     const resp = await store.dispatch("product/fetchProducts", payload);
-    let groupIds = [] as any;
-    const groupedProducts = {} as any;
-    groupIds = resp.data.response.docs.map((item: any) => {
-      return item.groupId;
-    })
-    groupIds = new Set([...groupIds]);
-    groupIds.forEach((id: any) => {
-      groupedProducts[id] =  resp.data.response.docs.filter((item: any) => {
-        item.groupId = id;
-        return item.groupId === id;
-      })
       csv = csv.map((item: any) => {
         const product = resp.data.response.docs.find((product: any) => {
           if(item.shopifyproductSKU == product.internalName)
           return product;
         })
+        console.log(product);
         item.groupId = product.groupId;
         item.internalName = product.internalName; 
         item.parentProductName = product.parentProductName;
         item.imageUrl = product.mainImageUrl;
+        item.isNewProduct = false;
         return item;
-      })
     })
     await store.dispatch('order/updateOrderList', csv);
     router.push({
