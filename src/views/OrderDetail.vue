@@ -26,11 +26,11 @@
         <div class="filters">
           <ion-item>
             <ion-label>{{ $t("Buffer days") }}</ion-label>
-            <ion-input v-model="numberOfDays" type="text" placeholder="all items" /> 
+            <ion-input v-model="numberOfDays" type="text" :placeholder = "$t('all items')" /> 
           </ion-item>
           <ion-item>
             <ion-label>{{ $t("Order buffer") }}</ion-label>
-            <ion-input v-model="numberOfpieces" type="number" />
+            <ion-input v-model="numberOfPieces" type="number" />
           </ion-item>
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
@@ -43,20 +43,13 @@
         </div> 
       </div>  
 
-      <div v-for="id in getGroupList(orderItems)" :key="id" >
-        <div v-for="item in getGroupItems(id, orderItems)" :key="item">
+      <div v-for="id in getGroupList(ordersList.items)" :key="id" >
+        <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
           <div class="list-header" >
             <ion-label>{{ item.parentProductName }}</ion-label>
-            <ion-chip >
-              <ion-label></ion-label>
-            </ion-chip>
-            <ion-chip >
-              <ion-label></ion-label>
-            </ion-chip>
-            <ion-chip >
-              <ion-icon />
-              <ion-label></ion-label>
-            </ion-chip>
+            <div />
+            <div />
+            <div />
             <ion-checkbox @click="checkGroupedProducts(id)" />
             <ion-button fill="clear" color="medium">
               <ion-icon  :icon="ellipsisVerticalOutline" />
@@ -81,8 +74,8 @@
               <ion-icon :icon="sendOutline" />
               <ion-label>{{ item.arrivalDate }}</ion-label>
             </ion-chip>
-              <ion-checkbox v-if="listOfCheckedProducts.includes(item.shopifyproductSKU)" checked="true" @click="onChange(item.shopifyproductSKU)"/>
-            <ion-checkbox v-else @click="onChange(item.shopifyproductSKU)"/>
+              <ion-checkbox  v-if="listOfCheckedProducts.includes(item.shopifyProductSKU)" checked="true" @click="checkProducts(item.shopifyProductSKU)"/>
+            <ion-checkbox v-else @click="checkProducts(item.shopifyProductSKU)"/>
             <ion-button fill="clear" color="medium">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
@@ -124,21 +117,20 @@ export default defineComponent({
     },
     computed: {
       ...mapGetters({
-        orderItems: 'order/getOrderItems',
+        ordersList: 'order/getOrdersList',
         getProduct: 'product/getProduct',
       }),
     },
     data() {
       return {
         numberOfDays: 0,
-        numberOfpieces: 0,
+        numberOfPieces: 0,
         catalog: "",
         listOfCheckedProducts: [] as any,
-        originalCsv: {}
       }
     },
     methods: {
-      onChange(productSku: string) {
+      checkProducts(productSku: string) {
         if (this.listOfCheckedProducts.includes(productSku)) {
           this.listOfCheckedProducts.splice(this.listOfCheckedProducts.indexOf(productSku, 1));
         }
@@ -147,15 +139,15 @@ export default defineComponent({
         }
       },
       apply() {
-        this.orderItems.map((item: any) => {
-          if (this.listOfCheckedProducts.includes(item.shopifyproductSKU)) {
-            item.quantityOrdered -= this.numberOfpieces;
+        this.ordersList.items.map((item: any) => {
+          if (this.listOfCheckedProducts.includes(item.shopifyProductSKU)) {
+            item.quantityOrdered -= this.numberOfPieces;
             item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
             if (this.catalog == "Preorder") item.isNewProduct = true
             else item.isNewProduct = false
           }
         })
-        this.store.dispatch("order/modifyCsv", this.orderItems);
+        this.store.commit('order/order/ITEMS_UPDATED', this.ordersList.items);
       },
       getGroupList (items: any) {
         return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
@@ -164,14 +156,14 @@ export default defineComponent({
         return items.filter((item: any) => item.parentProductId == parentProductId)
       },
       checkAllProducts() {
-        this.orderItems.forEach((item: any) => {
-          this.onChange(item.shopifyproductSKU);
+        this.ordersList.items.forEach((item: any) => {
+          this.checkProducts(item.shopifyProductSKU);
         })
       },
       checkGroupedProducts(parentProductId: any){
-        const groupedProducts = this.orderItems.filter((item: any) => {
+        const groupedProducts = this.ordersList.items.filter((item: any) => {
            if(item.parentProductId == parentProductId){
-             this.onChange(item.shopifyproductSKU);
+             this.checkProducts(item.shopifyProductSKU);
            }
         })
       },

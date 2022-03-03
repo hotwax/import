@@ -101,20 +101,23 @@ export default defineComponent({
         this.orderItemsList = this.content.map(item => {
           const orderItem = {
           orderId: [],
-          shopifyproductSKU: [],
-          shopifyproductUPC: [],
+          shopifyProductSKU: [],
+          shopifyProductUPC: [],
           arrivalDate: [],
           quantityOrdered: []
         }
           orderItem.orderId = item[this.orderIdField];
-          orderItem.shopifyproductSKU = item[this.productSkuField];
-          orderItem.shopifyproductUPC = item[this.productUpcField];
+          orderItem.shopifyProductSKU = item[this.productSkuField];
+          orderItem.shopifyProductUPC = item[this.productUpcField];
           orderItem.arrivalDate = item[this.dateField];
           orderItem.quantityOrdered = item[this.quantityField];
           return orderItem
         })
-         this.store.dispatch('order/groupProducts', this.orderItemsList);
-          
+        this.store.dispatch('order/orderListUpdated', this.orderItemsList);
+        console.log(this.orderItemsList);
+        this.router.push({
+          name:'Purchase Order Detail'
+        })
       },
     }, 
     setup(){

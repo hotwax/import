@@ -5,19 +5,17 @@ import mutations from './mutations'
 import OrderState from './OrderState'
 import RootState from '../../RootState'
 
-const productModule: Module<OrderState, RootState> = {
+const orderModule: Module<OrderState, RootState> = {
   namespaced: true,
   state: {
-    order: {
-      list: {
-        items: [],
-        original: []
-      },
-    }
+    list: {
+      items: [],
+      original: []
+    },
   },
   actions,
   getters,
   mutations  
 }
 
-export default productModule;
+export default orderModule;
