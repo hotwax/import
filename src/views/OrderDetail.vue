@@ -48,7 +48,7 @@
             <div />
             <div />
             <div />
-            <ion-checkbox @ionChange="selectParentProduct(id)" />
+            <ion-checkbox @ionChange="selectParentProduct(id, $event)" />
             <ion-button fill="clear" color="medium">
               <ion-icon  :icon="ellipsisVerticalOutline" />
             </ion-button>
@@ -72,7 +72,8 @@
               <ion-icon :icon="sendOutline" />
               <ion-label>{{ item.arrivalDate }}</ion-label>
             </ion-chip>
-              <ion-checkbox :checked="item.isSelected" @ionChange="selectProduct(item)"/>
+              <!-- Used :key as the changed value was not reflected -->
+              <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item)"/>
             <ion-button fill="clear" color="medium">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
@@ -124,7 +125,6 @@ export default defineComponent({
         numberOfDays: 0,
         numberOfPieces: 0,
         catalog: "",
-        listOfCheckedProducts: [] as any,
       }
     },
     mounted(){
@@ -133,7 +133,7 @@ export default defineComponent({
       })
     },
     methods: {
-      selectProduct(item: any){
+      selectProduct(item: any) {
         item.isSelected = true;
       },
       apply() {
@@ -144,7 +144,7 @@ export default defineComponent({
             item.isNewProduct = this.catalog == "Preorder"
           }
         })
-        this.store.commit('order/order/ITEMS_UPDATED', this.ordersList.items);
+        this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
       },
       getGroupList (items: any) {
         return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
@@ -157,10 +157,15 @@ export default defineComponent({
           item.isSelected = true;
         })
       },
-      selectParentProduct(parentProductId: any){
+      selectParentProduct(parentProductId: any, event: any){
         this.ordersList.items.forEach((item: any) => {
           if (item.parentProductId == parentProductId) {
-            item.isSelected = true;
+            if(event.detail.checked){
+              item.isSelected = true;
+            }else{
+              item.isSelected = false;
+            }
+            
           }
         })
       },

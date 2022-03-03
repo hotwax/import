@@ -7,8 +7,8 @@ import router from '@/router'
 
 
 const actions: ActionTree<OrderState, RootState> = {
-  async updatedOrderList ({commit}, orderItems) {
-    const productIds = orderItems.map((item: any) => {
+  async updatedOrderList ({commit}, items) {
+    const productIds = items.map((item: any) => {
       return item.shopifyProductSKU
     })
     const viewSize = productIds.length;
@@ -19,7 +19,7 @@ const actions: ActionTree<OrderState, RootState> = {
       productIds
     }
     const resp = await store.dispatch("product/fetchProducts", payload);
-    orderItems = orderItems.map((item: any) => {
+    items = items.map((item: any) => {
         const product = resp.data.response.docs.find((product: any) => {
           return item.shopifyProductSKU == product.internalName;
         })
@@ -30,8 +30,11 @@ const actions: ActionTree<OrderState, RootState> = {
         item.isNewProduct = false;
         return item;
     })
-    const original = JSON.parse(JSON.stringify(orderItems))
-    commit(types.ORDER_LIST_UPDATED, { orderItems: orderItems, original: original });
+    const original = JSON.parse(JSON.stringify(items))
+    commit(types.ORDER_LIST_UPDATED, { items: items, original: original });
+  },
+  updatedOrderListItems({ commit }, orderListItems){
+    commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
   }
 }
 export default actions;
