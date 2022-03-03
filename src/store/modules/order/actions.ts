@@ -7,7 +7,7 @@ import router from '@/router'
 
 
 const actions: ActionTree<OrderState, RootState> = {
-  async orderListUpdated ({commit}, orderItems) {
+  async updatedOrderList ({commit}, orderItems) {
     const productIds = orderItems.map((item: any) => {
       return item.shopifyProductSKU
     })

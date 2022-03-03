@@ -2,25 +2,23 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/home" />
+        <ion-back-button slot="start" default-href="/" />
         <ion-title>{{ $t("PO External Order ID") }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button @click="checkAllProducts">
+          <ion-button @click="selectAllItems">
             <ion-icon :icon="checkboxOutline" />
           </ion-button>
           <ion-button>
             <ion-icon :icon="arrowUndoOutline" />
           </ion-button>
         </ion-buttons>
-        
-        
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
       <div class="header">
         <div class="search">
-          <ion-searchbar> </ion-searchbar>
+          <ion-searchbar />
         </div> 
 
         <div class="filters">
@@ -50,7 +48,7 @@
             <div />
             <div />
             <div />
-            <ion-checkbox @click="checkGroupedProducts(id)" />
+            <ion-checkbox @ionChange="selectParentProduct(id)" />
             <ion-button fill="clear" color="medium">
               <ion-icon  :icon="ellipsisVerticalOutline" />
             </ion-button>
@@ -74,8 +72,7 @@
               <ion-icon :icon="sendOutline" />
               <ion-label>{{ item.arrivalDate }}</ion-label>
             </ion-chip>
-              <ion-checkbox  v-if="listOfCheckedProducts.includes(item.shopifyProductSKU)" checked="true" @click="checkProducts(item.shopifyProductSKU)"/>
-            <ion-checkbox v-else @click="checkProducts(item.shopifyProductSKU)"/>
+              <ion-checkbox :checked="item.isSelected" @ionChange="selectProduct(item)"/>
             <ion-button fill="clear" color="medium">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
@@ -92,7 +89,7 @@ import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
 export default defineComponent({
     components: {
@@ -113,11 +110,12 @@ export default defineComponent({
       IonButton,
       IonCheckbox,
       IonSelect,
-      IonSelectOption
+      IonSelectOption,
+      IonButtons
     },
     computed: {
       ...mapGetters({
-        ordersList: 'order/getOrdersList',
+        ordersList: 'order/getOrder',
         getProduct: 'product/getProduct',
       }),
     },
@@ -129,22 +127,21 @@ export default defineComponent({
         listOfCheckedProducts: [] as any,
       }
     },
+    mounted(){
+      this.ordersList.items.forEach((product: any) => {
+        product.isSelected = false;
+      })
+    },
     methods: {
-      checkProducts(productSku: string) {
-        if (this.listOfCheckedProducts.includes(productSku)) {
-          this.listOfCheckedProducts.splice(this.listOfCheckedProducts.indexOf(productSku, 1));
-        }
-        else {
-          this.listOfCheckedProducts.push(productSku);
-        }
+      selectProduct(item: any){
+        item.isSelected = true;
       },
       apply() {
         this.ordersList.items.map((item: any) => {
-          if (this.listOfCheckedProducts.includes(item.shopifyProductSKU)) {
+          if (item.isSelected) {
             item.quantityOrdered -= this.numberOfPieces;
             item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
-            if (this.catalog == "Preorder") item.isNewProduct = true
-            else item.isNewProduct = false
+            item.isNewProduct = this.catalog == "Preorder"
           }
         })
         this.store.commit('order/order/ITEMS_UPDATED', this.ordersList.items);
@@ -155,16 +152,16 @@ export default defineComponent({
       getGroupItems(parentProductId: any, items: any) {
         return items.filter((item: any) => item.parentProductId == parentProductId)
       },
-      checkAllProducts() {
+      selectAllItems() {
         this.ordersList.items.forEach((item: any) => {
-          this.checkProducts(item.shopifyProductSKU);
+          item.isSelected = true;
         })
       },
-      checkGroupedProducts(parentProductId: any){
-        const groupedProducts = this.ordersList.items.filter((item: any) => {
-           if(item.parentProductId == parentProductId){
-             this.checkProducts(item.shopifyProductSKU);
-           }
+      selectParentProduct(parentProductId: any){
+        this.ordersList.items.forEach((item: any) => {
+          if (item.parentProductId == parentProductId) {
+            item.isSelected = true;
+          }
         })
       },
     },

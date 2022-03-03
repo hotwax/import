@@ -20,32 +20,32 @@
           <ion-note>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-note>
           <ion-item>
               <ion-label>{{ $t("Order ID") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="orderIdField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-item>
               <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="productSkuField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-item>
               <ion-label>{{ $t("Shopify product UPC") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="productUpcField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productUpcField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-item>
               <ion-label>{{ $t("Arrival date") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="dateField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-item>
               <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="quantityField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-button color="dark" fill="solid" @click="mapFields" expand="block">{{ $t("REVIEW") }}</ion-button>
@@ -55,7 +55,7 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { parseCsv } from '@/utils';
@@ -73,7 +73,8 @@ export default defineComponent({
       IonLabel,
       IonButton,
       IonSelect,
-      IonNote
+      IonNote,
+      IonSelectOption
     },
     data() {
       return {
@@ -113,8 +114,7 @@ export default defineComponent({
           orderItem.quantityOrdered = item[this.quantityField];
           return orderItem
         })
-        this.store.dispatch('order/orderListUpdated', this.orderItemsList);
-        console.log(this.orderItemsList);
+        this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
           name:'Purchase Order Detail'
         })

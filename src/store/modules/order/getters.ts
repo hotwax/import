@@ -3,7 +3,7 @@ import OrderState from "./OrderState";
 import RootState from "../../RootState";
 
 const getters: GetterTree<OrderState, RootState> = {
-  getOrdersList(state){
+  getOrder(state) {
     return state.list;
   }
 };
