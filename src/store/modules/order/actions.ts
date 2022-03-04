@@ -31,7 +31,7 @@ const actions: ActionTree<OrderState, RootState> = {
         return item;
     })
     const original = JSON.parse(JSON.stringify(items))
-    commit(types.ORDER_LIST_UPDATED, { items: items, original: original });
+    commit(types.ORDER_LIST_UPDATED, { items, original });
   },
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
