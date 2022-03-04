@@ -2,35 +2,33 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/home" />
+        <ion-back-button slot="start" default-href="/" />
         <ion-title>{{ $t("PO External Order ID") }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button @click="checkAllProducts">
+          <ion-button @click="selectAllItems">
             <ion-icon :icon="checkboxOutline" />
           </ion-button>
           <ion-button>
             <ion-icon :icon="arrowUndoOutline" />
           </ion-button>
         </ion-buttons>
-        
-        
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
       <div class="header">
         <div class="search">
-          <ion-searchbar> </ion-searchbar>
+          <ion-searchbar />
         </div> 
 
         <div class="filters">
           <ion-item>
             <ion-label>{{ $t("Buffer days") }}</ion-label>
-            <ion-input v-model="numberOfDays" type="text" placeholder="all items" /> 
+            <ion-input v-model="numberOfDays" type="text" :placeholder = "$t('all items')" /> 
           </ion-item>
           <ion-item>
             <ion-label>{{ $t("Order buffer") }}</ion-label>
-            <ion-input v-model="numberOfpieces" type="number" />
+            <ion-input v-model="numberOfPieces" type="number" />
           </ion-item>
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
@@ -74,8 +72,8 @@
               <ion-icon :icon="sendOutline" />
               <ion-label>{{ item.arrivalDate }}</ion-label>
             </ion-chip>
-              <ion-checkbox v-if="listOfCheckedProducts.includes(item.shopifyproductSKU)" checked="true" @click="onChange(item.shopifyproductSKU)"/>
-            <ion-checkbox v-else @click="onChange(item.shopifyproductSKU)"/>
+              <!-- Used :key as the changed value was not reflected -->
+              <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item)"/>
             <ion-button fill="clear" color="medium">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
@@ -92,7 +90,7 @@ import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
 export default defineComponent({
   components: {
@@ -174,11 +172,8 @@ export default defineComponent({
     getGroupList (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
     },
-    computed: {
-      ...mapGetters({
-        parsedCsv: 'order/getOrdeItems',
-        getProduct: 'product/getProduct',
-      }),
+    getGroupItems(parentProductId: any, items: any) {
+      return items.filter((item: any) => item.parentProductId == parentProductId)
     },
     selectAllItems() {
       this.ordersList.items.forEach((item: any) => {
@@ -209,9 +204,9 @@ export default defineComponent({
             })
           }
         } 
-      },
+      })
     }
-  }    
+  },    
     setup() {
       const router = useRouter();
       const store = useStore();
@@ -223,7 +218,38 @@ export default defineComponent({
         router,
         store
       }
-    }
+    // getGroupItems(parentProductId: any, items: any) {
+    //   return items.filter((item: any) => item.parentProductId == parentProductId)
+    // },
+    // selectAllItems() {
+    //   this.ordersList.items.forEach((item: any) => {
+    //     item.isSelected = true;
+    //   })
+    // },
+    // selectParentProduct(parentProductId: any, event: any){
+    //   this.ordersList.items.forEach((item: any) => {
+    //     if (item.parentProductId == parentProductId) {
+    //       if(event.detail.checked){
+    //         item.isSelected = true;
+    //       }else{
+    //         item.isSelected = false;
+    //       }
+    //     }
+    //   })
+    // },
+  // },
+  // setup() {
+  //   const router = useRouter();
+  //   const store = useStore();
+  //   return {
+  //     checkboxOutline,
+  //     ellipsisVerticalOutline,
+  //     sendOutline,
+  //     arrowUndoOutline,
+  //     router,
+  //     store
+  //   }
+  }
 });
 
 </script>

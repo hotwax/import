@@ -29,13 +29,13 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/purchase-order',
-    name: 'Purchase Order',
+    name: 'PurchaseOrder',
     component: PurchaseOrder,
     beforeEnter: authGuard
   },
   {
     path: '/purchase-order-detail',
-    name: 'Purchase Order Detail',
+    name: 'PurchaseOrderDetail',
     component: OrderDetail,
     beforeEnter: authGuard
   },

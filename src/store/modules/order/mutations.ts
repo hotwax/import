@@ -4,11 +4,11 @@ import * as types from './mutation-types'
 
 const mutations: MutationTree <OrderState> = {
   [types.ORDER_LIST_UPDATED] (state, payload) {
-    state.order.originalCsv = payload;
-    console.log(payload);
+    state.list.items = payload.items;
+    state.list.original = payload.original;
   },
-  [types.MODIFY_CSV] (state, payload) {
-    state.order.modifiedCsv = payload;
+  [types.ORDER_LIST_ITEMS_UPDATED] (state, payload) {
+    state.list.items = payload;
   }
 }
 export default mutations;

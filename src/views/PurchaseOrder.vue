@@ -20,32 +20,32 @@
           <ion-note>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-note>
           <ion-item>
               <ion-label>{{ $t("Order ID") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="orderIdField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-item>
               <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="productSkuField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-item>
               <ion-label>{{ $t("Shopify product UPC") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="productUpcField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productUpcField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-item>
               <ion-label>{{ $t("Arrival date") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="dateField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-item>
               <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-              <ion-select v-if="content.length" placeholder="Select" v-model="quantityField">
-                  <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
           <ion-button color="dark" fill="solid" @click="mapFields" expand="block">{{ $t("REVIEW") }}</ion-button>
@@ -55,7 +55,7 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { parseCsv } from '@/utils';
@@ -73,7 +73,8 @@ export default defineComponent({
       IonLabel,
       IonButton,
       IonSelect,
-      IonNote
+      IonNote,
+      IonSelectOption
     },
     data() {
       return {
@@ -84,8 +85,7 @@ export default defineComponent({
         productUpcField: "",
         dateField: "",
         quantityField: "",
-        csvParsed: [],
-        
+        orderItemsList: [],
       }
     },
     methods: {
@@ -96,30 +96,28 @@ export default defineComponent({
       async parseFile(){
         await parseCsv(this.file).then(res => {
           this.content = res;
-          // console.log(res);
         })
       },
       mapFields() {
-        // console.log(this.csvParsed);
-        
-        this.csvParsed = this.content.map(item => {
-          const csvObject = {
+        this.orderItemsList = this.content.map(item => {
+          const orderItem = {
           orderId: [],
-          shopifyproductSKU: [],
-          shopifyproductUPC: [],
+          shopifyProductSKU: [],
+          shopifyProductUPC: [],
           arrivalDate: [],
           quantityOrdered: []
         }
-          csvObject.orderId = item[this.orderIdField];
-          csvObject.shopifyproductSKU = item[this.productSkuField];
-          csvObject.shopifyproductUPC = item[this.productUpcField];
-          csvObject.arrivalDate = item[this.dateField];
-          csvObject.quantityOrdered = item[this.quantityField];
-          return csvObject      
+          orderItem.orderId = item[this.orderIdField];
+          orderItem.shopifyProductSKU = item[this.productSkuField];
+          orderItem.shopifyProductUPC = item[this.productUpcField];
+          orderItem.arrivalDate = item[this.dateField];
+          orderItem.quantityOrdered = item[this.quantityField];
+          return orderItem
         })
-        // console.log(this.csvParsed);
-         this.store.dispatch('order/groupProducts', this.csvParsed);
-          
+        this.store.dispatch('order/updatedOrderList', this.orderItemsList);
+        this.router.push({
+          name:'PurchaseOrderDetail'
+        })
       },
     }, 
     setup(){

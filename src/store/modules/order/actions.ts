@@ -7,17 +7,11 @@ import router from '@/router'
 
 
 const actions: ActionTree<OrderState, RootState> = {
-  updateOrderList ({ commit }, payload) {
-    commit(types.ORDER_LIST_UPDATED,  payload );
-  },
-  modifyCsv ({ commit }, payload) {
-    commit(types.MODIFY_CSV, payload);
-  },
-  async groupProducts ({commit}, csv: any) {
-    const productIds = csv.map((item: any) => {
-      return item.shopifyproductSKU
+  async updatedOrderList ({commit}, items) {
+    const productIds = items.map((item: any) => {
+      return item.shopifyProductSKU
     })
-    const viewSize = process.env.VUE_APP_VIEW_SIZE;
+    const viewSize = productIds.length;
     const viewIndex = 0;
     const payload = {
       viewSize,
@@ -25,23 +19,22 @@ const actions: ActionTree<OrderState, RootState> = {
       productIds
     }
     const resp = await store.dispatch("product/fetchProducts", payload);
-      csv = csv.map((item: any) => {
+    items = items.map((item: any) => {
         const product = resp.data.response.docs.find((product: any) => {
-          if(item.shopifyproductSKU == product.internalName)
-          return product;
+          return item.shopifyProductSKU == product.internalName;
         })
-        console.log(product);
-        item.groupId = product.groupId;
+        item.parentProductId = product.groupId;
         item.internalName = product.internalName; 
         item.parentProductName = product.parentProductName;
         item.imageUrl = product.mainImageUrl;
         item.isNewProduct = false;
         return item;
     })
-    await store.dispatch('order/updateOrderList', csv);
-    router.push({
-      name:'Purchase Order Detail'
-    })
+    const original = JSON.parse(JSON.stringify(items))
+    commit(types.ORDER_LIST_UPDATED, { items, original });
+  },
+  updatedOrderListItems({ commit }, orderListItems){
+    commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
   }
-}    
+}
 export default actions;
