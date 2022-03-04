@@ -10,6 +10,34 @@ import emitter from '@/event-bus'
 
 const actions: ActionTree<ProductState, RootState> = {
 
+  async fetchProducts ( { commit, state }, { productIds }) {
+    const cachedProductIds = Object.keys(state.cached);
+    const productIdFilter= productIds.reduce((filter: string, productId: any) => {
+      // If product already exist in cached products skip
+      if (cachedProductIds.includes(productId)) {
+        return filter;
+      } else {
+        // checking condition that if the filter is not empty then adding 'OR' to the filter
+        if (filter !== '') filter += ' OR '
+        return filter += productId;
+      }
+    }, '');
+
+    // If there are no products skip the API call
+    if (productIdFilter === '') return;
+
+    const resp = await ProductService.fetchProducts({
+      "filters": ['internalName: (' + productIdFilter + ')']
+    })
+    if (resp.status === 200 && !hasError(resp)) {
+      const products = resp.data.response.docs;
+      // Handled empty response in case of failed query
+      if (resp.data) commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
+    }
+    // TODO Handle specific error
+    return resp;
+  },
+
   // Find Product
   async findProduct ({ commit, state }, payload) {
 
