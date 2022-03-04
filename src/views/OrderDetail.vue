@@ -140,7 +140,7 @@ export default defineComponent({
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
-          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: thisnumberOfDays }).toFormat('MM/dd/yyyy');
+          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
           item.isNewProduct = this.catalog == "Preorder"
         }
       })
