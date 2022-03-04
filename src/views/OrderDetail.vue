@@ -93,95 +93,94 @@ import { DateTime } from 'luxon';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
 export default defineComponent({
-    components: {
-      Image,
-      IonPage,
-      IonHeader,
-      IonToolbar,
-      IonBackButton,
-      IonTitle,
-      IonContent,
-      IonSearchbar,
-      IonItem,
-      IonThumbnail,
-      IonLabel,
-      IonInput,
-      IonChip,
-      IonIcon,
-      IonButton,
-      IonCheckbox,
-      IonSelect,
-      IonSelectOption,
-      IonButtons
+  components: {
+    Image,
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonBackButton,
+    IonTitle,
+    IonContent,
+    IonSearchbar,
+    IonItem,
+    IonThumbnail,
+    IonLabel,
+    IonInput,
+    IonChip,
+    IonIcon,
+    IonButton,
+    IonCheckbox,
+    IonSelect,
+    IonSelectOption,
+    IonButtons
+  },
+  computed: {
+    ...mapGetters({
+      ordersList: 'order/getOrder',
+      getProduct: 'product/getProduct',
+    }),
+  },
+  data() {
+    return {
+      numberOfDays: 0,
+      numberOfPieces: 0,
+      catalog: "",
+    }
+  },
+  mounted(){
+    this.ordersList.items.forEach((product: any) => {
+      product.isSelected = false;
+    })
+  },
+  methods: {
+    selectProduct(item: any) {
+      item.isSelected = true;
     },
-    computed: {
-      ...mapGetters({
-        ordersList: 'order/getOrder',
-        getProduct: 'product/getProduct',
-      }),
+    apply() {
+      this.ordersList.items.map((item: any) => {
+        if (item.isSelected) {
+          item.quantityOrdered -= this.numberOfPieces;
+          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: thisnumberOfDays }).toFormat('MM/dd/yyyy');
+          item.isNewProduct = this.catalog == "Preorder"
+        }
+      })
+      this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
     },
-    data() {
-      return {
-        numberOfDays: 0,
-        numberOfPieces: 0,
-        catalog: "",
-      }
+    getGroupList (items: any) {
+      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
     },
-    mounted(){
-      this.ordersList.items.forEach((product: any) => {
-        product.isSelected = false;
+    getGroupItems(parentProductId: any, items: any) {
+      return items.filter((item: any) => item.parentProductId == parentProductId)
+    },
+    selectAllItems() {
+      this.ordersList.items.forEach((item: any) => {
+        item.isSelected = true;
       })
     },
-    methods: {
-      selectProduct(item: any) {
-        item.isSelected = true;
-      },
-      apply() {
-        this.ordersList.items.map((item: any) => {
-          if (item.isSelected) {
-            item.quantityOrdered -= this.numberOfPieces;
-            item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
-            item.isNewProduct = this.catalog == "Preorder"
+    selectParentProduct(parentProductId: any, event: any){
+      this.ordersList.items.forEach((item: any) => {
+        if (item.parentProductId == parentProductId) {
+          if(event.detail.checked){
+            item.isSelected = true;
+          }else{
+            item.isSelected = false;
           }
-        })
-        this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
-      },
-      getGroupList (items: any) {
-        return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
-      },
-      getGroupItems(parentProductId: any, items: any) {
-        return items.filter((item: any) => item.parentProductId == parentProductId)
-      },
-      selectAllItems() {
-        this.ordersList.items.forEach((item: any) => {
-          item.isSelected = true;
-        })
-      },
-      selectParentProduct(parentProductId: any, event: any){
-        this.ordersList.items.forEach((item: any) => {
-          if (item.parentProductId == parentProductId) {
-            if(event.detail.checked){
-              item.isSelected = true;
-            }else{
-              item.isSelected = false;
-            }
-            
-          }
-        })
-      },
+        }
+      })
     },
-    setup() {
-      const router = useRouter();
-      const store = useStore();
-      return {
-        checkboxOutline,
-        ellipsisVerticalOutline,
-        sendOutline,
-        arrowUndoOutline,
-        router,
-        store
-      }
+  },
+  setup() {
+    const router = useRouter();
+    const store = useStore();
+    return {
+      checkboxOutline,
+      ellipsisVerticalOutline,
+      sendOutline,
+      arrowUndoOutline,
+      router,
+      store
     }
+  }
 });
 
 </script>
