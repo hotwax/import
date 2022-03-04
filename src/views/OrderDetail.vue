@@ -8,7 +8,7 @@
           <ion-button @click="selectAllItems">
             <ion-icon :icon="checkboxOutline" />
           </ion-button>
-          <ion-button>
+          <ion-button @click="revertAllChanges">
             <ion-icon :icon="arrowUndoOutline" />
           </ion-button>
         </ion-buttons>
@@ -74,9 +74,15 @@
             </ion-chip>
               <!-- Used :key as the changed value was not reflected -->
               <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item)"/>
-            <ion-button fill="clear" color="medium">
+            <ion-button fill="clear" color="medium" @click="setOpen(true, $event)" id="trigger-button">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
+            <ion-popover :is-open="isOpenRef" :event="event" @didDismiss="setOpen(false)" trigger="trigger-button">
+              <ion-content>
+                <ion-label>{{ item.internalName }}</ion-label>
+                
+              </ion-content>
+            </ion-popover>
           </div>
         </div>
       </div>
@@ -86,11 +92,11 @@
 <script lang="ts">
 import Image from '@/components/Image.vue';
 
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, IonPopover } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
 export default defineComponent({
   components: {
@@ -112,7 +118,8 @@ export default defineComponent({
     IonCheckbox,
     IonSelect,
     IonSelectOption,
-    IonButtons
+    IonButtons,
+    IonPopover
   },
   computed: {
     ...mapGetters({
@@ -125,16 +132,24 @@ export default defineComponent({
       numberOfDays: 0,
       numberOfPieces: 0,
       catalog: "",
+      original: {} as any
     }
   },
-  mounted(){
+  async mounted(){
     this.ordersList.items.forEach((product: any) => {
       product.isSelected = false;
     })
+    this.original = await JSON.parse(JSON.stringify(this.ordersList.original));
+    console.log(this.original);
   },
   methods: {
     selectProduct(item: any) {
       item.isSelected = true;
+    },
+    revertAllChanges() {
+      // console.log(this.original);
+      // this.store.dispatch('order/updatedOrderListItems', this.original )
+      this.ordersList.items = this.original;
     },
     apply() {
       this.ordersList.items.map((item: any) => {
@@ -172,13 +187,22 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+    const isOpenRef = ref(false);
+    const event = ref();
+    const setOpen = (state: boolean, ev?: Event) => {
+      event.value = ev; 
+      isOpenRef.value = state;
+    }
     return {
       checkboxOutline,
       ellipsisVerticalOutline,
       sendOutline,
       arrowUndoOutline,
       router,
-      store
+      store,
+      isOpenRef, 
+      setOpen, 
+      event
     }
   }
 });
