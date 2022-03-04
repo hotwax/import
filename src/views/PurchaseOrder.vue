@@ -116,7 +116,7 @@ export default defineComponent({
         })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
-          name:'Purchase Order Detail'
+          name:'PurchaseOrderDetail'
         })
       },
     }, 
