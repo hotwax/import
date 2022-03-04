@@ -41,17 +41,32 @@
         </div> 
       </div>  
 
-      <div v-for="(id, index) in getGroupList(ordersList.items)" :key="id" >
+      <div v-for="(id) in getGroupList(ordersList.items)" :key="id" >
         <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
           <div class="list-header" >
             <ion-label>{{ item.parentProductName }}</ion-label>
             <div />
             <div />
             <div />
-            <ion-checkbox :checked="isParentProductChecked[index][item.parentProductId]" @ionChange="selectParentProduct(id, $event)" />
+            <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
             <ion-button fill="clear" color="medium">
-              <ion-icon  :icon="ellipsisVerticalOutline" />
+              <ion-icon  :icon="ellipsisVerticalOutline"  @click="setOpen(true, $event)" />
             </ion-button>
+            <ion-popover
+            :is-open="isOpenRef"
+            @didDismiss="setOpen(false)" >
+              <ion-content>
+                <ion-label>{{ item.parentProductName }}</ion-label>
+                <ion-item>
+                  <ion-icon :icon="arrowUndoOutline" />
+                  <ion-label>Reset</ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon :icon="checkboxOutline" />
+                  <ion-label>Only select</ion-label>
+                </ion-item>
+              </ion-content>
+            </ion-popover>
           </div>
           <div class="list-item">
             <ion-item  lines="none">
@@ -80,13 +95,13 @@
           </div>
         </div>
       </div>
-    </ion-content>   
+    </ion-content>  
   </ion-page>
 </template>   
 <script lang="ts">
 import Image from '@/components/Image.vue';
 
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
@@ -118,16 +133,7 @@ export default defineComponent({
     ...mapGetters({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
-    }),
-    isParentProductChecked(){
-    const array= [] as any;
-    this.ordersList.items.map((item: any) => {
-      const obj = {} as any;
-        obj[item.parentProductId] = false;
-        array.push(obj);
-      })
-      return array;
-    }
+    }),  
   },
   data() {
     return {
@@ -142,22 +148,13 @@ export default defineComponent({
     })
   },
   methods: {
+    isParentProductChecked(parentProductId: string){
+      return !(this as any).ordersList.items.filter((item: any) => item.parentProductId  === parentProductId).some((item: any) => {
+        return !item.isSelected
+      })
+    },
     selectProduct(item: any) {
       item.isSelected = !item.isSelected;
-      if (this.ordersList.items.filter((product: any) => item.parentProductId ==  product.parentProductId).every((item: any) => item.isSelected)) {
-        this.isParentProductChecked.forEach((id: any) => {
-          if (Object.keys(id).includes(item.parentProductId)) {
-            id[item.parentProductId] = true;
-          }
-        })
-      }
-      else {
-        this.isParentProductChecked.forEach((id: any) => {
-          if (Object.keys(id).includes(item.parentProductId)) {
-            id[item.parentProductId] = false;
-          }  
-        })
-      }
     },
     apply() {
       this.ordersList.items.map((item: any) => {
@@ -178,11 +175,6 @@ export default defineComponent({
     selectAllItems() {
       this.ordersList.items.forEach((item: any) => {
         item.isSelected = true;
-        this.isParentProductChecked.forEach((id: any) => {
-          if (Object.keys(id).includes(item.parentProductId)) {
-            id[item.parentProductId] = true;
-          }
-        })
       })
     },
     selectParentProduct(parentProductId: any, event: any) {
@@ -190,18 +182,8 @@ export default defineComponent({
         if (item.parentProductId == parentProductId) {
           if (event.detail.checked) {
             item.isSelected = true;
-            this.isParentProductChecked.forEach((ele: any) => {
-              if (Object.keys(ele).includes(item.parentProductId)) {
-                ele[item.parentProductId] = true;
-              }
-            })
           }else {
             item.isSelected = false;
-            this.isParentProductChecked.forEach((ele: any) => {
-              if (Object.keys(ele).includes(item.parentProductId)) {
-                ele[item.parentProductId] = false;
-              }
-            })
           }
         }
       })
@@ -210,13 +192,22 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+    const isOpenRef = ref(false);
+    const event = ref();
+    const setOpen = (state: boolean, ev?: Event) => {
+      event.value = ev; 
+      isOpenRef.value = state;
+    }
     return {
       checkboxOutline,
       ellipsisVerticalOutline,
       sendOutline,
       arrowUndoOutline,
       router,
-      store
+      store,
+      isOpenRef,
+      setOpen,
+      event
     }
   }
 });
