@@ -43,21 +43,14 @@
         </div> 
       </div>  
 
-      <div v-for="id in getGroupList(parsedCsv)" :key="id" >
-        <div v-for="item in getGroupItems(id, parsedCsv)" :key="item">
+      <div v-for="(id, index) in getGroupList(ordersList.items)" :key="id" >
+        <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
           <div class="list-header" >
             <ion-label>{{ item.parentProductName }}</ion-label>
-            <ion-chip >
-              <ion-label></ion-label>
-            </ion-chip>
-            <ion-chip >
-              <ion-label></ion-label>
-            </ion-chip>
-            <ion-chip >
-              <ion-icon />
-              <ion-label></ion-label>
-            </ion-chip>
-            <ion-checkbox @click="checkGroupedProducts(id)" />
+            <div />
+            <div />
+            <div />
+            <ion-checkbox :checked="isParentProductChecked[index][item.parentProductId]" @ionChange="selectParentProduct(id, $event)" />
             <ion-button fill="clear" color="medium">
               <ion-icon  :icon="ellipsisVerticalOutline" />
             </ion-button>
@@ -102,25 +95,84 @@ import { DateTime } from 'luxon';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
 export default defineComponent({
-    components: {
-      Image,
-      IonPage,
-      IonHeader,
-      IonToolbar,
-      IonBackButton,
-      IonTitle,
-      IonContent,
-      IonSearchbar,
-      IonItem,
-      IonThumbnail,
-      IonLabel,
-      IonInput,
-      IonChip,
-      IonIcon,
-      IonButton,
-      IonCheckbox,
-      IonSelect,
-      IonSelectOption
+  components: {
+    Image,
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonBackButton,
+    IonTitle,
+    IonContent,
+    IonSearchbar,
+    IonItem,
+    IonThumbnail,
+    IonLabel,
+    IonInput,
+    IonChip,
+    IonIcon,
+    IonButton,
+    IonCheckbox,
+    IonSelect,
+    IonSelectOption,
+    IonButtons
+  },
+  computed: {
+    ...mapGetters({
+      ordersList: 'order/getOrder',
+      getProduct: 'product/getProduct',
+    }),
+    isParentProductChecked(){
+    const array= [] as any;
+    this.ordersList.items.map((item: any) => {
+      const obj = {} as any;
+        obj[item.parentProductId] = false;
+        array.push(obj);
+      })
+      return array;
+    }
+  },
+  data() {
+    return {
+      numberOfDays: 0,
+      numberOfPieces: 0,
+      catalog: "",
+    }
+  },
+  mounted() {
+    this.ordersList.items.forEach((product: any) => {
+      product.isSelected = false;
+    })
+  },
+  methods: {
+    selectProduct(item: any) {
+      item.isSelected = !item.isSelected;
+      if (this.ordersList.items.filter((product: any) => item.parentProductId ==  product.parentProductId).every((item: any) => item.isSelected)) {
+        this.isParentProductChecked.forEach((id: any) => {
+          if (Object.keys(id).includes(item.parentProductId)) {
+            id[item.parentProductId] = true;
+          }
+        })
+      }
+      else {
+        this.isParentProductChecked.forEach((id: any) => {
+          if (Object.keys(id).includes(item.parentProductId)) {
+            id[item.parentProductId] = false;
+          }  
+        })
+      }
+    },
+    apply() {
+      this.ordersList.items.map((item: any) => {
+        if (item.isSelected) {
+          item.quantityOrdered -= this.numberOfPieces;
+          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
+          item.isNewProduct = this.catalog == "Preorder"
+        }
+      })
+      this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
+    },
+    getGroupList (items: any) {
+      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
     },
     computed: {
       ...mapGetters({
@@ -128,54 +180,38 @@ export default defineComponent({
         getProduct: 'product/getProduct',
       }),
     },
-    data() {
-      return {
-        numberOfDays: 0,
-        numberOfpieces: 0,
-        catalog: "",
-        listOfCheckedProducts: [] as any,
-        originalCsv: {}
-      }
-    },
-    methods: {
-      onChange(productSku: string) {
-        if (this.listOfCheckedProducts.includes(productSku)) {
-          this.listOfCheckedProducts.splice(this.listOfCheckedProducts.indexOf(productSku, 1));
-        }
-        else {
-          this.listOfCheckedProducts.push(productSku);
-        }
-      },
-      apply() {
-        this.parsedCsv.map((item: any) => {
-          if (this.listOfCheckedProducts.includes(item.shopifyproductSKU)) {
-            item.quantityOrdered -= this.numberOfpieces;
-            item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
-            if (this.catalog == "Preorder") item.isNewProduct = true
-            else item.isNewProduct = false
+    selectAllItems() {
+      this.ordersList.items.forEach((item: any) => {
+        item.isSelected = true;
+        this.isParentProductChecked.forEach((id: any) => {
+          if (Object.keys(id).includes(item.parentProductId)) {
+            id[item.parentProductId] = true;
           }
         })
-        this.store.dispatch("order/modifyCsv", this.parsedCsv);
-      },
-      getGroupList (items: any) {
-        return Array.from(new Set(items.map((ele: any) => ele.groupId)))
-      },
-      getGroupItems(groupId: any, items: any) {
-        return items.filter((item: any) => item.groupId == groupId)
-      },
-      checkAllProducts() {
-        this.parsedCsv.forEach((item: any) => {
-          this.onChange(item.shopifyproductSKU);
-        })
-      },
-      checkGroupedProducts(groupId: any){
-        const groupedProducts = this.parsedCsv.filter((item: any) => {
-           if(item.groupId == groupId){
-             this.onChange(item.shopifyproductSKU);
-           }
-        })
-      },
+      })
     },
+    selectParentProduct(parentProductId: any, event: any) {
+      this.ordersList.items.forEach((item: any) => {
+        if (item.parentProductId == parentProductId) {
+          if (event.detail.checked) {
+            item.isSelected = true;
+            this.isParentProductChecked.forEach((ele: any) => {
+              if (Object.keys(ele).includes(item.parentProductId)) {
+                ele[item.parentProductId] = true;
+              }
+            })
+          }else {
+            item.isSelected = false;
+            this.isParentProductChecked.forEach((ele: any) => {
+              if (Object.keys(ele).includes(item.parentProductId)) {
+                ele[item.parentProductId] = false;
+              }
+            })
+          }
+        } 
+      },
+    }
+  }    
     setup() {
       const router = useRouter();
       const store = useStore();
