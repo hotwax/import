@@ -203,52 +203,21 @@ export default defineComponent({
               }
             })
           }
-        } 
+        }
       })
     }
   },    
-    setup() {
-      const router = useRouter();
-      const store = useStore();
-      return {
-        checkboxOutline,
-        ellipsisVerticalOutline,
-        sendOutline,
-        arrowUndoOutline,
-        router,
-        store
-      }
-    // getGroupItems(parentProductId: any, items: any) {
-    //   return items.filter((item: any) => item.parentProductId == parentProductId)
-    // },
-    // selectAllItems() {
-    //   this.ordersList.items.forEach((item: any) => {
-    //     item.isSelected = true;
-    //   })
-    // },
-    // selectParentProduct(parentProductId: any, event: any){
-    //   this.ordersList.items.forEach((item: any) => {
-    //     if (item.parentProductId == parentProductId) {
-    //       if(event.detail.checked){
-    //         item.isSelected = true;
-    //       }else{
-    //         item.isSelected = false;
-    //       }
-    //     }
-    //   })
-    // },
-  // },
-  // setup() {
-  //   const router = useRouter();
-  //   const store = useStore();
-  //   return {
-  //     checkboxOutline,
-  //     ellipsisVerticalOutline,
-  //     sendOutline,
-  //     arrowUndoOutline,
-  //     router,
-  //     store
-  //   }
+  setup() {
+    const router = useRouter();
+    const store = useStore();
+    return {
+      checkboxOutline,
+      ellipsisVerticalOutline,
+      sendOutline,
+      arrowUndoOutline,
+      router,
+      store
+    }
   }
 });
 
