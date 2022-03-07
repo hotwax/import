@@ -41,7 +41,7 @@
         </div> 
       </div>  
 
-      <div v-for="(id) in getGroupList(ordersList.items)" :key="id" >
+      <div v-for="id in getGroupList(ordersList.items)" :key="id" >
         <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
           <div class="list-header" >
             <ion-label>{{ item.parentProductName }}</ion-label>
@@ -50,7 +50,7 @@
             <div />
             <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
             <ion-button fill="clear" color="medium" @click="openPopover($event, ordersList.items, item, id)">
-              <ion-icon  :icon="ellipsisVerticalOutline"   />
+              <ion-icon  :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
           <div class="list-item">
@@ -86,7 +86,7 @@
 <script lang="ts">
 import Image from '@/components/Image.vue';
 import parentProductPopover from '@/components/ParentProductPopover.vue'
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
@@ -154,7 +154,7 @@ export default defineComponent({
         }
       })
     },
-    isParentProductChecked(parentProductId: string){
+    isParentProductChecked(parentProductId: string) {
       return !(this as any).ordersList.items.filter((item: any) => item.parentProductId  === parentProductId).some((item: any) => {
         return !item.isSelected
       })
@@ -194,7 +194,7 @@ export default defineComponent({
         }
       })
     }
-  },    
+  },
   setup() {
     const router = useRouter();
     const store = useStore();
