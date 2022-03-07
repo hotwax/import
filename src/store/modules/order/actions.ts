@@ -28,7 +28,7 @@ const actions: ActionTree<OrderState, RootState> = {
         item.parentProductName = product.parentProductName;
         item.imageUrl = product.mainImageUrl;
         item.isNewProduct = false;
-        item.isSelected = false;
+        item.isSelected = true;
         return item;
     })
     const original = JSON.parse(JSON.stringify(items))

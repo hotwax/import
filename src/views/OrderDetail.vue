@@ -33,8 +33,8 @@
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
             <ion-select selected-text="Backorder" v-model="catalog">
-              <ion-select-option>{{ $t("Backorder") }}</ion-select-option>
-              <ion-select-option>{{ $t("Preorder") }}</ion-select-option>
+              <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
+              <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item>
@@ -99,6 +99,7 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
+import { hasError } from "@/utils";
 export default defineComponent({
   components: {
     Image,
@@ -134,7 +135,7 @@ export default defineComponent({
     return {
       numberOfDays: 0,
       numberOfPieces: 0,
-      catalog: "",
+      catalog: "N",
       facilityId: "",
       facilities: [] as any
     }
@@ -144,16 +145,22 @@ export default defineComponent({
   },
   methods: {
     async fetchFacilities(){
-     const payload = {
-       "inputFields": {
-         "externalId_fld0_op": "not-empty",
-       },
-       "fieldList": ["externalId", "facilityName"],
-      "entityName": "Facility",
-      "noConditionFind": "Y"
-     }
-     const resp = await OrderService.getFacilities(payload);
-     this.facilities = resp.data.docs;
+      const payload = {
+        "inputFields": {
+          "externalId_fld0_op": "not-empty",
+        },
+        "fieldList": ["externalId", "facilityName"],
+        "entityName": "Facility",
+        "noConditionFind": "Y"
+      }
+      try {
+        const resp = await OrderService.getFacilities(payload);
+        if(resp.status === 200 && !hasError(resp)){
+          this.facilities = resp.data.docs;
+        }
+      } catch(err) {
+        console.error(err)
+      }
     },
     async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
       const popover = await popoverController
@@ -185,7 +192,9 @@ export default defineComponent({
           item.quantityOrdered -= this.numberOfPieces;
           item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
           item.isNewProduct = this.catalog == "Preorder";
-          item.facilityId = this.facilityId;
+          if(this.facilityId) {
+            item.facilityId = this.facilityId;
+          }
         }
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
