@@ -48,6 +48,12 @@
                 <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
+          <ion-item>
+              <ion-label>{{ $t("Facility ID") }}</ion-label>
+              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
+                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              </ion-select>
+          </ion-item>
           <ion-button color="dark" fill="solid" @click="mapFields" expand="block">{{ $t("REVIEW") }}</ion-button>
         </div>
       </div>     
@@ -85,6 +91,7 @@ export default defineComponent({
         productUpcField: "",
         dateField: "",
         quantityField: "",
+        facilityField: "",
         orderItemsList: [],
       }
     },
@@ -105,13 +112,15 @@ export default defineComponent({
           shopifyProductSKU: [],
           shopifyProductUPC: [],
           arrivalDate: [],
-          quantityOrdered: []
+          quantityOrdered: [],
+          facilityId: []
         }
           orderItem.orderId = item[this.orderIdField];
           orderItem.shopifyProductSKU = item[this.productSkuField];
           orderItem.shopifyProductUPC = item[this.productUpcField];
           orderItem.arrivalDate = item[this.dateField];
           orderItem.quantityOrdered = item[this.quantityField];
+          orderItem.facilityId = item[this.facilityField]
           return orderItem
         })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
@@ -120,7 +129,7 @@ export default defineComponent({
         })
       },
     }, 
-    setup(){
+    setup() {
     const router = useRouter();
     const store = useStore();
     return {

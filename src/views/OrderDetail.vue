@@ -24,21 +24,27 @@
         <div class="filters">
           <ion-item>
             <ion-label>{{ $t("Buffer days") }}</ion-label>
-            <ion-input v-model="numberOfDays" type="text" :placeholder = "$t('all items')" /> 
+            <ion-input v-model="numberOfDays" type="number" :placeholder = "$t('Lead time')" /> 
           </ion-item>
           <ion-item>
             <ion-label>{{ $t("Order buffer") }}</ion-label>
-            <ion-input v-model="numberOfPieces" type="number" />
+            <ion-input v-model="numberOfPieces" type="number" :placeholder = "$t('Safety stock')" />
           </ion-item>
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
-            <ion-select v-model="catalog">
-              <ion-select-option>{{ $t("Backorder") }}</ion-select-option>
-              <ion-select-option>{{ $t("Preorder") }}</ion-select-option>
+            <ion-select selected-text="Backorder" v-model="catalog">
+              <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
+              <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label>{{ $t("Facility") }}</ion-label>
+            <ion-select v-model="facilityId">
+              <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.externalId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-button expand="block" fill="outline" @click="apply">{{ $t("Apply") }}</ion-button>
-        </div> 
+        </div>
       </div>  
 
       <div v-for="id in getGroupList(ordersList.items)" :key="id" >
@@ -84,14 +90,16 @@
   </ion-page>
 </template>   
 <script lang="ts">
+import { OrderService } from "@/services/OrderService";
 import Image from '@/components/Image.vue';
-import parentProductPopover from '@/components/ProductPopover.vue'
+import ProductPopover from '@/components/ProductPopover.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
+import { hasError } from "@/utils";
 export default defineComponent({
   components: {
     Image,
@@ -127,14 +135,37 @@ export default defineComponent({
     return {
       numberOfDays: 0,
       numberOfPieces: 0,
-      catalog: "",
+      catalog: "N",
+      facilityId: "",
+      facilities: [] as any
     }
   },
+  mounted(){
+   this.fetchFacilities();
+  },
   methods: {
+    async fetchFacilities(){
+      const payload = {
+        "inputFields": {
+          "externalId_fld0_op": "not-empty",
+        },
+        "fieldList": ["externalId", "facilityName"],
+        "entityName": "Facility",
+        "noConditionFind": "Y"
+      }
+      try {
+        const resp = await OrderService.getFacilities(payload);
+        if(resp.status === 200 && !hasError(resp)){
+          this.facilities = resp.data.docs;
+        }
+      } catch(err) {
+        console.error(err)
+      }
+    },
     async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
       const popover = await popoverController
         .create({
-          component: parentProductPopover,
+          component: ProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
@@ -160,7 +191,10 @@ export default defineComponent({
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
           item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
-          item.isNewProduct = this.catalog == "Preorder"
+          item.isNewProduct = this.catalog == "Preorder";
+          if(this.facilityId) {
+            item.facilityId = this.facilityId;
+          }
         }
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
