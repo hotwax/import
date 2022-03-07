@@ -49,24 +49,9 @@
             <div />
             <div />
             <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
-            <ion-button fill="clear" color="medium">
-              <ion-icon  :icon="ellipsisVerticalOutline"  @click="setOpen(true, $event)" />
+            <ion-button fill="clear" color="medium" @click="openPopover($event, ordersList.items, item, id)">
+              <ion-icon  :icon="ellipsisVerticalOutline"   />
             </ion-button>
-            <ion-popover
-            :is-open="isOpenRef"
-            @didDismiss="setOpen(false)" >
-              <ion-content>
-                <ion-label>{{ item.parentProductName }}</ion-label>
-                <ion-item>
-                  <ion-icon :icon="arrowUndoOutline" />
-                  <ion-label>Reset</ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-icon :icon="checkboxOutline" />
-                  <ion-label>Only select</ion-label>
-                </ion-item>
-              </ion-content>
-            </ion-popover>
           </div>
           <div class="list-item">
             <ion-item  lines="none">
@@ -89,7 +74,7 @@
             </ion-chip>
               <!-- Used :key as the changed value was not reflected -->
               <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item)"/>
-            <ion-button fill="clear" color="medium">
+            <ion-button fill="clear" color="medium" @click="openPopover($event, ordersList.items, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -100,12 +85,12 @@
 </template>   
 <script lang="ts">
 import Image from '@/components/Image.vue';
-
+import parentProductPopover from '@/components/ParentProductPopover.vue'
 import { defineComponent, ref } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
 export default defineComponent({
   components: {
@@ -148,6 +133,27 @@ export default defineComponent({
     })
   },
   methods: {
+    async openPopover(ev: Event, items: any, item: any, id?: any) {
+      const popover = await popoverController
+        .create({
+          component: parentProductPopover,
+          event: ev,
+          translucent: true,
+          showBackdrop: true,
+          componentProps: { 'items': items, 'item': item, 'id': id }
+        })
+      return popover.present();
+    },
+    selectOnlyParentProduct(id: any){
+      this.ordersList.items.forEach((item: any) => {
+        if (item.parentProductId === id) {
+          item.isSelected = false;
+        }
+        else {
+          item.isSelected = true;
+        }
+      })
+    },
     isParentProductChecked(parentProductId: string){
       return !(this as any).ordersList.items.filter((item: any) => item.parentProductId  === parentProductId).some((item: any) => {
         return !item.isSelected
@@ -192,22 +198,13 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
-    const isOpenRef = ref(false);
-    const event = ref();
-    const setOpen = (state: boolean, ev?: Event) => {
-      event.value = ev; 
-      isOpenRef.value = state;
-    }
     return {
       checkboxOutline,
       ellipsisVerticalOutline,
       sendOutline,
       arrowUndoOutline,
       router,
-      store,
-      isOpenRef,
-      setOpen,
-      event
+      store
     }
   }
 });
