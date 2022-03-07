@@ -1,7 +1,7 @@
 <template>
   <ion-content>
     <ion-item lines="none">
-      <ion-label>{{ this.isVirtualProduct ? item.internalName : item.parentProductName }}</ion-label>
+      <ion-label>{{ this.isVirtual ? item.internalName : item.parentProductName }}</ion-label>
     </ion-item>
     <ion-item lines="none">
       <ion-icon slot="start" :icon="arrowUndoOutline" />
@@ -23,7 +23,7 @@ import {
   checkboxOutline,
 } from 'ionicons/icons';
 export default defineComponent({
-  props: ['id', 'isVirtualProduct', 'item'],
+  props: ['id', 'isVirtual', 'item'],
   name: 'parentProductPopover',
   components: { IonContent, IonIcon, IonLabel, IonItem },
   computed: {
@@ -32,12 +32,8 @@ export default defineComponent({
     }),
   },
   methods: {
-    onlySelect(){
-      if(this.isVirtualProduct){
-        this.onlySelectSingleProduct();
-      } else {
-        this.onlySelectParentProduct();
-      }
+    onlySelect() {
+      this.isVirtual ? this.onlySelectSingleProduct() : this.onlySelectParentProduct();
     },
     onlySelectParentProduct() {
       this.ordersList.items.forEach(element => {

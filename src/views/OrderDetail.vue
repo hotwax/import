@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/" />
-        <ion-title>{{ ordersList.items[0]?.orderId }}</ion-title>
+        <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
             <ion-icon :icon="checkboxOutline" />
@@ -85,7 +85,7 @@
 </template>   
 <script lang="ts">
 import Image from '@/components/Image.vue';
-import parentProductPopover from '@/components/ParentProductPopover.vue'
+import parentProductPopover from '@/components/ProductPopover.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
@@ -118,7 +118,10 @@ export default defineComponent({
     ...mapGetters({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
-    }),  
+    }),
+    orderId(){
+      return (this as any).ordersList.items[0]?.orderId
+    } 
   },
   data() {
     return {
@@ -128,14 +131,14 @@ export default defineComponent({
     }
   },
   methods: {
-    async UpdateProduct(ev: Event, id: any, isVirtualProduct: boolean, item: any) {
+    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
       const popover = await popoverController
         .create({
           component: parentProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
-          componentProps: { 'id': id, 'isVirtualProduct': isVirtualProduct, 'item': item }
+          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
         })
       return popover.present();
     },
