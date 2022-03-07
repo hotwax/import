@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/" />
-        <ion-title>{{ $t("PO External Order ID") }}</ion-title>
+        <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
             <ion-icon :icon="checkboxOutline" />
@@ -48,8 +48,8 @@
             <div />
             <div />
             <div />
-            <ion-checkbox @ionChange="selectParentProduct(id, $event)" />
-            <ion-button fill="clear" color="medium">
+            <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, false, item)"> 
               <ion-icon  :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -72,25 +72,25 @@
               <ion-icon :icon="sendOutline" />
               <ion-label>{{ item.arrivalDate }}</ion-label>
             </ion-chip>
-              <!-- Used :key as the changed value was not reflected -->
-              <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item)"/>
-            <ion-button fill="clear" color="medium">
+            <!-- Used :key as the changed value was not reflected -->
+            <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, true, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
         </div>
       </div>
-    </ion-content>   
+    </ion-content>  
   </ion-page>
 </template>   
 <script lang="ts">
 import Image from '@/components/Image.vue';
-
+import parentProductPopover from '@/components/ProductPopover.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
 export default defineComponent({
   components: {
@@ -119,6 +119,9 @@ export default defineComponent({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
     }),
+    orderId(){
+      return (this as any).ordersList.items[0]?.orderId
+    } 
   },
   data() {
     return {
@@ -127,14 +130,30 @@ export default defineComponent({
       catalog: "",
     }
   },
-  mounted(){
-    this.ordersList.items.forEach((product: any) => {
-      product.isSelected = false;
-    })
-  },
   methods: {
-    selectProduct(item: any) {
-      item.isSelected = true;
+    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
+      const popover = await popoverController
+        .create({
+          component: parentProductPopover,
+          event: ev,
+          translucent: true,
+          showBackdrop: true,
+          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
+        })
+      return popover.present();
+    },
+    selectOnlyParentProduct(id: any){
+      this.ordersList.items.forEach((item: any) => {
+        item.isSelected = !item.parentProductId === id;
+      })
+    },
+    isParentProductChecked(parentProductId: string) {
+      return !(this as any).ordersList.items.filter((item: any) => item.parentProductId  === parentProductId).some((item: any) => {
+        return !item.isSelected
+      })
+    },
+    selectProduct(item: any, event: any) {
+      item.isSelected = event.detail.checked;
     },
     apply() {
       this.ordersList.items.map((item: any) => {
@@ -157,17 +176,13 @@ export default defineComponent({
         item.isSelected = true;
       })
     },
-    selectParentProduct(parentProductId: any, event: any){
+    selectParentProduct(parentProductId: any, event: any) {
       this.ordersList.items.forEach((item: any) => {
         if (item.parentProductId == parentProductId) {
-          if(event.detail.checked){
-            item.isSelected = true;
-          }else{
-            item.isSelected = false;
-          }
+            item.isSelected = event.detail.checked;
         }
       })
-    },
+    }
   },
   setup() {
     const router = useRouter();
