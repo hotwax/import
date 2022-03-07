@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/" />
-        <ion-title>{{ ordersList.items[0].orderId }}</ion-title>
+        <ion-title>{{ ordersList.items[0]?.orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
             <ion-icon :icon="checkboxOutline" />
