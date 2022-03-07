@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/" />
+        <ion-back-button slot="start" default-href="/purchase-order" />
         <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
@@ -32,7 +32,7 @@
           </ion-item>
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
-            <ion-select selected-text="Backorder" v-model="catalog">
+            <ion-select v-model="catalog">
               <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
               <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
             </ion-select>
@@ -69,7 +69,7 @@
               </ion-label>
             </ion-item>
             <ion-chip outline>
-              <ion-label>{{ item.isNewProduct? $t("Preorder") : $t("Backorder") }}</ion-label>
+              <ion-label>{{ item.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
             </ion-chip>
             <ion-chip outline>
               <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
@@ -86,10 +86,17 @@
           </div>
         </div>
       </div>
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button @click="save" class="save">
+          <ion-icon  :icon="cloudUploadOutline" />
+        </ion-fab-button>
+      </ion-fab>
+      
     </ion-content>  
   </ion-page>
 </template>   
 <script lang="ts">
+import { UploadService } from "@/services/UploadService";
 import { OrderService } from "@/services/OrderService";
 import Image from '@/components/Image.vue';
 import ProductPopover from '@/components/ProductPopover.vue'
@@ -97,8 +104,8 @@ import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController } from '@ionic/vue'
-import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton } from '@ionic/vue'
+import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline, cloudUploadOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 export default defineComponent({
   components: {
@@ -120,7 +127,9 @@ export default defineComponent({
     IonCheckbox,
     IonSelect,
     IonSelectOption,
-    IonButtons
+    IonButtons,
+    IonFab,
+    IonFabButton
   },
   computed: {
     ...mapGetters({
@@ -144,6 +153,31 @@ export default defineComponent({
    this.fetchFacilities();
   },
   methods: {
+    async save(){
+      console.log("Save");
+      const uploadData = this.ordersList.items.map((item: any) => {
+        return { 
+          "poId": " ",
+          "externalId": item.orderId,
+          "facilityId": "",
+          "externalFacilityId": item.facilityId,
+          "arrivalDate": item.arrivalDate,
+          "quantity": item.quantityOrdered,
+          "isNewProduct": item.isNewProduct,
+          "idValue": item.shopifyProductSKU,
+          "idType": "SKU"
+        }
+      })
+      const fileName = "Upload_PO_Member_" + Date.now() +".json";
+      const params = {
+        "configId": "IMP_PO"
+      }
+      const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+        uploadData,
+        fileName,
+        params
+      }));
+    },
     async fetchFacilities(){
       const payload = {
         "inputFields": {
@@ -188,10 +222,11 @@ export default defineComponent({
     },
     apply() {
       this.ordersList.items.map((item: any) => {
+        console.log(this.catalog);
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
           item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
-          item.isNewProduct = this.catalog == "Preorder";
+          item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
           }
@@ -226,6 +261,7 @@ export default defineComponent({
       ellipsisVerticalOutline,
       sendOutline,
       arrowUndoOutline,
+      cloudUploadOutline,
       router,
       store
     }
@@ -262,6 +298,9 @@ export default defineComponent({
   justify-content: space-between;
   background-color: #F4F5F8;
   padding-left: 10px;
+}
+.save {
+  border-radius: 100%;
 }
 
 </style>

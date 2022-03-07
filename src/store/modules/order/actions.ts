@@ -27,7 +27,7 @@ const actions: ActionTree<OrderState, RootState> = {
         item.internalName = product.internalName; 
         item.parentProductName = product.parentProductName;
         item.imageUrl = product.mainImageUrl;
-        item.isNewProduct = false;
+        item.isNewProduct = "N";
         item.isSelected = true;
         return item;
     })
