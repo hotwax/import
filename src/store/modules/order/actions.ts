@@ -28,6 +28,7 @@ const actions: ActionTree<OrderState, RootState> = {
         item.parentProductName = product.parentProductName;
         item.imageUrl = product.mainImageUrl;
         item.isNewProduct = false;
+        item.isSelected = false;
         return item;
     })
     const original = JSON.parse(JSON.stringify(items))
@@ -35,6 +36,6 @@ const actions: ActionTree<OrderState, RootState> = {
   },
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
-  }
+  },
 }
 export default actions;

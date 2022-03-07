@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/" />
-        <ion-title>{{ $t("PO External Order ID") }}</ion-title>
+        <ion-title>{{ ordersList.items[0].orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
             <ion-icon :icon="checkboxOutline" />
@@ -49,7 +49,7 @@
             <div />
             <div />
             <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
-            <ion-button fill="clear" color="medium" @click="openPopover($event, ordersList.items, item, id)">
+            <ion-button fill="clear" color="medium" @click="openPopover($event, id, 'Parent', item)"> 
               <ion-icon  :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -74,7 +74,7 @@
             </ion-chip>
               <!-- Used :key as the changed value was not reflected -->
               <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item)"/>
-            <ion-button fill="clear" color="medium" @click="openPopover($event, ordersList.items, item)">
+            <ion-button fill="clear" color="medium" @click="openPopover($event, item.internalName, 'Product', item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -127,20 +127,15 @@ export default defineComponent({
       catalog: "",
     }
   },
-  mounted() {
-    this.ordersList.items.forEach((product: any) => {
-      product.isSelected = false;
-    })
-  },
   methods: {
-    async openPopover(ev: Event, items: any, item: any, id?: any) {
+    async openPopover(ev: Event, id: any, type: string, item: any) {
       const popover = await popoverController
         .create({
           component: parentProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
-          componentProps: { 'items': items, 'item': item, 'id': id }
+          componentProps: { 'id': id, 'type': type, 'item': item }
         })
       return popover.present();
     },
