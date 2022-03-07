@@ -2,7 +2,6 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/home" />
         <ion-title>{{ $t("Settings") }}</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -30,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { IonButton, IonBackButton , IonContent, IonHeader,IonIcon, IonItem, IonLabel, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
+import { IonButton, IonContent, IonHeader,IonIcon, IonItem, IonLabel, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { codeWorkingOutline, ellipsisVertical, personCircleOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
@@ -40,7 +39,6 @@ import TimeZoneModal from '@/views/TimezoneModal.vue';
 export default defineComponent({
   name: 'Settings',
   components: {
-    IonBackButton,
     IonButton, 
     IonContent, 
     IonHeader, 

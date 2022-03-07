@@ -2,7 +2,6 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/home" />
         <ion-title>{{ $t("Purchase orders") }}</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -61,7 +60,7 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { parseCsv } from '@/utils';
@@ -72,7 +71,6 @@ export default defineComponent({
       IonPage,
       IonHeader,
       IonToolbar,
-      IonBackButton,
       IonTitle,
       IonContent,
       IonItem,
