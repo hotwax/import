@@ -92,7 +92,7 @@
 <script lang="ts">
 import { OrderService } from "@/services/OrderService";
 import Image from '@/components/Image.vue';
-import parentProductPopover from '@/components/ProductPopover.vue'
+import ProductPopover from '@/components/ProductPopover.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
@@ -137,14 +137,28 @@ export default defineComponent({
       catalog: "",
       facilityId: "",
       facilities: [] as any
-
     }
   },
+  mounted(){
+   this.fetchFacilities();
+  },
   methods: {
+    async fetchFacilities(){
+     const payload = {
+       "inputFields": {
+         "externalId_fld0_op": "not-empty",
+       },
+       "fieldList": ["externalId", "facilityName"],
+      "entityName": "Facility",
+      "noConditionFind": "Y"
+     }
+     const resp = await OrderService.getFacilities(payload);
+     this.facilities = resp.data.docs;
+    },
     async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
       const popover = await popoverController
         .create({
-          component: parentProductPopover,
+          component: ProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
