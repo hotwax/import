@@ -25,7 +25,7 @@ const loginGuard = (to: any, from: any, next: any) => {
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/settings'
+    redirect: '/purchase-order'
   },
   {
     path: '/purchase-order',
