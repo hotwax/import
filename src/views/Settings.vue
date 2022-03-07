@@ -8,14 +8,6 @@
     </ion-header>
     
     <ion-content :fullscreen="true">
-      <!-- Select store -->
-      <ion-item>
-        <ion-icon :icon="storefrontOutline" slot="start" />
-        <ion-label>{{ $t("Store") }}</ion-label>
-        <ion-select interface="popover" :placeholder="$t('store name')" :value="currentFacility.facilityId" @ionChange="setFacility($event)">
-          <ion-select-option v-for="facility in ( userProfile && userProfile.facilities ? userProfile.facilities : [] )" :key="facility.facilityId" :value="facility.facilityId" >{{ facility.name }}</ion-select-option>
-        </ion-select>
-      </ion-item>
       <!-- OMS information -->
       <ion-item>
         <ion-icon :icon="codeWorkingOutline" slot="start"/>
@@ -38,9 +30,9 @@
 </template>
 
 <script lang="ts">
-import { alertController, IonButton, IonBackButton , IonContent, IonHeader,IonIcon, IonItem, IonLabel, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, popoverController, modalController } from '@ionic/vue';
+import { IonButton, IonBackButton , IonContent, IonHeader,IonIcon, IonItem, IonLabel, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
 import { defineComponent } from 'vue';
-import { codeWorkingOutline, ellipsisVertical, personCircleOutline, storefrontOutline} from 'ionicons/icons'
+import { codeWorkingOutline, ellipsisVertical, personCircleOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import TimeZoneModal from '@/views/TimezoneModal.vue';
@@ -55,28 +47,17 @@ export default defineComponent({
     IonIcon,
     IonItem, 
     IonLabel, 
-    IonPage, 
-    IonSelect, 
-    IonSelectOption,
+    IonPage,
     IonTitle, 
     IonToolbar
   },
   computed: {
     ...mapGetters({
       userProfile: 'user/getUserProfile',
-      currentFacility: 'user/getCurrentFacility',
       instanceUrl: 'user/getInstanceUrl'
     })
   },
   methods: {
-    setFacility (facility: any) {
-      this.userProfile.facilities.map((fac: any) => {
-        if (fac.facilityId == facility['detail'].value) {
-          this.store.dispatch('user/setFacility', {'facility': fac});
-          console.log(fac);
-        }
-      })
-    },
     async changeTimeZone() {
       const timeZoneModal = await modalController.create({
         component: TimeZoneModal,
@@ -97,7 +78,6 @@ export default defineComponent({
       codeWorkingOutline,
       ellipsisVertical,
       personCircleOutline,
-      storefrontOutline,
       store,
       router
     }
