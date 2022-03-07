@@ -1,7 +1,7 @@
 <template>
   <ion-content>
     <ion-item lines="none">
-      <ion-label>{{ this.type === "Parent" ? item.parentProductName : item.internalName }}</ion-label>
+      <ion-label>{{ this.isVirtualProduct ? item.internalName : item.parentProductName }}</ion-label>
     </ion-item>
     <ion-item lines="none">
       <ion-icon slot="start" :icon="arrowUndoOutline" />
@@ -23,7 +23,7 @@ import {
   checkboxOutline,
 } from 'ionicons/icons';
 export default defineComponent({
-  props: ['id', 'type', 'item'],
+  props: ['id', 'isVirtualProduct', 'item'],
   name: 'parentProductPopover',
   components: { IonContent, IonIcon, IonLabel, IonItem },
   computed: {
@@ -33,31 +33,21 @@ export default defineComponent({
   },
   methods: {
     onlySelect(){
-      if(this.type === "Parent"){
-        this.onlySelectParentProduct();
-      } else {
+      if(this.isVirtualProduct){
         this.onlySelectSingleProduct();
+      } else {
+        this.onlySelectParentProduct();
       }
     },
     onlySelectParentProduct() {
       this.ordersList.items.forEach(element => {
-        if (element.parentProductId === this.id) {
-          element.isSelected = true;
-        }
-        else {
-          element.isSelected = false;
-        }
+        element.isSelected = element.parentProductId === this.id;
       });
       popoverController.dismiss({ dismissed: true });
     },
     onlySelectSingleProduct() {
       this.ordersList.items.forEach(element => {
-        if (element.internalName === this.id) {
-          element.isSelected = true;
-        }
-        else {
-          element.isSelected = false;
-        }
+        element.isSelected = element.internalName === this.id;
       });
       popoverController.dismiss({ dismissed: true });
     }

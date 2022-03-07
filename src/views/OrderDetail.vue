@@ -49,7 +49,7 @@
             <div />
             <div />
             <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
-            <ion-button fill="clear" color="medium" @click="openPopover($event, id, 'Parent', item)"> 
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, false, item)"> 
               <ion-icon  :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -72,9 +72,9 @@
               <ion-icon :icon="sendOutline" />
               <ion-label>{{ item.arrivalDate }}</ion-label>
             </ion-chip>
-              <!-- Used :key as the changed value was not reflected -->
-              <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item)"/>
-            <ion-button fill="clear" color="medium" @click="openPopover($event, item.internalName, 'Product', item)">
+            <!-- Used :key as the changed value was not reflected -->
+            <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, true, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -128,25 +128,20 @@ export default defineComponent({
     }
   },
   methods: {
-    async openPopover(ev: Event, id: any, type: string, item: any) {
+    async UpdateProduct(ev: Event, id: any, isVirtualProduct: boolean, item: any) {
       const popover = await popoverController
         .create({
           component: parentProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
-          componentProps: { 'id': id, 'type': type, 'item': item }
+          componentProps: { 'id': id, 'isVirtualProduct': isVirtualProduct, 'item': item }
         })
       return popover.present();
     },
     selectOnlyParentProduct(id: any){
       this.ordersList.items.forEach((item: any) => {
-        if (item.parentProductId === id) {
-          item.isSelected = false;
-        }
-        else {
-          item.isSelected = true;
-        }
+        item.isSelected = !item.parentProductId === id;
       })
     },
     isParentProductChecked(parentProductId: string) {
@@ -154,8 +149,8 @@ export default defineComponent({
         return !item.isSelected
       })
     },
-    selectProduct(item: any) {
-      item.isSelected = !item.isSelected;
+    selectProduct(item: any, event: any) {
+      item.isSelected = event.detail.checked;
     },
     apply() {
       this.ordersList.items.map((item: any) => {
@@ -181,11 +176,7 @@ export default defineComponent({
     selectParentProduct(parentProductId: any, event: any) {
       this.ordersList.items.forEach((item: any) => {
         if (item.parentProductId == parentProductId) {
-          if (event.detail.checked) {
-            item.isSelected = true;
-          }else {
-            item.isSelected = false;
-          }
+            item.isSelected = event.detail.checked;
         }
       })
     }
