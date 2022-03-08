@@ -30,12 +30,6 @@
               </ion-select>
           </ion-item>
           <ion-item>
-              <ion-label>{{ $t("Shopify product UPC") }}</ion-label>
-              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productUpcField">
-                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-              </ion-select>
-          </ion-item>
-          <ion-item>
               <ion-label>{{ $t("Arrival date") }}</ion-label>
               <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
                 <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
@@ -63,10 +57,11 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { parseCsv } from '@/utils';
 import { useStore } from "vuex";
+import { showToast, parseCsv } from '@/utils';
+import { translate } from "@/i18n";
 export default defineComponent({
-    name: " purchase orders",
+    name: "purchase orders",
     components: {
       IonPage,
       IonHeader,
@@ -96,7 +91,13 @@ export default defineComponent({
     methods: {
       getFile(event) {
         this.file = event.target.files[0];
-        this.parseFile();
+        if(this.file){
+          showToast(translate("File uploaded successfully"));
+          this.parseFile();
+        }
+        else {
+          showToast(translate("Something went wrong, Please try again"));
+        }
       },
       async parseFile(){
         await parseCsv(this.file).then(res => {
@@ -126,7 +127,7 @@ export default defineComponent({
           name:'PurchaseOrderDetail'
         })
       },
-    }, 
+    },
     setup() {
     const router = useRouter();
     const store = useStore();
