@@ -30,12 +30,6 @@
               </ion-select>
           </ion-item>
           <ion-item>
-              <ion-label>{{ $t("Shopify product UPC") }}</ion-label>
-              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productUpcField">
-                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-              </ion-select>
-          </ion-item>
-          <ion-item>
               <ion-label>{{ $t("Arrival date") }}</ion-label>
               <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
                 <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
@@ -104,7 +98,6 @@ export default defineComponent({
         else {
           showToast(translate("Something went wrong, Please try again"));
         }
-        
       },
       async parseFile(){
         await parseCsv(this.file).then(res => {
@@ -134,7 +127,7 @@ export default defineComponent({
           name:'PurchaseOrderDetail'
         })
       },
-    }, 
+    },
     setup() {
     const router = useRouter();
     const store = useStore();

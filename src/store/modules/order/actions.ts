@@ -18,9 +18,9 @@ const actions: ActionTree<OrderState, RootState> = {
       viewIndex,
       productIds
     }
-    const resp = await store.dispatch("product/fetchProducts", payload);
+    const products = await store.dispatch("product/fetchProducts", payload);
     items = items.map((item: any) => {
-        const product = resp.data.response.docs.find((product: any) => {
+        const product = products.find((product: any) => {
           return item.shopifyProductSKU == product.internalName;
         })
         item.parentProductId = product.groupId;

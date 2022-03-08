@@ -104,6 +104,8 @@ import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
+import { showToast } from '@/utils';
+import { translate } from "@/i18n";
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline, cloudUploadOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
@@ -155,16 +157,18 @@ export default defineComponent({
   methods: {
     async save(){
       const uploadData = this.ordersList.items.map((item: any) => {
-        return { 
-          "poId": " ",
-          "externalId": item.orderId,
-          "facilityId": "",
-          "externalFacilityId": item.facilityId,
-          "arrivalDate": item.arrivalDate,
-          "quantity": item.quantityOrdered,
-          "isNewProduct": item.isNewProduct,
-          "idValue": item.shopifyProductSKU,
-          "idType": "SKU"
+        if(item.isSelected){
+          return {
+            "poId": " ",
+            "externalId": item.orderId,
+            "facilityId": "",
+            "externalFacilityId": item.facilityId,
+            "arrivalDate": item.arrivalDate,
+            "quantity": item.quantityOrdered,
+            "isNewProduct": item.isNewProduct,
+            "idValue": item.shopifyProductSKU,
+            "idType": "SKU"
+          }
         }
       })
       const fileName = "Upload_PO_Member_" + Date.now() +".json";
@@ -175,7 +179,14 @@ export default defineComponent({
         uploadData,
         fileName,
         params
-      }));
+      }))
+      .then(() => {
+        showToast(translate("The PO has been uploaded successfully"));
+        this.ordersList = [];
+        this.router.push("/purchase-order");
+      }).catch(() => {
+        showToast(translate("Something went wrong, please try again"));
+      })
     },
     async fetchFacilities(){
       const payload = {
@@ -221,7 +232,6 @@ export default defineComponent({
     },
     apply() {
       this.ordersList.items.map((item: any) => {
-        console.log(this.catalog);
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
           item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
