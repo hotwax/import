@@ -18,7 +18,7 @@
     <ion-content :fullscreen="true">
       <div class="header">
         <div class="search">
-          <ion-searchbar />
+          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="searchProduct(queryString)"></ion-searchbar>
         </div> 
 
         <div class="filters">
@@ -47,7 +47,33 @@
         </div>
       </div>  
 
-      <div v-for="id in getGroupList(ordersList.items)" :key="id" >
+      <div v-if="searchedProduct?.internalName" class="list-item">
+        <ion-item  lines="none">
+          <ion-thumbnail>
+            <Image :src="searchedProduct.imageUrl" />
+          </ion-thumbnail>
+          <ion-label>
+            {{ searchedProduct.internalName }}
+          </ion-label>
+        </ion-item>
+        <ion-chip outline>
+          <ion-label>{{ searchedProduct.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
+        </ion-chip>
+        <ion-chip outline>
+          <ion-label>{{ searchedProduct.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
+        </ion-chip>
+        <ion-chip outline>
+          <ion-icon :icon="sendOutline" />
+          <ion-label>{{ searchedProduct.arrivalDate }}</ion-label>
+        </ion-chip>
+        <!-- Used :key as the changed value was not reflected -->
+        <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, true, searchedProduct)">
+          <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
+        </ion-button>
+      </div>
+
+      <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
         <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
           <div class="list-header" >
             <ion-label>{{ item.parentProductName }}</ion-label>
@@ -146,14 +172,22 @@ export default defineComponent({
       numberOfPieces: 0,
       catalog: "N",
       facilityId: "",
-      facilities: [] as any
+      facilities: [] as any,
+      queryString: "",
+      searchedProduct: {} as any
     }
   },
   mounted(){
    this.fetchFacilities();
   },
   methods: {
-    async save(){
+    searchProduct(sku: any) {
+      const product = this.getProduct(sku);
+      this.searchedProduct = this.ordersList.items.find((item: any) => {
+        return item.internalName === product.internalName;
+      })
+    },
+    async save() {
       console.log("Save");
       const uploadData = this.ordersList.items.map((item: any) => {
         return { 
