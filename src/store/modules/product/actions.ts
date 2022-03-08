@@ -24,7 +24,7 @@ const actions: ActionTree<ProductState, RootState> = {
     }, '');
 
     // If there are no products skip the API call
-    if (productIdFilter === '') return;
+    if (productIdFilter === '') return productIds.map((productId: any) => state.cached[productId]);
 
     const resp = await ProductService.fetchProducts({
       "filters": ['internalName: (' + productIdFilter + ')']
@@ -33,6 +33,7 @@ const actions: ActionTree<ProductState, RootState> = {
       const products = resp.data.response.docs;
       // Handled empty response in case of failed query
       if (resp.data) commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
+      return products;
     }
     // TODO Handle specific error
     return resp;
