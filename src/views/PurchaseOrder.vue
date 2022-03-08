@@ -6,8 +6,8 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
-      <div class="header">
+    <ion-content>
+      <main>
         <div class="fileInput">
           <ion-item>
             <ion-label>{{ $t("Purchase order") }}</ion-label>
@@ -47,19 +47,24 @@
                 <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
               </ion-select>
           </ion-item>
-          <ion-button color="dark" fill="solid" @click="mapFields" expand="block">{{ $t("REVIEW") }}</ion-button>
+          <ion-button color="medium" fill="solid" @click="mapFields" expand="block">
+            {{ $t("REVIEW") }}
+            <ion-icon slot="end" :icon="arrowForward" />
+            </ion-button>
         </div>
-      </div>     
-    </ion-content>    
+      </main>
+    </ion-content>
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
+import { arrowForward } from 'ionicons/icons'
+
 export default defineComponent({
     name: "purchase orders",
     components: {
@@ -73,7 +78,8 @@ export default defineComponent({
       IonButton,
       IonSelect,
       IonNote,
-      IonSelectOption
+      IonSelectOption,
+      IonIcon
     },
     data() {
       return {
@@ -132,6 +138,7 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     return {
+      arrowForward,
       router,
       store
     }
@@ -140,15 +147,17 @@ export default defineComponent({
 </script>   
 <style scoped>
 
-.header {
+main {
   max-width: 60%;
-  grid-gap: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: var(--spacer-sm);
+  margin-bottom:var(--spacer-sm);
   margin: auto; 
 }
 
 .info{
   padding-top: 40px;
+}
+label {
+  cursor: pointer;
 }
 </style>
