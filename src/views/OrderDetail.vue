@@ -8,17 +8,17 @@
           <ion-button @click="selectAllItems">
             <ion-icon :icon="checkboxOutline" />
           </ion-button>
-          <ion-button>
-            <ion-icon :icon="arrowUndoOutline" />
-          </ion-button>
+        <!-- ion-button>
+           <ion-icon :icon="arrowUndoOutline">
+          <ion-button-->
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content >
       <div class="header">
         <div class="search">
-          <ion-searchbar />
+          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="searchProduct(queryString)"></ion-searchbar>
         </div> 
 
         <div class="filters">
@@ -47,24 +47,50 @@
         </div>
       </div>  
 
-      <div v-for="id in getGroupList(ordersList.items)" :key="id" >
+      <div v-if="searchedProduct?.internalName" class="list-item">
+        <ion-item  lines="none">
+          <ion-thumbnail>
+            <Image :src="searchedProduct.imageUrl" />
+          </ion-thumbnail>
+          <ion-label>
+            {{ searchedProduct.internalName }}
+          </ion-label>
+        </ion-item>
+        <ion-chip outline>
+          <ion-label>{{ searchedProduct.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
+        </ion-chip>
+        <ion-chip outline>
+          <ion-label>{{ searchedProduct.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
+        </ion-chip>
+        <ion-chip outline>
+          <ion-icon :icon="sendOutline" />
+          <ion-label>{{ searchedProduct.arrivalDate }}</ion-label>
+        </ion-chip>
+        <!-- Used :key as the changed value was not reflected -->
+        <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, true, searchedProduct)">
+          <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
+        </ion-button>
+      </div>
+
+      <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
         <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
-          <div class="list-header" >
+          <div class="list-item list-header">
             <ion-label>{{ item.parentProductName }}</ion-label>
             <div />
             <div />
             <div />
             <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
             <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, false, item)"> 
-              <ion-icon  :icon="ellipsisVerticalOutline" />
+              <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
           <div class="list-item">
             <ion-item  lines="none">
-              <ion-thumbnail>
+              <ion-thumbnail slot="start">
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
-              <ion-label>
+              <ion-label class="ion-text-wrap">
                 {{ item.internalName }}
               </ion-label>
             </ion-item>
@@ -106,8 +132,13 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
+<<<<<<< HEAD
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline, cloudUploadOutline } from 'ionicons/icons'
+=======
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton } from '@ionic/vue'
+import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline } from 'ionicons/icons'
+>>>>>>> d86b6719cc284317f231181793d001e0843f433d
 import { hasError } from "@/utils";
 export default defineComponent({
   components: {
@@ -149,7 +180,9 @@ export default defineComponent({
       numberOfPieces: 0,
       catalog: "N",
       facilityId: "",
-      facilities: [] as any
+      facilities: [] as any,
+      queryString: "",
+      searchedProduct: {} as any
     }
   },
   mounted(){
@@ -174,6 +207,12 @@ export default defineComponent({
           ],
       });
       return alert.present();
+    },  
+    searchProduct(sku: any) {
+      const product = this.getProduct(sku);
+      this.searchedProduct = this.ordersList.items.find((item: any) => {
+        return item.internalName === product.internalName;
+      })
     },
     async save(){
       const uploadData = this.ordersList.items.filter((item: any) => {
@@ -311,7 +350,6 @@ export default defineComponent({
       checkboxOutline,
       ellipsisVerticalOutline,
       sendOutline,
-      arrowUndoOutline,
       cloudUploadOutline,
       router,
       store
@@ -320,14 +358,14 @@ export default defineComponent({
 });
 
 </script>
-<style scoped>
+<style>
 .header {
   display: grid;
   grid: "search filters"
         /1fr 1fr;
-  grid-gap: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
+  grid-gap: var(--spacer-sm);
+  padding: var(--spacer-sm);
+  margin-bottom: var(--spacer-sm);
 }
 
 .search {
@@ -337,21 +375,64 @@ export default defineComponent({
 .filters {
   grid-area: filters;
 }
-/* TODO: Use universal list item class */
+
 .list-item {
-  display: flex;
-  justify-content: space-between;
+  --columns-mobile: 2;
+  --columns-tablet: 6;
+  --columns-desktop: 6;
+  --col-calc: var(--columns-mobile);
+  --implicit-columns: calc(var(--col-calc) - 1);
+  display: grid;
+  grid-template-columns: repeat(var(--implicit-columns), 1fr) max-content;
+  justify-items: center;
   align-items: center;
 }
-.list-header {
-  display: flex;
-  place-items: center;
-  justify-content: space-between;
-  background-color: #F4F5F8;
-  padding-left: 10px;
+
+.list-item > * {
+  display: none;
 }
-.save {
-  border-radius: 100%;
+
+.list-item > *:last-child {
+  display: unset;
+  justify-self: end;
+}
+
+.list-item > ion-label {
+  text-align: center;
+}
+
+.list-item > *:first-child {
+  display: unset;
+  justify-self: start
+}
+
+.list-header {
+  background-color: #F4F5F8;
+  padding-left: var(--spacer-sm);
+}
+
+@media (min-width: 700px) {
+  .list-item {
+    --col-calc: var(--columns-tablet);
+  }
+
+  .tablet {
+    display: unset;
+  }
+}
+
+@media (min-width: 991px) {
+  .list-item {
+    --col-calc: var(--columns-desktop);
+  }
+
+  .list-item > * {
+    display: unset;
+  }
+
+  .tablet {
+    display: unset;
+  }
 }
 
 </style>
