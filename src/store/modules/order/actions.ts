@@ -37,5 +37,8 @@ const actions: ActionTree<OrderState, RootState> = {
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
   },
+  clearOrderList({ commit }){
+    commit(types.ORDER_LIST_CLEARED);
+  }
 }
 export default actions;
