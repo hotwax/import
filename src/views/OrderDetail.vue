@@ -261,7 +261,6 @@ export default defineComponent({
             },
           ],
         });
-        console.log("alert", alert);
       return alert.present();  
     },
     async fetchFacilities(){
