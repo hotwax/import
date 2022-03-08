@@ -3,10 +3,10 @@
     <ion-item lines="none">
       <ion-label>{{ this.isVirtual ? item.internalName : item.parentProductName }}</ion-label>
     </ion-item>
-    <ion-item lines="none">
+    <!--ion-item lines="none">
       <ion-icon slot="start" :icon="arrowUndoOutline" />
       <ion-label>{{ $t('Reset') }}</ion-label>
-    </ion-item>
+    </ion-item-->
     <ion-item lines="none" @click="onlySelect">
       <ion-icon slot="start" :icon="checkboxOutline" />
       <ion-label>{{ $t('Only select') }}</ion-label>
@@ -19,7 +19,6 @@ import { IonContent, IonIcon, IonLabel, IonItem, popoverController } from '@ioni
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import {
-  arrowUndoOutline,
   checkboxOutline,
 } from 'ionicons/icons';
 export default defineComponent({
@@ -51,7 +50,6 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      arrowUndoOutline,
       checkboxOutline,
       store
     }
