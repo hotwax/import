@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/purchase-order" />
+        <ion-back-button slot="start" @click="navigateBack" default-href="/purchase-order" />
         <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
@@ -106,7 +106,7 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline, cloudUploadOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 export default defineComponent({
@@ -156,9 +156,28 @@ export default defineComponent({
    this.fetchFacilities();
   },
   methods: {
+    async navigateBack(){
+      const alert = await alertController.create({
+        header: this.$t("Leave page"),
+        message: this.$t("Any edits made to this PO will be lost."),
+        buttons: [
+            {
+              text: this.$t("STAY"),
+              role: 'cancel',
+            },
+            {
+              text: this.$t("LEAVE"),
+              handler: () => {
+                this.router.push("/purchase-order");
+              },
+            },
+          ],
+      });
+      return alert.present();
+    },
     async save(){
       const uploadData = this.ordersList.items.filter((item: any) => {
-       return item.isSelected;
+        return item.isSelected;
       }).map((item: any) => {
         return {
           "poId": " ",
@@ -176,24 +195,40 @@ export default defineComponent({
       const params = {
         "configId": "IMP_PO"
       }
-      const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
-        uploadData,
-        fileName,
-        params
-      }))
-      .then(() => {
-        showToast(translate("The PO has been uploaded successfully"), [{
-          text: translate('View'),
-          role: 'view',
-          handler: () => {
-            window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
-          }
-        }])
-        this.ordersList = [];
-        this.router.push("/purchase-order");
-      }).catch(() => {
-        showToast(translate("Something went wrong, please try again"));
-      })
+      const alert = await alertController.create({
+        header: this.$t("Upload purchase order"),
+        message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
+        buttons: [
+            {
+              text: this.$t("cancel"),
+              role: 'cancel',
+            },
+            {
+              text: this.$t("Upload"),
+              handler: () => {
+                const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+                  uploadData,
+                  fileName,
+                  params
+                })).then(() => {
+                  showToast(translate("The PO has been uploaded successfully"), [{
+                    text: translate('View'),
+                    role: 'view',
+                    handler: () => {
+                      window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
+                    }
+                  }])
+                  this.ordersList = [];
+                  this.router.push("/purchase-order");
+                }).catch(() => {
+                  showToast(translate("Something went wrong, please try again"));
+                })
+              },
+            },
+          ],
+        });
+        console.log("alert", alert);
+      return alert.present();  
     },
     async fetchFacilities(){
       const payload = {
