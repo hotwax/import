@@ -188,7 +188,6 @@ export default defineComponent({
       })
     },
     async save() {
-      console.log("Save");
       const uploadData = this.ordersList.items.map((item: any) => {
         return { 
           "poId": " ",
