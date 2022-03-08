@@ -65,6 +65,8 @@ import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { parseCsv } from '@/utils';
 import { useStore } from "vuex";
+import { showToast } from '@/utils';
+import { translate } from "@/i18n";
 export default defineComponent({
     name: " purchase orders",
     components: {
@@ -96,6 +98,12 @@ export default defineComponent({
     methods: {
       getFile(event) {
         this.file = event.target.files[0];
+        if(this.file){
+          showToast(translate("File uploaded successfully"));
+        }
+        else {
+          showToast(translate("Something went wrong, Please try again"));
+        }
         this.parseFile();
       },
       async parseFile(){
