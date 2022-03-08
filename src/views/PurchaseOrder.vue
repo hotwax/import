@@ -61,7 +61,7 @@ import { useStore } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 export default defineComponent({
-    name: " purchase orders",
+    name: "purchase orders",
     components: {
       IonPage,
       IonHeader,

@@ -9,12 +9,20 @@ const hasError = (response: any) => {
   return !!response.data._ERROR_MESSAGE_ || !!response.data._ERROR_MESSAGE_LIST_;
 }
 
-const showToast = async (message: string) => {
+const showToast = async (message: string, configButtons?: any) => {
+  const defaultButtons = [{
+    text: 'Dismiss',
+    role: 'cancel'
+  }]
+
+  if (configButtons) defaultButtons.push(...configButtons);
+
   const toast = await toastController
     .create({
-      message,
+      message: message,
       duration: 3000,
       position: 'top',
+      buttons: defaultButtons
     })
   return toast.present();
 }

@@ -137,6 +137,7 @@ export default defineComponent({
     ...mapGetters({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
+      instanceUrl: 'user/getInstanceUrl'
     }),
     orderId(){
       return (this as any).ordersList.items[0]?.orderId
@@ -181,7 +182,13 @@ export default defineComponent({
         params
       }))
       .then(() => {
-        showToast(translate("The PO has been uploaded successfully"));
+        showToast(translate("The PO has been uploaded successfully"), [{
+          text: translate('View'),
+          role: 'view',
+          handler: () => {
+            window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
+          }
+        }])
         this.ordersList = [];
         this.router.push("/purchase-order");
       }).catch(() => {
