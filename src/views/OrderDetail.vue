@@ -132,13 +132,8 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-<<<<<<< HEAD
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
-import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline, cloudUploadOutline } from 'ionicons/icons'
-=======
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline } from 'ionicons/icons'
->>>>>>> d86b6719cc284317f231181793d001e0843f433d
 import { hasError } from "@/utils";
 export default defineComponent({
   components: {
