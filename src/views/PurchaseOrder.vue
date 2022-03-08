@@ -11,7 +11,7 @@
         <div class="fileInput">
           <ion-item>
             <ion-label>{{ $t("Purchase order") }}</ion-label>
-            <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
+            <input @change="getFile" ref="file" class="ion-hide" type="file" accept=".csv" id="inputFile"/>
             <label for="inputFile">{{ $t("Upload") }}</label>
           </ion-item>
         </div>
