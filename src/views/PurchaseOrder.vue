@@ -63,9 +63,8 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { parseCsv } from '@/utils';
 import { useStore } from "vuex";
-import { showToast } from '@/utils';
+import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 export default defineComponent({
     name: " purchase orders",
@@ -100,11 +99,12 @@ export default defineComponent({
         this.file = event.target.files[0];
         if(this.file){
           showToast(translate("File uploaded successfully"));
+          this.parseFile();
         }
         else {
           showToast(translate("Something went wrong, Please try again"));
         }
-        this.parseFile();
+        
       },
       async parseFile(){
         await parseCsv(this.file).then(res => {
