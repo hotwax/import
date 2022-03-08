@@ -157,19 +157,19 @@ export default defineComponent({
   },
   methods: {
     async save(){
-      const uploadData = this.ordersList.items.map((item: any) => {
-        if(item.isSelected){
-          return {
-            "poId": " ",
-            "externalId": item.orderId,
-            "facilityId": "",
-            "externalFacilityId": item.facilityId,
-            "arrivalDate": item.arrivalDate,
-            "quantity": item.quantityOrdered,
-            "isNewProduct": item.isNewProduct,
-            "idValue": item.shopifyProductSKU,
-            "idType": "SKU"
-          }
+      const uploadData = this.ordersList.items.filter((item: any) => {
+       return item.isSelected;
+      }).map((item: any) => {
+        return {
+          "poId": " ",
+          "externalId": item.orderId,
+          "facilityId": "",
+          "externalFacilityId": item.facilityId,
+          "arrivalDate": item.arrivalDate,
+          "quantity": item.quantityOrdered,
+          "isNewProduct": item.isNewProduct,
+          "idValue": item.shopifyProductSKU,
+          "idType": "SKU"
         }
       })
       const fileName = "Upload_PO_Member_" + Date.now() +".json";
