@@ -6,7 +6,7 @@
         <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
-            <ion-icon :icon="checkboxOutline" />
+            <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
         <!-- ion-button>
            <ion-icon :icon="arrowUndoOutline">
@@ -26,10 +26,12 @@
             <ion-label>{{ $t("Buffer days") }}</ion-label>
             <ion-input v-model="numberOfDays" type="number" :placeholder = "$t('Lead time')" /> 
           </ion-item>
+
           <ion-item>
             <ion-label>{{ $t("Order buffer") }}</ion-label>
             <ion-input v-model="numberOfPieces" type="number" :placeholder = "$t('Safety stock')" />
           </ion-item>
+
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
             <ion-select v-model="catalog">
@@ -37,12 +39,14 @@
               <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
             </ion-select>
           </ion-item>
+
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
             <ion-select v-model="facilityId">
               <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.externalId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
+
           <ion-button expand="block" fill="outline" @click="apply">{{ $t("Apply") }}</ion-button>
         </div>
       </div>  
@@ -56,18 +60,23 @@
             {{ searchedProduct.internalName }}
           </ion-label>
         </ion-item>
+
         <ion-chip outline>
           <ion-label>{{ searchedProduct.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
         </ion-chip>
+
         <ion-chip outline>
           <ion-label>{{ searchedProduct.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
         </ion-chip>
+
         <ion-chip outline>
           <ion-icon :icon="sendOutline" />
           <ion-label>{{ searchedProduct.arrivalDate }}</ion-label>
         </ion-chip>
+
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
+        
         <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, true, searchedProduct)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
@@ -77,14 +86,20 @@
         <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
           <div class="list-item list-header">
             <ion-label>{{ item.parentProductName }}</ion-label>
+            
+            <div class="tablet" />
+            
+            <div class="tablet" />
+            
             <div />
-            <div />
-            <div />
+
             <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+            
             <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, false, item)"> 
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
+
           <div class="list-item">
             <ion-item  lines="none">
               <ion-thumbnail slot="start">
@@ -94,30 +109,35 @@
                 {{ item.internalName }}
               </ion-label>
             </ion-item>
-            <ion-chip outline>
+
+            <ion-chip outline class="tablet">
               <ion-label>{{ item.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
             </ion-chip>
+
             <ion-chip outline>
               <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
             </ion-chip>
-            <ion-chip outline>
+
+            <ion-chip outline class="tablet">
               <ion-icon :icon="sendOutline" />
               <ion-label>{{ item.arrivalDate }}</ion-label>
             </ion-chip>
+
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
+            
             <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, true, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
         </div>
       </div>
+
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="save" class="save">
+        <ion-fab-button @click="save">
           <ion-icon  :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
-      
     </ion-content>  
   </ion-page>
 </template>   
@@ -352,52 +372,20 @@ export default defineComponent({
 });
 
 </script>
-<style>
+
+<style scoped>
 .header {
-  display: grid;
-  grid: "search filters"
-        /1fr 1fr;
-  grid-gap: var(--spacer-sm);
-  padding: var(--spacer-sm);
   margin-bottom: var(--spacer-sm);
+  padding: var(--spacer-sm);
 }
 
-.search {
-  grid-area: search;
-}
-
-.filters {
-  grid-area: filters;
+.filters > ion-button {
+  margin-top: var(--spacer-sm);
 }
 
 .list-item {
-  --columns-mobile: 2;
-  --columns-tablet: 6;
+  --columns-tablet: 4;
   --columns-desktop: 6;
-  --col-calc: var(--columns-mobile);
-  --implicit-columns: calc(var(--col-calc) - 1);
-  display: grid;
-  grid-template-columns: repeat(var(--implicit-columns), 1fr) max-content;
-  justify-items: center;
-  align-items: center;
-}
-
-.list-item > * {
-  display: none;
-}
-
-.list-item > *:last-child {
-  display: unset;
-  justify-self: end;
-}
-
-.list-item > ion-label {
-  text-align: center;
-}
-
-.list-item > *:first-child {
-  display: unset;
-  justify-self: start
 }
 
 .list-header {
@@ -405,28 +393,20 @@ export default defineComponent({
   padding-left: var(--spacer-sm);
 }
 
-@media (min-width: 700px) {
-  .list-item {
-    --col-calc: var(--columns-tablet);
-  }
-
-  .tablet {
-    display: unset;
-  }
-}
-
 @media (min-width: 991px) {
-  .list-item {
-    --col-calc: var(--columns-desktop);
+  .header {
+    display: grid;
+    grid: "search filters"
+          /1fr 1fr;
+    gap: var(--spacer-sm);
   }
 
-  .list-item > * {
-    display: unset;
-  }
+  .search {
+    grid-area: search;
+  } 
 
-  .tablet {
-    display: unset;
+  .filters {
+    grid-area: filters;
   }
 }
-
 </style>
