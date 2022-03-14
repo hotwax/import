@@ -187,7 +187,7 @@ export default defineComponent({
     }),
     orderId(){
       return (this as any).ordersList.items[0]?.orderId
-    } 
+    }
   },
   data() {
     return {
@@ -287,9 +287,13 @@ export default defineComponent({
       const payload = {
         "inputFields": {
           "externalId_fld0_op": "not-empty",
+          "parentTypeId": "VIRTUAL_FACILITY",
+          "parentTypeId_op": "notEqual",
+          "facilityTypeId": "VIRTUAL_FACILITY",
+          "facilityTypeId_op": "notEqual",
         },
-        "fieldList": ["externalId", "facilityName"],
-        "entityName": "Facility",
+        "fieldList": ["externalId", "facilityName", "parentTypeId"],
+        "entityName": "FacilityAndType",
         "noConditionFind": "Y"
       }
       try {
