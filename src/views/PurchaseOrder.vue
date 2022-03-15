@@ -9,10 +9,10 @@
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>{{ $t("Purchase order") }}</ion-label>
+          <ion-label>{{ file.name ? $t("Purchase order ") +  file.name : $t('Purchase order') }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
-        </ion-item>       
+        </ion-item>      
 
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
