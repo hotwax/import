@@ -9,8 +9,8 @@
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
           <ion-button @click="revertAllChanges">
-            <ion-icon :icon="arrowUndoOutline">
-          <ion-button>
+            <ion-icon :icon="arrowUndoOutline" />
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -129,12 +129,6 @@
             <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, true, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
-            <ion-popover :is-open="isOpenRef" :event="event" @didDismiss="setOpen(false)" trigger="trigger-button">
-              <ion-content>
-                <ion-label>{{ item.internalName }}</ion-label>
-                
-              </ion-content>
-            </ion-popover>
           </div>
         </div>
       </div>
@@ -159,7 +153,7 @@ import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
-import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline } from 'ionicons/icons'
+import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 export default defineComponent({
   components: {
@@ -203,11 +197,13 @@ export default defineComponent({
       facilityId: "",
       facilities: [] as any,
       queryString: "",
-      searchedProduct: {} as any
+      searchedProduct: {} as any,
+      original: [] as any
     }
   },
   mounted(){
    this.fetchFacilities();
+   this.original = JSON.parse(JSON.stringify(this.ordersList.original));
   },
   methods: {
     async navigateBack(){
@@ -336,9 +332,7 @@ export default defineComponent({
       item.isSelected = event.detail.checked;
     },
     revertAllChanges() {
-      // console.log(this.original);
-      // this.store.dispatch('order/updatedOrderListItems', this.original )
-      this.ordersList.items = this.original;
+      this.store.dispatch('order/updatedOrderListItems', this.ordersList.original);
     },
     apply() {
       this.ordersList.items.map((item: any) => {
@@ -380,6 +374,7 @@ export default defineComponent({
       checkboxOutline,
       ellipsisVerticalOutline,
       sendOutline,
+      arrowUndoOutline,
       cloudUploadOutline,
       router,
       store,
