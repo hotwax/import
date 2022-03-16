@@ -2,79 +2,89 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/home" />
         <ion-title>{{ $t("Purchase orders") }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
-      <div class="header">
-        <div class="fileInput">
+    <ion-content>
+      <main>
+        <ion-item>
+          <ion-label>{{ $t("Purchase order") }}</ion-label>
+          <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
+          <label for="inputFile">{{ $t("Upload") }}</label>
+        </ion-item>       
+
+        <ion-list>
+          <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item>
-            <ion-label>{{ $t("Purchase order") }}</ion-label>
-            <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
-            <label for="inputFile">{{ $t("Upload") }}</label>
-          </ion-item>
-        </div>
-        <div class="info">
-          <ion-note>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-note>
-          <ion-item>
-              <ion-label>{{ $t("Order ID") }}</ion-label>
-              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
+            <ion-label>{{ $t("Order ID") }}</ion-label>
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
                 <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-              </ion-select>
+            </ion-select>
           </ion-item>
+
           <ion-item>
-              <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
-                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-              </ion-select>
+            <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
+              <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+            </ion-select>
           </ion-item>
+
           <ion-item>
-              <ion-label>{{ $t("Shopify product UPC") }}</ion-label>
-              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productUpcField">
-                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-              </ion-select>
+            <ion-label>{{ $t("Arrival date") }}</ion-label>
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
+              <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+            </ion-select>
           </ion-item>
+
           <ion-item>
-              <ion-label>{{ $t("Arrival date") }}</ion-label>
-              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
-                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-              </ion-select>
+            <ion-label>{{ $t("Ordered quantity") }}</ion-label>
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
+              <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+            </ion-select>
           </ion-item>
+
           <ion-item>
-              <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-              <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
-                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-              </ion-select>
+            <ion-label>{{ $t("Facility ID") }}</ion-label>
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
+              <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+            </ion-select>
           </ion-item>
-          <ion-button color="dark" fill="solid" @click="mapFields" expand="block">{{ $t("REVIEW") }}</ion-button>
-        </div>
-      </div>     
-    </ion-content>    
+        </ion-list>
+
+        <ion-button color="medium" @click="mapFields" expand="block">
+          {{ $t("Review") }}
+          <ion-icon slot="end" :icon="arrowForwardOutline" />
+        </ion-button>
+      </main>
+    </ion-content>
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonNote, IonButton, IonSelect, IonSelectOption } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { parseCsv } from '@/utils';
 import { useStore } from "vuex";
+import { showToast, parseCsv } from '@/utils';
+import { translate } from "@/i18n";
+import { arrowForwardOutline } from 'ionicons/icons';
+
 export default defineComponent({
-    name: " purchase orders",
+    name: "purchase orders",
     components: {
       IonPage,
       IonHeader,
       IonToolbar,
-      IonBackButton,
       IonTitle,
       IonContent,
       IonItem,
       IonLabel,
       IonButton,
       IonSelect,
-      IonNote,
-      IonSelectOption
+      IonSelectOption,
+      IonIcon,
+      IonListHeader,
+      IonList
     },
     data() {
       return {
@@ -85,14 +95,22 @@ export default defineComponent({
         productUpcField: "",
         dateField: "",
         quantityField: "",
+        facilityField: "",
         orderItemsList: [],
       }
     },
     methods: {
       getFile(event) {
         this.file = event.target.files[0];
-        this.parseFile();
+        if(this.file){
+          showToast(translate("File uploaded successfully"));
+          this.parseFile();
+        }
+        else {
+          showToast(translate("Something went wrong, Please try again"));
+        }
       },
+
       async parseFile(){
         await parseCsv(this.file).then(res => {
           this.content = res;
@@ -105,13 +123,15 @@ export default defineComponent({
           shopifyProductSKU: [],
           shopifyProductUPC: [],
           arrivalDate: [],
-          quantityOrdered: []
+          quantityOrdered: [],
+          facilityId: []
         }
           orderItem.orderId = item[this.orderIdField];
           orderItem.shopifyProductSKU = item[this.productSkuField];
           orderItem.shopifyProductUPC = item[this.productUpcField];
           orderItem.arrivalDate = item[this.dateField];
           orderItem.quantityOrdered = item[this.quantityField];
+          orderItem.facilityId = item[this.facilityField]
           return orderItem
         })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
@@ -119,28 +139,30 @@ export default defineComponent({
           name:'PurchaseOrderDetail'
         })
       },
-    }, 
-    setup(){
+    },
+    setup() {
     const router = useRouter();
     const store = useStore();
     return {
+      arrowForwardOutline,
       router,
       store
     }
   } 
 })
-</script>   
-<style scoped>
+</script>
 
-.header {
-  max-width: 60%;
-  grid-gap: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  margin: auto; 
+<style scoped>
+main {
+  max-width: 732px;
+  margin: var(--spacer-sm) auto 0; 
 }
 
-.info{
-  padding-top: 40px;
+ion-button{
+  margin-top: var(--spacer-sm);
+}
+
+label {
+  cursor: pointer;
 }
 </style>

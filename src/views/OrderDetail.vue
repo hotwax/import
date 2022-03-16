@@ -2,79 +2,131 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/" />
-        <ion-title>{{ $t("PO External Order ID") }}</ion-title>
+        <ion-back-button slot="start" @click="navigateBack" default-href="/purchase-order" />
+        <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
-            <ion-icon :icon="checkboxOutline" />
+            <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
           <ion-button @click="revertAllChanges">
-            <ion-icon :icon="arrowUndoOutline" />
-          </ion-button>
+            <ion-icon :icon="arrowUndoOutline">
+          <ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content >
       <div class="header">
         <div class="search">
-          <ion-searchbar />
+          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="searchProduct(queryString)"></ion-searchbar>
         </div> 
 
         <div class="filters">
           <ion-item>
             <ion-label>{{ $t("Buffer days") }}</ion-label>
-            <ion-input v-model="numberOfDays" type="text" :placeholder = "$t('all items')" /> 
+            <ion-input v-model="numberOfDays" type="number" :placeholder = "$t('Lead time')" /> 
           </ion-item>
+
           <ion-item>
             <ion-label>{{ $t("Order buffer") }}</ion-label>
-            <ion-input v-model="numberOfPieces" type="number" />
+            <ion-input v-model="numberOfPieces" type="number" :placeholder = "$t('Safety stock')" />
           </ion-item>
+
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
             <ion-select v-model="catalog">
-              <ion-select-option>{{ $t("Backorder") }}</ion-select-option>
-              <ion-select-option>{{ $t("Preorder") }}</ion-select-option>
+              <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
+              <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
             </ion-select>
           </ion-item>
+
+          <ion-item>
+            <ion-label>{{ $t("Facility") }}</ion-label>
+            <ion-select v-model="facilityId">
+              <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.externalId">{{ facility.facilityName }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
           <ion-button expand="block" fill="outline" @click="apply">{{ $t("Apply") }}</ion-button>
-        </div> 
+        </div>
       </div>  
 
-      <div v-for="id in getGroupList(ordersList.items)" :key="id" >
+      <div v-if="searchedProduct?.internalName" class="list-item">
+        <ion-item  lines="none">
+          <ion-thumbnail>
+            <Image :src="searchedProduct.imageUrl" />
+          </ion-thumbnail>
+          <ion-label>
+            {{ searchedProduct.internalName }}
+          </ion-label>
+        </ion-item>
+
+        <ion-chip outline>
+          <ion-label>{{ searchedProduct.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
+        </ion-chip>
+
+        <ion-chip outline>
+          <ion-label>{{ searchedProduct.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
+        </ion-chip>
+
+        <ion-chip outline>
+          <ion-icon :icon="sendOutline" />
+          <ion-label>{{ searchedProduct.arrivalDate }}</ion-label>
+        </ion-chip>
+
+        <!-- Used :key as the changed value was not reflected -->
+        <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
+        
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, true, searchedProduct)">
+          <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
+        </ion-button>
+      </div>
+
+      <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
         <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
-          <div class="list-header" >
+          <div class="list-item list-header">
             <ion-label>{{ item.parentProductName }}</ion-label>
+            
+            <div class="tablet" />
+            
+            <div class="tablet" />
+            
             <div />
-            <div />
-            <div />
-            <ion-checkbox @ionChange="selectParentProduct(id, $event)" />
-            <ion-button fill="clear" color="medium">
-              <ion-icon  :icon="ellipsisVerticalOutline" />
+
+            <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+            
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, false, item)"> 
+              <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
+
           <div class="list-item">
             <ion-item  lines="none">
-              <ion-thumbnail>
+              <ion-thumbnail slot="start">
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
-              <ion-label>
+              <ion-label class="ion-text-wrap">
                 {{ item.internalName }}
               </ion-label>
             </ion-item>
-            <ion-chip outline>
-              <ion-label>{{ item.isNewProduct? $t("Preorder") : $t("Backorder") }}</ion-label>
+
+            <ion-chip outline class="tablet">
+              <ion-label>{{ item.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
             </ion-chip>
+
             <ion-chip outline>
               <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
             </ion-chip>
-            <ion-chip outline>
+
+            <ion-chip outline class="tablet">
               <ion-icon :icon="sendOutline" />
               <ion-label>{{ item.arrivalDate }}</ion-label>
             </ion-chip>
-              <!-- Used :key as the changed value was not reflected -->
-              <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item)"/>
-            <ion-button fill="clear" color="medium" @click="setOpen(true, $event)" id="trigger-button">
+
+            <!-- Used :key as the changed value was not reflected -->
+            <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
+            
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, true, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
             <ion-popover :is-open="isOpenRef" :event="event" @didDismiss="setOpen(false)" trigger="trigger-button">
@@ -86,18 +138,29 @@
           </div>
         </div>
       </div>
-    </ion-content>   
+
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button @click="save">
+          <ion-icon  :icon="cloudUploadOutline" />
+        </ion-fab-button>
+      </ion-fab>
+    </ion-content>  
   </ion-page>
 </template>   
 <script lang="ts">
+import { UploadService } from "@/services/UploadService";
+import { OrderService } from "@/services/OrderService";
 import Image from '@/components/Image.vue';
-
-import { defineComponent, ref } from 'vue';
+import ProductPopover from '@/components/ProductPopover.vue'
+import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, IonPopover } from '@ionic/vue'
-import { ellipsisVerticalOutline, sendOutline, checkboxOutline, arrowUndoOutline } from 'ionicons/icons'
+import { showToast } from '@/utils';
+import { translate } from "@/i18n";
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
+import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline } from 'ionicons/icons'
+import { hasError } from "@/utils";
 export default defineComponent({
   components: {
     Image,
@@ -119,32 +182,158 @@ export default defineComponent({
     IonSelect,
     IonSelectOption,
     IonButtons,
-    IonPopover
+    IonFab,
+    IonFabButton
   },
   computed: {
     ...mapGetters({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
+      instanceUrl: 'user/getInstanceUrl'
     }),
+    orderId(){
+      return (this as any).ordersList.items[0]?.orderId
+    }
   },
   data() {
     return {
       numberOfDays: 0,
       numberOfPieces: 0,
-      catalog: "",
-      original: {} as any
+      catalog: "N",
+      facilityId: "",
+      facilities: [] as any,
+      queryString: "",
+      searchedProduct: {} as any
     }
   },
-  async mounted(){
-    this.ordersList.items.forEach((product: any) => {
-      product.isSelected = false;
-    })
-    this.original = await JSON.parse(JSON.stringify(this.ordersList.original));
-    console.log(this.original);
+  mounted(){
+   this.fetchFacilities();
   },
   methods: {
-    selectProduct(item: any) {
-      item.isSelected = true;
+    async navigateBack(){
+      const alert = await alertController.create({
+        header: this.$t("Leave page"),
+        message: this.$t("Any edits made to this PO will be lost."),
+        buttons: [
+            {
+              text: this.$t("STAY"),
+              role: 'cancel',
+            },
+            {
+              text: this.$t("LEAVE"),
+              handler: () => {
+                this.router.push("/purchase-order");
+              },
+            },
+          ],
+      });
+      return alert.present();
+    },  
+    searchProduct(sku: any) {
+      const product = this.getProduct(sku);
+      this.searchedProduct = this.ordersList.items.find((item: any) => {
+        return item.internalName === product.internalName;
+      })
+    },
+    async save(){
+      const uploadData = this.ordersList.items.filter((item: any) => {
+        return item.isSelected;
+      }).map((item: any) => {
+        return {
+          "poId": " ",
+          "externalId": item.orderId,
+          "facilityId": "",
+          "externalFacilityId": item.facilityId,
+          "arrivalDate": item.arrivalDate,
+          "quantity": item.quantityOrdered,
+          "isNewProduct": item.isNewProduct,
+          "idValue": item.shopifyProductSKU,
+          "idType": "SKU"
+        }
+      })
+      const fileName = "Upload_PO_Member_" + Date.now() +".json";
+      const params = {
+        "configId": "IMP_PO"
+      }
+      const alert = await alertController.create({
+        header: this.$t("Upload purchase order"),
+        message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
+        buttons: [
+            {
+              text: this.$t("cancel"),
+              role: 'cancel',
+            },
+            {
+              text: this.$t("Upload"),
+              handler: () => {
+                const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+                  uploadData,
+                  fileName,
+                  params
+                })).then(() => {
+                  showToast(translate("The PO has been uploaded successfully"), [{
+                    text: translate('View'),
+                    role: 'view',
+                    handler: () => {
+                      window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
+                    }
+                  }])
+                  this.ordersList = [];
+                  this.router.push("/purchase-order");
+                }).catch(() => {
+                  showToast(translate("Something went wrong, please try again"));
+                })
+              },
+            },
+          ],
+        });
+      return alert.present();  
+    },
+    async fetchFacilities(){
+      const payload = {
+        "inputFields": {
+          "externalId_fld0_op": "not-empty",
+          "parentTypeId": "VIRTUAL_FACILITY",
+          "parentTypeId_op": "notEqual",
+          "facilityTypeId": "VIRTUAL_FACILITY",
+          "facilityTypeId_op": "notEqual",
+        },
+        "fieldList": ["externalId", "facilityName", "parentTypeId"],
+        "entityName": "FacilityAndType",
+        "noConditionFind": "Y"
+      }
+      try {
+        const resp = await OrderService.getFacilities(payload);
+        if(resp.status === 200 && !hasError(resp)){
+          this.facilities = resp.data.docs;
+        }
+      } catch(err) {
+        console.error(err)
+      }
+    },
+    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
+      const popover = await popoverController
+        .create({
+          component: ProductPopover,
+          event: ev,
+          translucent: true,
+          showBackdrop: true,
+          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
+        })
+      return popover.present();
+    },
+    selectOnlyParentProduct(id: any){
+      this.ordersList.items.forEach((item: any) => {
+        item.isSelected = !item.parentProductId === id;
+      })
+    },
+    isParentProductChecked(parentProductId: string) {
+      return !(this as any).ordersList.items.filter((item: any) => item.parentProductId  === parentProductId).some((item: any) => {
+        return !item.isSelected
+      })
+    },
+    selectProduct(item: any, event: any) {
+      item.isSelected = event.detail.checked;
     },
     revertAllChanges() {
       // console.log(this.original);
@@ -156,7 +345,10 @@ export default defineComponent({
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
           item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
-          item.isNewProduct = this.catalog == "Preorder"
+          item.isNewProduct = this.catalog;
+          if(this.facilityId) {
+            item.facilityId = this.facilityId;
+          }
         }
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
@@ -172,71 +364,65 @@ export default defineComponent({
         item.isSelected = true;
       })
     },
-    selectParentProduct(parentProductId: any, event: any){
+    selectParentProduct(parentProductId: any, event: any) {
       this.ordersList.items.forEach((item: any) => {
         if (item.parentProductId == parentProductId) {
-          if(event.detail.checked){
-            item.isSelected = true;
-          }else{
-            item.isSelected = false;
-          }
+            item.isSelected = event.detail.checked;
         }
       })
-    },
+    }
   },
   setup() {
     const router = useRouter();
     const store = useStore();
-    const isOpenRef = ref(false);
-    const event = ref();
-    const setOpen = (state: boolean, ev?: Event) => {
-      event.value = ev; 
-      isOpenRef.value = state;
-    }
+    
     return {
       checkboxOutline,
       ellipsisVerticalOutline,
       sendOutline,
-      arrowUndoOutline,
+      cloudUploadOutline,
       router,
       store,
-      isOpenRef, 
-      setOpen, 
-      event
     }
   }
 });
 
 </script>
+
 <style scoped>
 .header {
-  display: grid;
-  grid: "search filters"
-        /1fr 1fr;
-  grid-gap: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacer-sm);
+  padding: var(--spacer-sm);
 }
 
-.search {
-  grid-area: search;
+.filters > ion-button {
+  margin-top: var(--spacer-sm);
 }
 
-.filters {
-  grid-area: filters;
-}
-/* TODO: Use universal list item class */
 .list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.list-header {
-  display: flex;
-  place-items: center;
-  justify-content: space-between;
-  background-color: #F4F5F8;
-  padding-left: 10px;
+  --columns-tablet: 4;
+  --columns-desktop: 6;
 }
 
+.list-header {
+  background-color: #F4F5F8;
+  padding-left: var(--spacer-sm);
+}
+
+@media (min-width: 991px) {
+  .header {
+    display: grid;
+    grid: "search filters"
+          /1fr 1fr;
+    gap: var(--spacer-sm);
+  }
+
+  .search {
+    grid-area: search;
+  } 
+
+  .filters {
+    grid-area: filters;
+  }
+}
 </style>

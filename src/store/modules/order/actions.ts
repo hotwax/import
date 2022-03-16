@@ -18,16 +18,17 @@ const actions: ActionTree<OrderState, RootState> = {
       viewIndex,
       productIds
     }
-    const resp = await store.dispatch("product/fetchProducts", payload);
+    const products = await store.dispatch("product/fetchProducts", payload);
     items = items.map((item: any) => {
-        const product = resp.data.response.docs.find((product: any) => {
+        const product = products.find((product: any) => {
           return item.shopifyProductSKU == product.internalName;
         })
         item.parentProductId = product.groupId;
         item.internalName = product.internalName; 
         item.parentProductName = product.parentProductName;
         item.imageUrl = product.mainImageUrl;
-        item.isNewProduct = false;
+        item.isNewProduct = "N";
+        item.isSelected = true;
         return item;
     })
     const original = JSON.parse(JSON.stringify(items))
@@ -35,6 +36,6 @@ const actions: ActionTree<OrderState, RootState> = {
   },
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
-  }
+  },
 }
 export default actions;
