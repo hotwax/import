@@ -85,7 +85,9 @@
       <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
         <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
           <div class="list-item list-header">
-            <ion-label>{{ item.parentProductName }}</ion-label>
+            <ion-item color="light" lines="none">
+              <ion-label>{{ item.parentProductName }}</ion-label>
+            </ion-item>
             
             <div class="tablet" />
             
@@ -101,7 +103,7 @@
           </div>
 
           <div class="list-item">
-            <ion-item  lines="none">
+            <ion-item lines="none">
               <ion-thumbnail slot="start">
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
@@ -392,9 +394,12 @@ export default defineComponent({
   --columns-desktop: 6;
 }
 
+.list-item :first-child ion-label {
+  word-break: break-all;
+}
+
 .list-header {
-  background-color: #F4F5F8;
-  padding-left: var(--spacer-sm);
+  background-color: var(--ion-color-light);
 }
 
 @media (min-width: 991px) {
