@@ -1,9 +1,9 @@
 <template>
   <ion-content>
     <ion-item lines="none">
-      <ion-label>{{ this.isVirtual ? item.internalName : item.parentProductName }}</ion-label>
+      <ion-label>{{ this.isVirtual ? item.parentProductName : item.internalName }}</ion-label>
     </ion-item>
-    <ion-item lines="none" @click="onlyRevert">
+    <ion-item lines="none" @click="revert">
       <ion-icon slot="start" :icon="arrowUndoOutline" />
       <ion-label>{{ $t('Reset') }}</ion-label>
     </ion-item>
@@ -32,11 +32,11 @@ export default defineComponent({
     }),
   },
   methods: {
-    onlyRevert() {
-      this.isVirtual ? this.onlyRevertSingleProduct() : this.onlyRevertParentProduct();
+    revert() {
+      this.isVirtual ? this.revertParentProduct() : this.revertProduct();
     },
     onlySelect() {
-      this.isVirtual ? this.onlySelectSingleProduct() : this.onlySelectParentProduct();
+      this.isVirtual ? this.onlySelectParentProduct() : this.onlySelectSingleProduct();
     },
     onlySelectParentProduct() {
       this.ordersList.items.forEach(element => {
@@ -50,7 +50,7 @@ export default defineComponent({
       });
       popoverController.dismiss({ dismissed: true });
     },
-    onlyRevertSingleProduct() {
+    revertProduct() {
       const original = JSON.parse(JSON.stringify(this.ordersList.original));
       const items = this.ordersList.items.map(element => {
         if(element.internalName === this.id) {
@@ -64,7 +64,7 @@ export default defineComponent({
       this.store.dispatch('order/updatedOrderListItems', items)
       popoverController.dismiss({ dismissed: true });
     },
-    onlyRevertParentProduct(){
+    revertParentProduct(){
       const original = JSON.parse(JSON.stringify(this.ordersList.original));
       const items = this.ordersList.items.map(element => {
         if(element.parentProductId === this.id) {

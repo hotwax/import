@@ -8,7 +8,7 @@
           <ion-button @click="selectAllItems">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
-          <ion-button @click="revertAllChanges">
+          <ion-button @click="revertAll">
             <ion-icon :icon="arrowUndoOutline" />
           </ion-button>
         </ion-buttons>
@@ -95,7 +95,7 @@
 
             <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, false, item)"> 
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, item)"> 
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -126,7 +126,7 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, true, item)">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -329,7 +329,7 @@ export default defineComponent({
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
     },
-    revertAllChanges() {
+    revertAll() {
       const original = JSON.parse(JSON.stringify(this.ordersList.original));
       this.store.dispatch('order/updatedOrderListItems', original);
     },
