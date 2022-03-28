@@ -198,12 +198,10 @@ export default defineComponent({
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
-      original: [] as any
     }
   },
   mounted(){
    this.fetchFacilities();
-   this.original = JSON.parse(JSON.stringify(this.ordersList.original));
   },
   methods: {
     async navigateBack(){
@@ -332,7 +330,8 @@ export default defineComponent({
       item.isSelected = event.detail.checked;
     },
     revertAllChanges() {
-      this.store.dispatch('order/updatedOrderListItems', this.ordersList.original);
+      const original = JSON.parse(JSON.stringify(this.ordersList.original));
+      this.store.dispatch('order/updatedOrderListItems', original);
     },
     apply() {
       this.ordersList.items.map((item: any) => {
