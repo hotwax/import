@@ -9,10 +9,6 @@ const mutations: MutationTree <OrderState> = {
   },
   [types.ORDER_LIST_ITEMS_UPDATED] (state, payload) {
     state.list.items = payload;
-  },
-  [types.ORDER_LIST_CLEARED] (state) {
-    state.list.items = [];
-    state.list.original = [];
-  },
+  }
 }
 export default mutations;
