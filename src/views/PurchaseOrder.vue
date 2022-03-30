@@ -134,10 +134,14 @@ export default defineComponent({
           orderItem.facilityId = item[this.facilityField]
           return orderItem
         })
-        this.store.dispatch('order/updatedOrderList', this.orderItemsList);
-        this.router.push({
-          name:'PurchaseOrderDetail'
-        })
+        if(this.orderIdField && this.productSkuField && this.dateField && this.quantityField && this.facilityField && this.orderItemsList.length && this.content){
+          this.store.dispatch('order/updatedOrderList', this.orderItemsList);
+          this.router.push({
+            name:'PurchaseOrderDetail'
+          })
+        } else {
+          showToast(translate("Something went wrong"));
+        }
       },
     },
     setup() {
