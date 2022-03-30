@@ -133,6 +133,10 @@
         </div>
       </div>
 
+      <div v-for="item in ordersList.unidentifiedProducts" :key="item">
+        <ion-item lines="none">{{ item.shopifyProductSKU }}</ion-item>
+      </div>
+
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button @click="save">
           <ion-icon  :icon="cloudUploadOutline" />

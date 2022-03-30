@@ -10,7 +10,8 @@ const orderModule: Module<OrderState, RootState> = {
   state: {
     list: {
       items: [],
-      original: []
+      original: [],
+      unidentifiedProducts: [],
     },
   },
   actions,

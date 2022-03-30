@@ -19,20 +19,26 @@ const actions: ActionTree<OrderState, RootState> = {
       productIds
     }
     const products = await store.dispatch("product/fetchProducts", payload);
+    const unidentifiedProducts = [] as any;
     items = items.map((item: any) => {
         const product = products.find((product: any) => {
           return item.shopifyProductSKU == product.internalName;
         })
-        item.parentProductId = product.groupId;
-        item.internalName = product.internalName; 
-        item.parentProductName = product.parentProductName;
-        item.imageUrl = product.mainImageUrl;
-        item.isNewProduct = "N";
-        item.isSelected = true;
-        return item;
-    })
+        if(product){
+          item.parentProductId = product.groupId;
+          item.internalName = product.internalName;
+          item.parentProductName = product.parentProductName;
+          item.imageUrl = product.mainImageUrl;
+          item.isNewProduct = "N";
+          item.isSelected = true;
+          return item;
+        }
+        unidentifiedProducts.push(item);
+        return ;
+    }).filter((item: any) => item);
     const original = JSON.parse(JSON.stringify(items))
-    commit(types.ORDER_LIST_UPDATED, { items, original });
+
+    commit(types.ORDER_LIST_UPDATED, { items, original, unidentifiedProducts });
   },
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
