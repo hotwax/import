@@ -92,8 +92,6 @@
 
           <div />
 
-          {{ product.isSelected }}
-
           <ion-checkbox 
           @click="selectParentProduct(product)"
         :checked="isParentProductChecked(product)" />
@@ -186,8 +184,7 @@ export default defineComponent({
     ...mapGetters({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
-      instanceUrl: 'user/getInstanceUrl',
-      isParentProductChecked: 'order/isParentProductChecked'
+      instanceUrl: 'user/getInstanceUrl'
     }),
     orderId(){
       return (this as any).ordersList.items[0]?.orderId
@@ -319,6 +316,9 @@ export default defineComponent({
           componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
         })
       return popover.present();
+    },
+    isParentProductChecked(product: any) {
+      return product.isSelected;
     },
     selectProduct(item: any, event: any, product: any) {
       item.isSelected = event.detail.checked;
