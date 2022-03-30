@@ -4,6 +4,7 @@ import RootState from '@/store/RootState'
 import OrderState from './OrderState'
 import * as types from './mutation-types'
 import router from '@/router'
+import { DateTime } from 'luxon';
 
 
 const actions: ActionTree<OrderState, RootState> = {
@@ -23,6 +24,8 @@ const actions: ActionTree<OrderState, RootState> = {
         const product = products.find((product: any) => {
           return item.shopifyProductSKU == product.internalName;
         })
+        console.log(item);
+        item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy' );
         item.parentProductId = product.groupId;
         item.internalName = product.internalName; 
         item.parentProductName = product.parentProductName;
