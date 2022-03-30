@@ -83,23 +83,22 @@
       </div>
 
       <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
-        <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
-          <div class="list-item list-header">
-            <ion-label>{{ item.parentProductName }}</ion-label>
-            
-            <div class="tablet" />
-            
-            <div class="tablet" />
-            
-            <div />
+        <div class="list-item list-header">
+          <ion-label>{{ getParentInformation(id, ordersList.items).parentProductName }}</ion-label>
 
-            <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
-            
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, item)"> 
-              <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
-            </ion-button>
-          </div>
+          <div class="tablet" />
 
+          <div class="tablet" />
+
+          <div />
+          
+          <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
+            <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
+          </ion-button>
+        </div>
+        <div v-for="(item, index) in getGroupItems(id, ordersList.items)" :key="index">
           <div class="list-item">
             <ion-item  lines="none">
               <ion-thumbnail slot="start">
@@ -316,15 +315,9 @@ export default defineComponent({
         })
       return popover.present();
     },
-    selectOnlyParentProduct(id: any){
-      this.ordersList.items.forEach((item: any) => {
-        item.isSelected = !item.parentProductId === id;
-      })
-    },
     isParentProductChecked(parentProductId: string) {
-      return !(this as any).ordersList.items.filter((item: any) => item.parentProductId  === parentProductId).some((item: any) => {
-        return !item.isSelected
-      })
+      const items = (this as any).ordersList.items.filter((item: any) => item.parentProductId === parentProductId)
+      return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
@@ -352,6 +345,9 @@ export default defineComponent({
     getGroupItems(parentProductId: any, items: any) {
       return items.filter((item: any) => item.parentProductId == parentProductId)
     },
+    getParentInformation(id: any, items: any) {
+      return items.find((item: any) => item.parentProductId == id)
+    },
     selectAllItems() {
       this.ordersList.items.forEach((item: any) => {
         item.isSelected = true;
@@ -360,7 +356,7 @@ export default defineComponent({
     selectParentProduct(parentProductId: any, event: any) {
       this.ordersList.items.forEach((item: any) => {
         if (item.parentProductId == parentProductId) {
-            item.isSelected = event.detail.checked;
+          item.isSelected = event.detail.checked;
         }
       })
     }
