@@ -272,7 +272,7 @@ export default defineComponent({
                       window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
                     }
                   }])
-                  this.ordersList = [];
+                  this.store.dispatch('order/updatedOrderListItems', { items: [], original: [] });
                   this.router.push("/purchase-order");
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
