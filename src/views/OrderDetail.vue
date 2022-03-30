@@ -329,15 +329,17 @@ export default defineComponent({
       this.store.dispatch('order/updatedOrderListItems', original);
     },
     apply() {
-      this.ordersList.items.map((item: any) => {
-        if (item.isSelected) {
-          item.quantityOrdered -= this.numberOfPieces;
-          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
-          item.isNewProduct = this.catalog;
-          if(this.facilityId) {
-            item.facilityId = this.facilityId;
+      this.ordersList.items.map((virtual: any) => {
+        virtual.variants.map((item: any) => {
+          if (item.isSelected) {
+            item.quantityOrdered -= this.numberOfPieces;
+            item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
+            item.isNewProduct = this.catalog;
+            if(this.facilityId) {
+              item.facilityId = this.facilityId;
+            }
           }
-        }
+        })
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
     },
