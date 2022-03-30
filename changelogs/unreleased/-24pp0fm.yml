@@ -1,0 +1,6 @@
+---
+title: Block user navigating to details page if no records after review action
+ticket_id: "#24pp0fm"
+merge_request: 26
+author: Disha Talreja
+type: performance
