@@ -8,9 +8,9 @@
           <ion-button @click="selectAllItems">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
-        <!-- ion-button>
-           <ion-icon :icon="arrowUndoOutline">
-          <ion-button-->
+          <ion-button @click="revertAll">
+            <ion-icon :icon="arrowUndoOutline" />
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -91,10 +91,10 @@
           <div class="tablet" />
 
           <div />
-
+          
           <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
 
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, false, getParentInformation(id, ordersList.items))">
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
@@ -125,7 +125,7 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, true, item)">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -152,7 +152,7 @@ import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
-import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline } from 'ionicons/icons'
+import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 export default defineComponent({
   components: {
@@ -196,7 +196,7 @@ export default defineComponent({
       facilityId: "",
       facilities: [] as any,
       queryString: "",
-      searchedProduct: {} as any
+      searchedProduct: {} as any,
     }
   },
   mounted(){
@@ -322,6 +322,10 @@ export default defineComponent({
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
     },
+    revertAll() {
+      const original = JSON.parse(JSON.stringify(this.ordersList.original));
+      this.store.dispatch('order/updatedOrderListItems', original);
+    },
     apply() {
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
@@ -360,13 +364,15 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+    
     return {
       checkboxOutline,
       ellipsisVerticalOutline,
       sendOutline,
+      arrowUndoOutline,
       cloudUploadOutline,
       router,
-      store
+      store,
     }
   }
 });
