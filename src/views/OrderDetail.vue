@@ -82,23 +82,27 @@
         </ion-button>
       </div>
 
-      <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
+      <div v-else v-for="product in ordersList.items" :key="product.id" >
         <div class="list-item list-header">
-          <ion-label>{{ getParentInformation(id, ordersList.items).parentProductName }}</ion-label>
+          <ion-label>{{ product.name }}</ion-label>
 
           <div class="tablet" />
 
           <div class="tablet" />
 
           <div />
-          
-          <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
 
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
+          {{ product.isSelected }}
+
+          <ion-checkbox 
+          @click="selectParentProduct(product)"
+        :checked="isParentProductChecked(product)" />
+
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, product.id, true, product)">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
-        <div v-for="(item, index) in getGroupItems(id, ordersList.items)" :key="index">
+        <div v-for="(item, index) in product.variants" :key="index">
           <div class="list-item">
             <ion-item  lines="none">
               <ion-thumbnail slot="start">
@@ -123,7 +127,7 @@
             </ion-chip>
 
             <!-- Used :key as the changed value was not reflected -->
-            <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
+            <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event, product)"/>
             
             <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -182,7 +186,8 @@ export default defineComponent({
     ...mapGetters({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
-      instanceUrl: 'user/getInstanceUrl'
+      instanceUrl: 'user/getInstanceUrl',
+      isParentProductChecked: 'order/isParentProductChecked'
     }),
     orderId(){
       return (this as any).ordersList.items[0]?.orderId
@@ -315,12 +320,9 @@ export default defineComponent({
         })
       return popover.present();
     },
-    isParentProductChecked(parentProductId: string) {
-      const items = (this as any).ordersList.items.filter((item: any) => item.parentProductId === parentProductId)
-      return items.every((item: any) => item.isSelected)
-    },
-    selectProduct(item: any, event: any) {
+    selectProduct(item: any, event: any, product: any) {
       item.isSelected = event.detail.checked;
+      product.isSelected = product.variants.every((variant: any) => variant.isSelected)
     },
     revertAll() {
       const original = JSON.parse(JSON.stringify(this.ordersList.original));
@@ -339,26 +341,16 @@ export default defineComponent({
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
     },
-    getGroupList (items: any) {
-      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
-    },
-    getGroupItems(parentProductId: any, items: any) {
-      return items.filter((item: any) => item.parentProductId == parentProductId)
-    },
-    getParentInformation(id: any, items: any) {
-      return items.find((item: any) => item.parentProductId == id)
-    },
     selectAllItems() {
       this.ordersList.items.forEach((item: any) => {
         item.isSelected = true;
+        item.variants.map((variant: any) => variant.isSelected = true)
       })
     },
-    selectParentProduct(parentProductId: any, event: any) {
-      this.ordersList.items.forEach((item: any) => {
-        if (item.parentProductId == parentProductId) {
-          item.isSelected = event.detail.checked;
-        }
-      })
+    selectParentProduct(parent: any) {
+      console.log(parent.isSelected)
+      parent.isSelected = !parent.isSelected;
+      parent.variants.map((variant: any) => variant.isSelected = parent.isSelected)
     }
   },
   setup() {

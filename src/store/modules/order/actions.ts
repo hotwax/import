@@ -31,8 +31,23 @@ const actions: ActionTree<OrderState, RootState> = {
         item.isSelected = true;
         return item;
     })
-    const original = JSON.parse(JSON.stringify(items))
-    commit(types.ORDER_LIST_UPDATED, { items, original });
+
+    const product = [] as any
+
+    const parentIds = Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
+    parentIds.map((id) => {
+      const variants = items.filter((item: any) => item.parentProductId == id)
+      product.push({
+        name: variants[0].parentProductName,
+        id: variants[0].parentProductId,
+        isSelected: true,
+        orderId: variants[0].orderId,
+        variants
+      })
+    })
+
+    const original = JSON.parse(JSON.stringify(product))
+    commit(types.ORDER_LIST_UPDATED, { items: product, original });
   },
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
