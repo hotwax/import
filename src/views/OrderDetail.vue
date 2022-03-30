@@ -352,7 +352,7 @@ export default defineComponent({
     selectParentProduct(parentProductId: any, event: any) {
       this.ordersList.items.forEach((item: any) => {
         if (item.parentProductId == parentProductId) {
-          item.isSelected = event.detail.check;
+          item.isSelected = event.detail.checked;
         }
       })
     }
