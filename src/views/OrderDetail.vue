@@ -92,9 +92,7 @@
 
           <div />
 
-          <ion-checkbox 
-          @click="selectParentProduct(product)"
-        :checked="isParentProductChecked(product)" />
+          <ion-checkbox @update:modelValue="product.isSelected = $event" :modelValue="product.isSelected" @click="selectParentProduct(product)"/>
 
           <ion-button fill="clear" color="medium" @click="UpdateProduct($event, product.id, true, product)">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -350,9 +348,11 @@ export default defineComponent({
       })
     },
     selectParentProduct(parent: any) {
-      console.log(parent.isSelected)
-      parent.isSelected = !parent.isSelected;
-      parent.variants.map((variant: any) => variant.isSelected = parent.isSelected)
+      // TODO Fix this
+      // This is temporary solution
+      // As parent.isSelected is changed after click event, used negated value
+      // When using ionChange or @update:modalValue, it executes in loop when the value is changed programatically
+      parent.variants.map((variant: any) => variant.isSelected = !parent.isSelected)
     }
   },
   setup() {
