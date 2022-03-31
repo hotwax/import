@@ -11,7 +11,7 @@ const orderModule: Module<OrderState, RootState> = {
     list: {
       items: [],
       original: [],
-      unidentifiedProducts: [],
+      unidentifiedProductItems: [],
     },
   },
   actions,

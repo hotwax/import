@@ -20,7 +20,7 @@ const actions: ActionTree<OrderState, RootState> = {
       productIds
     }
     await store.dispatch("product/fetchProducts", payload);
-    const unidentifiedProducts = [] as any;
+    const unidentifiedProductItems = [] as any;
     items = items.map((item: any) => {
       const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
 
@@ -34,12 +34,12 @@ const actions: ActionTree<OrderState, RootState> = {
         item.isSelected = true;
         return item;
       }
-      unidentifiedProducts.push(item);
+      unidentifiedProductItems.push(item);
       return ;
     }).filter((item: any) => item);
     const original = JSON.parse(JSON.stringify(items))
 
-    commit(types.ORDER_LIST_UPDATED, { items, original, unidentifiedProducts });
+    commit(types.ORDER_LIST_UPDATED, { items, original, unidentifiedProductItems });
   },
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)

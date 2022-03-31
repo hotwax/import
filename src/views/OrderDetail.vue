@@ -211,7 +211,7 @@ export default defineComponent({
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
-        componentProps: { 'missingSkus': this.ordersList.unidentifiedProducts }
+        componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
       });
       return missingSkuModal.present();
     },

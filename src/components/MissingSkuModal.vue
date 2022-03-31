@@ -11,7 +11,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <ion-list v-for="item in missingSkus" :key="item.shopifyProductSKU">
+      <ion-list v-for="item in unidentifiedProductItems" :key="item.shopifyProductSKU">
         <ion-item lines="none">
           <ion-label>{{ item.shopifyProductSKU }}</ion-label>
         </ion-item>
@@ -53,7 +53,7 @@ export default defineComponent({
   IonTitle,
   IonToolbar
   },
-  props: ['missingSkus'],
+  props: ['unidentifiedProductItems'],
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });
