@@ -19,6 +19,9 @@
       <div class="header">
         <div class="search">
           <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="searchProduct(queryString)"></ion-searchbar>
+          <ion-chip outline @click="listMissingSkus()">
+            <ion-label>{{ $t("Missing SKUs") }}</ion-label>
+          </ion-chip>
         </div> 
 
         <div class="filters">
@@ -151,9 +154,11 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
+import MissingSkuModal from "@/components/MissingSkuModal.vue"
+
 export default defineComponent({
   components: {
     Image,
@@ -203,6 +208,13 @@ export default defineComponent({
    this.fetchFacilities();
   },
   methods: {
+    async listMissingSkus() {
+      const missingSkuModal = await modalController.create({
+        component: MissingSkuModal,
+        componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
+      });
+      return missingSkuModal.present();
+    },
     async navigateBack(){
       const alert = await alertController.create({
         header: this.$t("Leave page"),
