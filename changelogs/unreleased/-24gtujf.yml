@@ -1,0 +1,6 @@
+---
+title: Updated the code to make date format configurable through env file
+ticket_id: "#24gtujf"
+merge_request: 28
+author: Disha Talreja
+type: performance
