@@ -1,0 +1,6 @@
+---
+title: Implemented logic to handle case when the product sku is not present on server
+ticket_id: "#245fb8k"
+merge_request: 25
+author: Disha Talreja
+type: performance
