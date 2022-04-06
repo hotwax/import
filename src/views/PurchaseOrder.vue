@@ -2,6 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
+        <ion-menu-button slot="start" />
         <ion-title>{{ $t("Purchase orders") }}</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -61,7 +62,7 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
@@ -80,6 +81,7 @@ export default defineComponent({
       IonItem,
       IonLabel,
       IonButton,
+      IonMenuButton,
       IonSelect,
       IonSelectOption,
       IonIcon,
@@ -159,7 +161,7 @@ main {
 }
 
 ion-button{
-  margin-top: var(--spacer-sm);
+  margin: var(--spacer-base) var(--spacer-sm);
 }
 
 label {
