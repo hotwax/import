@@ -18,35 +18,35 @@
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item>
             <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fields.orderIdField" aria-required="required">
                 <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fields.productSkuField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fields.dateField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fields.quantityField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
+            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fields.facilityField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -90,12 +90,13 @@ export default defineComponent({
       return {
         file: "",
         content: [],
-        orderIdField: "",
-        productSkuField: "",
-        productUpcField: "",
-        dateField: "",
-        quantityField: "",
-        facilityField: "",
+        fields:{
+          orderIdField: "",
+          productSkuField: "",
+          dateField: "",
+          quantityField: "",
+          facilityField: "",
+        },
         orderItemsList: [],
       }
     },
@@ -121,20 +122,23 @@ export default defineComponent({
           const orderItem = {
           orderId: [],
           shopifyProductSKU: [],
-          shopifyProductUPC: [],
           arrivalDate: [],
           quantityOrdered: [],
           facilityId: []
         }
           orderItem.orderId = item[this.orderIdField];
-          orderItem.shopifyProductSKU = item[this.productSkuField];
-          orderItem.shopifyProductUPC = item[this.productUpcField];
-          orderItem.arrivalDate = item[this.dateField];
-          orderItem.quantityOrdered = item[this.quantityField];
-          orderItem.facilityId = item[this.facilityField]
+          orderItem.shopifyProductSKU = item[this.fields.productSkuField];
+          orderItem.arrivalDate = item[this.fields.dateField];
+          orderItem.quantityOrdered = item[this.fields.quantityField];
+          orderItem.facilityId = item[this.fields.facilityField]
           return orderItem
         })
-        if(this.orderIdField && this.productSkuField && this.dateField && this.quantityField && this.facilityField && this.orderItemsList.length && this.content){
+        const review = Object.values(this.fields).some(field => {
+          return field === "";
+        })
+        if (this.content.length <= 0) {
+          showToast(translate("Please upload a purchase order to continue"));
+        } else if (!review) {
           this.store.dispatch('order/updatedOrderList', this.orderItemsList);
           this.router.push({
             name:'PurchaseOrderDetail'
