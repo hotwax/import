@@ -8,9 +8,9 @@
           <ion-button @click="selectAllItems">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
-        <!-- ion-button>
-           <ion-icon :icon="arrowUndoOutline">
-          <ion-button-->
+          <ion-button @click="revertAll">
+            <ion-icon :icon="arrowUndoOutline" />
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -19,6 +19,9 @@
       <div class="header">
         <div class="search">
           <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="searchProduct(queryString)"></ion-searchbar>
+          <ion-chip outline @click="listMissingSkus()">
+            <ion-label>{{ $t("Missing SKUs") }}</ion-label>
+          </ion-chip>
         </div> 
 
         <div class="filters">
@@ -83,25 +86,26 @@
       </div>
 
       <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
-        <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
-          <div class="list-item list-header">
-            <ion-label>{{ item.parentProductName }}</ion-label>
-            
-            <div class="tablet" />
-            
-            <div class="tablet" />
-            
-            <div />
+        <div class="list-item list-header">
+          <ion-item color="light" lines="none">
+            <ion-label>{{ getParentInformation(id, ordersList.items).parentProductName }}</ion-label>
+          </ion-item>
 
-            <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
-            
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, false, item)"> 
-              <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
-            </ion-button>
-          </div>
+          <div class="tablet" />
 
+          <div class="tablet" />
+
+          <div />
+          
+          <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
+            <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
+          </ion-button>
+        </div>
+        <div v-for="(item, index) in getGroupItems(id, ordersList.items)" :key="index">
           <div class="list-item">
-            <ion-item  lines="none">
+            <ion-item lines="none">
               <ion-thumbnail slot="start">
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
@@ -126,7 +130,7 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, true, item)">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -152,9 +156,11 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
-import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline } from 'ionicons/icons'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
+import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
+import MissingSkuModal from "@/components/MissingSkuModal.vue"
+
 export default defineComponent({
   components: {
     Image,
@@ -198,13 +204,20 @@ export default defineComponent({
       facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
       facilities: [] as any,
       queryString: "",
-      searchedProduct: {} as any
+      searchedProduct: {} as any,
     }
   },
   mounted(){
    this.fetchFacilities();
   },
   methods: {
+    async listMissingSkus() {
+      const missingSkuModal = await modalController.create({
+        component: MissingSkuModal,
+        componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
+      });
+      return missingSkuModal.present();
+    },
     async navigateBack(){
       const alert = await alertController.create({
         header: this.$t("Leave page"),
@@ -273,7 +286,7 @@ export default defineComponent({
                       window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
                     }
                   }])
-                  this.ordersList = [];
+                  this.store.dispatch('order/updatedOrderListItems', { items: [], original: [] });
                   this.router.push("/purchase-order");
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
@@ -317,24 +330,22 @@ export default defineComponent({
         })
       return popover.present();
     },
-    selectOnlyParentProduct(id: any){
-      this.ordersList.items.forEach((item: any) => {
-        item.isSelected = !item.parentProductId === id;
-      })
-    },
     isParentProductChecked(parentProductId: string) {
-      return !(this as any).ordersList.items.filter((item: any) => item.parentProductId  === parentProductId).some((item: any) => {
-        return !item.isSelected
-      })
+      const items = (this as any).ordersList.items.filter((item: any) => item.parentProductId === parentProductId)
+      return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
+    },
+    revertAll() {
+      const original = JSON.parse(JSON.stringify(this.ordersList.original));
+      this.store.dispatch('order/updatedOrderListItems', original);
     },
     apply() {
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
-          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
+          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy').plus({ days: this.numberOfDays }).toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
@@ -349,6 +360,9 @@ export default defineComponent({
     getGroupItems(parentProductId: any, items: any) {
       return items.filter((item: any) => item.parentProductId == parentProductId)
     },
+    getParentInformation(id: any, items: any) {
+      return items.find((item: any) => item.parentProductId == id)
+    },
     selectAllItems() {
       this.ordersList.items.forEach((item: any) => {
         item.isSelected = true;
@@ -357,7 +371,7 @@ export default defineComponent({
     selectParentProduct(parentProductId: any, event: any) {
       this.ordersList.items.forEach((item: any) => {
         if (item.parentProductId == parentProductId) {
-            item.isSelected = event.detail.checked;
+          item.isSelected = event.detail.checked;
         }
       })
     }
@@ -365,13 +379,15 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+    
     return {
       checkboxOutline,
       ellipsisVerticalOutline,
       sendOutline,
+      arrowUndoOutline,
       cloudUploadOutline,
       router,
-      store
+      store,
     }
   }
 });
@@ -393,9 +409,12 @@ export default defineComponent({
   --columns-desktop: 6;
 }
 
+.list-item :first-child ion-label {
+  word-break: break-all;
+}
+
 .list-header {
-  background-color: #F4F5F8;
-  padding-left: var(--spacer-sm);
+  background-color: var(--ion-color-light);
 }
 
 @media (min-width: 991px) {

@@ -27,7 +27,8 @@ const actions: ActionTree<ProductState, RootState> = {
     if (productIdFilter === '') return productIds.map((productId: any) => state.cached[productId]);
 
     const resp = await ProductService.fetchProducts({
-      "filters": ['internalName: (' + productIdFilter + ')']
+      "filters": ['internalName: (' + productIdFilter + ')'],
+      "viewSize": productIds.length
     })
     if (resp.status === 200 && !hasError(resp)) {
       const products = resp.data.response.docs;
