@@ -144,7 +144,7 @@ export default defineComponent({
             name:'PurchaseOrderDetail'
           })
         } else {
-          showToast(translate("Something went wrong"));
+          showToast(translate("Select all the fields to continue"));
         }
       },
     },
