@@ -11,7 +11,7 @@
 import Menu from '@/components/Menu.vue';
 import { IonApp, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
 import { defineComponent } from 'vue';
-import { loadingController, alertController } from '@ionic/vue';
+import { loadingController } from '@ionic/vue';
 import { useStore } from "./store";
 import emitter from "@/event-bus"
 export default defineComponent({
