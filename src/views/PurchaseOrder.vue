@@ -94,7 +94,6 @@ export default defineComponent({
         content: [],
         orderIdField: "",
         productSkuField: "",
-        productUpcField: "",
         dateField: "",
         quantityField: "",
         facilityField: "",
@@ -130,7 +129,6 @@ export default defineComponent({
         }
           orderItem.orderId = item[this.orderIdField];
           orderItem.shopifyProductSKU = item[this.productSkuField];
-          orderItem.shopifyProductUPC = item[this.productUpcField];
           orderItem.arrivalDate = item[this.dateField];
           orderItem.quantityOrdered = item[this.quantityField];
           orderItem.facilityId = item[this.facilityField]
@@ -141,6 +139,16 @@ export default defineComponent({
           name:'PurchaseOrderDetail'
         })
       },
+    },
+    beforeUnmount(){
+      this.file = '';
+      this.content = [];
+      this.orderIdField = '';
+      this.productSkuField = '';
+      this.dateField = '';
+      this.quantityField = '';
+      this.facilityField = '';
+      this.orderItemsList = [];
     },
     setup() {
     const router = useRouter();
