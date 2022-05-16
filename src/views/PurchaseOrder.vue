@@ -126,14 +126,17 @@ export default defineComponent({
           shopifyProductUPC: [],
           arrivalDate: [],
           quantityOrdered: [],
-          facilityId: []
+          facilityId: [],
+          externalFacilityId: []
         }
           orderItem.orderId = item[this.orderIdField];
           orderItem.shopifyProductSKU = item[this.productSkuField];
           orderItem.shopifyProductUPC = item[this.productUpcField];
           orderItem.arrivalDate = item[this.dateField];
           orderItem.quantityOrdered = item[this.quantityField];
-          orderItem.facilityId = item[this.facilityField]
+          orderItem.externalFacilityId = item[this.facilityField]
+          orderItem.facilityId = '';
+
           return orderItem
         })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);

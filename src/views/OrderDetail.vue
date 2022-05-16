@@ -246,17 +246,23 @@ export default defineComponent({
       const uploadData = this.ordersList.items.filter((item: any) => {
         return item.isSelected;
       }).map((item: any) => {
-        return {
+        const orderItem = {
           "poId": " ",
           "externalId": item.orderId,
-          "facilityId": "",
-          "externalFacilityId": item.facilityId,
+          "facilityId": item.facilityId,
+          "externalFacilityId": "",
           "arrivalDate": item.arrivalDate,
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
           "idValue": item.shopifyProductSKU,
           "idType": "SKU"
         }
+        if (item.facilityId) {
+          return orderItem;
+        }
+        orderItem.facilityId = "";
+        orderItem.externalFacilityId = item.externalFacilityId;
+        return orderItem;
       })
       const fileName = "Upload_PO_Member_" + Date.now() +".json";
       const params = {
@@ -285,8 +291,8 @@ export default defineComponent({
                       window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
                     }
                   }])
-                  this.store.dispatch('order/updatedOrderListItems', { items: [], original: [] });
                   this.router.push("/purchase-order");
+                  this.store.dispatch('order/updatedOrderListItems', { items: [], original: [] });
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
                 })
@@ -299,13 +305,13 @@ export default defineComponent({
     async fetchFacilities(){
       const payload = {
         "inputFields": {
-          "externalId_fld0_op": "not-empty",
           "parentTypeId": "VIRTUAL_FACILITY",
           "parentTypeId_op": "notEqual",
           "facilityTypeId": "VIRTUAL_FACILITY",
           "facilityTypeId_op": "notEqual",
         },
         "fieldList": ["externalId", "facilityName", "parentTypeId"],
+        "viewSize": 50,
         "entityName": "FacilityAndType",
         "noConditionFind": "Y"
       }
@@ -354,7 +360,9 @@ export default defineComponent({
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
     },
     getGroupList (items: any) {
-      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
+      if (items.length) {
+        return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
+      } else return {};
     },
     getGroupItems(parentProductId: any, items: any) {
       return items.filter((item: any) => item.parentProductId == parentProductId)
