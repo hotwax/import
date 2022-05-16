@@ -140,16 +140,6 @@ export default defineComponent({
         })
       },
     },
-    beforeUnmount(){
-      this.file = '';
-      this.content = [];
-      this.orderIdField = '';
-      this.productSkuField = '';
-      this.dateField = '';
-      this.quantityField = '';
-      this.facilityField = '';
-      this.orderItemsList = [];
-    },
     setup() {
     const router = useRouter();
     const store = useStore();
