@@ -2,6 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
+        <ion-menu-button slot="start" />
         <ion-title>{{ $t("Purchase orders") }}</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -18,35 +19,35 @@
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item>
             <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
                 <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -61,7 +62,7 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
@@ -80,6 +81,7 @@ export default defineComponent({
       IonItem,
       IonLabel,
       IonButton,
+      IonMenuButton,
       IonSelect,
       IonSelectOption,
       IonIcon,
@@ -159,7 +161,7 @@ main {
 }
 
 ion-button{
-  margin-top: var(--spacer-sm);
+  margin: var(--spacer-base) var(--spacer-sm);
 }
 
 label {
