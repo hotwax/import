@@ -206,7 +206,7 @@ export default defineComponent({
       searchedProduct: {} as any,
     }
   },
-  mounted(){
+  ionViewDidEnter(){
    this.fetchFacilities();
   },
   methods: {
