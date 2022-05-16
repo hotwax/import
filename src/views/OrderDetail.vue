@@ -18,7 +18,7 @@
     <ion-content >
       <div class="header">
         <div class="search">
-          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="searchProduct(queryString)"></ion-searchbar>
+          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)"></ion-searchbar>
           <ion-chip outline @click="listMissingSkus()">
             <ion-label>{{ $t("Missing SKUs") }}</ion-label>
           </ion-chip>
