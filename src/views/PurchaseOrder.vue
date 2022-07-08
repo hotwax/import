@@ -26,28 +26,28 @@
 
           <ion-item>
             <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappingPreference.shopifyProductSKU">
+            <ion-select interface="popover"  v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappingPreference.shopifyProductSKU">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappingPreference.arrivalDate">
+            <ion-select interface="popover"  v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappingPreference.arrivalDate">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappingPreference.quantityOrdered">
+            <ion-select interface="popover"  v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappingPreference.quantityOrdered">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappingPreference.facilityId">
+            <ion-select interface="popover"  v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappingPreference.facilityId">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
