@@ -57,12 +57,20 @@
           {{ $t("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
+        <ion-item>
+          <ion-label>{{ $t("Enter mapping name") }}</ion-label>
+          <ion-input v-model="mappingName" />
+        </ion-item>
+        <ion-button @click="saveMapping">
+          {{ $t("Save mapping") }}
+        </ion-button>
+        <ion-button >{{ $t("Apply Mapping") }}</ion-button>
       </main>
     </ion-content>
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters } from "vuex";
@@ -78,6 +86,7 @@ export default defineComponent({
       IonToolbar,
       IonTitle,
       IonContent,
+      IonInput,
       IonItem,
       IonLabel,
       IonButton,
@@ -93,6 +102,7 @@ export default defineComponent({
         file: "",
         content: [],
         orderItemsList: [],
+        mappingName: ""
       }
     },
     computed: {
@@ -138,9 +148,17 @@ export default defineComponent({
           return orderItem
         })
       },
+      saveMapping(){
+        console.log(this.mappingName)
+        if(this.mappingName){
+          console.log(this.mappingName)
+          const name = this.mappingName
+          this.store.dispatch('user/setUserPreference',{ fieldMappingPreference: { [name]: this.fieldMappingPreference } })
+        } 
+      },
       review() {
         this.mapFields();
-        this.store.dispatch('user/setUserPreference',{fieldMappingPreference: this.fieldMappingPreference })
+        // this.store.dispatch('user/setUserPreference',{fieldMappingPreference: this.fieldMappingPreference })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
           name:'PurchaseOrderDetail'
