@@ -162,6 +162,7 @@ import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
 
 export default defineComponent({
+  name: 'PurchaseOrderDetail',
   components: {
     Image,
     IonPage,
@@ -250,18 +251,13 @@ export default defineComponent({
           "poId": " ",
           "externalId": item.orderId,
           "facilityId": item.facilityId,
-          "externalFacilityId": "",
+          "externalFacilityId": item.externalFacilityId,
           "arrivalDate": item.arrivalDate,
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
           "idValue": item.shopifyProductSKU,
           "idType": "SKU"
         }
-        if (item.facilityId) {
-          return orderItem;
-        }
-        orderItem.facilityId = "";
-        orderItem.externalFacilityId = item.externalFacilityId;
         return orderItem;
       })
       const fileName = "Upload_PO_Member_" + Date.now() +".json";
@@ -354,6 +350,7 @@ export default defineComponent({
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
+            item.externalFacilityId = "";
           }
         }
       })
@@ -362,7 +359,8 @@ export default defineComponent({
     getGroupList (items: any) {
       if (items.length) {
         return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
-      } else return {};
+      }
+      return [];
     },
     getGroupItems(parentProductId: any, items: any) {
       return items.filter((item: any) => item.parentProductId == parentProductId)
