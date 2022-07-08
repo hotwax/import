@@ -71,7 +71,6 @@ const actions: ActionTree<UserState, RootState> = {
         console.error(err)
       }
       commit(types.USER_INFO_UPDATED, resp.data);
-      commit(types.USER_INFO_UPDATED, resp.data);
     }
   },
 
