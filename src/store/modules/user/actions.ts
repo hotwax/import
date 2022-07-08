@@ -58,6 +58,19 @@ const actions: ActionTree<UserState, RootState> = {
       if (resp.data.userTimeZone !== localTimeZone) {
         emitter.emit('timeZoneDifferent', { profileTimeZone: resp.data.userTimeZone, localTimeZone});
       }
+      try {
+        const userPreferenceResp = await UserService.getUserPreference({
+          'userPrefTypeId': 'IMPORT_SETTINGS'
+        });
+
+        if (userPreferenceResp.status == 200 && !hasError(userPreferenceResp) && userPreferenceResp.data?.userPrefValue) {
+          const userPreference = JSON.parse(userPreferenceResp.data.userPrefValue)
+          commit(types.USER_PREFERENCE_UPDATED, userPreference)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+      commit(types.USER_INFO_UPDATED, resp.data);
       commit(types.USER_INFO_UPDATED, resp.data);
     }
   },
@@ -87,6 +100,14 @@ const actions: ActionTree<UserState, RootState> = {
    */
   setUserInstanceUrl ({ state, commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
+  },
+
+  setUserPreference( {state, commit }, payload){
+    commit(types.USER_PREFERENCE_UPDATED, payload)
+    UserService.setUserPreference({
+      'userPrefTypeId': 'IMPORT_SETTINGS',
+      'userPrefValue': JSON.stringify(state.preference)
+    });
   }
 }
 
