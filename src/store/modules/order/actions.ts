@@ -26,10 +26,10 @@ const actions: ActionTree<OrderState, RootState> = {
 
       if(Object.keys(product).length > 0){
         item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
-        item.parentProductId = product.groupId;
-        item.internalName = product.internalName;
-        item.parentProductName = product.parentProductName;
-        item.imageUrl = product.mainImageUrl;
+        item.parentProductId = product?.assocs?.toProductId;
+        item.internalName = product.pseudoId;
+        item.parentProductName = product?.assocs?.toProduct?.productName;
+        item.imageUrl = product.images?.mainImageUrl;
         item.isNewProduct = "N";
         item.isSelected = true;
         return item;

@@ -239,7 +239,7 @@ export default defineComponent({
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
       this.searchedProduct = this.ordersList.items.find((item: any) => {
-        return item.internalName === product.internalName;
+        return item.internalName === product.pseudoId;
       })
     },
     async save(){
