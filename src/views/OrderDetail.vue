@@ -288,7 +288,7 @@ export default defineComponent({
                     }
                   }])
                   this.router.push("/purchase-order");
-                  this.store.dispatch('order/updatedOrderListItems', { items: [], original: [] });
+                  this.store.dispatch('order/clearOrderList');
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
                 })
@@ -357,10 +357,7 @@ export default defineComponent({
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
     },
     getGroupList (items: any) {
-      if (items.length) {
-        return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
-      }
-      return [];
+      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
     },
     getGroupItems(parentProductId: any, items: any) {
       return items.filter((item: any) => item.parentProductId == parentProductId)
