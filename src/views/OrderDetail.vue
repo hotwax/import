@@ -247,7 +247,7 @@ export default defineComponent({
       const uploadData = this.ordersList.items.filter((item: any) => {
         return item.isSelected;
       }).map((item: any) => {
-        const orderItem = {
+        return {
           "poId": " ",
           "externalId": item.orderId,
           "facilityId": item.facilityId,
@@ -257,8 +257,7 @@ export default defineComponent({
           "isNewProduct": item.isNewProduct,
           "idValue": item.shopifyProductSKU,
           "idType": "SKU"
-        }
-        return orderItem;
+        };
       })
       const fileName = "Upload_PO_Member_" + Date.now() +".json";
       const params = {
