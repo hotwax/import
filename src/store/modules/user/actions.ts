@@ -54,6 +54,18 @@ const actions: ActionTree<UserState, RootState> = {
   async getProfile ( { commit }) {
     const resp = await UserService.getProfile()
     if (resp.status === 200) {
+      try {
+        const userPreferenceResp = await UserService.getUserPreference({
+          'userPrefTypeId': 'IMPORT_SETTINGS'
+        });
+
+        if (userPreferenceResp.status == 200 && !hasError(userPreferenceResp) && userPreferenceResp.data?.userPrefValue) {
+          const userPreference = JSON.parse(userPreferenceResp.data.userPrefValue)
+          commit(types.USER_PREFERENCE_UPDATED, userPreference)
+        }
+      } catch (err) {
+        console.error(err)
+      }
       commit(types.USER_INFO_UPDATED, resp.data);
     }
   },
@@ -83,6 +95,14 @@ const actions: ActionTree<UserState, RootState> = {
    */
   setUserInstanceUrl ({ state, commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
+  },
+
+  setUserPreference( {state, commit }, payload){
+    commit(types.USER_PREFERENCE_UPDATED, payload)
+    UserService.setUserPreference({
+      'userPrefTypeId': 'IMPORT_SETTINGS',
+      'userPrefValue': JSON.stringify(state.preference)
+    });
   }
 }
 

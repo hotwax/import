@@ -20,6 +20,9 @@ const getters: GetterTree <UserState, RootState> = {
     },
     getInstanceUrl (state) {
         return state.instanceUrl;
+    },
+    getFieldMappingPreference (state) {
+        return state.preference.fieldMappingPreference;
     }
 }
 export default getters;
