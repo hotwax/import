@@ -2,6 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
+        <ion-menu-button slot="start" />
         <ion-title>{{ $t("Settings") }}</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -11,10 +12,11 @@
       <ion-item>
         <ion-icon :icon="codeWorkingOutline" slot="start"/>
         <ion-label>{{ $t("OMS") }}</ion-label>
-        <p slot="end">{{ instanceUrl }}</p>
+        <p slot="end">{{ baseURL ? baseURL : instanceUrl }}</p>
       </ion-item>
       <!-- Time zone -->
       <ion-item>
+        <ion-icon :icon="timeOutline" slot="start"/>
         <ion-label> {{ userProfile && userProfile.userTimeZone ? userProfile.userTimeZone : '-' }} </ion-label>
         <ion-button @click="changeTimeZone()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
       </ion-item>
@@ -29,9 +31,9 @@
 </template>
 
 <script lang="ts">
-import { IonButton, IonContent, IonHeader,IonIcon, IonItem, IonLabel, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
+import { IonButton, IonContent, IonHeader,IonIcon, IonItem, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
 import { defineComponent } from 'vue';
-import { codeWorkingOutline, ellipsisVertical, personCircleOutline } from 'ionicons/icons'
+import { codeWorkingOutline, ellipsisVertical, personCircleOutline, timeOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import TimeZoneModal from '@/views/TimezoneModal.vue';
@@ -45,9 +47,15 @@ export default defineComponent({
     IonIcon,
     IonItem, 
     IonLabel, 
+    IonMenuButton,
     IonPage,
     IonTitle, 
     IonToolbar
+  },
+  data() {
+    return {
+      baseURL: process.env.VUE_APP_BASE_URL
+    };
   },
   computed: {
     ...mapGetters({
@@ -77,7 +85,8 @@ export default defineComponent({
       ellipsisVertical,
       personCircleOutline,
       store,
-      router
+      router,
+      timeOutline
     }
   }
 });

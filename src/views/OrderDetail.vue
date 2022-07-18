@@ -18,7 +18,10 @@
     <ion-content >
       <div class="header">
         <div class="search">
-          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="searchProduct(queryString)"></ion-searchbar>
+          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)"></ion-searchbar>
+          <ion-chip outline @click="listMissingSkus()">
+            <ion-label>{{ $t("Missing SKUs") }}</ion-label>
+          </ion-chip>
         </div> 
 
         <div class="filters">
@@ -43,7 +46,7 @@
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
             <ion-select v-model="facilityId">
-              <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.externalId">{{ facility.facilityName }}</ion-select-option>
+              <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
 
@@ -83,25 +86,26 @@
       </div>
 
       <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
-        <div v-for="item in getGroupItems(id, ordersList.items)" :key="item">
-          <div class="list-item list-header">
-            <ion-label>{{ item.parentProductName }}</ion-label>
-            
-            <div class="tablet" />
-            
-            <div class="tablet" />
-            
-            <div />
+        <div class="list-item list-header">
+          <ion-item color="light" lines="none">
+            <ion-label>{{ getParentInformation(id, ordersList.items).parentProductName }}</ion-label>
+          </ion-item>
 
-            <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
-            
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, item)"> 
-              <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
-            </ion-button>
-          </div>
+          <div class="tablet" />
 
+          <div class="tablet" />
+
+          <div />
+          
+          <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
+            <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
+          </ion-button>
+        </div>
+        <div v-for="(item, index) in getGroupItems(id, ordersList.items)" :key="index">
           <div class="list-item">
-            <ion-item  lines="none">
+            <ion-item lines="none">
               <ion-thumbnail slot="start">
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
@@ -152,10 +156,13 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
+import MissingSkuModal from "@/components/MissingSkuModal.vue"
+
 export default defineComponent({
+  name: 'PurchaseOrderDetail',
   components: {
     Image,
     IonPage,
@@ -200,10 +207,17 @@ export default defineComponent({
       searchedProduct: {} as any,
     }
   },
-  mounted(){
+  ionViewDidEnter(){
    this.fetchFacilities();
   },
   methods: {
+    async listMissingSkus() {
+      const missingSkuModal = await modalController.create({
+        component: MissingSkuModal,
+        componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
+      });
+      return missingSkuModal.present();
+    },
     async navigateBack(){
       const alert = await alertController.create({
         header: this.$t("Leave page"),
@@ -236,14 +250,14 @@ export default defineComponent({
         return {
           "poId": " ",
           "externalId": item.orderId,
-          "facilityId": "",
-          "externalFacilityId": item.facilityId,
+          "facilityId": item.facilityId,
+          "externalFacilityId": item.externalFacilityId,
           "arrivalDate": item.arrivalDate,
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
           "idValue": item.shopifyProductSKU,
           "idType": "SKU"
-        }
+        };
       })
       const fileName = "Upload_PO_Member_" + Date.now() +".json";
       const params = {
@@ -272,8 +286,8 @@ export default defineComponent({
                       window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
                     }
                   }])
-                  this.ordersList = [];
                   this.router.push("/purchase-order");
+                  this.store.dispatch('order/clearOrderList');
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
                 })
@@ -286,13 +300,13 @@ export default defineComponent({
     async fetchFacilities(){
       const payload = {
         "inputFields": {
-          "externalId_fld0_op": "not-empty",
           "parentTypeId": "VIRTUAL_FACILITY",
           "parentTypeId_op": "notEqual",
           "facilityTypeId": "VIRTUAL_FACILITY",
           "facilityTypeId_op": "notEqual",
         },
-        "fieldList": ["externalId", "facilityName", "parentTypeId"],
+        "fieldList": ["facilityId", "facilityName", "parentTypeId"],
+        "viewSize": 50,
         "entityName": "FacilityAndType",
         "noConditionFind": "Y"
       }
@@ -316,15 +330,9 @@ export default defineComponent({
         })
       return popover.present();
     },
-    selectOnlyParentProduct(id: any){
-      this.ordersList.items.forEach((item: any) => {
-        item.isSelected = !item.parentProductId === id;
-      })
-    },
     isParentProductChecked(parentProductId: string) {
-      return !(this as any).ordersList.items.filter((item: any) => item.parentProductId  === parentProductId).some((item: any) => {
-        return !item.isSelected
-      })
+      const items = (this as any).ordersList.items.filter((item: any) => item.parentProductId === parentProductId)
+      return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
@@ -337,20 +345,24 @@ export default defineComponent({
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
-          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
+          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy').plus({ days: this.numberOfDays }).toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
+            item.externalFacilityId = "";
           }
         }
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
     },
     getGroupList (items: any) {
-      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
+      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
     },
     getGroupItems(parentProductId: any, items: any) {
       return items.filter((item: any) => item.parentProductId == parentProductId)
+    },
+    getParentInformation(id: any, items: any) {
+      return items.find((item: any) => item.parentProductId == id)
     },
     selectAllItems() {
       this.ordersList.items.forEach((item: any) => {
@@ -360,7 +372,7 @@ export default defineComponent({
     selectParentProduct(parentProductId: any, event: any) {
       this.ordersList.items.forEach((item: any) => {
         if (item.parentProductId == parentProductId) {
-            item.isSelected = event.detail.checked;
+          item.isSelected = event.detail.checked;
         }
       })
     }
@@ -398,9 +410,12 @@ export default defineComponent({
   --columns-desktop: 6;
 }
 
+.list-item :first-child ion-label {
+  word-break: break-all;
+}
+
 .list-header {
-  background-color: #F4F5F8;
-  padding-left: var(--spacer-sm);
+  background-color: var(--ion-color-light);
 }
 
 @media (min-width: 991px) {
