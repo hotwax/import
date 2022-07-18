@@ -45,6 +45,7 @@ const actions: ActionTree<UserState, RootState> = {
   async logout ({ commit }) {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
+    this.dispatch('user/clearOrderList');
     
   },
 
@@ -54,10 +55,6 @@ const actions: ActionTree<UserState, RootState> = {
   async getProfile ( { commit }) {
     const resp = await UserService.getProfile()
     if (resp.status === 200) {
-      const localTimeZone = DateTime.local().zoneName;
-      if (resp.data.userTimeZone !== localTimeZone) {
-        emitter.emit('timeZoneDifferent', { profileTimeZone: resp.data.userTimeZone, localTimeZone});
-      }
       commit(types.USER_INFO_UPDATED, resp.data);
     }
   },

@@ -19,35 +19,35 @@
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item>
             <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
                 <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -94,7 +94,6 @@ export default defineComponent({
         content: [],
         orderIdField: "",
         productSkuField: "",
-        productUpcField: "",
         dateField: "",
         quantityField: "",
         facilityField: "",
@@ -120,21 +119,15 @@ export default defineComponent({
       },
       mapFields() {
         this.orderItemsList = this.content.map(item => {
-          const orderItem = {
-          orderId: [],
-          shopifyProductSKU: [],
-          shopifyProductUPC: [],
-          arrivalDate: [],
-          quantityOrdered: [],
-          facilityId: []
-        }
-          orderItem.orderId = item[this.orderIdField];
-          orderItem.shopifyProductSKU = item[this.productSkuField];
-          orderItem.shopifyProductUPC = item[this.productUpcField];
-          orderItem.arrivalDate = item[this.dateField];
-          orderItem.quantityOrdered = item[this.quantityField];
-          orderItem.facilityId = item[this.facilityField]
-          return orderItem
+          return {
+            orderId: item[this.orderIdField],
+            shopifyProductSKU: item[this.productSkuField],
+            shopifyProductUPC: item[this.productUpcField],
+            arrivalDate: item[this.dateField],
+            quantityOrdered: item[this.quantityField],
+            facilityId: '',
+            externalFacilityId: item[this.facilityField]
+          }
         })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
