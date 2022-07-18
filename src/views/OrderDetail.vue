@@ -18,7 +18,7 @@
     <ion-content >
       <div class="header">
         <div class="search">
-          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="searchProduct(queryString)"></ion-searchbar>
+          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)"></ion-searchbar>
           <ion-chip outline @click="listMissingSkus()">
             <ion-label>{{ $t("Missing SKUs") }}</ion-label>
           </ion-chip>
@@ -46,7 +46,7 @@
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
             <ion-select v-model="facilityId">
-              <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.externalId">{{ facility.facilityName }}</ion-select-option>
+              <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
 
@@ -162,6 +162,7 @@ import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
 
 export default defineComponent({
+  name: 'PurchaseOrderDetail',
   components: {
     Image,
     IonPage,
@@ -206,7 +207,7 @@ export default defineComponent({
       searchedProduct: {} as any,
     }
   },
-  mounted(){
+  ionViewDidEnter(){
    this.fetchFacilities();
   },
   methods: {
@@ -249,14 +250,14 @@ export default defineComponent({
         return {
           "poId": " ",
           "externalId": item.orderId,
-          "facilityId": "",
-          "externalFacilityId": item.facilityId,
+          "facilityId": item.facilityId,
+          "externalFacilityId": item.externalFacilityId,
           "arrivalDate": item.arrivalDate,
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
           "idValue": item.shopifyProductSKU,
           "idType": "SKU"
-        }
+        };
       })
       const fileName = "Upload_PO_Member_" + Date.now() +".json";
       const params = {
@@ -285,8 +286,8 @@ export default defineComponent({
                       window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
                     }
                   }])
-                  this.store.dispatch('order/updatedOrderListItems', { items: [], original: [] });
                   this.router.push("/purchase-order");
+                  this.store.dispatch('order/clearOrderList');
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
                 })
@@ -299,13 +300,13 @@ export default defineComponent({
     async fetchFacilities(){
       const payload = {
         "inputFields": {
-          "externalId_fld0_op": "not-empty",
           "parentTypeId": "VIRTUAL_FACILITY",
           "parentTypeId_op": "notEqual",
           "facilityTypeId": "VIRTUAL_FACILITY",
           "facilityTypeId_op": "notEqual",
         },
-        "fieldList": ["externalId", "facilityName", "parentTypeId"],
+        "fieldList": ["facilityId", "facilityName", "parentTypeId"],
+        "viewSize": 50,
         "entityName": "FacilityAndType",
         "noConditionFind": "Y"
       }
@@ -348,13 +349,14 @@ export default defineComponent({
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
+            item.externalFacilityId = "";
           }
         }
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
     },
     getGroupList (items: any) {
-      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)))
+      return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
     },
     getGroupItems(parentProductId: any, items: any) {
       return items.filter((item: any) => item.parentProductId == parentProductId)

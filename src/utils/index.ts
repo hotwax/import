@@ -21,7 +21,7 @@ const showToast = async (message: string, configButtons?: any) => {
     .create({
       message: message,
       duration: 3000,
-      position: 'top',
+      position: 'bottom',
       buttons: defaultButtons
     })
   return toast.present();
