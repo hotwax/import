@@ -80,7 +80,7 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, true, searchedProduct)">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -331,7 +331,10 @@ export default defineComponent({
           translucent: true,
           showBackdrop: true,
           componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
-        })
+        });
+        popover.onDidDismiss().then(() => {
+          this.searchProduct(this.queryString);
+        });
       return popover.present();
     },
     isParentProductChecked(parentProductId: string) {
