@@ -94,7 +94,6 @@ export default defineComponent({
         content: [],
         orderIdField: "",
         productSkuField: "",
-        productUpcField: "",
         dateField: "",
         quantityField: "",
         facilityField: "",
