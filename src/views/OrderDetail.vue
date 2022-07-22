@@ -97,7 +97,7 @@
 
           <div />
           
-          <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+          <ion-checkbox :checked="isParentProductChecked(id)" @click="handleChange(true)" @ionChange="selectParentProduct(id, $event)" />
 
           <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -205,12 +205,16 @@ export default defineComponent({
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
+      handleOnChange: false
     }
   },
   ionViewDidEnter(){
    this.fetchFacilities();
   },
   methods: {
+    handleChange(value: any){
+      this.handleOnChange = value;
+    },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
@@ -331,7 +335,7 @@ export default defineComponent({
       return popover.present();
     },
     isParentProductChecked(parentProductId: string) {
-      const items = (this as any).ordersList.items.filter((item: any) => item.parentProductId === parentProductId)
+      const items = (this as any).getGroupItems(parentProductId, this.ordersList.items);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
@@ -370,11 +374,14 @@ export default defineComponent({
       })
     },
     selectParentProduct(parentProductId: any, event: any) {
-      this.ordersList.items.forEach((item: any) => {
-        if (item.parentProductId == parentProductId) {
-          item.isSelected = event.detail.checked;
-        }
-      })
+      if(this.handleOnChange){
+        this.ordersList.items.forEach((item: any) => {
+          if (item.parentProductId === parentProductId) {
+            item.isSelected = event.detail.checked;
+          }
+        })
+      }
+      this.handleOnChange = false;
     }
   },
   setup() {
