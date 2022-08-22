@@ -6,9 +6,7 @@ import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
 import emitter from '@/event-bus'
-import { fetchProducts } from "@hotwax/oms-api/src/product";
-import { isError } from "@hotwax/oms-api/src/util";
-
+import { fetchProducts, isError } from "@hotwax/oms-api";
 
 const actions: ActionTree<ProductState, RootState> = {
 
@@ -33,7 +31,7 @@ const actions: ActionTree<ProductState, RootState> = {
     if (!isError(resp)) {
       const products = resp.products;
       // Handled empty response in case of failed query
-      if (products) commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
+      if (resp.total) commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
     } else {
       console.error(resp)
     }
