@@ -94,7 +94,6 @@ export default defineComponent({
         content: [],
         orderIdField: "",
         productSkuField: "",
-        productUpcField: "",
         dateField: "",
         quantityField: "",
         facilityField: "",
@@ -120,21 +119,15 @@ export default defineComponent({
       },
       mapFields() {
         this.orderItemsList = this.content.map(item => {
-          const orderItem = {
-          orderId: [],
-          shopifyProductSKU: [],
-          shopifyProductUPC: [],
-          arrivalDate: [],
-          quantityOrdered: [],
-          facilityId: []
-        }
-          orderItem.orderId = item[this.orderIdField];
-          orderItem.shopifyProductSKU = item[this.productSkuField];
-          orderItem.shopifyProductUPC = item[this.productUpcField];
-          orderItem.arrivalDate = item[this.dateField];
-          orderItem.quantityOrdered = item[this.quantityField];
-          orderItem.facilityId = item[this.facilityField]
-          return orderItem
+          return {
+            orderId: item[this.orderIdField],
+            shopifyProductSKU: item[this.productSkuField],
+            shopifyProductUPC: item[this.productUpcField],
+            arrivalDate: item[this.dateField],
+            quantityOrdered: item[this.quantityField],
+            facilityId: '',
+            externalFacilityId: item[this.facilityField]
+          }
         })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
