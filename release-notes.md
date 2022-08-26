@@ -1,3 +1,17 @@
+# Release 1.0.1
+
+## What's Changed
+* Update contribution guideline in Readme file(#2r0kmb3) by @azkyakhan in https://github.com/hotwax/import/pull/56
+* Implemented: Code to check if user has permission to access the app(#2hr41aq) by @shashwatbangar in https://github.com/hotwax/import/pull/57
+* Implemented: Display instance and time-zone at the bottom of the menu in ion footer(#28u2prh) by @shashwatbangar in https://github.com/hotwax/import/pull/52
+* Improved code by displaying instance and current time zone in the bottom of the menu(#28u2prh) by @azkyakhan in https://github.com/hotwax/import/pull/35
+
+## New Contributors
+* @shashwatbangar made their first contribution in https://github.com/hotwax/import/pull/57
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v1.0.0...v1.0.1
+
+
 # Release 1.0.0
 
 ## What's Changed
