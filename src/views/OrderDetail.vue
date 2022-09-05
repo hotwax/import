@@ -37,7 +37,7 @@
 
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
-            <ion-select v-model="catalog">
+            <ion-select interface="popover" v-model="catalog">
               <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
               <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
             </ion-select>
@@ -45,7 +45,7 @@
 
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
-            <ion-select v-model="facilityId">
+            <ion-select interface="popover" v-model="facilityId">
               <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>

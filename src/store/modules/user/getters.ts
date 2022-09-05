@@ -19,10 +19,10 @@ const getters: GetterTree <UserState, RootState> = {
         return state.currentFacility;
     },
     getInstanceUrl (state) {
-        return state.instanceUrl;
-    },
+        const baseUrl = process.env.VUE_APP_BASE_URL;
+        return baseUrl ? baseUrl : state.instanceUrl;    },
     getDateTimeFormat (state) {
-        return state.dateTimeFormat;
+        return state.dateTimeFormat;  
     }
 }
 export default getters;

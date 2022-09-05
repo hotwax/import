@@ -17,14 +17,14 @@
       <!-- Time zone -->
       <ion-item>
         <ion-icon :icon="timeOutline" slot="start"/>
-        <ion-label> {{ this.dateTimeFormat }} </ion-label>
+        <ion-label> {{ userProfile && userProfile.userTimeZone ? userProfile.userTimeZone : '-' }} </ion-label>
         <ion-button @click="changeTimeZone()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
       </ion-item>
       <!-- DateTime format -->
       <ion-item>
         <ion-icon :icon="timeOutline" slot="start"/>
-        <ion-label> {{ userProfile && userProfile.userTimeZone ? userProfile.userTimeZone : '-' }} </ion-label>
-        <ion-button @click="changeTimeZone()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
+        <ion-label> {{ dateTimeFormat }} </ion-label>
+        <ion-button @click="changeDateTimeFormat()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
       </ion-item>
       <!-- Profile of user logged in -->
       <ion-item>
@@ -43,6 +43,8 @@ import { codeWorkingOutline, ellipsisVertical, personCircleOutline, timeOutline 
 import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import TimeZoneModal from '@/views/TimezoneModal.vue';
+import { DateTime } from 'luxon';
+import DateTimeModal from '@/components/DateTimeModal.vue';
 
 export default defineComponent({
   name: 'Settings',
@@ -66,7 +68,8 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       userProfile: 'user/getUserProfile',
-      instanceUrl: 'user/getInstanceUrl'
+      instanceUrl: 'user/getInstanceUrl',
+      dateTimeFormat: 'user/getDateTimeFormat'
     })
   },
   methods: {
@@ -75,6 +78,12 @@ export default defineComponent({
         component: TimeZoneModal,
       });
       return timeZoneModal.present();
+    },
+    async changeDateTimeFormat(){
+      const dateTimeModal = await modalController.create({
+        component: DateTimeModal,
+      });
+      return dateTimeModal.present();
     },
     logout () {
       this.store.dispatch('user/logout').then(() => {
