@@ -18,6 +18,7 @@ const actions: ActionTree<UserState, RootState> = {
       const resp = await UserService.login(username, password)
       if (resp.status === 200 && resp.data) {
         if (resp.data.token) {
+          dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT);
           const permissionId = process.env.VUE_APP_PERMISSION_ID;
           if (permissionId) {
             const checkPermissionResponse = await UserService.checkPermission({
@@ -92,6 +93,10 @@ const actions: ActionTree<UserState, RootState> = {
    */
   async setFacility ({ commit }, payload) {
     commit(types.USER_CURRENT_FACILITY_UPDATED, payload.facility);
+  },
+
+  setDateTimeFormat ({ commit }, payload) {
+    commit(types.USER_DATETIME_FORMAT_UPDATED, payload)
   },
   
   /**

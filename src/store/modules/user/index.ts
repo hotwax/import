@@ -12,7 +12,7 @@ const userModule: Module<UserState, RootState> = {
       current: null,
       currentFacility: {},
       instanceUrl: '',
-      dateTimeFormat: 'MM/dd/yyyy'
+      dateTimeFormat: ''
     },
     getters,
     actions,
