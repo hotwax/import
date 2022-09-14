@@ -25,7 +25,6 @@ const actions: ActionTree<OrderState, RootState> = {
       const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
 
       if(Object.keys(product).length > 0){
-        item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
         item.parentProductId = product.groupId;
         item.internalName = product.internalName;
         item.parentProductName = product.parentProductName;

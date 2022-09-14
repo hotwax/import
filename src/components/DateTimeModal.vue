@@ -9,7 +9,7 @@
       <ion-title>{{ $t("Select datetime format") }}</ion-title>
     </ion-toolbar>
     <ion-toolbar>
-      <ion-searchbar :value="dateTimeFormat" @ionFocus="selectSearchBarText($event)" :placeholder="$t('Enter format')"  v-model="format" v-on:keyup.enter="format = $event.target.value; setDateTimeFormat()"></ion-searchbar>
+      <ion-searchbar :value="dateTimeFormat" @ionFocus="selectSearchBarText($event)" :placeholder="$t('Enter format')"  v-model="format" v-on:keyup.enter="format = $event.target.value;"></ion-searchbar>
     </ion-toolbar>
   </ion-header>
 
@@ -20,7 +20,7 @@
     </div>
     
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button >
+      <ion-fab-button @click="setDateTimeFormat">
         <ion-icon :icon="save" />
       </ion-fab-button>
     </ion-fab>
@@ -76,9 +76,11 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
 
-    setDateTimeFormat(){
+    async setDateTimeFormat(){
       this.sampleDateTime = DateTime.now().toFormat(this.format);
-      this.store.dispatch('user/setDateTimeFormat', this.format)
+      return this.store.dispatch('user/setDateTimeFormat', this.format).then(() => {
+        this.closeModal();
+      })
     },
     
     selectSearchBarText(event: any) {

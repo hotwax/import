@@ -253,7 +253,7 @@ export default defineComponent({
           "externalId": item.orderId,
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
-          "arrivalDate": item.arrivalDate,
+          "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
           "idValue": item.shopifyProductSKU,
@@ -346,7 +346,7 @@ export default defineComponent({
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
-          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
+          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat(this.dateTimeFormat);
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
