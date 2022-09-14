@@ -346,7 +346,7 @@ export default defineComponent({
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
-          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat('MM/dd/yyyy');
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
