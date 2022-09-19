@@ -18,8 +18,8 @@
             <p>username</p>
           </ion-label>
         </ion-item>
-        <ion-button size="medium" fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
-        <ion-button size="medium" fill="outline" >{{ $t("Reset password") }}</ion-button>
+        <ion-button fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
+        <ion-button fill="outline" >{{ $t("Reset password") }}</ion-button>
       </ion-card>
       <!-- OMS information -->
       <ion-item>
