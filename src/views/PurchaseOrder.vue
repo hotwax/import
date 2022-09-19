@@ -107,7 +107,6 @@ export default defineComponent({
         if(this.file){
           showToast(translate("File uploaded successfully"));
           this.parseFile();
-          console.log(this.file.name);
           this.store.dispatch('order/updateFileName', this.file.name);
         }
         else {
