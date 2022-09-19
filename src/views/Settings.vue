@@ -124,7 +124,7 @@
             <p>{{ $t('Luxon date time formats can be found') }} <a href="https://github.com/moment/luxon/blob/master/docs/formatting.md">here</a></p>
           </ion-card-content> 
           <ion-item>
-            <ion-input clear-input='true' v-on:keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" />
+            <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" />
           </ion-item>
           <ion-item>
             <ion-label>{{ sampleDateTime }}</ion-label>
@@ -211,7 +211,7 @@ export default defineComponent({
       this.store.dispatch('user/logout').then(() => {
         this.router.push('/login');
       })
-    },
+    }
   },
   setup(){
     const store = useStore();
