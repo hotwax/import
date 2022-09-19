@@ -8,18 +8,18 @@
     </ion-header>
     
     <ion-content :fullscreen="true">
-      <ion-card>
+      <ion-card class="user-profile">
         <ion-item lines="full">
           <ion-thumbnail>
-            <Image src="xyz.png" />
+            <img src="https://dev-resources.hotwax.io/resources/uploads/images/product/m/h/mh09-blue_main.jpg" />
           </ion-thumbnail>
           <ion-label>
             First Last
             <p>username</p>
           </ion-label>
         </ion-item>
-        <ion-button size="small" fill="outline" color="danger">{{ $t("Logout") }}</ion-button>
-        <ion-button size="small" fill="outline" >{{ $t("Reset password") }}</ion-button>
+        <ion-button size="medium" fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
+        <ion-button size="medium" fill="outline" >{{ $t("Reset password") }}</ion-button>
       </ion-card>
       <!-- OMS information -->
       <ion-item>
@@ -91,7 +91,7 @@
         </div>
       </ion-item>  
 
-      <ion-item>
+      <ion-item lines="none">
         <div>
           <ion-label>{{ $t('APP') }}</ion-label>
           <div class="app-info">
@@ -106,7 +106,7 @@
                 {{ $t('The timezone you select is used to ensure automations you schedule are always accurate to the time you select.') }}
               </ion-card-content> 
                
-              <ion-item>
+              <ion-item lines="none">
                 <ion-label> {{ userProfile && userProfile.userTimeZone ? userProfile.userTimeZone : '-' }} </ion-label>
                 <ion-button @click="changeTimeZone()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
               </ion-item>
@@ -126,54 +126,20 @@
                 {{ $t('Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.')}}
               </ion-card-content> 
               <ion-item>
-                <ion-input clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" />
+                <ion-input clear-input='true' v-on:keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" />
               </ion-item>
               <ion-item>
                 <ion-label>{{ sampleDateTime }}</ion-label>
+                <ion-badge color="warning">sample</ion-badge>
               </ion-item>
-            </ion-card>
-  
-            <ion-card>
-              <ion-card-header>
-                <ion-card-subtitle>
-                  <p>{{ $t("Shop config")}}</p>
-                </ion-card-subtitle>
-                <ion-card-title>
-                  eCommerce
-                </ion-card-title>
-              </ion-card-header>
-              
-              <ion-card-content>
-                {{ $t('eCommerce stores are directly connected to one Shop Configs. If your OMS is connected to multiple eCommerce stores selling the same catalog operating as one Company, you may have multiple Shop Configs for the selected Product Store.')}}
-              </ion-card-content> 
-              <ion-item>
-                <ion-label>{{ $t('Select eCommerce') }}</ion-label>
-                <ion-select value="Demo">
-                  <ion-select-option>Demo</ion-select-option>
-                </ion-select>
-              </ion-item>
+              <ion-button size="medium" fill="clear" @click="updateDateTimeFormat()">
+                Save
+                <ion-icon slot="end" :icon="saveOutline" />
+              </ion-button>
             </ion-card>
           </div>
         </div>
       </ion-item>  
-      <!-- Time zone -->
-      <ion-item>
-        <ion-icon :icon="timeOutline" slot="start"/>
-        <ion-label> {{ userProfile && userProfile.userTimeZone ? userProfile.userTimeZone : '-' }} </ion-label>
-        <ion-button @click="changeTimeZone()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
-      </ion-item>
-      <!-- DateTime format -->
-      <ion-item>
-        <ion-icon :icon="timeOutline" slot="start"/>
-        <ion-label> {{ dateTimeFormat }} </ion-label>
-        <ion-button @click="changeDateTimeFormat()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
-      </ion-item>
-      <!-- Profile of user logged in -->
-      <ion-item>
-        <ion-icon :icon="personCircleOutline" slot="start" />
-        <ion-label>{{ userProfile !== null ? userProfile.partyName : '' }}</ion-label>
-        <ion-button slot="end" fill="outline" color="dark" @click="logout()">{{ $t("Logout") }}</ion-button>
-      </ion-item>
     </ion-content>
   </ion-page>
 </template>
@@ -181,7 +147,7 @@
 <script lang="ts">
 import { IonButton, IonCard, IonContent, IonHeader,IonIcon, IonItem, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
 import { defineComponent } from 'vue';
-import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline, timeOutline } from 'ionicons/icons'
+import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline, saveOutline, timeOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import TimeZoneModal from '@/views/TimezoneModal.vue';
@@ -207,28 +173,39 @@ export default defineComponent({
   data() {
     return {
       baseURL: process.env.VUE_APP_BASE_URL,
-      sampleDateTime: ''
+      sampleDateTime: '',
+      dateTimeFormat: ''
     };
   },
   computed: {
     ...mapGetters({
       userProfile: 'user/getUserProfile',
       instanceUrl: 'user/getInstanceUrl',
-      dateTimeFormat: 'user/getDateTimeFormat'
+      currentDateTimeFormat: 'user/getDateTimeFormat'
     })
   },
+  mounted(){
+    this.dateTimeFormat = this.currentDateTimeFormat
+    this.parse();
+  },
   methods: {
+    updateDateTimeFormat(){
+      this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
+    },
     async changeTimeZone() {
       const timeZoneModal = await modalController.create({
         component: TimeZoneModal,
       });
       return timeZoneModal.present();
     },
+    parse(){
+      this.sampleDateTime = DateTime.now().toFormat(this.dateTimeFormat);
+    },
     logout () {
       this.store.dispatch('user/logout').then(() => {
         this.router.push('/login');
       })
-    }
+    },
   },
   setup(){
     const store = useStore();
@@ -239,6 +216,7 @@ export default defineComponent({
       ellipsisVertical,
       personCircleOutline,
       openOutline,
+      saveOutline,
       store,
       router,
       timeOutline
@@ -250,5 +228,21 @@ export default defineComponent({
 .oms-info, .app-info{
   display: grid;
   grid-template-columns: auto auto auto;
+}
+ion-item > div {
+  padding: 20px 0;
+}
+
+.app-info {
+  max-width: 67%;
+}
+.user-profile {
+  max-width: 45%;
+}
+ion-card > ion-button {
+  padding: 0px 6px;
+}
+img {
+  border-radius: 100%;
 }
 </style>
