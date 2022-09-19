@@ -8,27 +8,29 @@
     </ion-header>
     
     <ion-content :fullscreen="true">
-      <ion-card class="user-profile">
-        <ion-item lines="full">
-          <ion-avatar slot="start">
-            <img src="https://dev-resources.hotwax.io/resources/uploads/images/product/m/h/mh09-blue_main.jpg" />
-          </ion-avatar>
-          <ion-label>
-            First Last
-            <p>username</p>
-          </ion-label>
-        </ion-item>
-        <ion-button fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
-        <ion-button fill="outline" color="medium">{{ $t("Reset password") }}</ion-button>
-      </ion-card>
+      <div class="user-profile">
+        <ion-card>
+          <ion-item lines="full">
+            <ion-avatar slot="start">
+              <img src="https://dev-resources.hotwax.io/resources/uploads/images/product/m/h/mh09-blue_main.jpg" />
+            </ion-avatar>
+            <ion-label>
+              First Last
+              <p>username</p>
+            </ion-label>
+          </ion-item>
+          <ion-button fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
+          <ion-button fill="outline" color="medium">{{ $t("Reset password") }}</ion-button>
+        </ion-card>
+      </div>
+      
+      <h1>{{ $t('OMS') }}</h1>
 
-      <p class="title">{{ $t('OMS') }}</p>
-
-      <div class="oms-info">
+      <section>
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
-              <p>{{ $t("OMS instance")}}</p>
+              {{ $t("OMS instance")}}
             </ion-card-subtitle>
             <ion-card-title>
               {{ instanceUrl }}
@@ -47,7 +49,7 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
-              <p>{{ $t("Product store")}}</p>
+              {{ $t("Product store")}}
             </ion-card-subtitle>
             <ion-card-title>
               {{ $t("Store") }}
@@ -67,7 +69,7 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
-              <p>{{ $t("Shop config")}}</p>
+              {{ $t("Shop config")}}
             </ion-card-subtitle>
             <ion-card-title>
               {{ $t("eCommerce") }}
@@ -84,11 +86,13 @@
             </ion-select>
           </ion-item>
         </ion-card>
-      </div>
+      </section>
+
+      <hr />
+
+      <h1>{{ $t('App') }}</h1>
       
-      <p class="title">{{ $t('App') }}</p>
-      
-      <div class="app-info">
+      <section>
         <ion-card>
           <ion-card-header>
             <ion-card-title>
@@ -108,7 +112,7 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
-              <p>{{ $t("File upload")}}</p>
+              {{ $t("File upload")}}
             </ion-card-subtitle>
             <ion-card-title>
               {{ $t("Date Format") }}
@@ -116,7 +120,8 @@
           </ion-card-header>
           
           <ion-card-content>
-            {{ $t('Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.')}}
+            {{ $t('Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.') }}
+            <p>{{ $t('Luxon date time formats can be found') }} <a href="https://github.com/moment/luxon/blob/master/docs/formatting.md">here</a></p>
           </ion-card-content> 
           <ion-item>
             <ion-input clear-input='true' v-on:keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" />
@@ -127,12 +132,12 @@
               <ion-label>{{ $t("Sample") }}</ion-label>
             </ion-badge>
           </ion-item>
-          <ion-button size="medium" fill="clear" @click="updateDateTimeFormat()">
-            Save
+          <ion-button fill="clear" @click="updateDateTimeFormat()">
+            {{ $t("Save") }}
             <ion-icon slot="end" :icon="saveOutline" />
           </ion-button>
         </ion-card>
-      </div>  
+      </section>  
     </ion-content>
   </ion-page>
 </template>
@@ -227,24 +232,22 @@ export default defineComponent({
 </script>
 <style scoped>
 ion-card > ion-button {
-  padding: 0px 6px;
+  margin: var(--spacer-xs);
 }
-.title {
-  padding: 10px 10px 0px;
+h1 {
+  padding: var(--spacer-xs) 10px 0;
+}
+section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  align-items: start;
+}
+.user-profile {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
+hr {
+  border-top: 1px solid var(--ion-color-medium);
 }
 
-@media (min-width: 860px) {
-  .oms-info, .app-info{
-    display: flex;
-  }
-  .oms-info > *, .app-info > * {
-    flex: 1
-  }
-  .app-info {
-    max-width: 67%;
-  }
-  .user-profile {
-    max-width: 45%;
-  }
-}
 </style>
