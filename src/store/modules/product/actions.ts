@@ -24,7 +24,7 @@ const actions: ActionTree<ProductState, RootState> = {
     if (productIdFilter.length <= 0) return;
 
     const resp = await fetchProducts({
-      filters: { 'internalName': productIdFilter },
+      filters: { 'internalName': { 'value': productIdFilter }},
       viewSize: productIdFilter.length,
       viewIndex: 0
     })
