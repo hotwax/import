@@ -230,6 +230,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 ion-card > ion-button {
   margin: var(--spacer-xs);
