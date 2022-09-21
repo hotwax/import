@@ -27,6 +27,7 @@ import './theme/variables.css';
 import i18n from './i18n'
 import store from './store'
 import { DateTime } from 'luxon';
+import { init } from '@hotwax/oms-api'
 
 const app = createApp(App)
   .use(IonicVue, {
@@ -49,7 +50,7 @@ app.config.globalProperties.$filters = {
     // TODO Make default format configurable and from environment variables
     const userProfile = store.getters['user/getUserProfile'];
     // TODO Fix this setDefault should set the default timezone instead of getting it everytiem and setting the tz
-    return DateTime.utc(value, inFormat).setZone(userProfile.userTimeZone).toFormat(outFormat ? outFormat : 'MM-DD-YYYY')
+    return DateTime.utc(value, inFormat).setZone(userProfile.timeZone).toFormat(outFormat ? outFormat : 'MM-DD-YYYY')
   },
   getFeature(featureHierarchy: any, featureKey: string) {
     let  featureValue = ''
@@ -62,6 +63,7 @@ app.config.globalProperties.$filters = {
   }
 }
 
+init(store.getters['user/getUserToken'], store.getters['user/getInstanceUrl'], 3000)
 
 router.isReady().then(() => {
   app.mount('#app');
