@@ -17,13 +17,13 @@
       <!-- Time zone -->
       <ion-item>
         <ion-icon :icon="timeOutline" slot="start"/>
-        <ion-label> {{ userProfile && userProfile.userTimeZone ? userProfile.userTimeZone : '-' }} </ion-label>
+        <ion-label> {{ userProfile && userProfile.timeZone ? userProfile.timeZone : '-' }} </ion-label>
         <ion-button @click="changeTimeZone()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
       </ion-item>
       <!-- Profile of user logged in -->
       <ion-item>
         <ion-icon :icon="personCircleOutline" slot="start" />
-        <ion-label>{{ userProfile !== null ? userProfile.partyName : '' }}</ion-label>
+        <ion-label>{{ userProfile !== null ? userProfile.username : '' }}</ion-label>
         <ion-button slot="end" fill="outline" color="dark" @click="logout()">{{ $t("Logout") }}</ion-button>
       </ion-item>
     </ion-content>

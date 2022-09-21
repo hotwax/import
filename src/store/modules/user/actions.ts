@@ -7,6 +7,7 @@ import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
 import emitter from '@/event-bus'
 import { DateTime } from 'luxon';
+import { isError, getProfile, updateToken, updateInstanceUrl } from '@hotwax/oms-api'
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -32,6 +33,7 @@ const actions: ActionTree<UserState, RootState> = {
 
             if (checkPermissionResponse.status === 200 && !hasError(checkPermissionResponse) && checkPermissionResponse.data && checkPermissionResponse.data.hasPermission) {
               commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
+              updateToken(resp.data.token)
               dispatch('getProfile')
               if (resp.data._EVENT_MESSAGE_ && resp.data._EVENT_MESSAGE_.startsWith("Alert:")) {
               // TODO Internationalise text
@@ -74,16 +76,19 @@ const actions: ActionTree<UserState, RootState> = {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
     this.dispatch('user/clearOrderList');
-    
+    updateInstanceUrl('')
+    updateToken('')
   },
 
   /**
    * Get User profile
    */
   async getProfile ( { commit }) {
-    const resp = await UserService.getProfile()
-    if (resp.status === 200) {
-      commit(types.USER_INFO_UPDATED, resp.data);
+    const resp = await getProfile()
+
+    console.log(resp);
+    if (!isError(resp)) {
+      commit(types.USER_INFO_UPDATED, resp);
     }
   },
 
@@ -101,7 +106,7 @@ const actions: ActionTree<UserState, RootState> = {
     const resp = await UserService.setUserTimeZone(payload)
     if (resp.status === 200 && !hasError(resp)) {
       const current: any = state.current;
-      current.userTimeZone = payload.tzId;
+      current.timeZone = payload.tzId;
       commit(types.USER_INFO_UPDATED, current);
       showToast(translate("Time zone updated successfully"));
     }
@@ -112,6 +117,7 @@ const actions: ActionTree<UserState, RootState> = {
    */
   setUserInstanceUrl ({ state, commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
+    updateInstanceUrl(payload)
   }
 }
 
