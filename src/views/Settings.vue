@@ -133,7 +133,8 @@ export default defineComponent({
     IonMenuButton,
     IonPage,
     IonTitle, 
-    IonToolbar
+    IonToolbar,
+    Image
   },
   data() {
     return {
