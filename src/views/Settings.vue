@@ -42,8 +42,8 @@
             {{ $t('This is the name of the OMS you are connected to right now. Make sure that you are connected to the right instance before proceeding.') }}
           </ion-card-content> 
            
-          <ion-button fill="clear">
-            {{ $t('Go to OMS')}}
+          <ion-button @click="goToOms" fill="clear">
+            {{ $t('Go to OMS') }}
             <ion-icon slot="end" :icon="openOutline" />
           </ion-button>
         </ion-card>
@@ -155,6 +155,9 @@ export default defineComponent({
     this.parse();
   },
   methods: {
+    goToOms(){
+      window.location.href = `https://${this.instanceUrl}.hotwax.io/`;
+    },
     updateDateTimeFormat(){
       this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
     },
