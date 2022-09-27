@@ -119,16 +119,18 @@ export default defineComponent({
       },
       mapFields() {
         this.orderItemsList = this.content.map(item => {
-          return {
-            orderId: item[this.orderIdField],
-            shopifyProductSKU: item[this.productSkuField],
-            shopifyProductUPC: item[this.productUpcField],
-            arrivalDate: item[this.dateField],
-            quantityOrdered: item[this.quantityField],
-            facilityId: '',
-            externalFacilityId: item[this.facilityField]
+          if(item[this.productSkuField]){
+            return {
+              orderId: item[this.orderIdField],
+              shopifyProductSKU: item[this.productSkuField],
+              shopifyProductUPC: item[this.productUpcField],
+              arrivalDate: item[this.dateField],
+              quantityOrdered: item[this.quantityField],
+              facilityId: '',
+              externalFacilityId: item[this.facilityField]
+            }
           }
-        })
+        }).filter(item => item)
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
           name:'PurchaseOrderDetail'
