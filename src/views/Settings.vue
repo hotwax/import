@@ -11,16 +11,17 @@
       <div class="user-profile">
         <ion-card>
           <ion-item lines="full">
-            <ion-avatar slot="start">
-              <img src="https://dev-resources.hotwax.io/resources/uploads/images/product/m/h/mh09-blue_main.jpg" />
+            <ion-avatar slot="start" v-if="userProfile?.partyImageUrl">
+              <Image :src="userProfile?.partyImageUrl"/>
             </ion-avatar>
             <ion-label>
-              First Last
-              <p>username</p>
+              {{ userProfile?.partyName }}
+              <p>{{ userProfile?.userLoginId }}</p>
             </ion-label>
           </ion-item>
           <ion-button fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
-          <ion-button fill="outline" color="medium">{{ $t("Reset password") }}</ion-button>
+          <!-- Commenting this code as we currently do not have reset password functionality -->
+          <!-- <ion-button fill="outline" color="medium">{{ $t("Reset password") }}</ion-button> -->
         </ion-card>
       </div>
       
@@ -30,7 +31,7 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
-              {{ $t("OMS instance")}}
+              {{ $t("OMS instance") }}
             </ion-card-subtitle>
             <ion-card-title>
               {{ instanceUrl }}
@@ -38,53 +39,13 @@
           </ion-card-header>
           
           <ion-card-content>
-            {{ $t('This is the name of the OMS you are connected to right now. Make sure that you are connected to the right instance before proceeding.')}}
+            {{ $t('This is the name of the OMS you are connected to right now. Make sure that you are connected to the right instance before proceeding.') }}
           </ion-card-content> 
            
           <ion-button fill="clear">
             {{ $t('Go to OMS')}}
             <ion-icon slot="end" :icon="openOutline" />
           </ion-button>
-        </ion-card>
-        <ion-card>
-          <ion-card-header>
-            <ion-card-subtitle>
-              {{ $t("Product store")}}
-            </ion-card-subtitle>
-            <ion-card-title>
-              {{ $t("Store") }}
-            </ion-card-title>
-          </ion-card-header>
-          
-          <ion-card-content>
-            {{ $t('A store repesents a company or a unique catalog of products. If your OMS is connected to multiple eCommerce stores sellling different collections of products, you may have multiple Product Stores set up in HotWax Commerce.')}}
-          </ion-card-content> 
-          <ion-item>
-            <ion-label>{{ $t('Select store') }}</ion-label>
-            <ion-select value="Demo">
-              <ion-select-option>Demo</ion-select-option>
-            </ion-select>
-          </ion-item>
-        </ion-card>
-        <ion-card>
-          <ion-card-header>
-            <ion-card-subtitle>
-              {{ $t("Shop config")}}
-            </ion-card-subtitle>
-            <ion-card-title>
-              {{ $t("eCommerce") }}
-            </ion-card-title>
-          </ion-card-header>
-          
-          <ion-card-content>
-            {{ $t('eCommerce stores are directly connected to one Shop Configs. If your OMS is connected to multiple eCommerce stores selling the same catalog operating as one Company, you may have multiple Shop Configs for the selected Product Store.')}}
-          </ion-card-content> 
-          <ion-item>
-            <ion-label>{{ $t('Select eCommerce') }}</ion-label>
-            <ion-select value="Demo">
-              <ion-select-option>Demo</ion-select-option>
-            </ion-select>
-          </ion-item>
         </ion-card>
       </section>
 
@@ -143,7 +104,7 @@
 </template>
 
 <script lang="ts">
-import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController } from '@ionic/vue';
+import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline, saveOutline, timeOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
@@ -171,8 +132,6 @@ export default defineComponent({
     IonLabel, 
     IonMenuButton,
     IonPage,
-    IonSelect,
-    IonSelectOption,
     IonTitle, 
     IonToolbar
   },
