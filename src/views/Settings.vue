@@ -17,7 +17,7 @@
       <!-- Time zone -->
       <ion-item>
         <ion-icon :icon="timeOutline" slot="start"/>
-        <ion-label> {{ userProfile && userProfile.userTimeZone ? userProfile.userTimeZone : '-' }} </ion-label>
+        <ion-label> {{ userProfile && userProfile?.userTimeZone ? userProfile.userTimeZone : '-' }} </ion-label>
         <ion-button @click="changeTimeZone()" slot="end" fill="outline" color="dark">{{ $t("Change") }}</ion-button>
       </ion-item>
       <!-- Profile of user logged in -->

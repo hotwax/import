@@ -12,6 +12,7 @@ const orderModule: Module<OrderState, RootState> = {
       items: [],
       original: [],
       unidentifiedProductItems: [],
+      productItemsWithMissingInfo: []
     },
   },
   actions,

@@ -127,9 +127,6 @@ export default defineComponent({
               facilityId: '',
               externalFacilityId: item[this.facilityField]
             }
-        }).filter(item => {
-          //Added check to only add products in order list if none of the fields is empty except facilityId.
-          return item && Object.values(item).filter(value => value).length === (Object.keys(item).length -1);
         })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({

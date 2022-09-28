@@ -3,5 +3,6 @@ export default interface OrderState {
       items: any,
       original: any,
       unidentifiedProductItems: any,
+      productItemsWithMissingInfo: any
     }
   }
