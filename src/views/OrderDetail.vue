@@ -190,7 +190,8 @@ export default defineComponent({
     ...mapGetters({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
-      instanceUrl: 'user/getInstanceUrl'
+      instanceUrl: 'user/getInstanceUrl',
+      fileName: 'order/getFileName'
     }),
     orderId(){
       return (this as any).ordersList.items[0]?.orderId
@@ -201,7 +202,7 @@ export default defineComponent({
       numberOfDays: 0,
       numberOfPieces: 0,
       catalog: "N",
-      facilityId: "",
+      facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
@@ -259,7 +260,7 @@ export default defineComponent({
           "idType": "SKU"
         };
       })
-      const fileName = "Upload_PO_Member_" + Date.now() +".json";
+      const fileName = this.fileName.replace(".csv", ".json");
       const params = {
         "configId": "IMP_PO"
       }
