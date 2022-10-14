@@ -53,7 +53,7 @@
           </ion-item>
         </ion-list>
 
-        <ion-button color="medium" @click="mapFields" expand="block">
+        <ion-button color="medium" @click="mapFields" expand="block"  :style="{'display':changeViewStatus}" >
           {{ $t("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
@@ -98,6 +98,7 @@ export default defineComponent({
         quantityField: "",
         facilityField: "",
         orderItemsList: [],
+        changeViewStatus: "none",
       }
     },
     methods: {
@@ -107,8 +108,12 @@ export default defineComponent({
           showToast(translate("File uploaded successfully"));
           this.parseFile();
           this.store.dispatch('order/updateFileName', this.file.name);
+          this.changeViewStatus = "block"
+
         }
         else {
+          this.changeViewStatus = "none"
+
           showToast(translate("Something went wrong, Please try again"));
         }
       },
