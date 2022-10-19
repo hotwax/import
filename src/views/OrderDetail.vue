@@ -97,7 +97,7 @@
 
           <div />
           
-          <ion-checkbox :checked="isParentProductChecked(id)" @click="handleChange(true)" @ionChange="selectParentProduct(id, $event)" />
+          <ion-checkbox :checked="isParentProductChecked(id)" @click="handleOnChange = true" @ionChange="selectParentProduct(id, $event)" />
 
           <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -212,9 +212,6 @@ export default defineComponent({
    this.fetchFacilities();
   },
   methods: {
-    handleChange(value: any){
-      this.handleOnChange = value;
-    },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
