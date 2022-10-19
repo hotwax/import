@@ -335,7 +335,7 @@ export default defineComponent({
       return popover.present();
     },
     isParentProductChecked(parentProductId: string) {
-      const items = (this as any).getGroupItems(parentProductId, this.ordersList.items);
+      const items = this.getGroupItems(parentProductId, this.ordersList.items);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
