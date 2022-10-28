@@ -138,7 +138,7 @@
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="save">
+        <ion-fab-button :disabled="isDateInvalid()" @click="save">
           <ion-icon  :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -213,6 +213,10 @@ export default defineComponent({
    this.fetchFacilities();
   },
   methods: {
+    isDateInvalid(){
+      const isInvalid = !this.ordersList.items.some((item: any) => DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
+      return isInvalid;
+    },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,

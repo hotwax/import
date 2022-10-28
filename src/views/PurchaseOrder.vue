@@ -65,10 +65,11 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { useStore } from "vuex";
+import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
+import { DateTime } from 'luxon'
 
 export default defineComponent({
     name: "purchase orders",
@@ -87,6 +88,11 @@ export default defineComponent({
       IonIcon,
       IonListHeader,
       IonList
+    },
+    computed: {
+      ...mapGetters({
+        dateTimeFormat : 'user/getDateTimeFormat',
+      })
     },
     data() {
       return {
@@ -124,7 +130,7 @@ export default defineComponent({
             orderId: item[this.orderIdField],
             shopifyProductSKU: item[this.productSkuField],
             shopifyProductUPC: item[this.productUpcField],
-            arrivalDate: item[this.dateField],
+            arrivalDate: DateTime.fromFormat(item[this.dateField], this.dateTimeFormat).toFormat(this.dateTimeFormat),
             quantityOrdered: item[this.quantityField],
             facilityId: '',
             externalFacilityId: item[this.facilityField]
