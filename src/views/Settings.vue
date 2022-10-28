@@ -195,26 +195,26 @@ export default defineComponent({
 </script>
 
 <style scoped>
-ion-card > ion-button {
-  margin: var(--spacer-xs);
-}
+  ion-card > ion-button {
+    margin: var(--spacer-xs);
+  }
 
-h1 {
-  padding: var(--spacer-xs) 10px 0;
-}
+  h1 {
+    padding: var(--spacer-xs) 10px 0;
+  }
 
-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  align-items: start;
-}
+  section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    align-items: start;
+  }
 
-.user-profile {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-}
+  .user-profile {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
 
-hr {
-  border-top: 1px solid var(--ion-color-medium);
-}
+  hr {
+    border-top: 1px solid var(--ion-color-medium);
+  }
 </style>
