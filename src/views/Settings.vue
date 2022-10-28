@@ -12,7 +12,7 @@
         <ion-card>
           <ion-item lines="full">
             <ion-avatar slot="start" v-if="userProfile?.partyImageUrl">
-              <Image :src="userProfile?.partyImageUrl"/>
+              <Image :src="userProfile.partyImageUrl"/>
             </ion-avatar>
             <ion-label>
               {{ userProfile?.partyName }}
@@ -82,7 +82,7 @@
           
           <ion-card-content>
             {{ $t('Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.') }}
-            <p>{{ $t('Luxon date time formats can be found') }} <a href="https://github.com/moment/luxon/blob/master/docs/formatting.md">{{ $t("here") }}</a></p>
+            <p>{{ $t('Luxon date time formats can be found') }} <a href="https://moment.github.io/luxon/#/formatting?id=presets">{{ $t("here") }}</a></p>
           </ion-card-content> 
           <ion-item>
             <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" />
@@ -156,7 +156,7 @@ export default defineComponent({
   },
   methods: {
     goToOms(){
-      window.location.href = `https://${this.instanceUrl}.hotwax.io/`;
+      window.location.href = this.instanceUrl.startsWith('http') ? this.instanceUrl : `https://${this.instanceUrl}.hotwax.io/`;
     },
     updateDateTimeFormat(){
       this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
