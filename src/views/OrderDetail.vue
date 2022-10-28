@@ -214,8 +214,7 @@ export default defineComponent({
   },
   methods: {
     isDateInvalid(){
-      const isInvalid = !this.ordersList.items.some((item: any) => DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
-      return isInvalid;
+      return !this.ordersList.items.some((item: any) => DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
     },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
