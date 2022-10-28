@@ -156,7 +156,7 @@ export default defineComponent({
   },
   methods: {
     goToOms(){
-      window.location.href = this.instanceUrl.startsWith('http') ? this.instanceUrl : `https://${this.instanceUrl}.hotwax.io/`;
+      window.location.href = this.instanceUrl.startsWith('http') ? this.instanceUrl.replace('api/', "") : `https://${this.instanceUrl}.hotwax.io/`;
     },
     updateDateTimeFormat(){
       this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);

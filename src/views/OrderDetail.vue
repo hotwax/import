@@ -80,7 +80,7 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, true, searchedProduct)">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -191,7 +191,8 @@ export default defineComponent({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
-      dateTimeFormat : 'user/getDateTimeFormat'
+      dateTimeFormat : 'user/getDateTimeFormat',
+      fileName: 'order/getFileName'
     }),
     orderId(){
       return (this as any).ordersList.items[0]?.orderId
@@ -202,7 +203,7 @@ export default defineComponent({
       numberOfDays: 0,
       numberOfPieces: 0,
       catalog: "N",
-      facilityId: "",
+      facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
@@ -260,7 +261,7 @@ export default defineComponent({
           "idType": "SKU"
         };
       })
-      const fileName = "Upload_PO_Member_" + Date.now() +".json";
+      const fileName = this.fileName.replace(".csv", ".json");
       const params = {
         "configId": "IMP_PO"
       }
@@ -328,7 +329,10 @@ export default defineComponent({
           translucent: true,
           showBackdrop: true,
           componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
-        })
+        });
+        popover.onDidDismiss().then(() => {
+          this.searchProduct(this.queryString);
+        });
       return popover.present();
     },
     isParentProductChecked(parentProductId: string) {
