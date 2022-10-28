@@ -130,7 +130,7 @@ export default defineComponent({
             orderId: item[this.orderIdField],
             shopifyProductSKU: item[this.productSkuField],
             shopifyProductUPC: item[this.productUpcField],
-            arrivalDate: DateTime.fromFormat(item[this.dateField], this.dateTimeFormat).toFormat(this.dateTimeFormat),
+            arrivalDate: DateTime.fromFormat(item[this.dateField], this.dateTimeFormat).toFormat(this.dateTimeFormat), //This is to verify whether the date format is correct.
             quantityOrdered: item[this.quantityField],
             facilityId: '',
             externalFacilityId: item[this.facilityField]

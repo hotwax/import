@@ -214,6 +214,7 @@ export default defineComponent({
   },
   methods: {
     isDateInvalid(){
+      // Checked if any of the date format is different than the selected format.
       return !this.ordersList.items.some((item: any) => DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
     },
     async listMissingSkus() {
@@ -257,6 +258,7 @@ export default defineComponent({
           "externalId": item.orderId,
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
+          //Convert date in the format accepted by the server.
           "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
