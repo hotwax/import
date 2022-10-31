@@ -133,7 +133,7 @@ export default defineComponent({
           return field === "";
         });
         if (this.content.length <= 0) {
-          showToast(translate("Please upload a purchase order to continue"));
+          showToast(translate("Please upload a valid purchase order csv to continue"));
         } else if (!review) {
           this.store.dispatch('order/updatedOrderList', this.orderItemsList);
           this.router.push({
