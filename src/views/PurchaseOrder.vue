@@ -121,21 +121,19 @@ export default defineComponent({
         })
       },
       mapFields() {
-        this.orderItemsList = this.content.map(item => {
-          return {
-            orderId: item[this.fields.orderIdField],
-            shopifyProductSKU: item[this.fields.productSkuField],
-            arrivalDate: item[this.fields.dateField],
-            quantityOrdered: item[this.fields.quantityField],
-            externalFacilityId: item[this.fields.facilityField]
-          }
-        })
-        const review = Object.values(this.fields).some(field => {
-          return field === "";
-        });
+        const areAllFieldsSelected = Object.values(this.fields).some(field => field === "");
         if (this.content.length <= 0) {
           showToast(translate("Please upload a valid purchase order csv to continue"));
-        } else if (!review) {
+        } else if (!areAllFieldsSelected) {
+          this.orderItemsList = this.content.map(item => {
+            return {
+              orderId: item[this.fields.orderIdField],
+              shopifyProductSKU: item[this.fields.productSkuField],
+              arrivalDate: item[this.fields.dateField],
+              quantityOrdered: item[this.fields.quantityField],
+              externalFacilityId: item[this.fields.facilityField]
+            }
+          })
           this.store.dispatch('order/updatedOrderList', this.orderItemsList);
           this.router.push({
             name:'PurchaseOrderDetail'
