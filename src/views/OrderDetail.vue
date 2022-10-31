@@ -37,7 +37,7 @@
 
           <ion-item>
             <ion-label>{{ $t("Catalog") }}</ion-label>
-            <ion-select v-model="catalog">
+            <ion-select interface="popover" v-model="catalog">
               <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
               <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
             </ion-select>
@@ -45,7 +45,7 @@
 
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
-            <ion-select v-model="facilityId">
+            <ion-select interface="popover" v-model="facilityId">
               <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -80,7 +80,7 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, true, searchedProduct)">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -190,7 +190,8 @@ export default defineComponent({
     ...mapGetters({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
-      instanceUrl: 'user/getInstanceUrl'
+      instanceUrl: 'user/getInstanceUrl',
+      fileName: 'order/getFileName'
     }),
     orderId(){
       return (this as any).ordersList.items[0]?.orderId
@@ -201,7 +202,7 @@ export default defineComponent({
       numberOfDays: 0,
       numberOfPieces: 0,
       catalog: "N",
-      facilityId: "",
+      facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
@@ -259,7 +260,7 @@ export default defineComponent({
           "idType": "SKU"
         };
       })
-      const fileName = "Upload_PO_Member_" + Date.now() +".json";
+      const fileName = this.fileName.replace(".csv", ".json");
       const params = {
         "configId": "IMP_PO"
       }
@@ -327,7 +328,10 @@ export default defineComponent({
           translucent: true,
           showBackdrop: true,
           componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
-        })
+        });
+        popover.onDidDismiss().then(() => {
+          this.searchProduct(this.queryString);
+        });
       return popover.present();
     },
     isParentProductChecked(parentProductId: string) {
@@ -345,7 +349,7 @@ export default defineComponent({
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
-          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy').plus({ days: this.numberOfDays }).toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy').plus({ days: this.numberOfDays }).toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
