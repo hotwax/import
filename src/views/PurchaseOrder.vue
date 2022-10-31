@@ -92,11 +92,13 @@ export default defineComponent({
       return {
         file: "",
         content: [],
-        orderIdField: "",
-        productSkuField: "",
-        dateField: "",
-        quantityField: "",
-        facilityField: "",
+        fields:{
+          orderIdField: "",
+          productSkuField: "",
+          dateField: "",
+          quantityField: "",
+          facilityField: "",
+        },
         orderItemsList: [],
       }
     },
