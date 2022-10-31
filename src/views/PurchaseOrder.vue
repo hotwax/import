@@ -10,10 +10,10 @@
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>{{ $t("Purchase order") }}</ion-label>
+          <ion-label>{{ file.name ? $t("Purchase order ") +  file.name : $t('Purchase order') }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
-        </ion-item>       
+        </ion-item>      
 
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
@@ -64,7 +64,7 @@
         <ion-button @click="saveMapping">
           {{ $t("Save mapping") }}
         </ion-button>
-        <ion-button >{{ $t("Apply Mapping") }}</ion-button>
+        <ion-button @click="applyMappings" >{{ $t("Apply Mapping") }}</ion-button>
       </main>
     </ion-content>
   </ion-page>
@@ -110,12 +110,16 @@ export default defineComponent({
         fieldMappingPreference: 'user/getFieldMappingPreference'
       })
     },
+    mounted(){
+      console.log(this.fieldMappingPreference);
+    },
     methods: {
       getFile(event) {
         this.file = event.target.files[0];
         if(this.file){
           showToast(translate("File uploaded successfully"));
           this.parseFile();
+          this.store.dispatch('order/updateFileName', this.file.name);
           if(this.fieldMappingPreference){
             this.mapFields()
           }
@@ -133,13 +137,13 @@ export default defineComponent({
       mapFields() {
         this.orderItemsList = this.content.map(item => {
           const orderItem = {
-          orderId: [],
-          shopifyProductSKU: [],
-          shopifyProductUPC: [],
-          arrivalDate: [],
-          quantityOrdered: [],
-          facilityId: []
-        }
+            orderId: [],
+            shopifyProductSKU: [],
+            shopifyProductUPC: [],
+            arrivalDate: [],
+            quantityOrdered: [],
+            facilityId: []
+          }
           if (this.fieldMappingPreference) {
             Object.entries(this.fieldMappingPreference).map(([key, value]) => {
               orderItem[key] = item[value];
@@ -148,17 +152,19 @@ export default defineComponent({
           return orderItem
         })
       },
+      applyMappings(){
+        console.log(localStorage);
+      },
       saveMapping(){
         console.log(this.mappingName)
         if(this.mappingName){
           console.log(this.mappingName)
           const name = this.mappingName
-          this.store.dispatch('user/setUserPreference',{ fieldMappingPreference: { [name]: this.fieldMappingPreference } })
+          window.localStorage.setItem(name, JSON.stringify(this.fieldMappingPreference));
         } 
       },
       review() {
         this.mapFields();
-        // this.store.dispatch('user/setUserPreference',{fieldMappingPreference: this.fieldMappingPreference })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
           name:'PurchaseOrderDetail'

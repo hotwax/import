@@ -13,6 +13,7 @@ const orderModule: Module<OrderState, RootState> = {
       original: [],
       unidentifiedProductItems: [],
     },
+    fileName: ""
   },
   actions,
   getters,
