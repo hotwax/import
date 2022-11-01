@@ -17,8 +17,8 @@
 
         <ion-item lines="none">
           <ion-label>{{ $t("Select mapping") }}</ion-label>
-          <ion-select interface="popover" @ionChange="mapFields">
-            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping">{{ mapping.name }}</ion-select-option>
+          <ion-select :disabled="!fieldMappings.length" interface="popover" @ionChange="mapFields">
+            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping.name">{{ mapping.name }}</ion-select-option>
           </ion-select>
         </ion-item>     
 
@@ -59,7 +59,7 @@
               <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-list>  
+        </ion-list>
 
         <ion-button color="medium" @click="review" expand="block">
           {{ $t("Review") }}
@@ -126,7 +126,11 @@ export default defineComponent({
     },
     methods: {
       savaMapping() {
-        this.store.dispatch('user/updateFieldMappings', { name: this.mappingName, fieldMapping: this.fields })
+        if (this.mappingName) {
+          this.store.dispatch('user/updateFieldMappings', { name: this.mappingName, fieldMapping: this.fields })
+        } else {
+          showToast(translate("Enter mapping name"));
+        }
       },
       getFile(event) {
         this.file = event.target.files[0];
