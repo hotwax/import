@@ -70,7 +70,7 @@
           <ion-label>{{ $t("Mapping name") }}</ion-label>
           <ion-input v-model="mappingName" />
         </ion-item>
-        <ion-button @click="savaMapping">{{ $t("Save mapping") }}</ion-button>
+        <ion-button @click="saveMapping">{{ $t("Save mapping") }}</ion-button>
 
       </main>
     </ion-content>
@@ -125,9 +125,9 @@ export default defineComponent({
       })
     },
     methods: {
-      savaMapping() {
+      saveMapping() {
         if (this.mappingName) {
-          this.store.dispatch('user/updateFieldMappings', { name: this.mappingName, fieldMapping: this.fields })
+          this.store.dispatch('user/updateFieldMappings', { name: this.mappingName, fieldMapping: JSON.parse(JSON.stringify(this.fields)) })
         } else {
           showToast(translate("Enter mapping name"));
         }
