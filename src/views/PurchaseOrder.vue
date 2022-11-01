@@ -13,17 +13,17 @@
           <ion-label>{{ file.name ? $t("Purchase order ") +  file.name : $t('Purchase order') }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
-        </ion-item>      
+        </ion-item> 
+
+        <ion-item lines="none">
+          <ion-label>{{ $t("Select mapping") }}</ion-label>
+          <ion-select interface="popover" @ionChange="mapFields">
+            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping">{{ mapping.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>     
 
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
-
-          <ion-item lines="none">
-            <ion-label>{{ $t("Select mapping") }}</ion-label>
-            <ion-select interface="popover" @ionChange="mapFields">
-              <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping">{{ mapping.name }}</ion-select-option>
-            </ion-select>
-          </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Order ID") }}</ion-label>
