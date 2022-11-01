@@ -152,7 +152,7 @@ export default defineComponent({
         })
       },
       mapFields(event) {
-        if(event.detail.value){
+        if(event && event.detail.value){
           const mapping = JSON.parse(JSON.stringify(event.detail.value));
           this.fields = mapping.fieldMapping;
           this.mappingName = mapping.name;
