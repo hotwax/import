@@ -284,7 +284,7 @@ export default defineComponent({
                     text: translate('View'),
                     role: 'view',
                     handler: () => {
-                      window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
+                      window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
                     }
                   }])
                   this.router.push("/purchase-order");
