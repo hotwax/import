@@ -97,7 +97,7 @@
 
           <div />
           
-          <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+          <ion-checkbox :checked="isParentProductChecked(id)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event)" />
 
           <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -206,6 +206,7 @@ export default defineComponent({
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
+      isParentProductUpdated: false
     }
   },
   ionViewDidEnter(){
@@ -284,7 +285,7 @@ export default defineComponent({
                     text: translate('View'),
                     role: 'view',
                     handler: () => {
-                      window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
+                      window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
                     }
                   }])
                   this.router.push("/purchase-order");
@@ -335,7 +336,7 @@ export default defineComponent({
       return popover.present();
     },
     isParentProductChecked(parentProductId: string) {
-      const items = (this as any).ordersList.items.filter((item: any) => item.parentProductId === parentProductId)
+      const items = this.getGroupItems(parentProductId, this.ordersList.items);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
@@ -374,11 +375,15 @@ export default defineComponent({
       })
     },
     selectParentProduct(parentProductId: any, event: any) {
-      this.ordersList.items.forEach((item: any) => {
-        if (item.parentProductId == parentProductId) {
-          item.isSelected = event.detail.checked;
-        }
-      })
+      // Todo: Need to find a better approach.
+      if(this.isParentProductUpdated){
+        this.ordersList.items.forEach((item: any) => {
+          if (item.parentProductId === parentProductId) {
+            item.isSelected = event.detail.checked;
+          }
+        })
+        this.isParentProductUpdated = false;
+      }
     }
   },
   setup() {
