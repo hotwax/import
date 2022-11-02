@@ -206,10 +206,53 @@ export default defineComponent({
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
+      canLeave: false
     }
   },
-  ionViewDidEnter(){
-   this.fetchFacilities();
+  // ionViewDidEnter(){
+  //  this.fetchFacilities();
+  // },
+  // async ionViewWillLeave(){
+  //   const alert = await alertController.create({
+  //       header: this.$t("Leave page"),
+  //       message: this.$t("Any edits made to this PO will be lost."),
+  //       buttons: [
+  //           {
+  //             text: this.$t("STAY"),
+  //             handler: () => {
+  //               this.router.push("/purchase-order-detail")
+  //             },
+  //           },
+  //           {
+  //             text: this.$t("LEAVE"),
+  //             handler: () => {
+  //               this.router.push() 
+  //             },
+  //           },
+  //         ],
+  //     });
+  //     return alert.present();
+  // },
+  async beforeRouteLeave(to, from) {
+    const alert = await alertController.create({
+        header: this.$t("Leave page"),
+        message: this.$t("Any edits made to this PO will be lost."),
+        buttons: [
+            {
+              text: this.$t("STAY"),
+              handler: () => {
+                this.router.push(from)
+              },
+            },
+            {
+              text: this.$t("LEAVE"),
+              handler: () => {
+                this.router.push(to) 
+              },
+            },
+          ],
+      });
+      return alert.present();
   },
   methods: {
     async listMissingSkus() {
