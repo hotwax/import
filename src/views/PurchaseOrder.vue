@@ -170,6 +170,8 @@ export default defineComponent({
           const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
           this.fieldMapping = fieldMapping.mapping;
           this.mappingName = fieldMapping.name;
+          const missingFields = Object.values(this.fieldMapping).filter(field => !Object.keys(this.content[0]).indexOf(field) >= 0);
+          if(missingFields.length) showToast(translate("Some of the fields are missing in the CSV"))
         }
       },
     },
