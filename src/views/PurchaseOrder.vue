@@ -17,8 +17,8 @@
 
         <ion-item lines="none">
           <ion-label>{{ $t("Select mapping") }}</ion-label>
-          <ion-select :disabled="!fieldMappings.length" interface="popover" @ionChange="mapFields">
-            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping.name">{{ mapping.name }}</ion-select-option>
+          <ion-select :disabled="!Object.keys(fieldMappings).length" interface="popover" @ionChange="mapFields">
+            <ion-select-option v-for="(mapping, name) in fieldMappings" :value="{ mapping, name }" :key="name">{{ name }}</ion-select-option>
           </ion-select>
         </ion-item>     
 
@@ -27,35 +27,35 @@
 
           <ion-item>
             <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.orderId">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderId">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.productSku">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.date">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderDate">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.quantity">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.facility">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -108,10 +108,10 @@ export default defineComponent({
       return {
         file: "",
         content: [],
-        fields: {
+        fieldMapping: {
           orderId: "",
           productSku: "",
-          date: "",
+          orderDate: "",
           quantity: "",
           facility: "",
         },
@@ -127,7 +127,7 @@ export default defineComponent({
     methods: {
       saveMapping() {
         if (this.mappingName) {
-          this.store.dispatch('user/updateFieldMappings', { name: this.mappingName, fieldMapping: JSON.parse(JSON.stringify(this.fields)) })
+          this.store.dispatch('user/updateFieldMappings', { name: this.mappingName, fieldMapping: JSON.parse(JSON.stringify(this.fieldMapping)) })
         } else {
           showToast(translate("Enter mapping name"));
         }
@@ -150,6 +150,16 @@ export default defineComponent({
       },
       review() {
         if(!this.orderItemsList.length) this.mapFields();
+        this.orderItemsList = this.content.map(item => {
+          return {
+            orderId: item[this.fieldMapping.orderId],
+            shopifyProductSKU: item[this.fieldMapping.productSku],
+            arrivalDate: item[this.fieldMapping.orderDate],
+            quantityOrdered: item[this.fieldMapping.quantity],
+            facilityId: '',
+            externalFacilityId: item[this.fieldMapping.facility]
+          }
+        })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
           name:'PurchaseOrderDetail'
@@ -157,21 +167,10 @@ export default defineComponent({
       },
       mapFields(event) {
         if(event && event.detail.value){
-          const mapping = JSON.parse(JSON.stringify(event.detail.value));
-          this.fields = mapping.fieldMapping;
-          this.mappingName = mapping.name;
+          const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
+          this.fieldMapping = fieldMapping.mapping;
+          this.mappingName = fieldMapping.name;
         }
-        this.orderItemsList = this.content.map(item => {
-          return {
-            orderId: item[this.fields.orderId],
-            shopifyProductSKU: item[this.fields.productSku],
-            shopifyProductUPC: item[this.fields.productUpc],
-            arrivalDate: item[this.fields.date],
-            quantityOrdered: item[this.fields.quantity],
-            facilityId: '',
-            externalFacilityId: item[this.fields.facility]
-          }
-        })
       },
     },
     setup() {

@@ -21,12 +21,7 @@ const mutations: MutationTree <UserState> = {
         state.instanceUrl = payload;
     },
     [types.USER_FIELD_MAPPINGS_UPDATED] (state, payload) {
-        const mapping = state.fieldMappings.find((mapping: any) => mapping.name === payload.name );
-        if (mapping) {
-            mapping.fieldMapping = payload.fieldMapping;
-        } else {
-            state.fieldMappings.push(payload);
-        }
+        state.fieldMappings[payload.name] = payload.fieldMapping;
     }
 }
 export default mutations;
