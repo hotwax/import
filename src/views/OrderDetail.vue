@@ -209,29 +209,29 @@ export default defineComponent({
       canLeave: false
     }
   },
-  // ionViewDidEnter(){
-  //  this.fetchFacilities();
-  // },
+  ionViewDidEnter(){
+   this.fetchFacilities();
+  },
   // async ionViewWillLeave(){
   //   const alert = await alertController.create({
-  //       header: this.$t("Leave page"),
-  //       message: this.$t("Any edits made to this PO will be lost."),
+  //       header: "Leave page",
+  //       message: "Any edits made to this PO will be lost.",
   //       buttons: [
   //           {
-  //             text: this.$t("STAY"),
+  //             text: "STAY",
   //             handler: () => {
-  //               this.router.push("/purchase-order-detail")
+  //               return false;
   //             },
   //           },
   //           {
-  //             text: this.$t("LEAVE"),
+  //             text: "LEAVE",
   //             handler: () => {
-  //               this.router.push() 
+  //               return true;
   //             },
   //           },
   //         ],
   //     });
-  //     return alert.present();
+  //     alert.present();
   // },
   async beforeRouteLeave(to, from) {
     const alert = await alertController.create({
@@ -240,20 +240,25 @@ export default defineComponent({
         buttons: [
             {
               text: this.$t("STAY"),
-              handler: () => {
-                this.router.push(from)
-              },
+              role: 'cancel',
             },
             {
               text: this.$t("LEAVE"),
               handler: () => {
-                this.router.push(to) 
+                return true; 
               },
             },
           ],
       });
-      return alert.present();
+      await alert.present();
+      await alert.onDidDismiss();
+
+      // return this.canLeave;
+      // alert.onDidDismiss().then(() => {
+      //   return this.canLeave;
+      // });
   },
+  
   methods: {
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
