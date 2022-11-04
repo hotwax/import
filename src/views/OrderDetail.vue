@@ -212,27 +212,6 @@ export default defineComponent({
   ionViewDidEnter(){
    this.fetchFacilities();
   },
-  // async ionViewWillLeave(){
-  //   const alert = await alertController.create({
-  //       header: "Leave page",
-  //       message: "Any edits made to this PO will be lost.",
-  //       buttons: [
-  //           {
-  //             text: "STAY",
-  //             handler: () => {
-  //               return false;
-  //             },
-  //           },
-  //           {
-  //             text: "LEAVE",
-  //             handler: () => {
-  //               return true;
-  //             },
-  //           },
-  //         ],
-  //     });
-  //     alert.present();
-  // },
   async beforeRouteLeave(to, from) {
     const alert = await alertController.create({
         header: this.$t("Leave page"),
@@ -240,23 +219,22 @@ export default defineComponent({
         buttons: [
             {
               text: this.$t("STAY"),
-              role: 'cancel',
+              handler: () => {
+                this.canLeave = false;
+              },
             },
             {
               text: this.$t("LEAVE"),
               handler: () => {
-                return true; 
+                this.canLeave = true;
               },
             },
           ],
       });
-      await alert.present();
+      alert.present();
       await alert.onDidDismiss();
 
-      // return this.canLeave;
-      // alert.onDidDismiss().then(() => {
-      //   return this.canLeave;
-      // });
+      return (this as any).canLeave;
   },
   
   methods: {
