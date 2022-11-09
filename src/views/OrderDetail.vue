@@ -215,7 +215,7 @@ export default defineComponent({
   methods: {
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
-      return !this.ordersList.items.some((item: any) => DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
+      return this.ordersList.items.some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
     },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({

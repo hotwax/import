@@ -21,7 +21,7 @@ const mutations: MutationTree <UserState> = {
         state.instanceUrl = payload;
     },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
-        state.dateTimeFormat = payload;
+        state.preferredDateTimeFormat = payload;
     }
 }
 export default mutations;
