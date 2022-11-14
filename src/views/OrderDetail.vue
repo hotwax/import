@@ -206,7 +206,6 @@ export default defineComponent({
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
-      canLeave: false,
       isParentProductUpdated: false
     }
   },
@@ -214,6 +213,7 @@ export default defineComponent({
    this.fetchFacilities();
   },
   async beforeRouteLeave(to, from) {
+    let canLeave = false;
     const alert = await alertController.create({
         header: this.$t("Leave page"),
         message: this.$t("Any edits made to this PO will be lost."),
@@ -221,13 +221,13 @@ export default defineComponent({
             {
               text: this.$t("STAY"),
               handler: () => {
-                this.canLeave = false;
+                canLeave = false;
               },
             },
             {
               text: this.$t("LEAVE"),
               handler: () => {
-                this.canLeave = true;
+                canLeave = true;
               },
             },
           ],
@@ -235,7 +235,7 @@ export default defineComponent({
       alert.present();
       await alert.onDidDismiss();
 
-      return (this as any).canLeave;
+      return canLeave;
   },
   
   methods: {
