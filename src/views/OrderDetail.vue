@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" @click="navigateBack" default-href="/purchase-order" />
+        <ion-back-button slot="start" default-href="/purchase-order" />
         <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
@@ -245,26 +245,7 @@ export default defineComponent({
         componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
       });
       return missingSkuModal.present();
-    },
-    async navigateBack(){
-      const alert = await alertController.create({
-        header: this.$t("Leave page"),
-        message: this.$t("Any edits made to this PO will be lost."),
-        buttons: [
-            {
-              text: this.$t("STAY"),
-              role: 'cancel',
-            },
-            {
-              text: this.$t("LEAVE"),
-              handler: () => {
-                this.router.push("/purchase-order");
-              },
-            },
-          ],
-      });
-      return alert.present();
-    },  
+    }, 
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
       this.searchedProduct = this.ordersList.items.find((item: any) => {
