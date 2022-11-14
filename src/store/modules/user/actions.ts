@@ -5,8 +5,6 @@ import UserState from './UserState'
 import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
-import emitter from '@/event-bus'
-import { DateTime } from 'luxon';
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -110,7 +108,7 @@ const actions: ActionTree<UserState, RootState> = {
   /**
    * Set User Instance Url
    */
-  setUserInstanceUrl ({ state, commit }, payload){
+  setUserInstanceUrl ({ commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
   }
 }
