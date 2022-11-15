@@ -30,7 +30,7 @@
               <ion-label class="ion-text-wrap">
                 <p class="overline">{{ instanceUrl }}</p>
               </ion-label>
-              <ion-note slot="end">{{ userProfile.userTimeZone }}</ion-note>
+              <ion-note slot="end">{{ userProfile?.userTimeZone }}</ion-note>
             </ion-item>
           </ion-toolbar>
         </ion-footer>

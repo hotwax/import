@@ -138,7 +138,7 @@
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="save">
+        <ion-fab-button :disabled="isDateInvalid()" @click="save">
           <ion-icon  :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -191,6 +191,7 @@ export default defineComponent({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
+      dateTimeFormat : 'user/getDateTimeFormat',
       fileName: 'order/getFileName'
     }),
     orderId(){
@@ -239,6 +240,10 @@ export default defineComponent({
   },
   
   methods: {
+    isDateInvalid(){
+      // Checked if any of the date format is different than the selected format.
+      return this.ordersList.items.some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
+    },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
@@ -261,7 +266,8 @@ export default defineComponent({
           "externalId": item.orderId,
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
-          "arrivalDate": item.arrivalDate,
+          //Convert date in the format accepted by the server.
+          "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
           "idValue": item.shopifyProductSKU,
@@ -357,7 +363,7 @@ export default defineComponent({
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
-          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy').plus({ days: this.numberOfDays }).toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat(this.dateTimeFormat);
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
