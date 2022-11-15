@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" @click="navigateBack" default-href="/purchase-order" />
+        <ion-back-button slot="start" default-href="/purchase-order" />
         <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
@@ -97,7 +97,7 @@
 
           <div />
           
-          <ion-checkbox :checked="isParentProductChecked(id)" @ionChange="selectParentProduct(id, $event)" />
+          <ion-checkbox :checked="isParentProductChecked(id)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event)" />
 
           <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -207,11 +207,38 @@ export default defineComponent({
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
+      isParentProductUpdated: false
     }
   },
   ionViewDidEnter(){
    this.fetchFacilities();
   },
+  async beforeRouteLeave(to, from) {
+    let canLeave = false;
+    const alert = await alertController.create({
+        header: this.$t("Leave page"),
+        message: this.$t("Any edits made to this PO will be lost."),
+        buttons: [
+            {
+              text: this.$t("STAY"),
+              handler: () => {
+                canLeave = false;
+              },
+            },
+            {
+              text: this.$t("LEAVE"),
+              handler: () => {
+                canLeave = true;
+              },
+            },
+          ],
+      });
+      alert.present();
+      await alert.onDidDismiss();
+
+      return canLeave;
+  },
+  
   methods: {
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
@@ -223,26 +250,7 @@ export default defineComponent({
         componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
       });
       return missingSkuModal.present();
-    },
-    async navigateBack(){
-      const alert = await alertController.create({
-        header: this.$t("Leave page"),
-        message: this.$t("Any edits made to this PO will be lost."),
-        buttons: [
-            {
-              text: this.$t("STAY"),
-              role: 'cancel',
-            },
-            {
-              text: this.$t("LEAVE"),
-              handler: () => {
-                this.router.push("/purchase-order");
-              },
-            },
-          ],
-      });
-      return alert.present();
-    },  
+    }, 
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
       this.searchedProduct = this.ordersList.items.find((item: any) => {
@@ -290,7 +298,7 @@ export default defineComponent({
                     text: translate('View'),
                     role: 'view',
                     handler: () => {
-                      window.location.href = `https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`
+                      window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
                     }
                   }])
                   this.router.push("/purchase-order");
@@ -341,7 +349,7 @@ export default defineComponent({
       return popover.present();
     },
     isParentProductChecked(parentProductId: string) {
-      const items = (this as any).ordersList.items.filter((item: any) => item.parentProductId === parentProductId)
+      const items = this.getGroupItems(parentProductId, this.ordersList.items);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
@@ -380,11 +388,15 @@ export default defineComponent({
       })
     },
     selectParentProduct(parentProductId: any, event: any) {
-      this.ordersList.items.forEach((item: any) => {
-        if (item.parentProductId == parentProductId) {
-          item.isSelected = event.detail.checked;
-        }
-      })
+      // Todo: Need to find a better approach.
+      if(this.isParentProductUpdated){
+        this.ordersList.items.forEach((item: any) => {
+          if (item.parentProductId === parentProductId) {
+            item.isSelected = event.detail.checked;
+          }
+        })
+        this.isParentProductUpdated = false;
+      }
     }
   },
   setup() {
