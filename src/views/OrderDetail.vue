@@ -208,7 +208,7 @@ export default defineComponent({
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
-      isPOUploaded: false
+      isPOUploadedSuccessfully: false
     }
   },
   ionViewDidEnter(){
@@ -234,10 +234,10 @@ export default defineComponent({
             },
           ],
       });
-      if(!this.isPOUploaded){
+      if(!this.isPOUploadedSuccessfully){
         alert.present();
         await alert.onDidDismiss();
-        this.isPOUploaded = false;
+        this.isPOUploadedSuccessfully = false;
         return canLeave;
       }
   },
@@ -297,7 +297,7 @@ export default defineComponent({
                   fileName,
                   params
                 })).then(() => {
-                  this.isPOUploaded = true;
+                  this.isPOUploadedSuccessfully = true;
                   showToast(translate("The PO has been uploaded successfully"), [{
                     text: translate('View'),
                     role: 'view',
