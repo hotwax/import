@@ -77,13 +77,14 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonList, IonListHeader, IonNote, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
+import { DateTime } from 'luxon'
 
 export default defineComponent({
     name: "purchase orders",
@@ -104,6 +105,12 @@ export default defineComponent({
       IonListHeader,
       IonList
     },
+    computed: {
+      ...mapGetters({
+        dateTimeFormat : 'user/getDateTimeFormat',
+        fieldMappings: 'user/getFieldMappings'
+      })
+    },
     data() {
       return {
         file: "",
@@ -118,11 +125,6 @@ export default defineComponent({
         mappingName: "",
         orderItemsList: [],
       }
-    },
-    computed: {
-      ...mapGetters({
-        fieldMappings: 'user/getFieldMappings'
-      })
     },
     methods: {
       saveMapping() {
@@ -154,7 +156,7 @@ export default defineComponent({
           return {
             orderId: item[this.fieldMapping.orderId],
             shopifyProductSKU: item[this.fieldMapping.productSku],
-            arrivalDate: item[this.fieldMapping.orderDate],
+            arrivalDate: DateTime.fromFormat(item[this.fieldMapping.orderDate], this.dateTimeFormat).toFormat(this.dateTimeFormat), //This is to verify whether the date format is correct.
             quantityOrdered: item[this.fieldMapping.quantity],
             facilityId: '',
             externalFacilityId: item[this.fieldMapping.facility]

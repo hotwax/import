@@ -24,6 +24,9 @@ const getters: GetterTree <UserState, RootState> = {
     },
     getFieldMappings(state) {
         return state.fieldMappings;
+    },
+    getDateTimeFormat (state) {
+        return state.preferredDateTimeFormat;  
     }
 }
 export default getters;

@@ -12,7 +12,8 @@ const userModule: Module<UserState, RootState> = {
       current: null,
       currentFacility: {},
       instanceUrl: '',
-      fieldMappings: {}
+      fieldMappings: {},
+      preferredDateTimeFormat: ''
     },
     getters,
     actions,

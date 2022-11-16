@@ -69,7 +69,7 @@ export default defineComponent({
       const items = this.ordersList.items.map(element => {
         if(element.parentProductId === this.id) {
           const item = original.find(item => {
-            return item.parentProductId === this.id;
+            return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
           })
           element = item;
         }

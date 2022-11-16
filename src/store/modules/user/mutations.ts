@@ -22,6 +22,9 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_FIELD_MAPPINGS_UPDATED] (state, payload) {
         state.fieldMappings[payload.name] = payload.fieldMapping;
+    },    
+    [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
+        state.preferredDateTimeFormat = payload;
     }
 }
 export default mutations;
