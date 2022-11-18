@@ -214,7 +214,7 @@ export default defineComponent({
   ionViewDidEnter(){
    this.fetchFacilities();
   },
-  async beforeRouteLeave(to, from) {
+  async beforeRouteLeave() {
     let canLeave = false;
     const alert = await alertController.create({
         header: this.$t("Leave page"),
@@ -292,7 +292,7 @@ export default defineComponent({
           {
             text: this.$t("Upload"),
             handler: () => {
-              const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+              UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
                 uploadData,
                 fileName,
                 params
