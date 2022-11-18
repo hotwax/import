@@ -14,11 +14,10 @@
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item> 
-
         <ion-item lines="none">
           <ion-label>{{ $t("Select mapping") }}</ion-label>
           <ion-select :disabled="!Object.keys(fieldMappings).length" interface="popover" @ionChange="mapFields">
-            <ion-select-option v-for="(mapping, name) in fieldMappings" :value="{ mapping, name }" :key="name">{{ name }}</ion-select-option>
+            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId">{{ mapping?.mappingPrefName }}</ion-select-option>
           </ion-select>
         </ion-item>     
 
@@ -129,7 +128,8 @@ export default defineComponent({
     methods: {
       saveMapping() {
         if (this.mappingName) {
-          this.store.dispatch('user/updateFieldMappings', { name: this.mappingName, fieldMapping: JSON.parse(JSON.stringify(this.fieldMapping)) })
+          const mappingPrefId = Math.floor(Math.random() * 1000);
+          this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         } else {
           showToast(translate("Enter mapping name"));
         }
@@ -169,8 +169,8 @@ export default defineComponent({
       mapFields(event) {
         if(event && event.detail.value){
           const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
-          this.fieldMapping = fieldMapping.mapping;
-          this.mappingName = fieldMapping.name;
+          this.fieldMapping = fieldMapping.mappingPrefValue;
+          this.mappingName = fieldMapping.mappingPrefName;
           const missingFields = Object.values(this.fieldMapping).filter(field => !Object.keys(this.content[0]).includes(field));
           if(missingFields.length) showToast(translate("Some of the fields are missing in the CSV"))
         }

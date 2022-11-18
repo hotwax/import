@@ -118,7 +118,7 @@ const actions: ActionTree<UserState, RootState> = {
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
   },
 
-  updateFieldMappings({ state, commit }, payload){
+  updateFieldMappings({ commit }, payload){
     commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
   }
 }
