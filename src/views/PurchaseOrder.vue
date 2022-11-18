@@ -151,7 +151,6 @@ export default defineComponent({
         })
       },
       review() {
-        if(!this.orderItemsList.length) this.mapFields();
         this.orderItemsList = this.content.map(item => {
           return {
             orderId: item[this.fieldMapping.orderId],
