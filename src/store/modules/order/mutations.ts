@@ -11,6 +11,9 @@ const mutations: MutationTree <OrderState> = {
   },
   [types.ORDER_LIST_ITEMS_UPDATED] (state, payload) {
     state.list.items = payload;
+  },
+  [types.ORDER_FILE_NAME_UPDATED] (state, payload) {
+    state.fileName = payload;
   }
 }
 export default mutations;

@@ -4,5 +4,6 @@ export default interface OrderState {
       original: any,
       unidentifiedProductItems: any,
       productItemsWithMissingInfo: any
-    }
+    },
+    fileName: string
   }

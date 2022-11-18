@@ -14,6 +14,7 @@ const orderModule: Module<OrderState, RootState> = {
       unidentifiedProductItems: [],
       productItemsWithMissingInfo: []
     },
+    fileName: ""
   },
   actions,
   getters,

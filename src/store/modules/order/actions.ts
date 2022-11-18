@@ -3,7 +3,6 @@ import store from '@/store'
 import RootState from '@/store/RootState'
 import OrderState from './OrderState'
 import * as types from './mutation-types'
-import router from '@/router'
 import { DateTime } from 'luxon';
 
 
@@ -25,9 +24,7 @@ const actions: ActionTree<OrderState, RootState> = {
     items = items.map((item: any) => {
       if(item.shopifyProductSKU){
         const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
-  
         if(Object.keys(product).length > 0){
-          item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
           item.parentProductId = product.groupId;
           item.internalName = product.internalName;
           item.parentProductName = product.parentProductName;
@@ -53,6 +50,9 @@ const actions: ActionTree<OrderState, RootState> = {
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
   },
+  updateFileName({ commit }, fileName){
+    commit(types.ORDER_FILE_NAME_UPDATED, fileName)
+  },  
   clearOrderList({ commit }){
     commit(types.ORDER_LIST_UPDATED, { items: [], original: [], unidentifiedProductItems: [], productItemsWithMissingInfo: []});
   }

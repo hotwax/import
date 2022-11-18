@@ -10,45 +10,45 @@
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>{{ $t("Purchase order") }}</ion-label>
+          <ion-label>{{ file.name ? $t("Purchase order ") +  file.name : $t('Purchase order') }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
-        </ion-item>       
+        </ion-item>      
 
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item>
             <ion-label>{{ $t("Order ID") }}</ion-label>
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
-                <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+                <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
-              <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Arrival date") }}</ion-label>
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
-              <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Ordered quantity") }}</ion-label>
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
-              <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
-              <ion-select-option v-bind:key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
@@ -62,13 +62,14 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { useStore } from "vuex";
+import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
+import { DateTime } from 'luxon'
 
 export default defineComponent({
     name: "purchase orders",
@@ -88,6 +89,11 @@ export default defineComponent({
       IonListHeader,
       IonList
     },
+    computed: {
+      ...mapGetters({
+        dateTimeFormat : 'user/getDateTimeFormat',
+      })
+    },
     data() {
       return {
         file: "",
@@ -106,6 +112,7 @@ export default defineComponent({
         if(this.file){
           showToast(translate("File uploaded successfully"));
           this.parseFile();
+          this.store.dispatch('order/updateFileName', this.file.name);
         }
         else {
           showToast(translate("Something went wrong, Please try again"));
@@ -119,14 +126,14 @@ export default defineComponent({
       },
       mapFields() {
         this.orderItemsList = this.content.map(item => {
-            return {
-              orderId: item[this.orderIdField],
-              shopifyProductSKU: item[this.productSkuField],
-              arrivalDate: item[this.dateField],
-              quantityOrdered: item[this.quantityField],
-              facilityId: '',
-              externalFacilityId: item[this.facilityField]
-            }
+          return {
+            orderId: item[this.orderIdField],
+            shopifyProductSKU: item[this.productSkuField],
+            arrivalDate: DateTime.fromFormat(item[this.dateField], this.dateTimeFormat).toFormat(this.dateTimeFormat), //This is to verify whether the date format is correct.
+            quantityOrdered: item[this.quantityField],
+            facilityId: '',
+            externalFacilityId: item[this.facilityField]
+          }
         })
         this.store.dispatch('order/updatedOrderList', this.orderItemsList);
         this.router.push({
