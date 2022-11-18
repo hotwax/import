@@ -237,11 +237,11 @@ export default defineComponent({
       if(!this.isPOUploadedSuccessfully){
         alert.present();
         await alert.onDidDismiss();
-        this.isPOUploadedSuccessfully = false;
         return canLeave;
+      } else {
+        this.isPOUploadedSuccessfully = false;
       }
   },
-  
   methods: {
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
@@ -285,35 +285,35 @@ export default defineComponent({
         header: this.$t("Upload purchase order"),
         message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
         buttons: [
-            {
-              text: this.$t("cancel"),
-              role: 'cancel',
+          {
+            text: this.$t("cancel"),
+            role: 'cancel',
+          },
+          {
+            text: this.$t("Upload"),
+            handler: () => {
+              const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+                uploadData,
+                fileName,
+                params
+              })).then(() => {
+                this.isPOUploadedSuccessfully = true;
+                showToast(translate("The PO has been uploaded successfully"), [{
+                  text: translate('View'),
+                  role: 'view',
+                  handler: () => {
+                    window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
+                  }
+                }])
+                this.router.push("/purchase-order");
+                this.store.dispatch('order/clearOrderList');
+              }).catch(() => {
+                showToast(translate("Something went wrong, please try again"));
+              })
             },
-            {
-              text: this.$t("Upload"),
-              handler: () => {
-                const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
-                  uploadData,
-                  fileName,
-                  params
-                })).then(() => {
-                  this.isPOUploadedSuccessfully = true;
-                  showToast(translate("The PO has been uploaded successfully"), [{
-                    text: translate('View'),
-                    role: 'view',
-                    handler: () => {
-                      window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
-                    }
-                  }])
-                  this.router.push("/purchase-order");
-                  this.store.dispatch('order/clearOrderList');
-                }).catch(() => {
-                  showToast(translate("Something went wrong, please try again"));
-                })
-              },
-            },
-          ],
-        });
+          },
+        ],
+      });
       return alert.present();  
     },
     async fetchFacilities(){
