@@ -110,9 +110,6 @@ export default defineComponent({
         fieldMappings: 'user/getFieldMappings'
       })
     },
-    mounted(){
-      console.log(this.fieldMappings, "abc");
-    },
     data() {
       return {
         file: "",
