@@ -126,7 +126,7 @@ export default defineComponent({
       }
     },
     methods: {
-      generateUniqueId(id) {
+      generateUniqueMappingPrefId(id) {
         if (!this.fieldMappings[id]) {
           return id;
         }
