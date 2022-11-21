@@ -85,7 +85,7 @@
             <p>{{ $t('Luxon date time formats can be found') }} <a target="_blank" rel="noopener noreferrer" href="https://moment.github.io/luxon/#/formatting?id=presets">{{ $t("here") }}</a></p>
           </ion-card-content> 
           <ion-item>
-            <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" />
+            <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
           </ion-item>
           <ion-item>
             <ion-label>{{ sampleDateTime }}</ion-label>
@@ -140,7 +140,8 @@ export default defineComponent({
     return {
       baseURL: process.env.VUE_APP_BASE_URL,
       sampleDateTime: '',
-      dateTimeFormat: ''
+      dateTimeFormat: '',
+      defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy'
     };
   },
   computed: {
@@ -159,7 +160,9 @@ export default defineComponent({
       window.open(this.instanceUrl.startsWith('http') ? this.instanceUrl.replace('api/', "") : `https://${this.instanceUrl}.hotwax.io/`, '_blank', 'noopener, noreferrer');
     },
     updateDateTimeFormat(){
+      this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
       this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
+      this.parse();
     },
     async changeTimeZone() {
       const timeZoneModal = await modalController.create({
