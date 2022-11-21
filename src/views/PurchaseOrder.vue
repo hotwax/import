@@ -181,11 +181,20 @@ export default defineComponent({
       mapFields(event) {
         if(event && event.detail.value) {
           const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
-          for(const field in fieldMapping.mappingPrefValue){
-            if(!Object.keys(this.content[0]).includes(fieldMapping.mappingPrefValue[field])) fieldMapping.mappingPrefValue[field] = "";
-          }
+          const CsvFields = Object.keys(this.content[0]);
+
+          const missingFields = Object.values(fieldMapping.mappingPrefValue).filter(field => {
+            if(!Object.keys(this.content[0]).includes(field)) return field;
+          });
+          if(missingFields.length) showToast(translate(`Some of the mapping fields are missing in the CSV: \n ${ missingFields.join(", ") }`))
+
+          Object.keys(fieldMapping.mappingPrefValue).map((field) => {
+            if(!CsvFields.includes(fieldMapping.mappingPrefValue[field])){
+              fieldMapping.mappingPrefValue[field] = "";
+            }
+          })
           this.fieldMapping = fieldMapping.mappingPrefValue;
-          this.mappingName = fieldMapping.mappingPrefName;
+          this.mappingName = fieldMapping.mappingPrefName; 
         }
       },
     },

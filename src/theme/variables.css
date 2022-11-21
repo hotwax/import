@@ -286,6 +286,10 @@ body {
   justify-self: start
 }
 
+.toast-message {
+  --white-space: pre-wrap !important;
+}
+
 @media (min-width: 700px) {
   .list-item {
     --col-calc: var(--columns-tablet);
