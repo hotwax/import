@@ -15,7 +15,7 @@
                 router-direction="root"
                 :router-link="p.url"
                 class="hydrated"
-                :class="{ selected: selectedIndex === i }"
+                :class="{ selected: selectedIndex === i && this.$route.path === p.url }"
               >
                 <ion-icon slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
@@ -30,7 +30,7 @@
               <ion-label class="ion-text-wrap">
                 <p class="overline">{{ instanceUrl }}</p>
               </ion-label>
-              <ion-note slot="end">{{ userProfile.userTimeZone }}</ion-note>
+              <ion-note slot="end">{{ userProfile?.userTimeZone }}</ion-note>
             </ion-item>
           </ion-toolbar>
         </ion-footer>

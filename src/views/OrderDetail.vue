@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" @click="navigateBack" default-href="/purchase-order" />
+        <ion-back-button slot="start" default-href="/purchase-order" />
         <ion-title>{{ orderId }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
@@ -138,7 +138,7 @@
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="save">
+        <ion-fab-button :disabled="isDateInvalid()" @click="save">
           <ion-icon  :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -191,6 +191,7 @@ export default defineComponent({
       ordersList: 'order/getOrder',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
+      dateTimeFormat : 'user/getDateTimeFormat',
       fileName: 'order/getFileName'
     }),
     orderId(){
@@ -206,39 +207,53 @@ export default defineComponent({
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
-      isParentProductUpdated: false
+      isParentProductUpdated: false,
+      isPOUploadedSuccessfully: false
     }
   },
   ionViewDidEnter(){
    this.fetchFacilities();
   },
+  async beforeRouteLeave() {
+    let canLeave = false;
+    const alert = await alertController.create({
+        header: this.$t("Leave page"),
+        message: this.$t("Any edits made to this PO will be lost."),
+        buttons: [
+            {
+              text: this.$t("STAY"),
+              handler: () => {
+                canLeave = false;
+              },
+            },
+            {
+              text: this.$t("LEAVE"),
+              handler: () => {
+                canLeave = true;
+              },
+            },
+          ],
+      });
+      if(!this.isPOUploadedSuccessfully){
+        alert.present();
+        await alert.onDidDismiss();
+        return canLeave;
+      } else {
+        this.isPOUploadedSuccessfully = false;
+      }
+  },
   methods: {
+    isDateInvalid(){
+      // Checked if any of the date format is different than the selected format.
+      return this.ordersList.items.some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
+    },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
         componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
       });
       return missingSkuModal.present();
-    },
-    async navigateBack(){
-      const alert = await alertController.create({
-        header: this.$t("Leave page"),
-        message: this.$t("Any edits made to this PO will be lost."),
-        buttons: [
-            {
-              text: this.$t("STAY"),
-              role: 'cancel',
-            },
-            {
-              text: this.$t("LEAVE"),
-              handler: () => {
-                this.router.push("/purchase-order");
-              },
-            },
-          ],
-      });
-      return alert.present();
-    },  
+    }, 
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
       this.searchedProduct = this.ordersList.items.find((item: any) => {
@@ -254,7 +269,8 @@ export default defineComponent({
           "externalId": item.orderId,
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
-          "arrivalDate": item.arrivalDate,
+          //Convert date in the format accepted by the server.
+          "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
           "idValue": item.shopifyProductSKU,
@@ -269,34 +285,35 @@ export default defineComponent({
         header: this.$t("Upload purchase order"),
         message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
         buttons: [
-            {
-              text: this.$t("cancel"),
-              role: 'cancel',
+          {
+            text: this.$t("cancel"),
+            role: 'cancel',
+          },
+          {
+            text: this.$t("Upload"),
+            handler: () => {
+              UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+                uploadData,
+                fileName,
+                params
+              })).then(() => {
+                this.isPOUploadedSuccessfully = true;
+                showToast(translate("The PO has been uploaded successfully"), [{
+                  text: translate('View'),
+                  role: 'view',
+                  handler: () => {
+                    window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
+                  }
+                }])
+                this.router.push("/purchase-order");
+                this.store.dispatch('order/clearOrderList');
+              }).catch(() => {
+                showToast(translate("Something went wrong, please try again"));
+              })
             },
-            {
-              text: this.$t("Upload"),
-              handler: () => {
-                const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
-                  uploadData,
-                  fileName,
-                  params
-                })).then(() => {
-                  showToast(translate("The PO has been uploaded successfully"), [{
-                    text: translate('View'),
-                    role: 'view',
-                    handler: () => {
-                      window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
-                    }
-                  }])
-                  this.router.push("/purchase-order");
-                  this.store.dispatch('order/clearOrderList');
-                }).catch(() => {
-                  showToast(translate("Something went wrong, please try again"));
-                })
-              },
-            },
-          ],
-        });
+          },
+        ],
+      });
       return alert.present();  
     },
     async fetchFacilities(){
@@ -350,7 +367,7 @@ export default defineComponent({
       this.ordersList.items.map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
-          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy').plus({ days: this.numberOfDays }).toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat(this.dateTimeFormat);
           item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
