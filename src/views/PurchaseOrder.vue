@@ -157,7 +157,7 @@ export default defineComponent({
         })
       },
       review() {
-        const areAllFieldsSelected = Object.values(this.fields).every(field => field !== "");
+        const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
         if (this.content.length <= 0) {
           showToast(translate("Please upload a valid purchase order csv to continue"));
         } else if (areAllFieldsSelected) {
