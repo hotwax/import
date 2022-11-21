@@ -130,11 +130,11 @@ export default defineComponent({
         if (!this.fieldMappings[id]) {
           return id;
         }
-        return this.generateUniqueId(Math.floor(Math.random() * 1000));
+        return this.generateUniqueMappingPrefId(Math.floor(Math.random() * 1000));
       },
       saveMapping() {
         if (this.mappingName) {
-          const mappingPrefId = this.generateUniqueId(Math.floor(Math.random() * 1000));
+          const mappingPrefId = this.generateUniqueMappingPrefId(Math.floor(Math.random() * 1000));
           this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         } else {
           showToast(translate("Enter mapping name"));
@@ -182,6 +182,9 @@ export default defineComponent({
       mapFields(event) {
         if(event && event.detail.value) {
           const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
+          for(const field in fieldMapping.mappingPrefValue){
+            if(!Object.keys(this.content[0]).includes(fieldMapping.mappingPrefValue[field])) fieldMapping.mappingPrefValue[field] = "";
+          }
           this.fieldMapping = fieldMapping.mappingPrefValue;
           this.mappingName = fieldMapping.mappingPrefName;
         }
