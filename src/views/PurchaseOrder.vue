@@ -26,56 +26,35 @@
 
           <ion-item>
             <ion-label>{{ $t("Order ID") }}</ion-label>
-<<<<<<< HEAD
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderId">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-=======
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.orderId">
-                <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
->>>>>>> edac349650757a3d685f74480e549aefe33f38ee
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-<<<<<<< HEAD
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
-=======
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.productSku">
->>>>>>> edac349650757a3d685f74480e549aefe33f38ee
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Arrival date") }}</ion-label>
-<<<<<<< HEAD
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderDate">
-=======
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.date">
->>>>>>> edac349650757a3d685f74480e549aefe33f38ee
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-<<<<<<< HEAD
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
-=======
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.quantity">
->>>>>>> edac349650757a3d685f74480e549aefe33f38ee
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
-<<<<<<< HEAD
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
-=======
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.facility">
->>>>>>> edac349650757a3d685f74480e549aefe33f38ee
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
