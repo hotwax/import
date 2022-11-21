@@ -19,35 +19,35 @@
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item>
             <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="orderIdField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.orderId">
                 <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.productSku">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="dateField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.date">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.quantity">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fields.facility">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -98,11 +98,13 @@ export default defineComponent({
       return {
         file: "",
         content: [],
-        orderIdField: "",
-        productSkuField: "",
-        dateField: "",
-        quantityField: "",
-        facilityField: "",
+        fields:{
+          orderId: "",
+          productSku: "",
+          date: "",
+          quantity: "",
+          facility: "",
+        },
         orderItemsList: [],
       }
     },
@@ -125,21 +127,24 @@ export default defineComponent({
         })
       },
       mapFields() {
-        this.orderItemsList = this.content.map(item => {
-          return {
-            orderId: item[this.orderIdField],
-            shopifyProductSKU: item[this.productSkuField],
-            shopifyProductUPC: item[this.productUpcField],
-            arrivalDate: DateTime.fromFormat(item[this.dateField], this.dateTimeFormat).toFormat(this.dateTimeFormat), //This is to verify whether the date format is correct.
-            quantityOrdered: item[this.quantityField],
-            facilityId: '',
-            externalFacilityId: item[this.facilityField]
-          }
-        })
-        this.store.dispatch('order/updatedOrderList', this.orderItemsList);
-        this.router.push({
-          name:'PurchaseOrderDetail'
-        })
+        const areAllFieldsSelected = Object.values(this.fields).every(field => field !== "");
+        if (this.content.length <= 0) {
+          showToast(translate("Please upload a valid purchase order csv to continue"));
+        } else if (areAllFieldsSelected) {
+          this.orderItemsList = this.content.map(item => ({
+            orderId: item[this.fields.orderId],
+            shopifyProductSKU: item[this.fields.productSku],
+            arrivalDate: item[this.fields.date],
+            quantityOrdered: item[this.fields.quantity],
+            externalFacilityId: item[this.fields.facility]
+          }))
+          this.store.dispatch('order/updatedOrderList', this.orderItemsList);
+          this.router.push({
+            name:'PurchaseOrderDetail'
+          })
+        } else {
+          showToast(translate("Select all the fields to continue"));
+        }
       },
     },
     setup() {
