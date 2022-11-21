@@ -126,15 +126,14 @@ export default defineComponent({
       }
     },
     methods: {
-      generateUniqueMappingPrefId(id) {
-        if (!this.fieldMappings[id]) {
-          return id;
-        }
-        return this.generateUniqueMappingPrefId(Math.floor(Math.random() * 1000));
+      //Todo: Generating unique identifiers as we are currently storing in local storage. Need to remove it as we will be storing data on server.
+      generateUniqueMappingPrefId() {
+        const id = Math.floor(Math.random() * 1000);
+        return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
       },
       saveMapping() {
         if (this.mappingName) {
-          const mappingPrefId = this.generateUniqueMappingPrefId(Math.floor(Math.random() * 1000));
+          const mappingPrefId = this.generateUniqueMappingPrefId();
           this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         } else {
           showToast(translate("Enter mapping name"));
