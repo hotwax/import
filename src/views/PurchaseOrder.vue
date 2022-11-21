@@ -110,6 +110,9 @@ export default defineComponent({
         fieldMappings: 'user/getFieldMappings'
       })
     },
+    mounted(){
+      console.log(this.fieldMappings, "abc");
+    },
     data() {
       return {
         file: "",
@@ -126,9 +129,15 @@ export default defineComponent({
       }
     },
     methods: {
+      generateUniqueId(id) {
+        if (!this.fieldMappings[id]) {
+          return id;
+        }
+        this.generateUniqueId(Math.floor(Math.random() * 1000));
+      },
       saveMapping() {
         if (this.mappingName) {
-          const mappingPrefId = Math.floor(Math.random() * 1000);
+          const mappingPrefId = this.generateUniqueId(Math.floor(Math.random() * 1000));
           this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         } else {
           showToast(translate("Enter mapping name"));
@@ -167,12 +176,10 @@ export default defineComponent({
         })
       },
       mapFields(event) {
-        if(event && event.detail.value){
+        if(event && event.detail.value) {
           const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
           this.fieldMapping = fieldMapping.mappingPrefValue;
           this.mappingName = fieldMapping.mappingPrefName;
-          const missingFields = Object.values(this.fieldMapping).filter(field => !Object.keys(this.content[0]).includes(field));
-          if(missingFields.length) showToast(translate("Some of the fields are missing in the CSV"))
         }
       },
     },
