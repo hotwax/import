@@ -9,7 +9,7 @@ import { DateTime } from 'luxon';
 
 const actions: ActionTree<OrderState, RootState> = {
   async updatedOrderList ({commit, rootGetters}, items) {
-    const productIds = items.map((item: any) => {
+    const productIds = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
       return item.shopifyProductSKU
     })
     const viewSize = productIds.length;
@@ -21,7 +21,7 @@ const actions: ActionTree<OrderState, RootState> = {
     }
     await store.dispatch("product/fetchProducts", payload);
     const unidentifiedProductItems = [] as any;
-    items = items.map((item: any) => {
+    items = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
       const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
 
       if(Object.keys(product).length > 0){
