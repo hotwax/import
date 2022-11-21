@@ -133,7 +133,7 @@ export default defineComponent({
         if (!this.fieldMappings[id]) {
           return id;
         }
-        this.generateUniqueId(Math.floor(Math.random() * 1000));
+        return this.generateUniqueId(Math.floor(Math.random() * 1000));
       },
       saveMapping() {
         if (this.mappingName) {
