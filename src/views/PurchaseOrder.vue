@@ -10,7 +10,7 @@
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>{{ file.name ? $t("Purchase order ") +  file.name : $t('Purchase order') }}</ion-label>
+          <ion-label>{{ file.name ? $t("Purchase order") +  file.name : $t('Purchase order') }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item> 
@@ -186,7 +186,7 @@ export default defineComponent({
           const missingFields = Object.values(fieldMapping.mappingPrefValue).filter(field => {
             if(!Object.keys(this.content[0]).includes(field)) return field;
           });
-          if(missingFields.length) showToast(translate(`Some of the mapping fields are missing in the CSV: \n ${ missingFields.join(", ") }`))
+          if(missingFields.length) showToast(this.$t("Some of the mapping fields are missing in the CSV: ", { missingFields: missingFields.join(", ") }))
 
           Object.keys(fieldMapping.mappingPrefValue).map((field) => {
             if(!CsvFields.includes(fieldMapping.mappingPrefValue[field])){
