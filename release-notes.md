@@ -1,3 +1,39 @@
+
+# Release 1.1.0
+
+## What's Changed
+* Fixed: error in console when having empty field value for buffer days(#2r0myjj) by @disha1202 in https://github.com/hotwax/import/pull/59
+* Implemented logic to display the first facility selected and upload file with the original file name(#23ek494) by @disha1202 in https://github.com/hotwax/import/pull/21
+* Upgraded ionic to 6.1.15(#2uaz29u) by @disha1202 in https://github.com/hotwax/import/pull/63
+* Added pr and issue template by @kaustav202 in https://github.com/hotwax/import/pull/69
+* fix: Popover option on a searched product are not working correctly(#2k06eqx) by @disha1202 in https://github.com/hotwax/import/pull/53
+* Change console.log to console.error in actions.ts by @divyanshugour in https://github.com/hotwax/import/pull/71
+* Improved: app version in package and lock file for new release(#2rbz0yh) by @ymaheshwari1 in https://github.com/hotwax/import/pull/58
+* Refactored: removed v-bind and used the shorthand instead (#2yma2j9) by @k2maan in https://github.com/hotwax/import/pull/85
+* Fixed: Viewing upload logs should open in a new tab by @disha1202 in https://github.com/hotwax/import/pull/80
+* fix: Deselecting a single product from a group, deselects all variants(#2kbkwnr) by @disha1202 in https://github.com/hotwax/import/pull/51
+* Fixed: Reseting reverts to wrong info(#2yma5bp) by @disha1202 in https://github.com/hotwax/import/pull/86
+* Upgraded Ionic to 6.2(#2zb17hz) by @disha1202 in https://github.com/hotwax/import/pull/89
+* Implemented logic to display an alert before route change(#2ymay5f) by @disha1202 in https://github.com/hotwax/import/pull/88
+* Added support to alias specific instance URL with environment configuration(#30dkjp1) by @disha1202 in https://github.com/hotwax/import/pull/91
+* Fixed: Build console warnings(#30k3pbj) by @shashwatbangar in https://github.com/hotwax/import/pull/92
+* Added support to configure date time format from settings page and updated UI of settings page(#2t2y3qq) by @disha1202 in https://github.com/hotwax/import/pull/60
+* Fixed: alert displaying on PO upload(#30rz7pt) by @disha1202 in https://github.com/hotwax/import/pull/94
+* Fixed: alert not displayed after first upload(#30rz7pt) by @disha1202 in https://github.com/hotwax/import/pull/95
+* Improved code to open external links in new tab and update sample date format on clicking save button(#31a00jh) by @ymaheshwari1 in https://github.com/hotwax/import/pull/97
+* Block user navigating to details page if no records after review action(#24pp0fm) by @disha1202 in https://github.com/hotwax/import/pull/27
+* Updated link for Luxon formats by @Shreyaakothari in https://github.com/hotwax/import/pull/100
+* Implemented logic for storing and applying multiple field mappings (#2hran7u) by @disha1202 in https://github.com/hotwax/import/pull/84 and @k2maan in https://github.com/hotwax/import/pull/99
+
+## New Contributors
+* @kaustav202 made their first contribution in https://github.com/hotwax/import/pull/69
+* @divyanshugour made their first contribution in https://github.com/hotwax/import/pull/71
+* @k2maan made their first contribution in https://github.com/hotwax/import/pull/85
+* @Shreyaakothari made their first contribution in https://github.com/hotwax/import/pull/100
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v1.0.1...v1.1.0
+
+
 # Release 1.0.1
 
 ## What's Changed
