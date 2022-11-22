@@ -82,7 +82,7 @@
           
           <ion-card-content>
             {{ $t('Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.') }}
-            <p>{{ $t('Luxon date time formats can be found') }} <a target="_blank" rel="noopener noreferrer" href="https://moment.github.io/luxon/#/formatting?id=presets">{{ $t("here") }}</a></p>
+            <p>{{ $t('Luxon date time formats can be found') }} <a target="_blank" rel="noopener noreferrer" href="https://moment.github.io/luxon/#/formatting?id=table-of-tokens">{{ $t("here") }}</a></p>
           </ion-card-content> 
           <ion-item>
             <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
