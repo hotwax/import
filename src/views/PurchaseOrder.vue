@@ -186,7 +186,7 @@ export default defineComponent({
           const missingFields = Object.values(fieldMapping.mappingPrefValue).filter(field => {
             if(!Object.keys(this.content[0]).includes(field)) return field;
           });
-          if(missingFields.length) showToast(this.$t("Some of the mapping fields are missing in the CSV: ", { missingFields: missingFields.join(", ") }))
+          if(missingFields.length) showToast(translate("Some of the mapping fields are missing in the CSV: ", { missingFields: missingFields.join(", ") }))
 
           Object.keys(fieldMapping.mappingPrefValue).map((field) => {
             if(!CsvFields.includes(fieldMapping.mappingPrefValue[field])){
