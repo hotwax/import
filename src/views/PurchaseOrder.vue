@@ -11,7 +11,7 @@
       <main>
         <ion-item>
           <ion-label>{{ $t("Purchase order") }}</ion-label>
-          <ion-label>{{ file.name }}</ion-label>
+          <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item> 
