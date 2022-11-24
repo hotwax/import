@@ -6,14 +6,17 @@
   "targets": {
     "hotwax-digital-commerce": {
       "hosting": {
-        "import-dev": [
+        "dev": [
           "import-dev"
+        ],
+        "uat": [
+          "import-uat"
         ]
       }
     },
     "digital-commerce-71eb8": {
       "hosting": {
-        "hotwax-import": [
+        "prod": [
           "hotwax-import"
         ]
       }
