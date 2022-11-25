@@ -19,15 +19,15 @@
               <p>{{ userProfile?.userLoginId }}</p>
             </ion-label>
           </ion-item>
-          <ion-button fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
+          <ion-button class="settings-button" fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
           <!-- Commenting this code as we currently do not have reset password functionality -->
           <!-- <ion-button fill="outline" color="medium">{{ $t("Reset password") }}</ion-button> -->
         </ion-card>
       </div>
       
-      <h1>{{ $t('OMS') }}</h1>
+      <h1 class="settings-heading">{{ $t('OMS') }}</h1>
 
-      <section>
+      <section class="settings-section">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
@@ -42,7 +42,7 @@
             {{ $t('This is the name of the OMS you are connected to right now. Make sure that you are connected to the right instance before proceeding.') }}
           </ion-card-content> 
            
-          <ion-button @click="goToOms" fill="clear">
+          <ion-button class="settings-button" @click="goToOms" fill="clear">
             {{ $t('Go to OMS') }}
             <ion-icon slot="end" :icon="openOutline" />
           </ion-button>
@@ -51,9 +51,9 @@
 
       <hr />
 
-      <h1>{{ $t('App') }}</h1>
+      <h1 class="settings-heading">{{ $t('App') }}</h1>
       
-      <section>
+      <section class="settings-section">
         <ion-card>
           <ion-card-header>
             <ion-card-title>
@@ -93,7 +93,7 @@
               <ion-label>{{ $t("Sample") }}</ion-label>
             </ion-badge>
           </ion-item>
-          <ion-button fill="clear" @click="updateDateTimeFormat()">
+          <ion-button class="settings-button" fill="clear" @click="updateDateTimeFormat()">
             {{ $t("Save") }}
             <ion-icon slot="end" :icon="saveOutline" />
           </ion-button>
@@ -198,15 +198,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  ion-card > ion-button {
+  .settings-button {
     margin: var(--spacer-xs);
   }
 
-  h1 {
+  .settings-heading {
     padding: var(--spacer-xs) 10px 0;
   }
 
-  section {
+  .settings-section {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     align-items: start;

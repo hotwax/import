@@ -22,8 +22,7 @@ import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
 
 /* Theme variables */
-import './theme/variables.css';
-
+import "ionic-vue-global-styles/src/styles.css";
 import i18n from './i18n'
 import store from './store'
 import { DateTime } from 'luxon';
