@@ -3,14 +3,14 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ $t("Purchase orders") }}</ion-title>
+        <ion-title>{{ $t("Inventory") }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>{{ file.name ? $t("Purchase order ") +  file.name : $t('Purchase order') }}</ion-label>
+          <ion-label>{{ file.name ? $t("Inventory ") +  file.name : $t('Inventory') }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item>      
@@ -118,9 +118,9 @@ export default defineComponent({
             externalFacilityId: item[this.facilityField]
           }
         })
-        this.store.dispatch('order/updatedOrderList', this.productsList);
+        this.store.dispatch('stock/updatedStockList', this.productsList);
         this.router.push({
-          name:'PurchaseOrderDetail'
+          name:'InventoryDetail'
         })
       },
     },

@@ -1,4 +1,2 @@
-export const SN_ORDER = 'order'
-export const ORDER_LIST_UPDATED = SN_ORDER + '/LIST_UPDATED'
-export const ORDER_LIST_ITEMS_UPDATED = SN_ORDER + '/LIST_ITEMS_UPDATED'
-export const ORDER_FILE_NAME_UPDATED = SN_ORDER + '/FILE_NAME_UPDATED'
+export const SN_STOCK = 'stock'
+export const STOCK_LIST_UPDATED = SN_STOCK + '/LIST_UPDATED'

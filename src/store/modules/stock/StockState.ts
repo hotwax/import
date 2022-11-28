@@ -1,8 +1,8 @@
-export default interface OrderState { 
-    list: {
-      items: any,
-      original: any,
-      unidentifiedProductItems: any,
-    },
-    fileName: string
-  }
+export default interface StockState { 
+  list: {
+    items: any,
+    original: any,
+    unidentifiedProductItems: any,
+  },  
+  fileName: string
+}
