@@ -15,9 +15,9 @@
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item> 
-        <ion-item v-if="file" lines="none">
+        <ion-item lines="none">
           <ion-label>{{ $t("Select mapping") }}</ion-label>
-          <ion-select :disabled="!Object.keys(fieldMappings).length" interface="popover" @ionChange="mapFields">
+          <ion-select :disabled="!Object.keys(fieldMappings).length || !file" interface="popover" @ionChange="mapFields">
             <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId">{{ mapping?.mappingPrefName }}</ion-select-option>
           </ion-select>
         </ion-item>     
