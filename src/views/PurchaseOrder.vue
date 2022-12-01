@@ -195,7 +195,6 @@ export default defineComponent({
             }
           })
           this.fieldMapping = fieldMapping.mappingPrefValue;
-          this.mappingName = fieldMapping.mappingPrefName; 
         }
       },
     },
