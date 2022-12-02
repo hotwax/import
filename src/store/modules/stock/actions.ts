@@ -6,9 +6,8 @@ import * as types from './mutation-types'
 
 const actions: ActionTree<StockState, RootState> = {
   async updatedStockList ({commit, rootGetters}, items) {
-    const productIds = items.map((item: any) => {
-      return item.productSKU
-    })
+    const productIds = items.map((item: any) => item.productSKU)
+    const facilityIds = items.map((item: any) => item.externalFacilityId)
     const viewSize = productIds.length;
     const viewIndex = 0;
     const payload = {
@@ -16,6 +15,7 @@ const actions: ActionTree<StockState, RootState> = {
       viewIndex,
       productIds
     }
+    await store.dispatch('user/fetchFacilityLocations', facilityIds);
     await store.dispatch("product/fetchProducts", payload);
     const unidentifiedProductItems = [] as any;
     items = items.map((item: any) => {

@@ -9,7 +9,8 @@ const mutations: MutationTree <UserState> = {
     [types.USER_END_SESSION] (state) {
       state.token = ''
       state.current = null
-      state.currentFacility = {}
+      state.currentFacility = {},
+      state.facilityLocationsByFacilityId = {}
     },
     [types.USER_INFO_UPDATED] (state, payload) {
         state.current = payload
@@ -22,6 +23,9 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
+    },
+    [types.USER_FACILITY_LOCATIONS_BY_FACILITY_ID] (state, payload) {
+        state.facilityLocationsByFacilityId = payload;
     }
 }
 export default mutations;

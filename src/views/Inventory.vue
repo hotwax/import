@@ -38,6 +38,13 @@
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
+
+          <ion-item>
+            <ion-label>{{ $t("Facility Location") }}</ion-label>
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="locationSeqIdField">
+              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+            </ion-select>
+          </ion-item>
         </ion-list>
 
         <ion-button color="medium" @click="mapFields" expand="block">
@@ -88,6 +95,7 @@ export default defineComponent({
         productSkuField: "",
         quantityField: "",
         facilityField: "",
+        locationSeqIdField: "",
         productsList: [],
       }
     },
@@ -115,7 +123,8 @@ export default defineComponent({
             productSKU: item[this.productSkuField],
             quantityOrdered: item[this.quantityField],
             facilityId: '',
-            externalFacilityId: item[this.facilityField]
+            externalFacilityId: item[this.facilityField],
+            locationSeqId: item[this.locationSeqIdField]
           }
         })
         this.store.dispatch('stock/updatedStockList', this.productsList);

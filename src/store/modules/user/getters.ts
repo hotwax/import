@@ -24,6 +24,9 @@ const getters: GetterTree <UserState, RootState> = {
     },
     getDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
+    },
+    getFacilityLocationsByFacilityId: (state) => (facilityId: string) => {
+        return state.facilityLocationsByFacilityId[facilityId]
     }
 }
 export default getters;

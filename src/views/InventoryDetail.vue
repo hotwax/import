@@ -26,26 +26,8 @@
 
         <div class="filters">
           <ion-item>
-            <ion-label>{{ $t("Buffer location") }}</ion-label>
-            <ion-input v-model="numberOfDays" type="number" :placeholder = "$t('Lead time')" /> 
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Inventory buffer") }}</ion-label>
-            <ion-input v-model="numberOfPieces" type="number" :placeholder = "$t('Safety stock')" />
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Catalog") }}</ion-label>
-            <ion-select interface="popover" v-model="catalog">
-              <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
-              <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
-            <ion-select interface="popover" v-model="facilityId">
+            <ion-select interface="popover" v-model="facilityId" @ionChange="fetchFacilityLocations($event.detail.value)">
               <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -121,10 +103,11 @@
             <ion-chip outline class="tablet">
               <ion-label>{{ item.externalFacilityId }}</ion-label>
             </ion-chip>
-
             <ion-chip outline class="tablet">
               <ion-icon :icon="locationOutline" />
-              <ion-label>234567890</ion-label>
+              <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event)">
+                <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
+              </ion-select>
             </ion-chip>
 
             <!-- Used :key as the changed value was not reflected -->
@@ -156,7 +139,7 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonInput, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
@@ -175,7 +158,6 @@ export default defineComponent({
     IonItem,
     IonThumbnail,
     IonLabel,
-    IonInput,
     IonChip,
     IonIcon,
     IonButton,
@@ -192,7 +174,8 @@ export default defineComponent({
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
       dateTimeFormat : 'user/getDateTimeFormat',
-      fileName: 'order/getFileName'
+      fileName: 'order/getFileName',
+      getFacilityLocationsByFacilityId: 'user/getFacilityLocationsByFacilityId'
     }),
     orderId(){
       return (this as any).ordersList.items[0]?.orderId
@@ -208,7 +191,8 @@ export default defineComponent({
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
-      isPOUploadedSuccessfully: false
+      isPOUploadedSuccessfully: false,
+      facilityLocations: {}
     }
   },
   ionViewDidEnter(){
@@ -243,6 +227,9 @@ export default defineComponent({
   },
   
   methods: {
+    setFacilityLocation(ev: Event){
+      console.log(ev);
+    },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
@@ -437,6 +424,10 @@ export default defineComponent({
 
 .list-header {
   background-color: var(--ion-color-light);
+}
+
+ion-chip > ion-select {
+  padding: 0px;
 }
 
 @media (min-width: 991px) {
