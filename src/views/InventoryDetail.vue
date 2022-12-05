@@ -26,7 +26,7 @@
         <div class="filters">
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
-            <ion-select interface="popover" v-model="facilityId" @ionChange="fetchFacilityLocations($event.detail.value)">
+            <ion-select interface="popover" v-model="facilityId">
               <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -50,10 +50,10 @@
         </ion-chip>
 
         <ion-chip outline class="tablet">
-          <ion-label>{{ searchedProduct.externalFacilityId }}</ion-label>
+          <ion-label>{{ searchedProduct.externalFacilityId ? searchedProduct.externalFacilityId : searchedProduct.facilityId }}</ion-label>
         </ion-chip>
 
-        <ion-chip outline class="tablet">
+        <ion-chip outline class="tablet" @click="fetchFacilityLocations(searchedProduct.externalFacilityId)">
           <ion-icon :icon="locationOutline" />
           <ion-select interface="popover" :value="searchedProduct.locationSeqId" @ionChange="setFacilityLocation($event)">
             <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(searchedProduct.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
@@ -102,9 +102,9 @@
             </ion-chip>
 
             <ion-chip outline class="tablet">
-              <ion-label>{{ item.externalFacilityId }}</ion-label>
+              <ion-label>{{ item.externalFacilityId ? item.externalFacilityId : item.facilityId }}</ion-label>
             </ion-chip>
-            <ion-chip outline class="tablet">
+            <ion-chip outline class="tablet" @click="fetchFacilityLocations(item.externalFacilityId ? item.externalFacilityId : item.facilityId)">
               <ion-icon :icon="locationOutline" />
               <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event, item)">
                 <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
@@ -219,6 +219,11 @@ export default defineComponent({
   },
   
   methods: {
+    fetchFacilityLocations(facilityId: any){
+      const facilityLocations = this.getFacilityLocationsByFacilityId(facilityId);
+      if(facilityLocations?.length) return facilityLocations;
+      return this.store.dispatch('user/fetchFacilityLocations', facilityId);
+    },
     setFacilityLocation(ev: CustomEvent, product: any){
       this.stock.items.map((item: any) => { 
         if(item.internalName === product.internalName){

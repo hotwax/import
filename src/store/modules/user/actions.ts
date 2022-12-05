@@ -120,10 +120,9 @@ const actions: ActionTree<UserState, RootState> = {
 
   async fetchFacilityLocations({ commit }, facilityId){
     let resp;
-    const params = {
+    const payload = {
       "inputFields": {
-        facilityId,
-        "facilityId_op": 'in'
+        facilityId
       },
       // Assuming we will not have more than 20 facility locations, hardcoded the viewSize value 20.
       "viewSize": 20,
@@ -133,25 +132,26 @@ const actions: ActionTree<UserState, RootState> = {
       "noConditionFind": "Y"
     }
     try{
-      resp = await UserService.getFacilityLocations(params);
+      resp = await UserService.getFacilityLocations(payload);
       if(resp.status === 200 && !hasError(resp) && resp.data?.count > 0) {
         let facilityLocations = resp.data.docs
-        facilityLocations = facilityLocations.reduce((locations: any, location: any) => {
+
+        facilityLocations = facilityLocations.map((location: any) => {
           const locationPath = [location.areaId, location.aisleId, location.sectionId, location.levelId, location.positionId].filter((value: any) => value).join("");
-          const facilityLocation = {
+          return {
             locationSeqId: location.locationSeqId,
             locationPath: locationPath
           }
-          locations[location.facilityId] ? locations[location.facilityId].push(facilityLocation) : locations[location.facilityId] = [facilityLocation]
-          return locations;
-        }, {})
-        commit(types.USER_FACILITY_LOCATIONS_BY_FACILITY_ID, facilityLocations);
+        })
+        commit(types.USER_FACILITY_LOCATIONS_BY_FACILITY_ID, { facilityLocations, facilityId });
         return facilityLocations;
       } else {
         console.error(resp);
+        return [];
       }
     } catch(err) {
       console.error(err);
+      return [];
     }  
   }
 }
