@@ -13,7 +13,8 @@ const userModule: Module<UserState, RootState> = {
       currentFacility: {},
       instanceUrl: '',
       preferredDateTimeFormat: '',
-      facilityLocationsByFacilityId: {}
+      facilityLocationsByFacilityId: {},
+      fieldMappings: {},
     },
     getters,
     actions,

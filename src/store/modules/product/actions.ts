@@ -12,7 +12,7 @@ const actions: ActionTree<ProductState, RootState> = {
 
   async fetchProducts ( { commit, state }, { productIds }) {
     const cachedProductIds = Object.keys(state.cached);
-    const productIdFilter= productIds.reduce((filter: string, productId: any) => {
+    const productIdFilter= productIds.filter((productId: any) =>  productId).reduce((filter: string, productId: any) => {
       // If product already exist in cached products skip
       if (cachedProductIds.includes(productId)) {
         return filter;

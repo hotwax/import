@@ -152,7 +152,10 @@ const actions: ActionTree<UserState, RootState> = {
     } catch(err) {
       console.error(err);
       return [];
-    }  
+    }
+  },    
+  updateFieldMappings({ commit }, payload){
+    commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
   }
 }
 

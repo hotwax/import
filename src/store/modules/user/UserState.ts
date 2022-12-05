@@ -3,6 +3,7 @@ export default interface UserState {
     current: object | null;
     currentFacility: object;
     instanceUrl: string;
+    fieldMappings: any;
     preferredDateTimeFormat: string;
     facilityLocationsByFacilityId: any;
 }
