@@ -8,5 +8,8 @@ const mutations: MutationTree <StockState> = {
     state.list.original = payload.original;
     state.list.unidentifiedProductItems = payload.unidentifiedProductItems;
   },
+  [types.STOCK_LIST_ITEMS_UPDATED] (state, payload) {
+    state.list.items = payload;
+  },
 }
 export default mutations;

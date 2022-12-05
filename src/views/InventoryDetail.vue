@@ -2,8 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-back-button slot="start" default-href="/purchase-order" />
-        <ion-title>{{ orderId }}</ion-title>
+        <ion-back-button slot="start" default-href="/inventory" />
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
@@ -47,30 +46,32 @@
         </ion-item>
 
         <ion-chip outline>
-          <ion-label>{{ searchedProduct.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
+          <ion-label>{{ searchedProduct.quantityOrdered }} {{ $t("Items") }}</ion-label>
         </ion-chip>
 
-        <ion-chip outline>
-          <ion-label>{{ searchedProduct.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
+        <ion-chip outline class="tablet">
+          <ion-label>{{ searchedProduct.externalFacilityId }}</ion-label>
         </ion-chip>
 
-        <ion-chip outline>
-          <ion-icon :icon="sendOutline" />
-          <ion-label>{{ searchedProduct.arrivalDate }}</ion-label>
+        <ion-chip outline class="tablet">
+          <ion-icon :icon="locationOutline" />
+          <ion-select interface="popover" :value="searchedProduct.locationSeqId" @ionChange="setFacilityLocation($event)">
+            <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(searchedProduct.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
+          </ion-select>
         </ion-chip>
 
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct)">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct, 'stock')">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
 
-      <div v-else v-for="id in getGroupList(ordersList.items)" :key="id">
+      <div v-else v-for="id in getGroupList(stock.items)" :key="id">
         <div class="list-item list-header">
           <ion-item color="light" lines="none">
-            <ion-label>{{ getParentInformation(id, ordersList.items).parentProductName }}</ion-label>
+            <ion-label>{{ getParentInformation(id, stock.items).parentProductName }}</ion-label>
           </ion-item>
 
           <div class="tablet" />
@@ -81,11 +82,11 @@
           
           <ion-checkbox :checked="isParentProductChecked(id)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event)" />
 
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, stock.items), 'stock')">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
-        <div v-for="(item, index) in getGroupItems(id, ordersList.items)" :key="index">
+        <div v-for="(item, index) in getGroupItems(id, stock.items)" :key="index">
           <div class="list-item">
             <ion-item lines="none">
               <ion-thumbnail slot="start">
@@ -97,7 +98,7 @@
             </ion-item>
 
             <ion-chip outline>
-              <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
+              <ion-label>{{ item.quantityOrdered }} {{ $t("Items") }}</ion-label>
             </ion-chip>
 
             <ion-chip outline class="tablet">
@@ -105,7 +106,7 @@
             </ion-chip>
             <ion-chip outline class="tablet">
               <ion-icon :icon="locationOutline" />
-              <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event)">
+              <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event, item)">
                 <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
               </ion-select>
             </ion-chip>
@@ -113,7 +114,7 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item, 'stock')">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -136,10 +137,9 @@ import ProductPopover from '@/components/ProductPopover.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
-import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
@@ -152,7 +152,6 @@ export default defineComponent({
     IonHeader,
     IonToolbar,
     IonBackButton,
-    IonTitle,
     IonContent,
     IonSearchbar,
     IonItem,
@@ -170,23 +169,16 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      ordersList: 'stock/getStock',
+      stock: 'stock/getStock',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
-      dateTimeFormat : 'user/getDateTimeFormat',
       fileName: 'order/getFileName',
       getFacilityLocationsByFacilityId: 'user/getFacilityLocationsByFacilityId'
-    }),
-    orderId(){
-      return (this as any).ordersList.items[0]?.orderId
-    }
+    })
   },
   data() {
     return {
-      numberOfDays: 0,
-      numberOfPieces: 0,
-      catalog: "N",
-      facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
+      facilityId: (this as any)?.stock?.items[0]?.facilityId,
       facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
@@ -202,7 +194,7 @@ export default defineComponent({
     let canLeave = false;
     const alert = await alertController.create({
       header: this.$t("Leave page"),
-      message: this.$t("Any edits made to this PO will be lost."),
+      message: this.$t("Any edits made to this CSV will be lost."),
       buttons: [
         {
           text: this.$t("STAY"),
@@ -227,36 +219,36 @@ export default defineComponent({
   },
   
   methods: {
-    setFacilityLocation(ev: Event){
-      console.log(ev);
+    setFacilityLocation(ev: CustomEvent, product: any){
+      this.stock.items.map((item: any) => { 
+        if(item.internalName === product.internalName){
+          item.locationSeqId = ev.detail.value;
+        }
+      });
+      this.store.dispatch('stock/updatedStockListItems', this.stock.items);
     },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
-        componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
+        componentProps: { 'unidentifiedProductItems': this.stock.unidentifiedProductItems }
       });
       return missingSkuModal.present();
     }, 
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
-      this.searchedProduct = this.ordersList.items.find((item: any) => {
+      this.searchedProduct = this.stock.items.find((item: any) => {
         return item.internalName === product.internalName;
       })
     },
     async save(){
-      const uploadData = this.ordersList.items.filter((item: any) => {
+      const uploadData = this.stock.items.filter((item: any) => {
         return item.isSelected;
       }).map((item: any) => {
         return {
           "poId": " ",
-          "externalId": item.orderId,
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
-          //Convert date in the format accepted by the server.
-          "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
-          "quantity": item.quantityOrdered,
-          "isNewProduct": item.isNewProduct,
-          "idValue": item.shopifyProductSKU,
+          "idValue": item.productSKU,
           "idType": "SKU"
         };
       })
@@ -269,7 +261,7 @@ export default defineComponent({
         message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
         buttons: [
             {
-              text: this.$t("cancel"),
+              text: this.$t("Cancel"),
               role: 'cancel',
             },
             {
@@ -321,14 +313,14 @@ export default defineComponent({
         console.error(err)
       }
     },
-    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
+    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any, type: string) {
       const popover = await popoverController
         .create({
           component: ProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
-          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
+          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item, 'type': type }
         });
         popover.onDidDismiss().then(() => {
           this.searchProduct(this.queryString);
@@ -336,28 +328,26 @@ export default defineComponent({
       return popover.present();
     },
     isParentProductChecked(parentProductId: string) {
-      const items = this.getGroupItems(parentProductId, this.ordersList.items);
+      const items = this.getGroupItems(parentProductId, this.stock.items);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
     },
     revertAll() {
-      const original = JSON.parse(JSON.stringify(this.ordersList.original));
-      this.store.dispatch('order/updatedOrderListItems', original);
+      const original = JSON.parse(JSON.stringify(this.stock.original));
+      this.store.dispatch('stock/updatedStockListItems', original);
     },
     apply() {
-      this.ordersList.items.map((item: any) => {
+      this.stock.items.map((item: any) => {
         if (item.isSelected) {
-          item.quantityOrdered -= this.numberOfPieces
-          item.isNewProduct = this.catalog;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
             item.externalFacilityId = "";
           }
         }
       })
-      this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
+      this.store.dispatch('stock/updatedStockListItems', this.stock.items);
     },
     getGroupList (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
@@ -369,14 +359,14 @@ export default defineComponent({
       return items.find((item: any) => item.parentProductId == id)
     },
     selectAllItems() {
-      this.ordersList.items.forEach((item: any) => {
+      this.stock.items.forEach((item: any) => {
         item.isSelected = true;
       })
     },
     selectParentProduct(parentProductId: any, event: any) {
       // Todo: Need to find a better approach.
       if(this.isParentProductUpdated){
-        this.ordersList.items.forEach((item: any) => {
+        this.stock.items.forEach((item: any) => {
           if (item.parentProductId === parentProductId) {
             item.isSelected = event.detail.checked;
           }

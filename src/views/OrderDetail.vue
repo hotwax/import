@@ -80,7 +80,7 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct)">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct, 'order')">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -99,7 +99,7 @@
           
           <ion-checkbox :checked="isParentProductChecked(id)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event)" />
 
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items), 'order')">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
@@ -130,7 +130,7 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item, 'order')">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -338,14 +338,14 @@ export default defineComponent({
         console.error(err)
       }
     },
-    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
+    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any, type: string) {
       const popover = await popoverController
         .create({
           component: ProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
-          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
+          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item, 'type': type }
         });
         popover.onDidDismiss().then(() => {
           this.searchProduct(this.queryString);

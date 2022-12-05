@@ -37,5 +37,8 @@ const actions: ActionTree<StockState, RootState> = {
 
     commit(types.STOCK_LIST_UPDATED, { items, original, unidentifiedProductItems });
   },
+  updatedStockListItems({ commit }, stockItems){
+    commit(types.STOCK_LIST_ITEMS_UPDATED, stockItems);
+  },
 }
 export default actions;

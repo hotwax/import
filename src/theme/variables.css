@@ -292,7 +292,7 @@ body {
   }
 
   .tablet {
-    display: unset;
+    display: flex;
   }
 }
 
@@ -306,7 +306,7 @@ body {
   }
 
   .tablet {
-    display: unset;
+    display: flex;
   }
 }
 
