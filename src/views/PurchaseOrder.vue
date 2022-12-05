@@ -133,11 +133,20 @@ export default defineComponent({
         return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
       },
       saveMapping() {
-        if (this.mappingName) {
+        if (this.mappingName && this.file && this.areAllFieldsSelected()) {
+          showToast(translate("Mapping saved successfully"));
           const mappingPrefId = this.generateUniqueMappingPrefId();
           this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         } else {
-          showToast(translate("Enter mapping name"));
+          if(!this.mappingName) {
+            showToast(translate("Enter mapping name"));
+          }
+          if (!this.file) {
+            showToast(translate("Upload a file"));
+          }
+          if (!this.areAllFieldsSelected()) {
+            showToast(translate("Map all fields"));
+          }
         }
       },
       getFile(event) {
@@ -198,6 +207,9 @@ export default defineComponent({
           this.mappingName = fieldMapping.mappingPrefName; 
         }
       },
+      areAllFieldsSelected() {
+        return Object.values(this.fieldMapping).every(field => field !== "");
+      }
     },
     setup() {
     const router = useRouter();
