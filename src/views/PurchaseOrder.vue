@@ -133,12 +133,21 @@ export default defineComponent({
         return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
       },
       saveMapping() {
-        if (this.mappingName) {
-          const mappingPrefId = this.generateUniqueMappingPrefId();
-          this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
-        } else {
+        if(!this.mappingName) {
           showToast(translate("Enter mapping name"));
+          return
         }
+        if (!this.file) {
+          showToast(translate("Upload a file"));
+          return
+        }
+        if (!this.areAllFieldsSelected()) {
+          showToast(translate("Map all fields"));
+          return
+        }
+        const mappingPrefId = this.generateUniqueMappingPrefId();
+        this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
+        showToast(translate("Mapping saved successfully"));
       },
       getFile(event) {
         this.file = event.target.files[0];
@@ -157,10 +166,9 @@ export default defineComponent({
         })
       },
       review() {
-        const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
         if (this.content.length <= 0) {
           showToast(translate("Please upload a valid purchase order csv to continue"));
-        } else if (areAllFieldsSelected) {
+        } else if (this.areAllFieldsSelected()) {
           this.orderItemsList = this.content.map(item => {
             return {
               orderId: item[this.fieldMapping.orderId],
@@ -197,6 +205,9 @@ export default defineComponent({
           this.fieldMapping = fieldMapping.mappingPrefValue;
         }
       },
+      areAllFieldsSelected() {
+        return Object.values(this.fieldMapping).every(field => field !== "");
+      }
     },
     setup() {
     const router = useRouter();
