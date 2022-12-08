@@ -168,7 +168,7 @@ export default defineComponent({
       review() {
         if (this.content.length <= 0) {
           showToast(translate("Please upload a valid purchase order csv to continue"));
-        } else if (areAllFieldsSelected()) {
+        } else if (this.areAllFieldsSelected()) {
           this.orderItemsList = this.content.map(item => {
             return {
               orderId: item[this.fieldMapping.orderId],
