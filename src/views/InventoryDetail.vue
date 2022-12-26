@@ -280,8 +280,8 @@ export default defineComponent({
                       window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
                     }
                   }])
-                  this.router.push("/purchase-order");
-                  this.store.dispatch('order/clearOrderList');
+                  this.router.push("/inventory");
+                  this.store.dispatch('stock/clearStockList');
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
                 })
