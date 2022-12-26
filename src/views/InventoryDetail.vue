@@ -345,6 +345,7 @@ export default defineComponent({
         await this.stock.items.map( async (item: any) => {
           if (item.isSelected) {
             item.facilityId = this.facilityId;
+            //TODO: Need to improve the handling of locationSeqId.
             item.locationSeqId = facilityLocations && facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0].locationSeqId ? facilityLocations[this.facilityId][0].locationSeqId : "";
             item.externalFacilityId = "";
           }
