@@ -26,7 +26,7 @@
         <div class="filters">
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
-            <ion-select interface="popover" v-model="facilityId" @ionChange="fetchFacilityLocations($event.detail.value)">
+            <ion-select interface="popover" v-model="facilityId">
               <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -46,7 +46,7 @@
         </ion-item>
 
         <ion-chip outline>
-          <ion-label>{{ searchedProduct.quantityOrdered }} {{ $t("Items") }}</ion-label>
+          <ion-label>{{ searchedProduct.quantity }} {{ $t("Items") }}</ion-label>
         </ion-chip>
 
         <ion-chip outline class="tablet">
@@ -98,16 +98,16 @@
             </ion-item>
 
             <ion-chip outline>
-              <ion-label>{{ item.quantityOrdered }} {{ $t("Items") }}</ion-label>
+              <ion-label>{{ item.quantity }} {{ $t("Items") }}</ion-label>
             </ion-chip>
 
             <ion-chip outline class="tablet">
-              <ion-label>{{ item.externalFacilityId }}</ion-label>
+              <ion-label>{{ item.externalFacilityId ? item.externalFacilityId : item.facilityId }}</ion-label>
             </ion-chip>
             <ion-chip outline class="tablet">
               <ion-icon :icon="locationOutline" />
               <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event, item)">
-                <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
+                <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.externalFacilityId ? item.externalFacilityId : item.facilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
               </ion-select>
             </ion-chip>
 
@@ -245,20 +245,21 @@ export default defineComponent({
         return item.isSelected;
       }).map((item: any) => {
         return {
-          "poId": " ",
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
           "idValue": item.productSKU,
-          "idType": "SKU"
+          "idType": "SKU",
+          "locationSeqId": item.locationSeqId,
+          "availableQty": item.quantity
         };
       })
       const fileName = this.fileName.replace(".csv", ".json");
       const params = {
-        "configId": "IMP_PO"
+        "configId": "RESET_INVENTORY"
       }
       const alert = await alertController.create({
-        header: this.$t("Upload purchase order"),
-        message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
+        header: this.$t("Reset inventory"),
+        message: this.$t("Make sure all the data you have entered is correct."),
         buttons: [
             {
               text: this.$t("Cancel"),
@@ -273,11 +274,11 @@ export default defineComponent({
                   params
                 })).then(() => {
                   this.isPOUploadedSuccessfully = true;
-                  showToast(translate("The PO has been uploaded successfully"), [{
+                  showToast(translate("The inventory has been updated successfully"), [{
                     text: translate('View'),
                     role: 'view',
                     handler: () => {
-                      window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
+                      window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=RESET_INVENTORY`, '_blank');
                     }
                   }])
                   this.router.push("/inventory");
@@ -338,16 +339,18 @@ export default defineComponent({
       const original = JSON.parse(JSON.stringify(this.stock.original));
       this.store.dispatch('stock/updatedStockListItems', original);
     },
-    apply() {
-      this.stock.items.map((item: any) => {
-        if (item.isSelected) {
-          if(this.facilityId) {
+    async apply() {
+      if(this.facilityId) {
+        const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', [this.facilityId]);
+        await this.stock.items.map( async (item: any) => {
+          if (item.isSelected) {
             item.facilityId = this.facilityId;
+            item.locationSeqId = facilityLocations && facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0].locationSeqId ? facilityLocations[this.facilityId][0].locationSeqId : "";
             item.externalFacilityId = "";
           }
-        }
-      })
-      this.store.dispatch('stock/updatedStockListItems', this.stock.items);
+        })
+      }
+      await this.store.dispatch('stock/updatedStockListItems', this.stock.items);
     },
     getGroupList (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));

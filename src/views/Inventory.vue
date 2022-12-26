@@ -121,7 +121,7 @@ export default defineComponent({
         this.productsList = this.content.map(item => {
           return {
             productSKU: item[this.productSkuField],
-            quantityOrdered: item[this.quantityField],
+            quantity: item[this.quantityField],
             facilityId: '',
             externalFacilityId: item[this.facilityField],
             locationSeqId: item[this.locationSeqIdField]
