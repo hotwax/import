@@ -10,7 +10,8 @@
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>{{ file.name ? $t("Inventory ") +  file.name : $t('Inventory') }}</ion-label>
+          <ion-label>{{ $t("Inventory") }}</ion-label>
+          <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item>      
