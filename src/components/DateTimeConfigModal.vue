@@ -80,7 +80,7 @@ import { warningOutline } from 'ionicons/icons'
 import { useStore } from "@/store";
 
 export default defineComponent({
-  name: "TimeZoneModal",
+  name: "DateTimeConfigModal",
   props: ["arrivalDate"],
   data() {
     return {
@@ -103,7 +103,7 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     async saveAlert() {
-      const message = this.$t("Are you sure you want to change the time zone to?", { timeZoneId: this.timeZoneId });
+      const message = this.$t("Are you sure you want to change the date time format?");
       const alert = await alertController.create({
         header: this.$t("Update date time format"),
         message,
