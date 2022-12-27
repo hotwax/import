@@ -142,10 +142,10 @@ const actions: ActionTree<UserState, RootState> = {
             locationSeqId: location.locationSeqId,
             locationPath: locationPath
           }
-          locations[location.facilityId] ? locations[location.facilityId].push(facilityLocation) : locations[location.facilityId] = [facilityLocation]
+          locations.push(facilityLocation);
           return locations;
-        }, {})
-        commit(types.USER_FACILITY_LOCATIONS_BY_FACILITY_ID, facilityLocations);
+        }, []);
+        commit(types.USER_FACILITY_LOCATIONS_BY_FACILITY_ID, { facilityLocations, facilityId });
         return facilityLocations;
       } else {
         console.error(resp);

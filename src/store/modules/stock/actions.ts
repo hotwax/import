@@ -7,7 +7,7 @@ import * as types from './mutation-types'
 const actions: ActionTree<StockState, RootState> = {
   async updatedStockList ({commit, rootGetters}, items) {
     const productIds = items.map((item: any) => item.productSKU)
-    const facilityIds = items.map((item: any) => item.externalFacilityId)
+    const facilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))]
     const viewSize = productIds.length;
     const viewIndex = 0;
     const payload = {

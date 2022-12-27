@@ -342,11 +342,11 @@ export default defineComponent({
     async apply() {
       if(this.facilityId) {
         const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', [this.facilityId]);
-        await this.stock.items.map( async (item: any) => {
+        await this.stock.items.map((item: any) => {
           if (item.isSelected) {
             item.facilityId = this.facilityId;
             //TODO: Need to improve the handling of locationSeqId.
-            item.locationSeqId = facilityLocations && facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0].locationSeqId ? facilityLocations[this.facilityId][0].locationSeqId : "";
+            item.locationSeqId = facilityLocations && facilityLocations[0] && facilityLocations[0].locationSeqId ? facilityLocations[0].locationSeqId : "";
             item.externalFacilityId = "";
           }
         })
