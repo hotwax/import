@@ -17,7 +17,7 @@
         </ion-item> 
         <ion-item lines="none">
           <ion-label>{{ $t("Select mapping") }}</ion-label>
-          <ion-select :disabled="!Object.keys(fieldMappings).length || !file" interface="popover" @ionChange="mapFields">
+          <ion-select :value="Object.keys(fieldMappings).length" :disabled="!Object.keys(fieldMappings).length || !file" interface="popover" @ionChange="mapFields">
             <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId">{{ mapping?.mappingPrefName }}</ion-select-option>
           </ion-select>
         </ion-item>     
@@ -153,6 +153,13 @@ export default defineComponent({
         this.file = event.target.files[0];
         if(this.file){
           showToast(translate("File uploaded successfully"));
+          this.fieldMapping = {
+            orderId: "",
+            productSku: "",
+            orderDate: "",
+            quantity: "",
+            facility: "",
+          }
           this.parseFile();
           this.store.dispatch('order/updateFileName', this.file.name);
         }
