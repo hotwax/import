@@ -412,7 +412,7 @@ export default defineComponent({
       });
       return timeZoneModal.present();
     },
-    showInvalidDateTime(date: string) {
+    showDateTime(date: string) {
       return DateTime.fromFormat(date, this.dateTimeFormat).toFormat(this.dateTimeFormat)
     }
   },
