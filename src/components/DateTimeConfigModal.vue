@@ -31,8 +31,8 @@
           
     <ion-item class="ion-padding-bottom">
       <ion-label color="medium">{{ $t("Parsed output") }}</ion-label>
-        <ion-label slot="end">{{ isDateInvalid(arrivalDate) ? $t("Invalid input") : arrivalDate }}</ion-label>
-        <ion-icon slot="end" color="danger" v-if="isDateInvalid(arrivalDate)" :icon="warningOutline"></ion-icon>
+      <ion-label slot="end">{{ isDateInvalid(arrivalDate) ? $t("Invalid input") : arrivalDate }}</ion-label>
+      <ion-icon slot="end" color="danger" v-if="isDateInvalid(arrivalDate)" :icon="warningOutline"></ion-icon>
     </ion-item>
 
     <ion-note class="ion-text-wrap ion-padding">{{ $t("Changes to the date time format will cause edits done to your PO to be reverted.") }}</ion-note>
