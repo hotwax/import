@@ -122,9 +122,9 @@
               <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
             </ion-chip>
 
-            <ion-chip outline class="tablet" @click="configureFormat(item.arrivalDate)">
+            <ion-chip outline class="tablet" @click="configureDateTimeFormat(item.arrivalDate)">
               <ion-icon :icon="sendOutline" />
-              <ion-label>{{ showInvalidDateTime(item.arrivalDate) }}</ion-label>
+              <ion-label>{{ showDateTime(item.arrivalDate) }}</ion-label>
             </ion-chip>
 
             <!-- Used :key as the changed value was not reflected -->
@@ -403,7 +403,7 @@ export default defineComponent({
         this.isParentProductUpdated = false;
       }
     },
-    async configureFormat(arrivalDate: string) {
+    async configureDateTimeFormat(arrivalDate: string) {
       const timeZoneModal = await modalController.create({
         component: DateTimeConfigModal,
         componentProps: {

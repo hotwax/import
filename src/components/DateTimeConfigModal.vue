@@ -13,44 +13,35 @@
   <ion-content class="ion-padding">
     
     <ion-item>
-      <ion-label>
-        <p>{{ $t("CSV input") }}</p>
-      </ion-label>
+      <ion-label color="medium">{{ $t("CSV input") }}</ion-label>
       <ion-label slot="end">{{ arrivalDate }}</ion-label>
     </ion-item> 
     <ion-item>
-      <ion-label>
-        <p>{{ $t("Expected input") }}</p>
-      </ion-label>
+      <ion-label color="medium">{{ $t("Expected input") }}</ion-label>
       <ion-label slot="end">{{ currentDate }}</ion-label>
     </ion-item>
-    <ion-item lines="none">
+    <ion-item lines="full">
       <ion-label>{{ $t("Custom date format") }}</ion-label>
       <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value;" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
     </ion-item>
 
-    <hr />
-
     <ion-item class="ion-padding-bottom" lines="none">
-      <p><a href="https://moment.github.io/luxon/#/formatting?id=table-of-tokens" target="_blank">{{ $t('View all date time formats supported by the HotWax Import app.') }}</a></p>
+      <a href="https://moment.github.io/luxon/#/formatting?id=table-of-tokens" target="_blank">{{ $t('View all date time formats supported by the HotWax Import app.') }}</a>
     </ion-item>
           
     <ion-item>
-      <ion-label>
-        <p>{{ $t("Parsed output") }}</p>
-      </ion-label>
-      <ion-label slot="end">{{ isDateInvalid(arrivalDate) ? $t("Invalid input") : arrivalDate }}</ion-label>
+      <ion-label color="medium">{{ $t("Parsed output") }}</ion-label>
+        <ion-label slot="end">{{ isDateInvalid(arrivalDate) ? $t("Invalid input") : arrivalDate }}</ion-label>
+        <ion-icon slot="end" color="danger" v-if="isDateInvalid(arrivalDate)" :icon="warningOutline"></ion-icon>
     </ion-item>
 
     <ion-item lines="none">
-      <ion-label>
-        <p>{{ $t("Changes to the date time format will cause edits done to your PO to be reverted.") }}</p>
-      </ion-label>
+      <ion-label color="medium" class="ion-text-wrap">{{ $t("Changes to the date time format will cause edits done to your PO to be reverted.") }}</ion-label>
     </ion-item>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="saveAlert">
-        <ion-icon :icon="save" />
+      <ion-fab-button @click="save()">
+        <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
   </ion-content>
@@ -73,7 +64,7 @@ import {
   modalController,
   alertController } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { close, save } from "ionicons/icons";
+import { close, saveOutline } from "ionicons/icons";
 import { mapGetters } from 'vuex';
 import { DateTime } from 'luxon';
 import { warningOutline } from 'ionicons/icons'
@@ -102,7 +93,7 @@ export default defineComponent({
     closeModal() {
       modalController.dismiss({ dismissed: true });
     },
-    async saveAlert() {
+    async save() {
       const message = this.$t("Are you sure you want to change the date time format?");
       const alert = await alertController.create({
         header: this.$t("Update date time format"),
@@ -133,7 +124,7 @@ export default defineComponent({
     const store = useStore();
     return {
       close,
-      save,
+      saveOutline,
       store,
       warningOutline
     };
@@ -154,8 +145,3 @@ export default defineComponent({
     },
 });
 </script>
-<style scoped>
-  hr {
-    border-top: 1px solid var(--ion-color-medium);
-  }
-</style>

@@ -173,7 +173,7 @@ export default defineComponent({
             return {
               orderId: item[this.fieldMapping.orderId],
               shopifyProductSKU: item[this.fieldMapping.productSku],
-              arrivalDate: item[this.fieldMapping.orderDate], //This is to verify whether the date format is correct.
+              arrivalDate: item[this.fieldMapping.orderDate], 
               quantityOrdered: item[this.fieldMapping.quantity],
               facilityId: '',
               externalFacilityId: item[this.fieldMapping.facility]
