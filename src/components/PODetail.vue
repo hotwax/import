@@ -1,8 +1,12 @@
 <template> 
   <div>
-    <h1>PO1</h1>
+    <ion-item lines="none">
+      <h2 slot="start">PO1</h2> 
+      <ion-button color="medium" fill="outline">{{ $t("Edit duplicate PO ID") }}</ion-button>
+    </ion-item>
+    
     <div class="list-item list-header">
-      <ion-item color="light" lines="full" >
+      <ion-item color="light" lines="none" >
         <ion-label>Parent Product</ion-label>
       </ion-item>  
       <div class="tablet" />  
@@ -16,7 +20,7 @@
     </div>
     <div>
       <div class="list-item">
-        <ion-item lines="full">
+        <ion-item lines="none">
           <ion-thumbnail slot="start">
             <Image :src="imageUrl" />
           </ion-thumbnail>
@@ -44,9 +48,9 @@
     </div>
   </div>
   <div>
-    <h1>PO2</h1>
+    <h2>PO2</h2> 
     <div class="list-item list-header">
-      <ion-item color="light" lines="full">
+      <ion-item color="light" lines="none" >
         <ion-label>Parent Product</ion-label>
       </ion-item>  
       <div class="tablet" />  
@@ -60,8 +64,8 @@
     </div>
     <div>
       <div class="list-item">
-        <ion-item lines="full">
-          <ion-thumbnail>
+        <ion-item lines="none">
+          <ion-thumbnail slot="start">
             <Image :src="imageUrl" />
           </ion-thumbnail>
           <ion-label class="ion-text-wrap">
@@ -136,6 +140,7 @@ export default defineComponent({
 .list-item {
   --columns-tablet: 4;
   --columns-desktop: 6;
+  border-bottom: #92949C 1px solid;
 }
 
 .list-item :first-child ion-label {
