@@ -59,10 +59,9 @@ import {
   IonTitle,
   IonToolbar,
   modalController,
-  alertController } from "@ionic/vue";
+} from "@ionic/vue";
 import { defineComponent } from "vue";
 import { close, saveOutline } from "ionicons/icons";
-import { mapGetters } from 'vuex';
 import { useStore } from "@/store";
 export default defineComponent({
   name: "DateTimeParseErrorModal",

@@ -6,34 +6,20 @@
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ $t("Bulk adjustment") }}</ion-title>
+      <ion-title>{{ $t("Missing facilities") }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content class="ion-padding">
 
     <ion-item lines="full">
-      <ion-label>{{ $t("Buffer days") }}</ion-label>
-      <ion-input type="number" :placeholder = "$t('Lead time')" /> 
-    </ion-item>
-
-    <ion-item lines="full">
-      <ion-label>{{ $t("Order buffer") }}</ion-label>
-      <ion-input type="number" :placeholder = "$t('Safety stock')" />
-    </ion-item>
-
-    <ion-item>
-      <ion-label>{{ $t("Catalog") }}</ion-label>
-      <ion-select interface="popover" value="N">
-        <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
-        <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>{{ $t("Facility") }}</ion-label>
-      <ion-select interface="popover" value="facility">
-        <ion-select-option value="facility">NJ Warehouse</ion-select-option>
+      <p>
+        <ion-label>input facility value</ion-label>
+        <ion-note>5 {{ $t("line items") }}</ion-note> 
+      </p>
+      
+      <ion-select slot="end" value="facility">
+          <ion-select-option value="facility">Map facility</ion-select-option>
       </ion-select>
     </ion-item>
 
@@ -55,7 +41,6 @@ import {
   IonHeader,
   IonItem,
   IonIcon,
-  IonInput,
   IonLabel,
   IonSelect,
   IonSelectOption,
@@ -67,7 +52,7 @@ import { defineComponent } from "vue";
 import { close, saveOutline } from "ionicons/icons";
 import { useStore } from "@/store";
 export default defineComponent({
-  name: "BulkAdjustment",
+  name: "MissingFacilityModal",
   components: {
     IonButtons,
     IonButton,
@@ -77,7 +62,6 @@ export default defineComponent({
     IonHeader,
     IonIcon,
     IonItem,
-    IonInput,
     IonLabel,
     IonSelect,
     IonSelectOption,

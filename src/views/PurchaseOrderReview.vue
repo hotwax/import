@@ -36,7 +36,7 @@
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item>
+          <ion-item @click="missingFacilityModal()">
             <ion-icon slot="start" :icon="businessOutline" />
             <ion-label>{{ $t("Missing facilities") }}</ion-label>
             <ion-note slot="end">10 {{ $t("items") }}</ion-note>
@@ -93,6 +93,7 @@ import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, ch
 import PODetails from '@/components/PODetail.vue'
 import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
 import BulkAdjustmentModal from '@/components/BulkAdjustmentModal.vue';
+import MissingFacilityModal from '@/components/MissingFacilitiesModal.vue';
 
 export default defineComponent({
   name: 'PurchaseOrderDetail',
@@ -133,6 +134,13 @@ export default defineComponent({
         componentProps: { }
       });
       return bulkAdjustmentModal.present();
+    },
+    async missingFacilityModal() {
+      const missingFacilityModal = await modalController.create({
+        component: MissingFacilityModal,
+        componentProps: { }
+      });
+      return missingFacilityModal.present();
     },
   },
   setup() {

@@ -47,8 +47,12 @@
       </div>
     </div>
   </div>
+  
   <div>
-    <h2>PO2</h2> 
+    <ion-item lines="none">
+      <h2>PO2</h2> 
+    </ion-item>
+    
     <div class="list-item list-header">
       <ion-item color="light" lines="none" >
         <ion-label>Parent Product</ion-label>
