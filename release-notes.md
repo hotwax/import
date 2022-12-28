@@ -1,3 +1,12 @@
+# Release 1.1.1
+
+## What's Changed
+* Updated the position of file name label (#31fu19p) by @k2maan in https://github.com/hotwax/import/pull/103
+* Fixed: Create new mapping should not show currently selected mapping name(#326r8mq) by @shashwatbangar in https://github.com/hotwax/import/pull/109
+* Fixed: User should not be able to select a mapping before uploading a file(#326r315) by @shashwatbangar in https://github.com/hotwax/import/pull/108
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v1.1.0...v1.1.1
 
 # Release 1.1.0
 
