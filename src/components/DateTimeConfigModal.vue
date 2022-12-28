@@ -29,15 +29,13 @@
       <a href="https://moment.github.io/luxon/#/formatting?id=table-of-tokens" target="_blank">{{ $t('View all date time formats supported by the HotWax Import app.') }}</a>
     </ion-item>
           
-    <ion-item>
+    <ion-item class="ion-padding-bottom">
       <ion-label color="medium">{{ $t("Parsed output") }}</ion-label>
         <ion-label slot="end">{{ isDateInvalid(arrivalDate) ? $t("Invalid input") : arrivalDate }}</ion-label>
         <ion-icon slot="end" color="danger" v-if="isDateInvalid(arrivalDate)" :icon="warningOutline"></ion-icon>
     </ion-item>
 
-    <ion-item lines="none">
-      <ion-label color="medium" class="ion-text-wrap">{{ $t("Changes to the date time format will cause edits done to your PO to be reverted.") }}</ion-label>
-    </ion-item>
+    <ion-note class="ion-text-wrap ion-padding">{{ $t("Changes to the date time format will cause edits done to your PO to be reverted.") }}</ion-note>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button @click="save()">
@@ -59,6 +57,7 @@ import {
   IonIcon,
   IonInput,
   IonLabel,
+  IonNote,
   IonTitle,
   IonToolbar,
   modalController,
@@ -140,8 +139,15 @@ export default defineComponent({
     IonItem,
     IonInput,
     IonLabel,
+    IonNote,
     IonTitle,
     IonToolbar 
     },
 });
 </script>
+
+<style scoped>
+a {
+  text-decoration: none;
+}
+</style>
