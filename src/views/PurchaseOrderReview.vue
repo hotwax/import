@@ -22,7 +22,7 @@
         </div>
 
         <div class="filters">
-          <ion-item>
+          <ion-item @click="bulkAdjustmentModal()"> 
             <ion-icon slot="start" :icon="calculatorOutline" />
             <ion-label>{{ $t("Bulk adjustment") }}</ion-label>
             <ion-note slot="end">50 {{ $t("items selected") }}</ion-note>
@@ -92,6 +92,7 @@ import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, Io
 import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, checkboxOutline, calculatorOutline, cloudUploadOutline, arrowUndoOutline, chevronForwardOutline, timeOutline } from 'ionicons/icons'
 import PODetails from '@/components/PODetail.vue'
 import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
+import BulkAdjustmentModal from '@/components/BulkAdjustmentModal.vue';
 
 export default defineComponent({
   name: 'PurchaseOrderDetail',
@@ -119,14 +120,19 @@ export default defineComponent({
     return {}
   },
   methods: {
-    async dateTimeParseErrorModal(arrivalDate: string) {
-      const timeZoneModal = await modalController.create({
+    async dateTimeParseErrorModal() {
+      const dateTimeParseErrorModal = await modalController.create({
         component: DateTimeParseErrorModal,
-        componentProps: {
-          arrivalDate
-        }
+        componentProps: { }
       });
-      return timeZoneModal.present();
+      return dateTimeParseErrorModal.present();
+    },
+    async bulkAdjustmentModal() {
+      const bulkAdjustmentModal = await modalController.create({
+        component: BulkAdjustmentModal,
+        componentProps: { }
+      });
+      return bulkAdjustmentModal.present();
     },
   },
   setup() {

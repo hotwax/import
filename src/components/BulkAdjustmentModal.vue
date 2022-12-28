@@ -6,35 +6,37 @@
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ $t("Date time parse error") }}</ion-title>
+      <ion-title>{{ $t("Bulk adjustment") }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content class="ion-padding">
 
-    <div>
-      <ion-label class="overline">{{ $t("File upload") }}</ion-label>
-      <h3>{{ $t("Date format") }}</h3> 
-      <ion-label color="medium">{{ $t("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}</ion-label>
-    </div>
-       
-    <ion-item class="ion-padding-top">
-      <ion-input clear-input='true' value="DD/MM/YYYY" />
+    <ion-item lines="full">
+      <ion-label>{{ $t("Buffer days") }}</ion-label>
+      <ion-input type="number" :placeholder = "$t('Lead time')" /> 
     </ion-item>
 
-    <ion-item class="ion-padding-bottom">
-      <ion-label>02/02/2022</ion-label>
-      <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
+    <ion-item lines="full">
+      <ion-label>{{ $t("Order buffer") }}</ion-label>
+      <ion-input type="number" :placeholder = "$t('Safety stock')" />
     </ion-item>
 
-    <ion-button fill="outline">
-        Check sample
-    </ion-button>
-
-    <ion-item lines="none">
-      <ion-label color="medium">{{ $t("This will update 50 products across 3 POs") }}</ion-label>
+    <ion-item>
+      <ion-label>{{ $t("Catalog") }}</ion-label>
+      <ion-select interface="popover" value="N">
+        <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
+        <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
+      </ion-select>
     </ion-item>
-    
+
+    <ion-item>
+      <ion-label>{{ $t("Facility") }}</ion-label>
+      <ion-select interface="popover" value="facility">
+        <ion-select-option value="facility">NJ Warehouse</ion-select-option>
+      </ion-select>
+    </ion-item>
+
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button>
         <ion-icon :icon="saveOutline" />
@@ -45,7 +47,6 @@
 </template>
 <script lang="ts">
 import { 
-  IonBadge,  
   IonButtons,
   IonButton,
   IonContent,
@@ -56,6 +57,8 @@ import {
   IonIcon,
   IonInput,
   IonLabel,
+  IonSelect,
+  IonSelectOption,
   IonTitle,
   IonToolbar,
   modalController,
@@ -65,9 +68,8 @@ import { close, saveOutline } from "ionicons/icons";
 import { mapGetters } from 'vuex';
 import { useStore } from "@/store";
 export default defineComponent({
-  name: "DateTimeParseErrorModal",
+  name: "BulkAdjustment",
   components: {
-    IonBadge,   
     IonButtons,
     IonButton,
     IonContent,
@@ -78,6 +80,8 @@ export default defineComponent({
     IonItem,
     IonInput,
     IonLabel,
+    IonSelect,
+    IonSelectOption,
     IonTitle,
     IonToolbar 
     },
