@@ -29,7 +29,7 @@
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item>
+          <ion-item @click="dateTimeParseErrorModal()">
             <ion-icon slot="start" :icon="timeOutline" />
             <ion-label>{{ $t("Date time parse error") }}</ion-label>
             <ion-note slot="end">20 {{ $t("items") }}</ion-note>
@@ -91,6 +91,7 @@ import { useRouter } from 'vue-router';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonLabel, IonIcon, IonButton, IonButtons, IonFab, IonFabButton, IonSegment, IonSegmentButton, IonNote, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, checkboxOutline, calculatorOutline, cloudUploadOutline, arrowUndoOutline, chevronForwardOutline, timeOutline } from 'ionicons/icons'
 import PODetails from '@/components/PODetail.vue'
+import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
 
 export default defineComponent({
   name: 'PurchaseOrderDetail',
@@ -116,6 +117,17 @@ export default defineComponent({
   },
   data() {
     return {}
+  },
+  methods: {
+    async dateTimeParseErrorModal(arrivalDate: string) {
+      const timeZoneModal = await modalController.create({
+        component: DateTimeParseErrorModal,
+        componentProps: {
+          arrivalDate
+        }
+      });
+      return timeZoneModal.present();
+    },
   },
   setup() {
     const router = useRouter();
