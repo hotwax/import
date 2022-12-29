@@ -19,6 +19,7 @@ const actions: ActionTree<OrderState, RootState> = {
     }
     await store.dispatch("product/fetchProducts", payload);
     const unidentifiedProductItems = [] as any;
+
     items = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
       const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
 
@@ -34,18 +35,23 @@ const actions: ActionTree<OrderState, RootState> = {
       unidentifiedProductItems.push(item);
       return ;
     }).filter((item: any) => item);
-    const original = JSON.parse(JSON.stringify(items))
+    
+    items = items.reduce((itemsByPoId: any, item: any) => {
+      itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].items.push(item) : itemsByPoId[item.orderId] = { items: [item] }
+      // itemsByPoId[item.orderId].original = JSON.parse(JSON.stringify(itemsByPoId[item.orderId].items))
+      return itemsByPoId;
+    }, {});
 
-    commit(types.ORDER_LIST_UPDATED, { items, original, unidentifiedProductItems });
+    commit(types.ORDER_LIST_UPDATED, items);
   },
-  updatedOrderListItems({ commit }, orderListItems){
-    commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
-  },
+  // updatedOrderListItems({ commit }, orderListItems){
+  //   commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
+  // },
   updateFileName({ commit }, fileName){
     commit(types.ORDER_FILE_NAME_UPDATED, fileName)
   },  
-  clearOrderList({ commit }){
-    commit(types.ORDER_LIST_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
-  }
+  // clearOrderList({ commit }){
+  //   commit(types.ORDER_LIST_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
+  // }
 }
 export default actions;

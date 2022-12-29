@@ -4,7 +4,7 @@ import RootState from "../../RootState";
 
 const getters: GetterTree<OrderState, RootState> = {
   getOrder(state) {
-    return state.list;
+    return state.purchaseOrders;
   },
   getFileName(state) {
     return state.fileName;

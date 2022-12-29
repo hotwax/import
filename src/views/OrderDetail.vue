@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/purchase-order" />
-        <ion-title>{{ orderId }}</ion-title>
+        <ion-title>{{ $t("Review purchase order") }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
@@ -84,11 +84,12 @@
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
-
-      <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
+      <div v-for="(order, index) in ordersList" :key="index">
+      <h3>{{ index }}</h3>
+      <div v-for="id in getGroupList(order.items)" :key="id" >
         <div class="list-item list-header">
           <ion-item color="light" lines="none">
-            <ion-label>{{ getParentInformation(id, ordersList.items).parentProductName }}</ion-label>
+            <ion-label>{{ getParentInformation(id, order.items).parentProductName }}</ion-label>
           </ion-item>
 
           <div class="tablet" />
@@ -97,13 +98,13 @@
 
           <div />
           
-          <ion-checkbox :checked="isParentProductChecked(id)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event)" />
+          <ion-checkbox :checked="isParentProductChecked(id, order)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, order)" />
 
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, order.items))">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
-        <div v-for="(item, index) in getGroupItems(id, ordersList.items)" :key="index">
+        <div v-for="(item, index) in getGroupItems(id, order.items)" :key="index">
           <div class="list-item">
             <ion-item lines="none">
               <ion-thumbnail slot="start">
@@ -137,6 +138,8 @@
         </div>
       </div>
 
+      </div>
+      
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button :disabled="isDateInvalid()" @click="save">
           <ion-icon  :icon="cloudUploadOutline" />
@@ -169,7 +172,6 @@ export default defineComponent({
     IonHeader,
     IonToolbar,
     IonBackButton,
-    IonTitle,
     IonContent,
     IonSearchbar,
     IonItem,
@@ -193,10 +195,10 @@ export default defineComponent({
       instanceUrl: 'user/getInstanceUrl',
       dateTimeFormat : 'user/getDateTimeFormat',
       fileName: 'order/getFileName'
-    }),
-    orderId(){
-      return (this as any).ordersList.items[0]?.orderId
-    }
+    })
+  },
+  mounted(){
+    console.log(this.ordersList)
   },
   data() {
     return {
@@ -245,7 +247,7 @@ export default defineComponent({
   methods: {
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
-      return this.ordersList.items.some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
+      return Object.values(this.ordersList).map((order: any) => order.items).flat().some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
     },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
@@ -260,62 +262,62 @@ export default defineComponent({
         return item.internalName === product.internalName;
       })
     },
-    async save(){
-      const uploadData = this.ordersList.items.filter((item: any) => {
-        return item.isSelected;
-      }).map((item: any) => {
-        return {
-          "poId": " ",
-          "externalId": item.orderId,
-          "facilityId": item.facilityId,
-          "externalFacilityId": item.externalFacilityId,
-          //Convert date in the format accepted by the server.
-          "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
-          "quantity": item.quantityOrdered,
-          "isNewProduct": item.isNewProduct,
-          "idValue": item.shopifyProductSKU,
-          "idType": "SKU"
-        };
-      })
-      const fileName = this.fileName.replace(".csv", ".json");
-      const params = {
-        "configId": "IMP_PO"
-      }
-      const alert = await alertController.create({
-        header: this.$t("Upload purchase order"),
-        message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
-        buttons: [
-          {
-            text: this.$t("cancel"),
-            role: 'cancel',
-          },
-          {
-            text: this.$t("Upload"),
-            handler: () => {
-              UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
-                uploadData,
-                fileName,
-                params
-              })).then(() => {
-                this.isPOUploadedSuccessfully = true;
-                showToast(translate("The PO has been uploaded successfully"), [{
-                  text: translate('View'),
-                  role: 'view',
-                  handler: () => {
-                    window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
-                  }
-                }])
-                this.router.push("/purchase-order");
-                this.store.dispatch('order/clearOrderList');
-              }).catch(() => {
-                showToast(translate("Something went wrong, please try again"));
-              })
-            },
-          },
-        ],
-      });
-      return alert.present();  
-    },
+    // async save(){
+    //   const uploadData = this.ordersList.items.filter((item: any) => {
+    //     return item.isSelected;
+    //   }).map((item: any) => {
+    //     return {
+    //       "poId": " ",
+    //       "externalId": item.orderId,
+    //       "facilityId": item.facilityId,
+    //       "externalFacilityId": item.externalFacilityId,
+    //       //Convert date in the format accepted by the server.
+    //       "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
+    //       "quantity": item.quantityOrdered,
+    //       "isNewProduct": item.isNewProduct,
+    //       "idValue": item.shopifyProductSKU,
+    //       "idType": "SKU"
+    //     };
+    //   })
+    //   const fileName = this.fileName.replace(".csv", ".json");
+    //   const params = {
+    //     "configId": "IMP_PO"
+    //   }
+    //   const alert = await alertController.create({
+    //     header: this.$t("Upload purchase order"),
+    //     message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
+    //     buttons: [
+    //       {
+    //         text: this.$t("cancel"),
+    //         role: 'cancel',
+    //       },
+    //       {
+    //         text: this.$t("Upload"),
+    //         handler: () => {
+    //           UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+    //             uploadData,
+    //             fileName,
+    //             params
+    //           })).then(() => {
+    //             this.isPOUploadedSuccessfully = true;
+    //             showToast(translate("The PO has been uploaded successfully"), [{
+    //               text: translate('View'),
+    //               role: 'view',
+    //               handler: () => {
+    //                 window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
+    //               }
+    //             }])
+    //             this.router.push("/purchase-order");
+    //             this.store.dispatch('order/clearOrderList');
+    //           }).catch(() => {
+    //             showToast(translate("Something went wrong, please try again"));
+    //           })
+    //         },
+    //       },
+    //     ],
+    //   });
+      // return alert.present();  
+    // },
     async fetchFacilities(){
       const payload = {
         "inputFields": {
@@ -352,19 +354,19 @@ export default defineComponent({
         });
       return popover.present();
     },
-    isParentProductChecked(parentProductId: string) {
-      const items = this.getGroupItems(parentProductId, this.ordersList.items);
+    isParentProductChecked(parentProductId: string, order: any) {
+      const items = this.getGroupItems(parentProductId, order.items);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
     },
     revertAll() {
-      const original = JSON.parse(JSON.stringify(this.ordersList.original));
+      const original = JSON.parse(JSON.stringify(this.ordersList));
       this.store.dispatch('order/updatedOrderListItems', original);
     },
     apply() {
-      this.ordersList.items.map((item: any) => {
+      Object.values(this.ordersList).map((order: any) => order.items).flat().map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
           if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat(this.dateTimeFormat);
@@ -375,26 +377,29 @@ export default defineComponent({
           }
         }
       })
-      this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
+      this.store.dispatch('order/updatedOrderListItems', this.ordersList);
     },
     getGroupList (items: any) {
+      if(items)
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
     },
     getGroupItems(parentProductId: any, items: any) {
+      if(items)
       return items.filter((item: any) => item.parentProductId == parentProductId)
     },
     getParentInformation(id: any, items: any) {
+      if(items)
       return items.find((item: any) => item.parentProductId == id)
     },
     selectAllItems() {
-      this.ordersList.items.forEach((item: any) => {
+      Object.values(this.ordersList).map((order: any) => order.items).flat().forEach((item: any) => {
         item.isSelected = true;
       })
     },
-    selectParentProduct(parentProductId: any, event: any) {
+    selectParentProduct(parentProductId: any, event: any, order: any) {
       // Todo: Need to find a better approach.
       if(this.isParentProductUpdated){
-        this.ordersList.items.forEach((item: any) => {
+        order.items.forEach((item: any) => {
           if (item.parentProductId === parentProductId) {
             item.isSelected = event.detail.checked;
           }
@@ -442,6 +447,10 @@ export default defineComponent({
 
 .list-header {
   background-color: var(--ion-color-light);
+}
+
+h3 {
+  padding-left: 15px;
 }
 
 @media (min-width: 991px) {
