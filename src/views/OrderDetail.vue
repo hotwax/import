@@ -404,13 +404,13 @@ export default defineComponent({
       }
     },
     async configureDateTimeFormat(arrivalDate: string) {
-      const timeZoneModal = await modalController.create({
+      const dateTimeConfigModal = await modalController.create({
         component: DateTimeConfigModal,
         componentProps: {
           arrivalDate
         }
       });
-      return timeZoneModal.present();
+      return dateTimeConfigModal.present();
     },
     showDateTime(date: string) {
       return DateTime.fromFormat(date, this.dateTimeFormat).toFormat(this.dateTimeFormat)

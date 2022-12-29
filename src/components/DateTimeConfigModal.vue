@@ -63,10 +63,9 @@ import {
   modalController,
   alertController } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { close, saveOutline } from "ionicons/icons";
+import { close, saveOutline, warningOutline } from "ionicons/icons";
 import { mapGetters } from 'vuex';
 import { DateTime } from 'luxon';
-import { warningOutline } from 'ionicons/icons'
 import { useStore } from "@/store";
 
 export default defineComponent({
