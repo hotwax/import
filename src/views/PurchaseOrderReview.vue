@@ -15,10 +15,10 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content >
+    <ion-content>
       <div class="header">
         <div class="search">
-          <ion-searchbar  :placeholder="$t('Search products')" />
+          <ion-searchbar :placeholder="$t('Search products')" />
         </div>
 
         <div class="filters">
@@ -49,7 +49,6 @@
             <ion-note slot="end">23 {{ $t("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
-
         </div>
       </div>
 

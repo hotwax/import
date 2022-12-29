@@ -1,5 +1,5 @@
 <template>
-    <ion-header>
+  <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-button @click="closeModal"> 
@@ -11,7 +11,6 @@
   </ion-header>
 
   <ion-content class="ion-padding">
-
     <div>
       <ion-label class="overline">{{ $t("File upload") }}</ion-label>
       <h3>{{ $t("Date format") }}</h3> 
@@ -28,7 +27,7 @@
     </ion-item>
 
     <ion-button fill="outline">
-        Check sample
+      Check sample
     </ion-button>
 
     <ion-item lines="none">
@@ -40,7 +39,6 @@
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
-
   </ion-content>
 </template>
 <script lang="ts">
@@ -79,14 +77,12 @@ export default defineComponent({
     IonLabel,
     IonTitle,
     IonToolbar 
-    },
+  },
   props: [""],
   data() {
     return { }
   },
-  computed: {
-    
-  },
+  computed: { },
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });

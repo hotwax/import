@@ -217,30 +217,30 @@ export default defineComponent({
   async beforeRouteLeave() {
     let canLeave = false;
     const alert = await alertController.create({
-        header: this.$t("Leave page"),
-        message: this.$t("Any edits made to this PO will be lost."),
-        buttons: [
-            {
-              text: this.$t("STAY"),
-              handler: () => {
-                canLeave = false;
-              },
-            },
-            {
-              text: this.$t("LEAVE"),
-              handler: () => {
-                canLeave = true;
-              },
-            },
-          ],
-      });
-      if(!this.isPOUploadedSuccessfully){
-        alert.present();
-        await alert.onDidDismiss();
-        return canLeave;
-      } else {
-        this.isPOUploadedSuccessfully = false;
-      }
+      header: this.$t("Leave page"),
+      message: this.$t("Any edits made to this PO will be lost."),
+      buttons: [
+        {
+          text: this.$t("STAY"),
+          handler: () => {
+            canLeave = false;
+          },
+        },
+        {
+          text: this.$t("LEAVE"),
+          handler: () => {
+            canLeave = true;
+          },
+        },
+      ],
+    });
+    if(!this.isPOUploadedSuccessfully){
+      alert.present();
+      await alert.onDidDismiss();
+      return canLeave;
+    } else {
+      this.isPOUploadedSuccessfully = false;
+    }
   },
   methods: {
     isDateInvalid(){

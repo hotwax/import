@@ -1,5 +1,5 @@
 <template>
-    <ion-header>
+  <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-button @click="closeModal"> 
@@ -83,14 +83,12 @@ export default defineComponent({
     IonSelectOption,
     IonTitle,
     IonToolbar 
-    },
+  },
   props: [""],
   data() {
     return { }
   },
-  computed: {
-    
-  },
+  computed: { },
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });

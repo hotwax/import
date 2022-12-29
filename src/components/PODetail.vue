@@ -1,7 +1,7 @@
 <template> 
   <div>
     <ion-item lines="none">
-      <h2 slot="start">PO1</h2> 
+      <h2>PO1</h2> 
       <ion-button color="medium" fill="outline">{{ $t("Edit duplicate PO ID") }}</ion-button>
     </ion-item>
     
