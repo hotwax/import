@@ -129,12 +129,10 @@ export default defineComponent({
     methods: {
       //Todo: Generating unique identifiers as we are currently storing in local storage. Need to remove it as we will be storing data on server.
       generateUniqueMappingPrefId() {
-        console.log("gen");
         const id = Math.floor(Math.random() * 1000);
         return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
       },
       saveMapping() {
-        console.log("saveMapping");
         if(!this.mappingName) {
           showToast(translate("Enter mapping name"));
           return
@@ -152,7 +150,6 @@ export default defineComponent({
         showToast(translate("Mapping saved successfully"));
       },
       getFile(event) {
-        console.log("getFile");
         this.file = event.target.files[0];
         if(this.file){
           showToast(translate("File uploaded successfully"));
@@ -171,7 +168,6 @@ export default defineComponent({
         }
       },
       async parseFile(){
-        console.log("parseFile");
         await parseCsv(this.file).then(res => {
           this.content = res;
         })
@@ -199,7 +195,6 @@ export default defineComponent({
         } 
       },
       mapFields(event) {
-        console.log("mapFields");
         if(event && event.detail.value) {
           const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
           const CsvFields = Object.keys(this.content[0]);
