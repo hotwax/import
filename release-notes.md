@@ -3,7 +3,6 @@
 ## What's Changed
 * Fixed: SAVE MAPPING button saves empty mapping when file not uploaded(#326re7p) by @shashwatbangar in https://github.com/hotwax/import/pull/114
 * Improved: Added missing static texts to translation file(#85zrgxtj0) by @shashwatbangar in https://github.com/hotwax/import/pull/116
-* Updated: app to prepare for a patch release by @disha1202 in https://github.com/hotwax/import/pull/125
 * Fixed: Cursor should change to pointer for drop down action menu for records(#85zrgxywt) by @disha1202 in https://github.com/hotwax/import/pull/115
 
 
