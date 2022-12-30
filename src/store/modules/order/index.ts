@@ -9,6 +9,8 @@ const orderModule: Module<OrderState, RootState> = {
   namespaced: true,
   state: {
     purchaseOrders: {},
+    original: {},
+    unidentifiedProductItems: {},
     fileName: ""
   },
   actions,
