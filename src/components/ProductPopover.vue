@@ -3,13 +3,13 @@
     <ion-item lines="none">
       <ion-label>{{ this.isVirtual ? item.parentProductName : item.internalName }}</ion-label>
     </ion-item>
-    <ion-item lines="none" @click="revert">
+    <ion-item button lines="none" @click="revert">
       <ion-icon slot="start" :icon="arrowUndoOutline" />
-      <ion-button size="default" expand="full" color="dark" fill="clear">{{ $t('Reset') }}</ion-button>
+      <ion-label>{{ $t('Reset') }}</ion-label>
     </ion-item>
-    <ion-item lines="none" @click="onlySelect">
+    <ion-item button lines="none" @click="onlySelect">
       <ion-icon slot="start" :icon="checkboxOutline" />
-      <ion-button size="default" expand="full" color="dark" fill="clear">{{ $t('Only select') }}</ion-button>
+      <ion-label>{{ $t('Only select') }}</ion-label>
     </ion-item>
   </ion-content>
 </template>
