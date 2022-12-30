@@ -5,11 +5,11 @@
     </ion-item>
     <ion-item lines="none" @click="revert">
       <ion-icon slot="start" :icon="arrowUndoOutline" />
-      <ion-label class="pointer">{{ $t('Reset') }}</ion-label>
+      <ion-button size="default" expand="full" color="dark" fill="clear">{{ $t('Reset') }}</ion-button>
     </ion-item>
     <ion-item lines="none" @click="onlySelect">
       <ion-icon slot="start" :icon="checkboxOutline" />
-      <ion-label class="pointer">{{ $t('Only select') }}</ion-label>
+      <ion-button size="default" expand="full" color="dark" fill="clear">{{ $t('Only select') }}</ion-button>
     </ion-item>
   </ion-content>
 </template>
@@ -89,8 +89,3 @@ export default defineComponent({
   }
 });
 </script>
-<style scoped>
-.pointer {
-  cursor: pointer;
-}
-</style>
