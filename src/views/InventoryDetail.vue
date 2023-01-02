@@ -55,7 +55,7 @@
 
         <ion-chip outline class="tablet">
           <ion-icon :icon="locationOutline" />
-          <ion-select interface="popover" :value="searchedProduct.locationSeqId" @ionChange="setFacilityLocation($event)">
+          <ion-select interface="popover" :value="searchedProduct.locationSeqId" @ionChange="setFacilityLocation($event, searchedProduct)">
             <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(searchedProduct.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
           </ion-select>
         </ion-chip>
@@ -145,7 +145,7 @@ import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
 
 export default defineComponent({
-  name: 'PurchaseOrderDetail',
+  name: 'InventoryDetail',
   components: {
     Image,
     IonPage,

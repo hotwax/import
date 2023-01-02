@@ -64,10 +64,9 @@ import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
-import { DateTime } from 'luxon'
 
 export default defineComponent({
-    name: "purchase orders",
+    name: "Inventory",
     components: {
       IonPage,
       IonHeader,
@@ -103,12 +102,11 @@ export default defineComponent({
     methods: {
       getFile(event) {
         this.file = event.target.files[0];
-        if(this.file){
+        if(this.file) {
           showToast(translate("File uploaded successfully"));
           this.parseFile();
           this.store.dispatch('order/updateFileName', this.file.name);
-        }
-        else {
+        } else {
           showToast(translate("Something went wrong, Please try again"));
         }
       },
