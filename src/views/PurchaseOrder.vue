@@ -175,13 +175,17 @@ export default defineComponent({
               shopifyProductSKU: item[this.fieldMapping.productSku],
               arrivalDate: DateTime.fromFormat(item[this.fieldMapping.orderDate], this.dateTimeFormat).toFormat(this.dateTimeFormat), //This is to verify whether the date format is correct.
               quantityOrdered: item[this.fieldMapping.quantity],
-              facilityId: '',
+              facilityId: item['facility-id'],
               externalFacilityId: item[this.fieldMapping.facility]
             }
           })
           this.store.dispatch('order/updatedOrderList', this.orderItemsList);
+          const purchaseOrdersFacilityId = Object.values(this.orderItemsList).map((item) => {
+            return item.facilityId
+          })
           this.router.push({
-            name:'PurchaseOrderDetail'
+            name:'PurchaseOrderDetail',
+            params: { purchaseOrdersFacilityId }
           })
         } else {
           showToast(translate("Select all the fields to continue"));
