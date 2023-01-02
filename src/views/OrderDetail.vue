@@ -80,7 +80,7 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct)">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct, searchedProduct.orderId)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -101,7 +101,7 @@
           
           <ion-checkbox :checked="isParentProductChecked(id, orderItems)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, orderItems)" />
 
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, orderItems))">
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, orderItems), getParentInformation(id, orderItems).orderId)">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
@@ -132,7 +132,7 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item, item.orderId)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -200,9 +200,6 @@ export default defineComponent({
       fileName: 'order/getFileName'
     })
   },
-  mounted(){
-    console.log(this.ordersList)
-  },
   data() {
     return {
       numberOfDays: 0,
@@ -261,7 +258,7 @@ export default defineComponent({
     }, 
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
-      this.searchedProduct = this.ordersList.items.find((item: any) => {
+      this.searchedProduct = Object.values(this.ordersList).flat(1).find((item: any) => {
         return item.internalName === product.internalName;
       })
     },
@@ -343,14 +340,14 @@ export default defineComponent({
         console.error(err)
       }
     },
-    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
+    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any, poId: string) {
       const popover = await popoverController
         .create({
           component: ProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
-          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
+          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item, poId }
         });
         popover.onDidDismiss().then(() => {
           this.searchProduct(this.queryString);
@@ -365,7 +362,11 @@ export default defineComponent({
       item.isSelected = event.detail.checked;
     },
     revertAll() {
-      const original = JSON.parse(JSON.stringify(this.ordersList));
+      let original = JSON.parse(JSON.stringify(this.originalItems));
+      original = original.reduce((itemsByPoId: any, item: any) => {
+      itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
+      return itemsByPoId;
+    }, {});
       this.store.dispatch('order/updatedOrderListItems', original);
     },
     apply() {
@@ -383,15 +384,12 @@ export default defineComponent({
       this.store.dispatch('order/updatedOrderListItems', this.ordersList);
     },
     getGroupList (items: any) {
-      if(items)
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
     },
     getGroupItems(parentProductId: any, items: any) {
-      if(items)
       return items.filter((item: any) => item.parentProductId == parentProductId)
     },
     getParentInformation(id: any, items: any) {
-      if(items)
       return items.find((item: any) => item.parentProductId == id)
     },
     selectAllItems() {

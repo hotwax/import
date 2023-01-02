@@ -39,10 +39,10 @@ const actions: ActionTree<OrderState, RootState> = {
     const original = JSON.parse(JSON.stringify(items));
     
     items = items.reduce((itemsByPoId: any, item: any) => {
-      itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].items.push(item) : itemsByPoId[item.orderId] = { items: [item] }
+      itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
       return itemsByPoId;
     }, {});
-
+    
     commit(types.ORDER_LIST_UPDATED, {items, original, unidentifiedProductItems});
   },
   updatedOrderListItems({ commit }, orderListItems){
