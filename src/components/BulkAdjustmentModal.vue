@@ -10,7 +10,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="ion-padding">
+  <ion-content>
 
     <ion-item lines="full">
       <ion-label>{{ $t("Buffer days") }}</ion-label>

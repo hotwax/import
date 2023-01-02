@@ -168,51 +168,37 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.header {
-  margin-bottom: var(--spacer-sm);
-  padding: var(--spacer-sm);
-}
+  .header {
+    margin-bottom: var(--spacer-sm);
+    padding: var(--spacer-sm);
+  }
+  
+  .filters > ion-button {
+    margin-top: var(--spacer-sm);
+  }
 
-.filters > ion-button {
-  margin-top: var(--spacer-sm);
-}
-
-.list-item {
-  --columns-tablet: 4;
-  --columns-desktop: 6;
-}
-
-.list-item :first-child ion-label {
-  word-break: break-all;
-}
-
-.list-header {
-  background-color: var(--ion-color-light);
-}
-#segment{
+  #segment {
     width: 40%;
     bottom: 0px;
     margin-top: 10px;
     border-radius: 0px 4px 0px 0px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 4px 5px rgba(0, 0, 0, 0.12), 0px 1px 10px rgba(0, 0, 0, 0.2);
-}
-h1 {
-    margin-left: 15px;
-}
-@media (min-width: 991px) {
-  .header {
-    display: grid;
-    grid: "search filters"
-          /1fr 1fr;
-    gap: var(--spacer-sm);
   }
-
-  .search {
-    grid-area: search;
-  } 
-
-  .filters {
-    grid-area: filters;
+  
+  @media (min-width: 991px) {
+    .header {
+      display: grid;
+      grid: "search filters"
+            /1fr 1fr;
+      gap: var(--spacer-sm);
+    }
+  
+    .search {
+      grid-area: search;
+    } 
+  
+    .filters {
+      grid-area: filters;
+    }
   }
-}
 </style>

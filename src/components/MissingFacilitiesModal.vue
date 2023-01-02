@@ -10,7 +10,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="ion-padding">
+  <ion-content>
 
     <ion-item lines="full">
       <p>
@@ -18,7 +18,7 @@
         <ion-note>5 {{ $t("line items") }}</ion-note> 
       </p>
       
-      <ion-select slot="end" value="facility">
+      <ion-select interface="popover" slot="end" value="facility">
         <ion-select-option value="facility">Map facility</ion-select-option>
       </ion-select>
     </ion-item>
