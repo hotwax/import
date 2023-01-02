@@ -5,8 +5,6 @@ import UserState from './UserState'
 import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
-import emitter from '@/event-bus'
-import { DateTime } from 'luxon';
 import { updateInstanceUrl, updateToken } from '@hotwax/oms-api'
 
 const actions: ActionTree<UserState, RootState> = {
