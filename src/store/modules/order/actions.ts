@@ -3,13 +3,11 @@ import store from '@/store'
 import RootState from '@/store/RootState'
 import OrderState from './OrderState'
 import * as types from './mutation-types'
-import router from '@/router'
-import { DateTime } from 'luxon';
 
 
 const actions: ActionTree<OrderState, RootState> = {
   async updatedOrderList ({commit, rootGetters}, items) {
-    const productIds = items.map((item: any) => {
+    const productIds = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
       return item.shopifyProductSKU
     })
     const viewSize = productIds.length;
@@ -21,11 +19,10 @@ const actions: ActionTree<OrderState, RootState> = {
     }
     await store.dispatch("product/fetchProducts", payload);
     const unidentifiedProductItems = [] as any;
-    items = items.map((item: any) => {
+    items = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
       const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
 
       if(Object.keys(product).length > 0){
-        item.arrivalDate = DateTime.fromFormat(item.arrivalDate, "D").toFormat(process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
         item.parentProductId = product?.parent?.id;
         item.internalName = product.pseudoId;
         item.parentProductName = product?.parent?.productName;
@@ -44,6 +41,9 @@ const actions: ActionTree<OrderState, RootState> = {
   updatedOrderListItems({ commit }, orderListItems){
     commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
   },
+  updateFileName({ commit }, fileName){
+    commit(types.ORDER_FILE_NAME_UPDATED, fileName)
+  },  
   clearOrderList({ commit }){
     commit(types.ORDER_LIST_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
   }

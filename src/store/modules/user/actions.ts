@@ -19,10 +19,40 @@ const actions: ActionTree<UserState, RootState> = {
       const resp = await UserService.login(username, password)
       if (resp.status === 200 && resp.data) {
         if (resp.data.token) {
+          const permissionId = process.env.VUE_APP_PERMISSION_ID;
+          if (permissionId) {
+            const checkPermissionResponse = await UserService.checkPermission({
+              data: {
+                permissionId
+              },
+              headers: {
+                Authorization:  'Bearer ' + resp.data.token,
+                'Content-Type': 'application/json'
+              }
+            });
+
+            if (checkPermissionResponse.status === 200 && !hasError(checkPermissionResponse) && checkPermissionResponse.data && checkPermissionResponse.data.hasPermission) {
+              commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
+              dispatch('getProfile')
+              dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+              if (resp.data._EVENT_MESSAGE_ && resp.data._EVENT_MESSAGE_.startsWith("Alert:")) {
+              // TODO Internationalise text
+                showToast(translate(resp.data._EVENT_MESSAGE_));
+              }
+              return resp.data;
+            } else {
+              const permissionError = 'You do not have permission to access the app.';
+              showToast(translate(permissionError));
+              console.error("error", permissionError);
+              return Promise.reject(new Error(permissionError));
+            }
+          } else {
             commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
             updateToken(resp.data.token)
             dispatch('getProfile')
+            dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
             return resp.data;
+          }
         } else if (hasError(resp)) {
           showToast(translate('Sorry, your username or password is incorrect. Please try again.'));
           console.error("error", resp.data._ERROR_MESSAGE_);
@@ -50,6 +80,7 @@ const actions: ActionTree<UserState, RootState> = {
     updateToken('')
     updateInstanceUrl('')
     this.dispatch('user/clearOrderList');
+    this.dispatch('order/clearOrderList');
   },
 
   /**
@@ -67,6 +98,10 @@ const actions: ActionTree<UserState, RootState> = {
    */
   async setFacility ({ commit }, payload) {
     commit(types.USER_CURRENT_FACILITY_UPDATED, payload.facility);
+  },
+
+  setDateTimeFormat ({ commit }, payload) {
+    commit(types.USER_DATETIME_FORMAT_UPDATED, payload)
   },
   
   /**
@@ -88,6 +123,10 @@ const actions: ActionTree<UserState, RootState> = {
   setUserInstanceUrl ({ commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
     updateInstanceUrl(payload)
+  },
+
+  updateFieldMappings({ commit }, payload){
+    commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
   }
 }
 

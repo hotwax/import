@@ -3,11 +3,11 @@
     <ion-item lines="none">
       <ion-label>{{ this.isVirtual ? item.parentProductName : item.internalName }}</ion-label>
     </ion-item>
-    <ion-item lines="none" @click="revert">
+    <ion-item button lines="none" @click="revert">
       <ion-icon slot="start" :icon="arrowUndoOutline" />
       <ion-label>{{ $t('Reset') }}</ion-label>
     </ion-item>
-    <ion-item lines="none" @click="onlySelect">
+    <ion-item button lines="none" @click="onlySelect">
       <ion-icon slot="start" :icon="checkboxOutline" />
       <ion-label>{{ $t('Only select') }}</ion-label>
     </ion-item>
@@ -69,7 +69,7 @@ export default defineComponent({
       const items = this.ordersList.items.map(element => {
         if(element.parentProductId === this.id) {
           const item = original.find(item => {
-            return item.parentProductId === this.id;
+            return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
           })
           element = item;
         }
