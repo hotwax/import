@@ -5,7 +5,7 @@ import UserState from './UserState'
 import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
-import { updateInstanceUrl, updateToken } from '@hotwax/oms-api'
+import { updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -75,8 +75,7 @@ const actions: ActionTree<UserState, RootState> = {
   async logout ({ commit }) {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
-    updateToken('')
-    updateInstanceUrl('')
+    resetConfig();
     this.dispatch('order/clearOrderList');
   },
 

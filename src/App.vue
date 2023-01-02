@@ -15,7 +15,7 @@ import { loadingController } from '@ionic/vue';
 import { useStore } from "./store";
 import emitter from "@/event-bus"
 import { mapGetters } from 'vuex';
-import { updateToken, updateInstanceUrl } from '@hotwax/oms-api'
+import { updateToken, updateInstanceUrl, resetConfig } from '@/adapter'
 
 export default defineComponent({
   name: 'App',
@@ -64,8 +64,7 @@ export default defineComponent({
   unmounted() {
     emitter.off('presentLoader', this.presentLoader);
     emitter.off('dismissLoader', this.dismissLoader);
-    updateToken('')
-    updateInstanceUrl('')
+    resetConfig()
   },
   computed: {
     ...mapGetters({
