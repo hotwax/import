@@ -9,12 +9,10 @@
 
 <script lang="ts">
 import Menu from '@/components/Menu.vue';
-import { IonApp, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
+import { IonApp, IonRouterOutlet, IonSplitPane, loadingController } from '@ionic/vue';
 import { defineComponent } from 'vue';
-import { loadingController } from '@ionic/vue';
-import { useStore } from "./store";
 import emitter from "@/event-bus"
-import { mapGetters } from 'vuex';
+import { mapGetters, useStore } from 'vuex';
 import { updateToken, updateInstanceUrl, resetConfig } from '@/adapter'
 
 export default defineComponent({
