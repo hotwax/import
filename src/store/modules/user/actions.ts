@@ -79,7 +79,6 @@ const actions: ActionTree<UserState, RootState> = {
     commit(types.USER_END_SESSION)
     updateToken('')
     updateInstanceUrl('')
-    this.dispatch('user/clearOrderList');
     this.dispatch('order/clearOrderList');
   },
 

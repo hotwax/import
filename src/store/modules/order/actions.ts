@@ -24,7 +24,7 @@ const actions: ActionTree<OrderState, RootState> = {
 
       if(Object.keys(product).length > 0){
         item.parentProductId = product?.parent?.id;
-        item.internalName = product.pseudoId;
+        item.pseudoId = product.pseudoId;
         item.parentProductName = product?.parent?.productName;
         item.imageUrl = product.images?.mainImageUrl;
         item.isNewProduct = "N";

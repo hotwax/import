@@ -28,6 +28,8 @@ const actions: ActionTree<ProductState, RootState> = {
       viewSize: productIdFilter.length,
       viewIndex: 0
     })
+
+    console.log('resp', resp)
     if (!isError(resp)) {
       const products = resp.products;
       // Handled empty response in case of failed query
