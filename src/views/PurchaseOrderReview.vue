@@ -53,13 +53,13 @@
       </div>
 
       <div v-if="segmentSelected === 'all'">
-        <PODetails />
+        <PODetail />
       </div>
       <div v-if="segmentSelected === 'po1'">
-        <PODetails />
+        <PODetail />
       </div>
       <div v-if="segmentSelected === 'po2'">
-        <PODetails />
+        <PODetail />
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -89,7 +89,7 @@ import { useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonLabel, IonIcon, IonButton, IonButtons, IonFab, IonFabButton, IonSegment, IonSegmentButton, IonNote, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, checkboxOutline, calculatorOutline, cloudUploadOutline, arrowUndoOutline, chevronForwardOutline, timeOutline } from 'ionicons/icons'
-import PODetails from '@/components/PODetail.vue'
+import PODetail from '@/components/PODetail.vue'
 import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
 import BulkAdjustmentModal from '@/components/BulkAdjustmentModal.vue';
 import MissingFacilityModal from '@/components/MissingFacilitiesModal.vue';
@@ -114,7 +114,7 @@ export default defineComponent({
     IonButtons,
     IonFab,
     IonFabButton,
-    PODetails
+    PODetail
   },
   data() {
     return {}

@@ -127,7 +127,7 @@ import { sendOutline, ellipsisVerticalOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
-  name: "MissingSkuModal",
+  name: "PODetail",
   components: {
     IonCheckbox,
     IonThumbnail,
