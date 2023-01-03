@@ -47,7 +47,6 @@
           <ion-label>12/22/2022</ion-label>
         </ion-chip> 
 
-        <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :checked="true"/>
         
         <ion-button fill="clear" color="medium">
@@ -104,7 +103,6 @@
           <ion-label>12/22/2022</ion-label>
         </ion-chip> 
 
-        <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :checked="true"/>
         
         <ion-button fill="clear" color="medium">

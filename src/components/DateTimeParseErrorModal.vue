@@ -19,11 +19,12 @@
     </ion-item>
 
     <ion-list>
-      <ion-list-header>
-        <ion-label color="medium">
-          {{ $t("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}
+
+      <ion-item lines="none">
+        <ion-label class="ion-text-wrap">
+          <p>{{ $t("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}</p>
         </ion-label>
-      </ion-list-header>
+      </ion-item>
         
       <ion-item>
         <ion-input clear-input='true' value="DD/MM/YYYY" />
@@ -33,12 +34,15 @@
         <ion-label>02/02/2022</ion-label>
         <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
       </ion-item>
+
     </ion-list>
 
-    <ion-button class="ion-padding-start" fill="outline">
-      {{ $t("Check sample") }}
-    </ion-button>
-
+    <div>
+      <ion-button class="ion-padding-start" fill="outline">
+        {{ $t("Check sample") }}
+      </ion-button>
+    </div>
+    
     <ion-item lines="none">
       <ion-label color="medium">{{ $t("This will update 50 products across 3 POs") }}</ion-label>
     </ion-item>
