@@ -45,7 +45,7 @@
 
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
-            <ion-select interface="popover" v-model="facilityId" :value="ordersList.unidentifiedProductItems.length ? 'Mutiple' : ordersList.original.facilityId">
+            <ion-select interface="popover" v-model="facilityId" :value="poFacilityIds.length > 1 ? 'Mutiple' : poFacilityIds[0]">
               <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -208,7 +208,8 @@ export default defineComponent({
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
-      isPOUploadedSuccessfully: false
+      isPOUploadedSuccessfully: false,
+      poFacilityIds: [] as any
     }
   },
   ionViewDidEnter(){
@@ -334,6 +335,7 @@ export default defineComponent({
         if(resp.status === 200 && !hasError(resp)){
           this.facilities = resp.data.docs;
         }
+        this.poFacilityIds = this.getFacilityIds(this.ordersList);
       } catch(err) {
         console.error(err)
       }
@@ -401,6 +403,22 @@ export default defineComponent({
         })
         this.isParentProductUpdated = false;
       }
+    },
+    getFacilityIds(ordersList: any) {
+      const allFacilityIds = [] as any;
+      ordersList.items.map((purchaseOrder: any) => {
+        allFacilityIds.push(purchaseOrder.externalFacilityId)
+        return;
+      })
+      ordersList.original.map((purchaseOrder: any) => {
+        allFacilityIds.push(purchaseOrder.externalFacilityId)
+        return;
+      })
+      ordersList.unidentifiedProductItems.map((purchaseOrder: any) => {
+        allFacilityIds.push(purchaseOrder.externalFacilityId)
+        return;
+      })
+      return [...new Set(allFacilityIds)]
     }
   },
   setup() {
