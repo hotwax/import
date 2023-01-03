@@ -45,7 +45,7 @@
 
           <ion-item>
             <ion-label>{{ $t("Facility") }}</ion-label>
-            <ion-select interface="popover" v-model="facilityId" :placeholder="poFacilityIds.length > 1 ? 'Multiple' : poFacilityIds[0]">
+            <ion-select interface="popover" v-model="facilityId" :value="ordersList.unidentifiedProductItems.length ? 'Mutiple' : ordersList.original.facilityId">
               <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -208,8 +208,7 @@ export default defineComponent({
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
-      isPOUploadedSuccessfully: false,
-      poFacilityIds: this.$route.params.purchaseOrdersFacilityId
+      isPOUploadedSuccessfully: false
     }
   },
   ionViewDidEnter(){
