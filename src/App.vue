@@ -13,7 +13,7 @@ import { IonApp, IonRouterOutlet, IonSplitPane, loadingController } from '@ionic
 import { defineComponent } from 'vue';
 import emitter from "@/event-bus"
 import { mapGetters, useStore } from 'vuex';
-import { updateToken, updateInstanceUrl, resetConfig } from '@/adapter'
+import { init, resetConfig } from '@/adapter'
 
 export default defineComponent({
   name: 'App',
@@ -25,7 +25,8 @@ export default defineComponent({
   },
   data() {
     return {
-      loader: null as any
+      loader: null as any,
+      maxAge: process.env.VUE_APP_CACHE_MAX_AGE ? parseInt(process.env.VUE_APP_CACHE_MAX_AGE) : 0
     }
   },
   methods: {
@@ -56,8 +57,8 @@ export default defineComponent({
       });
     emitter.on('presentLoader', this.presentLoader);
     emitter.on('dismissLoader', this.dismissLoader);
-    updateToken(this.userToken)
-    updateInstanceUrl(this.instanceUrl)
+
+    init(this.userToken, this.instanceUrl, this.maxAge)
   },
   unmounted() {
     emitter.off('presentLoader', this.presentLoader);

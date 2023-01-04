@@ -21,7 +21,7 @@ const actions: ActionTree<ProductState, RootState> = {
     }, []);
 
     // If there are no product ids to search skip the API call
-    if (productIdFilter.length <= 0) return;
+    if (productIdFilter.length == 0) return;
 
     const resp = await fetchProducts({
       filters: { 'internalName': { 'value': productIdFilter }},
@@ -34,7 +34,7 @@ const actions: ActionTree<ProductState, RootState> = {
       // Handled empty response in case of failed query
       if (resp.total) commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
     } else {
-      console.error(resp)
+      console.error(resp.serverResponse)
     }
     // TODO Handle specific error
     return resp;
