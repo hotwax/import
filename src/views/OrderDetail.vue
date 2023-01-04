@@ -85,7 +85,7 @@
         </ion-button>
       </div>
 
-      <div v-for="(orderItems, index) in ordersList" :key="index">
+      <div v-else v-for="(orderItems, index) in ordersList" :key="index">
       <h3>{{ index }}</h3>
       <div v-for="id in getGroupList(orderItems)" :key="id" >
         <div class="list-item list-header">
@@ -256,7 +256,7 @@ export default defineComponent({
         componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
       });
       return missingSkuModal.present();
-    }, 
+    },
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
       this.searchedProduct = Object.values(this.ordersList).flat(1).find((item: any) => {

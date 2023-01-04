@@ -5,7 +5,7 @@
         <ion-back-button slot="start" default-href="/purchase-order" />
         <ion-title>{{ $t("Review PO details") }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button>
+          <ion-button @click="selectAllItems()">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
           <ion-button>
@@ -18,7 +18,7 @@
     <ion-content>
       <div class="header">
         <div class="search">
-          <ion-searchbar :placeholder="$t('Search products')" />
+          <ion-searchbar :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
         </div>
 
         <div class="filters">
@@ -43,7 +43,7 @@
             <ion-icon slot="end" mode="ios" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item>
+          <ion-item @click="listMissingSkus()">
             <ion-icon slot="start" :icon="shirtOutline" />
             <ion-label>{{ $t("Missing products") }}</ion-label>
             <ion-note slot="end">23 {{ $t("items") }}</ion-note>
@@ -63,7 +63,7 @@
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button>
+        <ion-fab-button :disabled="isDateInvalid()">
           <ion-icon :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -85,17 +85,24 @@
 </template>   
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { useStore } from "vuex";
+import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
+import { DateTime } from 'luxon';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonLabel, IonIcon, IonButton, IonButtons, IonFab, IonFabButton, IonSegment, IonSegmentButton, IonNote, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, checkboxOutline, calculatorOutline, cloudUploadOutline, arrowUndoOutline, chevronForwardOutline, timeOutline } from 'ionicons/icons'
 import PODetail from '@/components/PODetail.vue'
 import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
 import BulkAdjustmentModal from '@/components/BulkAdjustmentModal.vue';
 import MissingFacilityModal from '@/components/MissingFacilitiesModal.vue';
+import MissingSkuModal from "@/components/MissingSkuModal.vue"
+import { UploadService } from "@/services/UploadService";
+import { OrderService } from "@/services/OrderService";
+import { hasError } from "@/utils";
+import { showToast } from '@/utils';
+import { translate } from "@/i18n";
 
 export default defineComponent({
-  name: 'PurchaseOrderDetail',
+  name: 'PurchaseOrderReview',
   components: {
     IonPage,
     IonHeader,
@@ -116,16 +123,163 @@ export default defineComponent({
     IonFabButton,
     PODetail
   },
+  computed: {
+    ...mapGetters({
+      ordersList: 'order/getOrder',
+      originalItems: 'order/getOriginalItems',
+      unidentifiedProductItems: 'order/getUnidentifiedProductItems',
+      getProduct: 'product/getProduct',
+      instanceUrl: 'user/getInstanceUrl',
+      dateTimeFormat : 'user/getDateTimeFormat',
+      fileName: 'order/getFileName'
+    })
+  },
   data() {
-    return {}
+    return {
+      numberOfDays: 0,
+      numberOfPieces: 0,
+      catalog: "N",
+      facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
+      facilities: [] as any,
+      queryString: "",
+      searchedProduct: {} as any,
+      isParentProductUpdated: false,
+      isPOUploadedSuccessfully: false
+    }
+  },
+  ionViewDidEnter(){
+   this.fetchFacilities();
+  },
+  async beforeRouteLeave() {
+    let canLeave = false;
+    const alert = await alertController.create({
+      header: this.$t("Leave page"),
+      message: this.$t("Any edits made to this PO will be lost."),
+      buttons: [
+        {
+          text: this.$t("STAY"),
+          handler: () => {
+            canLeave = false;
+          },
+        },
+        {
+          text: this.$t("LEAVE"),
+          handler: () => {
+            canLeave = true;
+          },
+        },
+      ],
+    });
+    if(!this.isPOUploadedSuccessfully){
+      alert.present();
+      await alert.onDidDismiss();
+      return canLeave;
+    } else {
+      this.isPOUploadedSuccessfully = false;
+    }
   },
   methods: {
+    async fetchFacilities(){
+      const payload = {
+        "inputFields": {
+          "parentTypeId": "VIRTUAL_FACILITY",
+          "parentTypeId_op": "notEqual",
+          "facilityTypeId": "VIRTUAL_FACILITY",
+          "facilityTypeId_op": "notEqual",
+        },
+        "fieldList": ["facilityId", "facilityName", "parentTypeId"],
+        "viewSize": 50,
+        "entityName": "FacilityAndType",
+        "noConditionFind": "Y"
+      }
+      try {
+        const resp = await OrderService.getFacilities(payload);
+        if(resp.status === 200 && !hasError(resp)){
+          this.facilities = resp.data.docs;
+        }
+      } catch(err) {
+        console.error(err)
+      }
+    },
+    isDateInvalid(){
+      // Checked if any of the date format is different than the selected format.
+      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
+    },
+    async listMissingSkus() {
+      const missingSkuModal = await modalController.create({
+        component: MissingSkuModal,
+        componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
+      });
+      return missingSkuModal.present();
+    },
+    searchProduct(sku: any) {
+      const product = this.getProduct(sku);
+      this.searchedProduct = Object.values(this.ordersList).flat(1).find((item: any) => {
+        return item.internalName === product.internalName;
+      })
+    },
     async dateTimeParseErrorModal() {
       const dateTimeParseErrorModal = await modalController.create({
         component: DateTimeParseErrorModal,
         componentProps: { }
       });
       return dateTimeParseErrorModal.present();
+    },
+    async save(){
+      const uploadData = this.ordersList.items.filter((item: any) => {
+        return item.isSelected;
+      }).map((item: any) => {
+        return {
+          "poId": " ",
+          "externalId": item.orderId,
+          "facilityId": item.facilityId,
+          "externalFacilityId": item.externalFacilityId,
+          //Convert date in the format accepted by the server.
+          "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
+          "quantity": item.quantityOrdered,
+          "isNewProduct": item.isNewProduct,
+          "idValue": item.shopifyProductSKU,
+          "idType": "SKU"
+        };
+      })
+      const fileName = this.fileName.replace(".csv", ".json");
+      const params = {
+        "configId": "IMP_PO"
+      }
+      const alert = await alertController.create({
+        header: this.$t("Upload purchase order"),
+        message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
+        buttons: [
+          {
+            text: this.$t("cancel"),
+            role: 'cancel',
+          },
+          {
+            text: this.$t("Upload"),
+            handler: () => {
+              UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+                uploadData,
+                fileName,
+                params
+              })).then(() => {
+                this.isPOUploadedSuccessfully = true;
+                showToast(translate("The PO has been uploaded successfully"), [{
+                  text: translate('View'),
+                  role: 'view',
+                  handler: () => {
+                    window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=IMP_PO`, '_blank');
+                  }
+                }])
+                this.router.push("/purchase-order");
+                this.store.dispatch('order/clearOrderList');
+              }).catch(() => {
+                showToast(translate("Something went wrong, please try again"));
+              })
+            },
+          },
+        ],
+      });
+      return alert.present();  
     },
     async bulkAdjustmentModal() {
       const bulkAdjustmentModal = await modalController.create({
@@ -140,6 +294,11 @@ export default defineComponent({
         componentProps: { }
       });
       return missingFacilityModal.present();
+    },
+    selectAllItems() {
+      Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().forEach((item: any) => {
+        item.isSelected = true;
+      })
     },
   },
   setup() {

@@ -181,7 +181,7 @@ export default defineComponent({
           })
           this.store.dispatch('order/updatedOrderList', this.orderItemsList);
           this.router.push({
-            name:'PurchaseOrderDetail'
+            name:'PurchaseOrderReview'
           })
         } else {
           showToast(translate("Select all the fields to continue"));
