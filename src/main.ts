@@ -27,7 +27,6 @@ import './theme/variables.css';
 import i18n from './i18n'
 import store from './store'
 import { DateTime } from 'luxon';
-import { init } from '@/adapter';
 
 const app = createApp(App)
   .use(IonicVue, {
