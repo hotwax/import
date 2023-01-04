@@ -21,28 +21,28 @@
 
           <ion-item>
             <ion-label>{{ $t("Product SKU") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="productSkuField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Quantity") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="quantityField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="facilityField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
             <ion-label>{{ $t("Facility Location") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="locationSeqIdField">
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.locationSeqId">
               <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -66,73 +66,81 @@ import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
 
 export default defineComponent({
-    name: "Inventory",
-    components: {
-      IonPage,
-      IonHeader,
-      IonToolbar,
-      IonTitle,
-      IonContent,
-      IonItem,
-      IonLabel,
-      IonButton,
-      IonMenuButton,
-      IonSelect,
-      IonSelectOption,
-      IonIcon,
-      IonListHeader,
-      IonList
-    },
-    computed: {
-      ...mapGetters({
-        dateTimeFormat : 'user/getDateTimeFormat',
-      })
-    },
-    data() {
-      return {
-        file: "",
-        content: [],
-        productSkuField: "",
-        quantityField: "",
-        facilityField: "",
-        locationSeqIdField: "",
-        productsList: [],
+  name: "Inventory",
+  components: {
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonItem,
+    IonLabel,
+    IonButton,
+    IonMenuButton,
+    IonSelect,
+    IonSelectOption,
+    IonIcon,
+    IonListHeader,
+    IonList
+  },
+  computed: {
+    ...mapGetters({
+      dateTimeFormat : 'user/getDateTimeFormat',
+    })
+  },
+  data() {
+    return {
+      file: "",
+      content: [],
+      fieldMapping: {
+        productSku: "",
+        quantity: "",
+        facility: "",
+        locationSeqId: "",
+      },
+      productsList: [],
+    }
+  },
+  methods: {
+    getFile(event) {
+      this.file = event.target.files[0];
+      if(this.file) {
+        showToast(translate("File uploaded successfully"));
+        this.parseFile();
+        this.store.dispatch('order/updateFileName', this.file.name);
+      } else {
+        showToast(translate("Something went wrong, Please try again"));
       }
     },
-    methods: {
-      getFile(event) {
-        this.file = event.target.files[0];
-        if(this.file) {
-          showToast(translate("File uploaded successfully"));
-          this.parseFile();
-          this.store.dispatch('order/updateFileName', this.file.name);
-        } else {
-          showToast(translate("Something went wrong, Please try again"));
-        }
-      },
-
-      async parseFile(){
-        await parseCsv(this.file).then(res => {
-          this.content = res;
-        })
-      },
-      mapFields() {
+    async parseFile(){
+      await parseCsv(this.file).then(res => {
+        this.content = res;
+      })
+    },
+    mapFields() {
+      const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
+      if (this.content.length <= 0) {
+        showToast(translate("Please upload a valid reset inventory csv to continue"));
+      } else if (areAllFieldsSelected) {
         this.productsList = this.content.map(item => {
           return {
-            productSKU: item[this.productSkuField],
-            quantity: item[this.quantityField],
+            productSKU: item[this.fieldMapping.productSku],
+            quantity: item[this.fieldMapping.quantity],
             facilityId: '',
-            externalFacilityId: item[this.facilityField],
-            locationSeqId: item[this.locationSeqIdField]
+            externalFacilityId: item[this.fieldMapping.facility],
+            locationSeqId: item[this.fieldMapping.locationSeqId]
           }
         })
         this.store.dispatch('stock/updatedStockList', this.productsList);
         this.router.push({
           name:'InventoryDetail'
         })
-      },
+      } else {
+        showToast(translate("Select all the fields to continue"));
+      }
     },
-    setup() {
+  },
+  setup() {
     const router = useRouter();
     const store = useStore();
     return {
