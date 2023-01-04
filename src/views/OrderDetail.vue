@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/purchase-order" />
-        <ion-title>{{ orderId }}</ion-title>
+        <ion-title>{{ $t("Review purchase order") }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
@@ -80,15 +80,17 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct)">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct, searchedProduct.orderId)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
 
-      <div v-else v-for="id in getGroupList(ordersList.items)" :key="id" >
+      <div v-for="(orderItems, index) in ordersList" :key="index">
+      <h3>{{ index }}</h3>
+      <div v-for="id in getGroupList(orderItems)" :key="id" >
         <div class="list-item list-header">
           <ion-item color="light" lines="none">
-            <ion-label>{{ getParentInformation(id, ordersList.items).parentProductName }}</ion-label>
+            <ion-label>{{ getParentInformation(id, orderItems).parentProductName }}</ion-label>
           </ion-item>
 
           <div class="tablet" />
@@ -97,13 +99,13 @@
 
           <div />
           
-          <ion-checkbox :checked="isParentProductChecked(id)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event)" />
+          <ion-checkbox :checked="isParentProductChecked(id, orderItems)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, orderItems)" />
 
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, ordersList.items))">
+          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, orderItems), getParentInformation(id, orderItems).orderId)">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
-        <div v-for="(item, index) in getGroupItems(id, ordersList.items)" :key="index">
+        <div v-for="(item, index) in getGroupItems(id, orderItems)" :key="index">
           <div class="list-item">
             <ion-item lines="none">
               <ion-thumbnail slot="start">
@@ -130,13 +132,15 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item, item.orderId)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
         </div>
       </div>
 
+      </div>
+      
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button :disabled="isDateInvalid()" @click="save">
           <ion-icon  :icon="cloudUploadOutline" />
@@ -169,11 +173,11 @@ export default defineComponent({
     IonHeader,
     IonToolbar,
     IonBackButton,
-    IonTitle,
     IonContent,
     IonSearchbar,
     IonItem,
     IonThumbnail,
+    IonTitle,
     IonLabel,
     IonInput,
     IonChip,
@@ -189,14 +193,13 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       ordersList: 'order/getOrder',
+      originalItems: 'order/getOriginalItems',
+      unidentifiedProductItems: 'order/getUnidentifiedProductItems',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
       dateTimeFormat : 'user/getDateTimeFormat',
       fileName: 'order/getFileName'
-    }),
-    orderId(){
-      return (this as any).ordersList.items[0]?.orderId
-    }
+    })
   },
   data() {
     return {
@@ -245,7 +248,7 @@ export default defineComponent({
   methods: {
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
-      return this.ordersList.items.some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
+      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
     },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
@@ -256,7 +259,7 @@ export default defineComponent({
     }, 
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
-      this.searchedProduct = this.ordersList.items.find((item: any) => {
+      this.searchedProduct = Object.values(this.ordersList).flat(1).find((item: any) => {
         return item.internalName === product.internalName;
       })
     },
@@ -338,33 +341,37 @@ export default defineComponent({
         console.error(err)
       }
     },
-    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
+    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any, poId: string) {
       const popover = await popoverController
         .create({
           component: ProductPopover,
           event: ev,
           translucent: true,
           showBackdrop: true,
-          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item }
+          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item, poId }
         });
         popover.onDidDismiss().then(() => {
           this.searchProduct(this.queryString);
         });
       return popover.present();
     },
-    isParentProductChecked(parentProductId: string) {
-      const items = this.getGroupItems(parentProductId, this.ordersList.items);
+    isParentProductChecked(parentProductId: string, orderItems: any) {
+      const items = this.getGroupItems(parentProductId, orderItems);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
     },
     revertAll() {
-      const original = JSON.parse(JSON.stringify(this.ordersList.original));
+      let original = JSON.parse(JSON.stringify(this.originalItems));
+      original = original.reduce((itemsByPoId: any, item: any) => {
+      itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
+      return itemsByPoId;
+    }, {});
       this.store.dispatch('order/updatedOrderListItems', original);
     },
     apply() {
-      this.ordersList.items.map((item: any) => {
+      Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().map((item: any) => {
         if (item.isSelected) {
           item.quantityOrdered -= this.numberOfPieces;
           if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat(this.dateTimeFormat);
@@ -375,7 +382,7 @@ export default defineComponent({
           }
         }
       })
-      this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
+      this.store.dispatch('order/updatedOrderListItems', this.ordersList);
     },
     getGroupList (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
@@ -387,14 +394,14 @@ export default defineComponent({
       return items.find((item: any) => item.parentProductId == id)
     },
     selectAllItems() {
-      this.ordersList.items.forEach((item: any) => {
+      Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().forEach((item: any) => {
         item.isSelected = true;
       })
     },
-    selectParentProduct(parentProductId: any, event: any) {
+    selectParentProduct(parentProductId: any, event: any, orderItems: any) {
       // Todo: Need to find a better approach.
       if(this.isParentProductUpdated){
-        this.ordersList.items.forEach((item: any) => {
+        orderItems.forEach((item: any) => {
           if (item.parentProductId === parentProductId) {
             item.isSelected = event.detail.checked;
           }
@@ -442,6 +449,10 @@ export default defineComponent({
 
 .list-header {
   background-color: var(--ion-color-light);
+}
+
+h3 {
+  padding-left: 15px;
 }
 
 @media (min-width: 991px) {
