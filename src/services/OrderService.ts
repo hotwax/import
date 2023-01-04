@@ -7,6 +7,34 @@ const getFacilities= async (payload: any): Promise <any> => {
       data: payload
     });
   }
+
+const saveFieldMapping = async (payload: any): Promise <any> => {
+  return api({
+    url: "/createDataManagerMapping",
+    method: "POST",
+    data: payload
+  });
+}
+
+const updateFieldMapping = async (payload: any): Promise <any> => {
+  return api({
+    url: "/updateDataManagerMapping",
+    method: "POST",
+    data: payload
+  });
+}
+
+const removeFieldMapping = async (payload: any): Promise <any> => {
+  return api({
+    url: "/deleteDataManagerMapping",
+    method: "POST",
+    data: payload
+  });
+}
+
 export const OrderService = {
-    getFacilities
+    getFacilities,
+  saveFieldMapping,
+  updateFieldMapping,
+  removeFieldMapping
   }
