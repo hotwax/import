@@ -62,7 +62,6 @@ app.config.globalProperties.$filters = {
   }
 }
 
-
 router.isReady().then(() => {
   app.mount('#app');
 });
