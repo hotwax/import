@@ -177,6 +177,7 @@ export default defineComponent({
     IonSearchbar,
     IonItem,
     IonThumbnail,
+    IonTitle,
     IonLabel,
     IonInput,
     IonChip,
