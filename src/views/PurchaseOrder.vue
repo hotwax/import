@@ -150,6 +150,7 @@ export default defineComponent({
         showToast(translate("Mapping saved successfully"));
       },
       getFile(event) {
+        if(!event.target.files[0]) return;
         this.file = event.target.files[0];
         if(this.file){
           showToast(translate("File uploaded successfully"));
