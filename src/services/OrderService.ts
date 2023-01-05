@@ -8,7 +8,7 @@ const getFacilities= async (payload: any): Promise <any> => {
     });
   }
 
-const saveFieldMapping = async (payload: any): Promise <any> => {
+const setFieldMapping = async (payload: any): Promise <any> => {
   return api({
     url: "/createDataManagerMapping",
     method: "POST",
@@ -34,7 +34,7 @@ const removeFieldMapping = async (payload: any): Promise <any> => {
 
 export const OrderService = {
     getFacilities,
-  saveFieldMapping,
+  setFieldMapping,
   updateFieldMapping,
   removeFieldMapping
   }
