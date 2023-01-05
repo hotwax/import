@@ -18,7 +18,11 @@
         <ion-item lines="none">
           <ion-label>{{ $t("Select mapping") }}</ion-label>
           <ion-select :disabled="!Object.keys(fieldMappings).length || !file" interface="popover" @ionChange="mapFields">
-            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId">{{ mapping?.mappingPrefName }}</ion-select-option>
+            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId">
+              {{ mapping?.mappingPrefName }}
+              <ion-icon @click="saveMapping" slot="icon-only" :icon="pencilOutline" />
+              <ion-icon @click="deleteMapping" slot="icon-only" :icon="trashOutline" />
+            </ion-select-option>
           </ion-select>
         </ion-item>     
 
@@ -83,7 +87,7 @@ import { useRouter } from 'vue-router';
 import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
-import { arrowForwardOutline } from 'ionicons/icons';
+import { arrowForwardOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { DateTime } from 'luxon';
 
 export default defineComponent({
@@ -207,6 +211,10 @@ export default defineComponent({
       },
       areAllFieldsSelected() {
         return Object.values(this.fieldMapping).every(field => field !== "");
+      },
+      deleteMapping() {
+        this.store.dispatch('user/deleteFieldMappings', { mappingPrefId })
+        showToast(translate("Mapping deleted successfully"));
       }
     },
     setup() {
@@ -214,6 +222,8 @@ export default defineComponent({
     const store = useStore();
     return {
       arrowForwardOutline,
+      pencilOutline,
+      trashOutline,
       router,
       store
     }

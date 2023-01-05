@@ -5,6 +5,7 @@ import UserState from './UserState'
 import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
+import { OrderService } from '@/services/OrderService'
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -120,6 +121,21 @@ const actions: ActionTree<UserState, RootState> = {
 
   updateFieldMappings({ commit }, payload){
     commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
+  },
+
+  async deleteFieldMappings({ commit }, payload){
+    try {
+      const resp = await OrderService.deleteFieldMapping(payload);
+
+      if(resp.status === 200 && !hasError(resp)) {
+        commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
+        return;
+      } else {
+        showToast(translate('Something went wrong'));
+      }
+    } catch(err) {
+      console.error(err)
+    }
   }
 }
 

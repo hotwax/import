@@ -24,7 +24,7 @@ const updateFieldMapping = async (payload: any): Promise <any> => {
   });
 }
 
-const removeFieldMapping = async (payload: any): Promise <any> => {
+const deleteFieldMapping = async (payload: any): Promise <any> => {
   return api({
     url: "/deleteDataManagerMapping",
     method: "POST",
@@ -36,5 +36,5 @@ export const OrderService = {
     getFacilities,
   setFieldMapping,
   updateFieldMapping,
-  removeFieldMapping
+  deleteFieldMapping
   }
