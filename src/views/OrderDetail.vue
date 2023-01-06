@@ -308,7 +308,7 @@ export default defineComponent({
                 this.router.push("/purchase-order");
                 this.store.dispatch('order/clearOrderList');
               }).catch(() => {
-                showToast(translate("Something went wrong, please try again"));
+                showToast(translate("Something went wrong. Please try again"));
               })
             },
           },

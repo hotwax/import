@@ -157,7 +157,7 @@ export default defineComponent({
           this.store.dispatch('order/updateFileName', this.file.name);
         }
         else {
-          showToast(translate("Something went wrong, Please try again"));
+          showToast(translate("Something went wrong. Please try again"));
         }
       },
       async parseFile(){
