@@ -149,7 +149,7 @@ export default defineComponent({
           showToast(translate("Map all fields"));
           return
         }
-        const mappingPrefId = this.generateUniqueMappingPrefId();
+        const mappingPrefId = this.fieldMappings[this.mappingName] ? this.fieldMappings[this.mappingName] : this.generateUniqueMappingPrefId();
         this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         showToast(translate("Mapping saved successfully"));
       },
@@ -212,7 +212,7 @@ export default defineComponent({
       areAllFieldsSelected() {
         return Object.values(this.fieldMapping).every(field => field !== "");
       },
-      deleteMapping(event: any) {
+      deleteMapping(event) {
         const mappingPrefId = this.fieldMappings[event.target.value];
         this.store.dispatch('user/deleteFieldMappings', { mappingPrefId })
         showToast(translate("Mapping deleted successfully"));
