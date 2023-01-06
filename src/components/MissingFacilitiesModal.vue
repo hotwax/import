@@ -12,14 +12,14 @@
 
   <ion-content>
 
-    <ion-item v-for="(facilityId, products) in items" :key="facilityId" lines="full">
+    <ion-item v-for="(products, facilityId) in items" :key="facilityId" lines="full">
       <p>
         <ion-label>{{ facilityId }}</ion-label>
-        <ion-note>{{ products.length ? products.length : 0 }} {{ $t("line items") }}</ion-note> 
+        <ion-note>{{ products?.length }} {{ $t("line items") }}</ion-note> 
       </p>
       
-      <ion-select interface="popover" slot="end" value="facility">
-        <ion-select-option value="facility">Map facility</ion-select-option>
+      <ion-select interface="popover" slot="end" placeholder="Map facility">
+        <ion-select-option v-for="facility in facilities" :key="facility.facilityId" value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
       </ion-select>
     </ion-item>
 
@@ -68,7 +68,7 @@ export default defineComponent({
     IonTitle,
     IonToolbar 
   },
-  props: ["ItemsWithMissingFacility"],
+  props: ["ItemsWithMissingFacility", "facilities"],
   data() {
     return {
       items: {}

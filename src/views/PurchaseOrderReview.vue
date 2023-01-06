@@ -46,7 +46,7 @@
           <ion-item @click="listMissingSkus()">
             <ion-icon slot="start" :icon="shirtOutline" />
             <ion-label>{{ $t("Missing products") }}</ion-label>
-            <ion-note slot="end">23 {{ $t("items") }}</ion-note>
+            <ion-note slot="end">{{ unidentifiedProductItems.length }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
         </div>
@@ -187,7 +187,7 @@ export default defineComponent({
     },
     getItemsWithMissingFacility() {
       const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
-      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !facilityIds.includes(item.externalFacilityId)).length;
+      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !facilityIds.includes(item.externalFacilityId));
     },
     async fetchFacilities(){
       const payload = {
@@ -218,7 +218,7 @@ export default defineComponent({
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
-        componentProps: { 'unidentifiedProductItems': this.ordersList.unidentifiedProductItems }
+        componentProps: { 'unidentifiedProductItems': this.unidentifiedProductItems }
       });
       return missingSkuModal.present();
     },
@@ -302,7 +302,7 @@ export default defineComponent({
       const ItemsWithMissingFacility = this.getItemsWithMissingFacility();
       const missingFacilityModal = await modalController.create({
         component: MissingFacilityModal,
-        componentProps: { ItemsWithMissingFacility }
+        componentProps: { ItemsWithMissingFacility, facilities: this.facilities }
       });
       return missingFacilityModal.present();
     },
