@@ -137,11 +137,10 @@ import ProductPopover from '@/components/ProductPopover.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
-import { showToast } from '@/utils';
+import { showToast, hasError } from '@/utils';
 import { translate } from "@/i18n";
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
-import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
 
 export default defineComponent({
@@ -268,7 +267,7 @@ export default defineComponent({
             {
               text: this.$t("Upload"),
               handler: () => {
-                const response = UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
+                UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
                   uploadData,
                   fileName,
                   params
