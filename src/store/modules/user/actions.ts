@@ -6,6 +6,7 @@ import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
 import { OrderService } from '@/services/OrderService'
+import { updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -31,6 +32,7 @@ const actions: ActionTree<UserState, RootState> = {
 
             if (checkPermissionResponse.status === 200 && !hasError(checkPermissionResponse) && checkPermissionResponse.data && checkPermissionResponse.data.hasPermission) {
               commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
+              updateToken(resp.data.token)
               dispatch('getProfile')
               dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
               if (resp.data._EVENT_MESSAGE_ && resp.data._EVENT_MESSAGE_.startsWith("Alert:")) {
@@ -46,6 +48,7 @@ const actions: ActionTree<UserState, RootState> = {
             }
           } else {
             commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
+            updateToken(resp.data.token)
             dispatch('getProfile')
             dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
             return resp.data;
@@ -74,8 +77,8 @@ const actions: ActionTree<UserState, RootState> = {
   async logout ({ commit }) {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
+    resetConfig();
     this.dispatch('order/clearOrderList');
-    
   },
 
   /**
@@ -117,6 +120,7 @@ const actions: ActionTree<UserState, RootState> = {
    */
   setUserInstanceUrl ({ commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
+    updateInstanceUrl(payload)
   },
 
   updateFieldMappings({ commit }, payload){
