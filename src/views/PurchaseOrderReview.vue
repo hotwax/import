@@ -25,21 +25,21 @@
           <ion-item @click="bulkAdjustmentModal()"> 
             <ion-icon slot="start" :icon="calculatorOutline" />
             <ion-label>{{ $t("Bulk adjustment") }}</ion-label>
-            <ion-note slot="end">50 {{ $t("items selected") }}</ion-note>
+            <ion-note slot="end">{{ getSelectedItems() }} {{ $t("items selected") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
           <ion-item @click="dateTimeParseErrorModal()">
             <ion-icon slot="start" :icon="timeOutline" />
             <ion-label>{{ $t("Date time parse error") }}</ion-label>
-            <ion-note slot="end">20 {{ $t("items") }}</ion-note>
+            <ion-note slot="end">{{ getItemsWithInvalidDateFormat() }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
           <ion-item @click="missingFacilityModal()">
             <ion-icon slot="start" :icon="businessOutline" />
             <ion-label>{{ $t("Missing facilities") }}</ion-label>
-            <ion-note slot="end">10 {{ $t("items") }}</ion-note>
+            <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" mode="ios" :icon="chevronForwardOutline" />
           </ion-item>
 
@@ -179,6 +179,16 @@ export default defineComponent({
     }
   },
   methods: {
+    getSelectedItems(){
+      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => item.isSelected).length;
+    },
+    getItemsWithInvalidDateFormat(){
+      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid).length;
+    },
+    getItemsWithMissingFacility() {
+      const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
+      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !facilityIds.includes(item.externalFacilityId)).length;
+    },
     async fetchFacilities(){
       const payload = {
         "inputFields": {
@@ -289,9 +299,10 @@ export default defineComponent({
       return bulkAdjustmentModal.present();
     },
     async missingFacilityModal() {
+      const ItemsWithMissingFacility = this.getItemsWithMissingFacility();
       const missingFacilityModal = await modalController.create({
         component: MissingFacilityModal,
-        componentProps: { }
+        componentProps: { ItemsWithMissingFacility }
       });
       return missingFacilityModal.present();
     },

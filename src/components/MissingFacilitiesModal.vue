@@ -12,10 +12,10 @@
 
   <ion-content>
 
-    <ion-item lines="full">
+    <ion-item v-for="(facilityId, products) in items" :key="facilityId" lines="full">
       <p>
-        <ion-label>input facility value</ion-label>
-        <ion-note>5 {{ $t("line items") }}</ion-note> 
+        <ion-label>{{ facilityId }}</ion-label>
+        <ion-note>{{ products.length ? products.length : 0 }} {{ $t("line items") }}</ion-note> 
       </p>
       
       <ion-select interface="popover" slot="end" value="facility">
@@ -68,14 +68,25 @@ export default defineComponent({
     IonTitle,
     IonToolbar 
   },
-  props: [""],
+  props: ["ItemsWithMissingFacility"],
   data() {
-    return { }
+    return {
+      items: {}
+    }
   },
   computed: { },
+  mounted(){
+    this.itemsByFacilityId();
+  },
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });
+    },
+    itemsByFacilityId(){
+      this.items = this.ItemsWithMissingFacility.reduce((itemsByFacilityId: any, item: any) => {
+        itemsByFacilityId[item.externalFacilityId] ? itemsByFacilityId[item.externalFacilityId].push(item) : itemsByFacilityId[item.externalFacilityId] = [item];
+        return itemsByFacilityId;
+      }, {});
     }
   },
   setup() {

@@ -139,10 +139,11 @@ export default defineComponent({
     selectParentProduct(parentProductId: any, event: any, orderItems: any) {
       // Todo: Need to find a better approach.
       if(this.isParentProductUpdated){
-        orderItems.forEach((item: any) => {
+        orderItems = orderItems.map((item: any) => {
           if (item.parentProductId === parentProductId) {
             item.isSelected = event.detail.checked;
           }
+          return item;
         })
         this.isParentProductUpdated = false;
       }
