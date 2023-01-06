@@ -15,7 +15,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
+    <ion-content :fullscreen="true">
       <div class="header">
         <div class="search">
           <ion-searchbar :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
@@ -53,13 +53,13 @@
       </div>
 
       <div v-if="segmentSelected === 'all'">
-        <PODetail />
+        <PurchaseOrderDetail />
       </div>
       <div v-if="segmentSelected === 'po1'">
-        <PODetail />
+        <PurchaseOrderDetail />
       </div>
       <div v-if="segmentSelected === 'po2'">
-        <PODetail />
+        <PurchaseOrderDetail />
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -67,20 +67,22 @@
           <ion-icon :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
-      <div id="segment">
-        <ion-segment v-model="segmentSelected">
-          <ion-segment-button value="all">
-            <ion-label>All</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="po1">
-            <ion-label>PO1</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="po2">
-            <ion-label>PO2</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
-    </ion-content>  
+        
+    </ion-content>
+
+    <ion-footer>
+      <ion-segment v-model="segmentSelected">
+        <ion-segment-button value="all">
+          <ion-label>All</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="po1">
+          <ion-label>PO1</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="po2">
+          <ion-label>PO2</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-footer>
   </ion-page>
 </template>   
 <script lang="ts">
@@ -90,7 +92,7 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonLabel, IonIcon, IonButton, IonButtons, IonFab, IonFabButton, IonSegment, IonSegmentButton, IonNote, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, checkboxOutline, calculatorOutline, cloudUploadOutline, arrowUndoOutline, chevronForwardOutline, timeOutline } from 'ionicons/icons'
-import PODetail from '@/components/PODetail.vue'
+import PurchaseOrderDetail from '@/components/PurchaseOrderDetail.vue'
 import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
 import BulkAdjustmentModal from '@/components/BulkAdjustmentModal.vue';
 import MissingFacilityModal from '@/components/MissingFacilitiesModal.vue';
@@ -121,7 +123,7 @@ export default defineComponent({
     IonButtons,
     IonFab,
     IonFabButton,
-    PODetail
+    PurchaseOrderDetail
   },
   computed: {
     ...mapGetters({
@@ -347,12 +349,14 @@ export default defineComponent({
     margin-top: var(--spacer-sm);
   }
 
-  #segment {
-    width: 40%;
-    bottom: 0px;
-    margin-top: 10px;
-    border-radius: 0px 4px 0px 0px;
+  ion-footer {
+    max-width: fit-content;
+  }
+
+  ion-segment {
+    --background: white;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 4px 5px rgba(0, 0, 0, 0.12), 0px 1px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 0px 4px 0px 0px;
   }
   
   @media (min-width: 991px) {

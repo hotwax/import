@@ -17,6 +17,7 @@
         <div />
         
         <ion-checkbox :checked="isParentProductChecked(id, orderItems)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, orderItems)" />
+        
         <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, orderItems), getParentInformation(id, orderItems).orderId)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>

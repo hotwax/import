@@ -12,36 +12,25 @@
 
   <ion-content>
     <ion-item lines="none">
-      <p>
-        <ion-note class="overline">{{ $t("File upload") }}</ion-note>
-        <ion-label>{{ $t("Date format") }}</ion-label> 
-      </p>
+      <ion-label>
+        <p class="overline">{{ $t("File upload") }}</p>
+        <h1>{{ $t("Date format") }}</h1> 
+        <p class="ion-text-wrap">{{ $t("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}</p>
+      </ion-label>
+    </ion-item>
+    
+    <ion-item>
+      <ion-input clear-input='true' value="DD/MM/YYYY" />
+    </ion-item>
+    
+    <ion-item>
+      <ion-label>02/02/2022</ion-label>
+      <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
     </ion-item>
 
-    <ion-list>
-
-      <ion-item lines="none">
-        <ion-label class="ion-text-wrap">
-          <p>{{ $t("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}</p>
-        </ion-label>
-      </ion-item>
-        
-      <ion-item>
-        <ion-input clear-input='true' value="DD/MM/YYYY" />
-      </ion-item>
-
-      <ion-item >
-        <ion-label>02/02/2022</ion-label>
-        <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
-      </ion-item>
-
-    </ion-list>
-
-    <div>
-      <ion-button class="ion-padding-start" fill="outline">
-        {{ $t("Check sample") }}
-      </ion-button>
-    </div>
+    <ion-button class="ion-margin-top ion-margin-start" fill="outline">
+      {{ $t("Check sample") }}
+    </ion-button>
     
     <ion-item lines="none">
       <ion-label color="medium">{{ $t("This will update 50 products across 3 POs") }}</ion-label>
