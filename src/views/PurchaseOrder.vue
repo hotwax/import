@@ -148,6 +148,7 @@ export default defineComponent({
         const mappingPrefId = this.generateUniqueMappingPrefId();
         this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         showToast(translate("Mapping saved successfully"));
+        this.mappingName = "";
       },
       getFile(event) {
         this.file = event.target.files[0];
@@ -157,7 +158,7 @@ export default defineComponent({
           this.store.dispatch('order/updateFileName', this.file.name);
         }
         else {
-          showToast(translate("Something went wrong, Please try again"));
+          showToast(translate("Something went wrong. Please try again"));
         }
       },
       async parseFile(){
