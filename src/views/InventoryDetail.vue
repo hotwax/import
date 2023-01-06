@@ -63,7 +63,7 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.pseudoId, false, searchedProduct, 'stock')">
+        <ion-button fill="clear" color="medium" @click="updateProduct($event, searchedProduct.pseudoId, false, searchedProduct, 'stock')">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -82,7 +82,7 @@
           
           <ion-checkbox :checked="isParentProductChecked(id)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event)" />
 
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, stock.items), 'stock')">
+          <ion-button fill="clear" color="medium" @click="updateProduct($event, id, true, getParentInformation(id, stock.items), 'stock')">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
@@ -114,7 +114,7 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.pseudoId, false, item, 'stock')">
+            <ion-button fill="clear" color="medium" @click="updateProduct($event, item.pseudoId, false, item, 'stock')">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -313,7 +313,7 @@ export default defineComponent({
         console.error(err)
       }
     },
-    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any, type: string) {
+    async updateProduct(ev: Event, id: any, isVirtual: boolean, item: any, type: string) {
       const popover = await popoverController
         .create({
           component: ProductPopover,
