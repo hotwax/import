@@ -54,13 +54,13 @@
         </div>
       </div>  
 
-      <div v-if="searchedProduct?.internalName" class="list-item">
+      <div v-if="searchedProduct?.pseudoId" class="list-item">
         <ion-item  lines="none">
           <ion-thumbnail>
             <Image :src="searchedProduct.imageUrl" />
           </ion-thumbnail>
           <ion-label>
-            {{ searchedProduct.internalName }}
+            {{ searchedProduct.pseudoId }}
           </ion-label>
         </ion-item>
 
@@ -80,7 +80,7 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct, 'order')">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.pseudoId, false, searchedProduct, 'order')">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -110,7 +110,7 @@
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
-                {{ item.internalName }}
+                {{ item.pseudoId }}
               </ion-label>
             </ion-item>
 
@@ -130,7 +130,7 @@
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item, 'order')">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.pseudoId, false, item, 'order')">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -257,7 +257,7 @@ export default defineComponent({
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
       this.searchedProduct = this.ordersList.items.find((item: any) => {
-        return item.internalName === product.internalName;
+        return item.pseudoId === product.pseudoId;
       })
     },
     async save(){

@@ -1,13 +1,13 @@
 <template>
   <ion-content>
     <ion-item lines="none">
-      <ion-label>{{ this.isVirtual ? item.parentProductName : item.internalName }}</ion-label>
+      <ion-label>{{ this.isVirtual ? item.parentProductName : item.pseudoId }}</ion-label>
     </ion-item>
-    <ion-item lines="none" @click="revert">
+    <ion-item button lines="none" @click="revert">
       <ion-icon slot="start" :icon="arrowUndoOutline" />
       <ion-label>{{ $t('Reset') }}</ion-label>
     </ion-item>
-    <ion-item lines="none" @click="onlySelect">
+    <ion-item button lines="none" @click="onlySelect">
       <ion-icon slot="start" :icon="checkboxOutline" />
       <ion-label>{{ $t('Only select') }}</ion-label>
     </ion-item>
@@ -49,7 +49,7 @@ export default defineComponent({
     onlySelectSingleProduct() {
       const items = this.type === 'order' ? this.ordersList.items : this.stock.items;
       items.forEach(element => {
-        element.isSelected = element.internalName === this.id;
+        element.isSelected = element.pseudoId === this.id;
       });
       popoverController.dismiss({ dismissed: true });
     },
@@ -57,9 +57,9 @@ export default defineComponent({
       const items = this.type === 'order' ? this.ordersList.items : this.stock.items;
       const original = this.type === 'order' ? JSON.parse(JSON.stringify(this.ordersList.original)) : JSON.parse(JSON.stringify(this.stock.original));
       const itemsList = items.map(element => {
-        if(element.internalName === this.id) {
+        if(element.pseudoId === this.id) {
           const item = original.find(item => {
-            return item.internalName === this.id;
+            return item.pseudoId === this.id;
           })
           element = item;
         }

@@ -22,10 +22,10 @@ const actions: ActionTree<StockState, RootState> = {
       const product = rootGetters['product/getProduct'](item.productSKU)
       
       if(Object.keys(product).length > 0){
-        item.parentProductId = product.groupId;
-        item.internalName = product.internalName;
-        item.parentProductName = product.parentProductName;
-        item.imageUrl = product.mainImageUrl;
+        item.parentProductId = product?.parent?.id;
+        item.pseudoId = product.pseudoId;
+        item.parentProductName = product?.parent?.productName;
+        item.imageUrl = product.images?.mainImageUrl;
         item.isNewProduct = "N";
         item.isSelected = true;
         return item;
