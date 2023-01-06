@@ -113,7 +113,7 @@ export default defineComponent({
     },
     data() {
       return {
-        file: "",
+        file: {},
         content: [],
         fieldMapping: {
           orderId: "",
@@ -150,15 +150,16 @@ export default defineComponent({
         showToast(translate("Mapping saved successfully"));
       },
       getFile(event) {
-        if(!event.target.files[0]) return;
-        this.file = event.target.files[0];
-        if(this.file){
-          showToast(translate("File uploaded successfully"));
+        // if(!event.target.files[0]) return;
+        const file = event.target.files[0];
+        if(file){
+          this.file = file;
           this.parseFile();
           this.store.dispatch('order/updateFileName', this.file.name);
+          showToast(translate("File uploaded successfully"));
         }
         else {
-          showToast(translate("Something went wrong, Please try again"));
+          showToast(translate("No new file upload. Please try again"));
         }
       },
       async parseFile(){
