@@ -123,8 +123,19 @@ const actions: ActionTree<UserState, RootState> = {
     updateInstanceUrl(payload)
   },
 
-  updateFieldMappings({ commit }, payload){
-    commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
+  async updateFieldMappings({ commit }, payload){
+    try {
+      const resp = await OrderService.setFieldMapping(payload);
+
+      if(resp.status === 200 && !hasError(resp)) {
+        commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
+        return;
+      } else {
+        showToast(translate('Something went wrong'));
+      }
+    } catch(err) {
+      console.error(err)
+    }
   },
 
   async deleteFieldMappings({ commit }, payload){
