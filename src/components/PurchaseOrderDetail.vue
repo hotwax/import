@@ -71,7 +71,7 @@ import { mapGetters } from 'vuex';
 import ProductPopover from '@/components/ProductPopover.vue'
 
 export default defineComponent({
-  name: "PODetail",
+  name: "PurchaseOrderDetails",
   components: {
     IonCheckbox,
     IonThumbnail,
@@ -82,9 +82,13 @@ export default defineComponent({
     IonLabel,
     Image
   },
+  props: {
+    ordersList: {
+      type: Object
+    }
+  },
   computed: {
     ...mapGetters({
-      ordersList: 'order/getOrder',
       originalItems: 'order/getOriginalItems',
       unidentifiedProductItems: 'order/getUnidentifiedProductItems',
       getProduct: 'product/getProduct',

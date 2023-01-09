@@ -53,13 +53,10 @@
       </div>
 
       <div v-if="segmentSelected === 'all'">
-        <PurchaseOrderDetail />
+        <PurchaseOrderDetail :orders="ordersList" />
       </div>
-      <div v-if="segmentSelected === 'po1'">
-        <PurchaseOrderDetail />
-      </div>
-      <div v-if="segmentSelected === 'po2'">
-        <PurchaseOrderDetail />
+      <div v-for="(po, poId) in ordersList" :key="poId" >
+        <PurchaseOrderDetail v-if="segmentSelected === poId" :orders="{[poId]: po}" />
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -73,13 +70,10 @@
     <ion-footer>
       <ion-segment v-model="segmentSelected">
         <ion-segment-button value="all">
-          <ion-label>All</ion-label>
+          <ion-label>{{ $t("All") }}</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="po1">
-          <ion-label>PO1</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="po2">
-          <ion-label>PO2</ion-label>
+        <ion-segment-button v-for="(po, poId) in ordersList" :key="poId" :value="poId">
+          <ion-label>{{ poId }}</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-footer>
@@ -90,7 +84,7 @@ import { defineComponent, ref } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonSearchbar, IonItem, IonLabel, IonIcon, IonButton, IonButtons, IonFab, IonFabButton, IonSegment, IonSegmentButton, IonNote, alertController, modalController } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, IonFooter, IonSearchbar, IonItem, IonLabel, IonIcon, IonButton, IonButtons, IonFab, IonFabButton, IonSegment, IonSegmentButton, IonNote, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, checkboxOutline, calculatorOutline, cloudUploadOutline, arrowUndoOutline, chevronForwardOutline, timeOutline } from 'ionicons/icons'
 import PurchaseOrderDetail from '@/components/PurchaseOrderDetail.vue'
 import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
@@ -112,6 +106,7 @@ export default defineComponent({
     IonBackButton,
     IonTitle,
     IonContent,
+    IonFooter,
     IonSearchbar,
     IonItem,
     IonLabel,
