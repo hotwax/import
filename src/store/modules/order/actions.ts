@@ -22,7 +22,7 @@ const actions: ActionTree<OrderState, RootState> = {
     items = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
       const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
 
-      if(Object.keys(product).length > 0){
+      if (Object.keys(product).length > 0) {
         item.parentProductId = product?.parent?.id;
         item.pseudoId = product.pseudoId;
         item.parentProductName = product?.parent?.productName;
@@ -34,6 +34,7 @@ const actions: ActionTree<OrderState, RootState> = {
       unidentifiedProductItems.push(item);
       return ;
     }).filter((item: any) => item);
+    
     const original = JSON.parse(JSON.stringify(items))
 
     commit(types.ORDER_LIST_UPDATED, { items, original, unidentifiedProductItems });
