@@ -14,10 +14,10 @@
             <ion-avatar slot="start" v-if="userProfile?.partyImageUrl">
               <Image :src="userProfile.partyImageUrl"/>
             </ion-avatar>
-            <ion-label>
-              {{ userProfile?.partyName }}
-              <p>{{ userProfile?.userLoginId }}</p>
-            </ion-label>
+            <ion-card-header>
+              <ion-card-subtitle>{{ userProfile?.userLoginId }}</ion-card-subtitle>
+              <ion-card-title>{{ userProfile?.partyName }}</ion-card-title>
+            </ion-card-header>
           </ion-item>
           <ion-button fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
           <!-- Commenting this code as we currently do not have reset password functionality -->
@@ -25,7 +25,9 @@
         </ion-card>
       </div>
       
-      <h1>{{ $t('OMS') }}</h1>
+      <div class="section-header">
+        <h1>{{ $t('OMS') }}</h1>
+      </div>
 
       <section>
         <ion-card>
@@ -51,7 +53,13 @@
 
       <hr />
 
-      <h1>{{ $t('App') }}</h1>
+      <div class="section-header">
+        <h1>
+          {{ $t('App') }}
+          <p class="overline" >{{ "Version: " + appVersion }}</p>
+        </h1>
+        <p class="overline">{{ "Built: " + getDateTime(appInfo.builtTime) }}</p>
+      </div>
       
       <section>
         <ion-card>
@@ -141,7 +149,9 @@ export default defineComponent({
       baseURL: process.env.VUE_APP_BASE_URL,
       sampleDateTime: '',
       dateTimeFormat: '',
-      defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy'
+      defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy',
+      appInfo: (process.env.VUE_APP_VERSION_INFO ? JSON.parse(process.env.VUE_APP_VERSION_INFO) : {}) as any,
+      appVersion: ""
     };
   },
   computed: {
@@ -154,6 +164,7 @@ export default defineComponent({
   mounted(){
     this.dateTimeFormat = this.currentDateTimeFormat
     this.parse();
+    this.appVersion = this.appInfo.version;
   },
   methods: {
     goToOms(){
@@ -177,6 +188,9 @@ export default defineComponent({
       this.store.dispatch('user/logout').then(() => {
         this.router.push('/login');
       })
+    },
+    getDateTime(time: any) {
+      return DateTime.fromMillis(time).toLocaleString(DateTime.DATETIME_MED);
     }
   },
   setup(){
@@ -219,5 +233,12 @@ export default defineComponent({
 
   hr {
     border-top: 1px solid var(--ion-color-medium);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacer-xs) 10px 0px;
   }
 </style>
