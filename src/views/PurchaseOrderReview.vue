@@ -53,10 +53,10 @@
       </div>
 
       <div v-if="segmentSelected === 'all'">
-        <PurchaseOrderDetail :orders="ordersList" />
+        <PurchaseOrderDetail :ordersList="ordersList" />
       </div>
       <div v-for="(po, poId) in ordersList" :key="poId" >
-        <PurchaseOrderDetail v-if="segmentSelected === poId" :orders="{[poId]: po}" />
+        <PurchaseOrderDetail v-if="segmentSelected === poId" :ordersList="{[poId]: po}" />
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -122,6 +122,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
+      facilities: 'util/getFacilities',
       ordersList: 'order/getOrder',
       originalItems: 'order/getOriginalItems',
       unidentifiedProductItems: 'order/getUnidentifiedProductItems',
@@ -137,7 +138,7 @@ export default defineComponent({
       numberOfPieces: 0,
       catalog: "N",
       facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
-      facilities: [] as any,
+      // facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
@@ -145,7 +146,7 @@ export default defineComponent({
     }
   },
   ionViewDidEnter(){
-   this.fetchFacilities();
+   this.store.dispatch('util/fetchFacilities');
   },
   async beforeRouteLeave() {
     let canLeave = false;
@@ -186,28 +187,28 @@ export default defineComponent({
       const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
       return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !facilityIds.includes(item.externalFacilityId));
     },
-    async fetchFacilities(){
-      const payload = {
-        "inputFields": {
-          "parentTypeId": "VIRTUAL_FACILITY",
-          "parentTypeId_op": "notEqual",
-          "facilityTypeId": "VIRTUAL_FACILITY",
-          "facilityTypeId_op": "notEqual",
-        },
-        "fieldList": ["facilityId", "facilityName", "parentTypeId"],
-        "viewSize": 50,
-        "entityName": "FacilityAndType",
-        "noConditionFind": "Y"
-      }
-      try {
-        const resp = await OrderService.getFacilities(payload);
-        if(resp.status === 200 && !hasError(resp)){
-          this.facilities = resp.data.docs;
-        }
-      } catch(err) {
-        console.error(err)
-      }
-    },
+    // async fetchFacilities(){
+    //   const payload = {
+    //     "inputFields": {
+    //       "parentTypeId": "VIRTUAL_FACILITY",
+    //       "parentTypeId_op": "notEqual",
+    //       "facilityTypeId": "VIRTUAL_FACILITY",
+    //       "facilityTypeId_op": "notEqual",
+    //     },
+    //     "fieldList": ["facilityId", "facilityName", "parentTypeId"],
+    //     "viewSize": 50,
+    //     "entityName": "FacilityAndType",
+    //     "noConditionFind": "Y"
+    //   }
+    //   try {
+    //     const resp = await OrderService.getFacilities(payload);
+    //     if(resp.status === 200 && !hasError(resp)){
+    //       this.facilities = resp.data.docs;
+    //     }
+    //   } catch(err) {
+    //     console.error(err)
+    //   }
+    // },
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
       return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
