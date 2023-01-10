@@ -138,7 +138,6 @@ export default defineComponent({
       numberOfPieces: 0,
       catalog: "N",
       facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
-      // facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
@@ -146,7 +145,7 @@ export default defineComponent({
     }
   },
   ionViewDidEnter(){
-   this.store.dispatch('util/fetchFacilities');
+    this.store.dispatch('util/fetchFacilities');
   },
   async beforeRouteLeave() {
     let canLeave = false;
@@ -187,28 +186,6 @@ export default defineComponent({
       const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
       return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !facilityIds.includes(item.externalFacilityId));
     },
-    // async fetchFacilities(){
-    //   const payload = {
-    //     "inputFields": {
-    //       "parentTypeId": "VIRTUAL_FACILITY",
-    //       "parentTypeId_op": "notEqual",
-    //       "facilityTypeId": "VIRTUAL_FACILITY",
-    //       "facilityTypeId_op": "notEqual",
-    //     },
-    //     "fieldList": ["facilityId", "facilityName", "parentTypeId"],
-    //     "viewSize": 50,
-    //     "entityName": "FacilityAndType",
-    //     "noConditionFind": "Y"
-    //   }
-    //   try {
-    //     const resp = await OrderService.getFacilities(payload);
-    //     if(resp.status === 200 && !hasError(resp)){
-    //       this.facilities = resp.data.docs;
-    //     }
-    //   } catch(err) {
-    //     console.error(err)
-    //   }
-    // },
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
       return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
