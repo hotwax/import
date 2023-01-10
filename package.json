@@ -1,6 +1,6 @@
 {
   "name": "import",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "private": true,
   "description": "Import App",
   "scripts": {
@@ -14,6 +14,7 @@
   "dependencies": {
     "@capacitor/android": "^2.4.7",
     "@capacitor/core": "^2.4.7",
+    "@hotwax/oms-api": "1.1.0",
     "@ionic/core": "6.2.9",
     "@ionic/vue": "6.2.9",
     "@ionic/vue-router": "6.2.9",
