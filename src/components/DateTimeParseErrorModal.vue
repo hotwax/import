@@ -20,15 +20,15 @@
     </ion-item>
     
     <ion-item>
-      <ion-input clear-input='true' value="DD/MM/YYYY" />
+      <ion-input clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
     </ion-item>
     
     <ion-item>
-      <ion-label>02/02/2022</ion-label>
+      <ion-label>{{ sampleDateTime }}</ion-label>
       <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
     </ion-item>
 
-    <ion-button class="ion-margin-top ion-margin-start" fill="outline">
+    <ion-button class="ion-margin-top ion-margin-start" fill="outline" @click="parse">
       {{ $t("Check sample") }}
     </ion-button>
     
@@ -37,7 +37,7 @@
     </ion-item>
     
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button>
+      <ion-fab-button @click="updateDateTimeFormat">
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
@@ -63,6 +63,10 @@ import {
 import { defineComponent } from "vue";
 import { close, saveOutline } from "ionicons/icons";
 import { useStore } from "@/store";
+import { mapGetters } from "vuex";
+import { DateTime } from "luxon";
+import { showToast } from "@/utils";
+import { translate } from "@/i18n";
 export default defineComponent({
   name: "DateTimeParseErrorModal",
   components: {
@@ -80,15 +84,37 @@ export default defineComponent({
     IonTitle,
     IonToolbar 
   },
-  props: [""],
   data() {
-    return { }
+    return { 
+      sampleDateTime: '',
+      dateTimeFormat: '',
+      defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy'
+    }
   },
-  computed: { },
+  computed: {
+    ...mapGetters({
+      currentDateTimeFormat: 'user/getDateTimeFormat'
+    })
+  },
+  mounted(){
+    this.dateTimeFormat = this.currentDateTimeFormat
+    this.parse();
+  },
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });
-    }
+    },
+    updateDateTimeFormat(){
+      this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
+      this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
+      this.parse();
+      modalController.dismiss({ dismissed: true });
+      showToast(translate("Date time format has been updated successfully"));
+
+    },
+    parse(){
+      this.sampleDateTime = DateTime.now().toFormat(this.dateTimeFormat);
+    },
   },
   setup() {
     const store = useStore();

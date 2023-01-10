@@ -40,7 +40,7 @@
           </ion-chip>
           <ion-chip outline class="tablet">
             <ion-icon :icon="sendOutline" />
-            <ion-label>{{ item.arrivalDate }}</ion-label>
+            <ion-label>{{ getArrivalDate(item.arrivalDate) }}</ion-label>
           </ion-chip>
           <!-- Used :key as the changed value was not reflected -->
           <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
@@ -69,6 +69,7 @@ import { sendOutline, ellipsisVerticalOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
 import { mapGetters } from 'vuex';
 import ProductPopover from '@/components/ProductPopover.vue'
+import { DateTime } from 'luxon'
 
 export default defineComponent({
   name: "PurchaseOrderDetails",
@@ -123,6 +124,9 @@ export default defineComponent({
         //   this.searchProduct(this.queryString);
         // });
       return popover.present();
+    },
+    getArrivalDate(date: any){
+      return DateTime.fromFormat(date, this.dateTimeFormat).toFormat(this.dateTimeFormat)
     },
     isParentProductChecked(parentProductId: string, orderItems: any) {
       const items = this.getGroupItems(parentProductId, orderItems);
