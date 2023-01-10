@@ -206,7 +206,7 @@ export default defineComponent({
     async dateTimeParseErrorModal() {
       const dateTimeParseErrorModal = await modalController.create({
         component: DateTimeParseErrorModal,
-        componentProps: { }
+        componentProps: { numberOfProducts: Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().length, numberOfPos: Object.keys(this.ordersList).length }
       });
       return dateTimeParseErrorModal.present();
     },
@@ -269,7 +269,6 @@ export default defineComponent({
     async bulkAdjustmentModal() {
       const bulkAdjustmentModal = await modalController.create({
         component: BulkAdjustmentModal,
-        componentProps: { }
       });
       return bulkAdjustmentModal.present();
     },

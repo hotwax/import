@@ -33,7 +33,7 @@
     </ion-button>
     
     <ion-item lines="none">
-      <ion-label color="medium">{{ $t("This will update 50 products across 3 POs") }}</ion-label>
+      <ion-label color="medium">{{ $t("This will update products across POs", {numberOfProducts, numberOfPos}) }}</ion-label>
     </ion-item>
     
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -91,6 +91,7 @@ export default defineComponent({
       defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy'
     }
   },
+  props: ["numberOfProducts", "numberOfPos"],
   computed: {
     ...mapGetters({
       currentDateTimeFormat: 'user/getDateTimeFormat'
