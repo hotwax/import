@@ -69,7 +69,7 @@ import { DateTime } from 'luxon';
 import { useStore } from "@/store";
 
 export default defineComponent({
-  name: "DateTimeConfigModal",
+  name: "ConfigureDateTimeFormatModal",
   props: ["arrivalDate"],
   data() {
     return {

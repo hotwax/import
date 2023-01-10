@@ -160,7 +160,7 @@ import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, Io
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
-import DateTimeConfigModal from "@/components/DateTimeConfigModal.vue"
+import ConfigureDateTimeFormatModal from "@/components/ConfigureDateTimeFormatModal.vue"
 
 export default defineComponent({
   name: 'PurchaseOrderDetail',
@@ -405,7 +405,7 @@ export default defineComponent({
     },
     async configureDateTimeFormat(arrivalDate: string) {
       const dateTimeConfigModal = await modalController.create({
-        component: DateTimeConfigModal,
+        component: ConfigureDateTimeFormatModal,
         componentProps: {
           arrivalDate
         }
