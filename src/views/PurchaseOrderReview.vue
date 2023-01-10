@@ -60,7 +60,7 @@
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button :disabled="isDateInvalid()">
+        <ion-fab-button :disabled="isDateInvalid()" @click="save">
           <ion-icon :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -184,7 +184,7 @@ export default defineComponent({
     },
     getItemsWithMissingFacility() {
       const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
-      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !facilityIds.includes(item.externalFacilityId));
+      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
     },
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
@@ -211,7 +211,7 @@ export default defineComponent({
       return dateTimeParseErrorModal.present();
     },
     async save(){
-      const uploadData = this.ordersList.items.filter((item: any) => {
+      const uploadData = Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item: any) => {
         return item.isSelected;
       }).map((item: any) => {
         return {
