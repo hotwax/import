@@ -1,3 +1,16 @@
+# Release 2.0.0
+
+## What's Changed
+* Implemented: support of oms-api package in the product module and updated the code as per the updated schema(#2k05wua) by @ymaheshwari1 in https://github.com/hotwax/import/pull/47
+* Implemented: Added static texts to translation file(#85zrhddez) by @k2maan in https://github.com/hotwax/import/pull/141
+* Fixed: The save mapping input value should be empty after save action(#85zrh7473) by @shashwatbangar in https://github.com/hotwax/import/pull/128
+* Added toast to show 'changes have been successfully applied' on clicking apply button (#2h1ax9r) by @k2maan in https://github.com/hotwax/import/pull/133
+* Removed: unwanted code related to search page(#85zrhdn0f) by @ymaheshwari1 in https://github.com/hotwax/import/pull/140
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v1.1.2...v2.0.0
+
+
 # Release 1.1.2
 
 ## What's Changed
