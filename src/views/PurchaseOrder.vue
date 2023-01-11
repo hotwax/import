@@ -158,24 +158,28 @@ export default defineComponent({
       review() {
         if (this.content.length <= 0) {
           showToast(translate("Please upload a valid purchase order csv to continue"));
-        } else if (this.areAllFieldsSelected()) {
-          this.orderItemsList = this.content.map(item => {
-            return {
-              orderId: item[this.fieldMapping.orderId],
-              shopifyProductSKU: item[this.fieldMapping.productSku],
-              arrivalDate: DateTime.fromFormat(item[this.fieldMapping.orderDate], this.dateTimeFormat).toFormat(this.dateTimeFormat), //This is to verify whether the date format is correct.
-              quantityOrdered: item[this.fieldMapping.quantity],
-              facilityId: '',
-              externalFacilityId: item[this.fieldMapping.facility]
-            }
-          })
-          this.store.dispatch('order/updatedOrderList', this.orderItemsList);
-          this.router.push({
-            name:'PurchaseOrderDetail'
-          })
-        } else {
-          showToast(translate("Select all the fields to continue"));
+          return;
         } 
+
+        if (!this.areAllFieldsSelected()) {
+          showToast(translate("Select all the fields to continue"));
+          return;
+        }
+
+        this.orderItemsList = this.content.map(item => {
+          return {
+            orderId: item[this.fieldMapping.orderId],
+            shopifyProductSKU: item[this.fieldMapping.productSku],
+            arrivalDate: DateTime.fromFormat(item[this.fieldMapping.orderDate], this.dateTimeFormat).toFormat(this.dateTimeFormat), //This is to verify whether the date format is correct.
+            quantityOrdered: item[this.fieldMapping.quantity],
+            facilityId: '',
+            externalFacilityId: item[this.fieldMapping.facility]
+          }
+        })
+        this.store.dispatch('order/updatedOrderList', this.orderItemsList);
+        this.router.push({
+          name:'PurchaseOrderDetail'
+        })
       },
       mapFields(event) {
         if(event && event.detail.value) {

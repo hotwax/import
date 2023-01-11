@@ -112,23 +112,27 @@ export default defineComponent({
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       if (this.content.length <= 0) {
         showToast(translate("Please upload a valid reset inventory csv to continue"));
-      } else if (areAllFieldsSelected) {
-        this.productsList = this.content.map(item => {
-          return {
-            productSKU: item[this.fieldMapping.productSku],
-            quantity: item[this.fieldMapping.quantity],
-            facilityId: '',
-            externalFacilityId: item[this.fieldMapping.facility],
-            locationSeqId: item[this.fieldMapping.locationSeqId]
-          }
-        })
-        this.store.dispatch('stock/updatedStockList', this.productsList);
-        this.router.push({
-          name:'InventoryDetail'
-        })
-      } else {
-        showToast(translate("Select all the fields to continue"));
+        return;
       }
+      
+      if (!areAllFieldsSelected) {
+        showToast(translate("Select all the fields to continue"));
+        return;
+      } 
+
+      this.productsList = this.content.map(item => {
+        return {
+          productSKU: item[this.fieldMapping.productSku],
+          quantity: item[this.fieldMapping.quantity],
+          facilityId: '',
+          externalFacilityId: item[this.fieldMapping.facility],
+          locationSeqId: item[this.fieldMapping.locationSeqId]
+        }
+      })
+      this.store.dispatch('stock/updatedStockList', this.productsList);
+      this.router.push({
+        name:'InventoryDetail'
+      })
     },
   },
   setup() {
