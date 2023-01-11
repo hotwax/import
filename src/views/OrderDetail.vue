@@ -308,7 +308,7 @@ export default defineComponent({
                 this.router.push("/purchase-order");
                 this.store.dispatch('order/clearOrderList');
               }).catch(() => {
-                showToast(translate("Something went wrong, please try again"));
+                showToast(translate("Something went wrong. Please try again"));
               })
             },
           },
@@ -376,6 +376,7 @@ export default defineComponent({
         }
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
+      showToast(translate("Changes have been successfully applied"));
     },
     getGroupList (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));

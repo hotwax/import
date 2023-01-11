@@ -150,6 +150,7 @@ export default defineComponent({
         const mappingPrefId = this.generateUniqueMappingPrefId();
         this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         showToast(translate("Mapping saved successfully"));
+        this.mappingName = "";
       },
       async parse(event){
         this.file = event.target.files[0];
