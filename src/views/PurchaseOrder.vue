@@ -12,7 +12,7 @@
         <ion-item>
           <ion-label>{{ $t("Purchase order") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
-          <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
+          <input @change="parse" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item> 
         <ion-item lines="none">
@@ -85,6 +85,7 @@ import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
 import { DateTime } from 'luxon';
+import parseFileMixin from '@/mixins/parseFileMixin';
 
 export default defineComponent({
     name: "purchase orders",
@@ -111,6 +112,7 @@ export default defineComponent({
         fieldMappings: 'user/getFieldMappings'
       })
     },
+    mixins:[ parseFileMixin ],
     data() {
       return {
         file: "",
@@ -149,21 +151,9 @@ export default defineComponent({
         this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         showToast(translate("Mapping saved successfully"));
       },
-      getFile(event) {
+      async parse(event){
         this.file = event.target.files[0];
-        if(this.file){
-          showToast(translate("File uploaded successfully"));
-          this.parseFile();
-          this.store.dispatch('order/updateFileName', this.file.name);
-        }
-        else {
-          showToast(translate("Something went wrong, Please try again"));
-        }
-      },
-      async parseFile(){
-        await parseCsv(this.file).then(res => {
-          this.content = res;
-        })
+        this.content = await this.getFile(this.file);
       },
       review() {
         if (this.content.length <= 0) {

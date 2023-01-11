@@ -12,7 +12,7 @@
         <ion-item>
           <ion-label>{{ $t("Inventory") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
-          <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
+          <input @change="parse" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item>      
 
@@ -64,6 +64,7 @@ import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
+import parseFileMixin from '@/mixins/parseFileMixin';
 
 export default defineComponent({
   name: "Inventory",
@@ -101,21 +102,11 @@ export default defineComponent({
       productsList: [],
     }
   },
+  mixins:[ parseFileMixin ],
   methods: {
-    getFile(event) {
+    async parse(event) {
       this.file = event.target.files[0];
-      if(this.file) {
-        showToast(translate("File uploaded successfully"));
-        this.parseFile();
-        this.store.dispatch('order/updateFileName', this.file.name);
-      } else {
-        showToast(translate("Something went wrong, Please try again"));
-      }
-    },
-    async parseFile(){
-      await parseCsv(this.file).then(res => {
-        this.content = res;
-      })
+      this.content = await this.getFile(this.file);
     },
     mapFields() {
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
