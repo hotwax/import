@@ -7,6 +7,7 @@ import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
 import { OrderService } from '@/services/OrderService'
 import { updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
+import store from '@/store';
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -124,33 +125,39 @@ const actions: ActionTree<UserState, RootState> = {
   },
 
   async updateFieldMappings({ commit }, payload){
-    try {
-      const resp = await OrderService.setFieldMapping(payload);
+    // try {
+    //   const resp = await OrderService.setFieldMapping(payload);
 
-      if(resp.status === 200 && !hasError(resp)) {
+    //   if(resp.status === 200 && !hasError(resp)) {
         commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
-        return;
-      } else {
-        showToast(translate('Something went wrong'));
-      }
-    } catch(err) {
-      console.error(err)
-    }
+    //     return;
+    //   } else {
+    //     showToast(translate('Something went wrong'));
+    //   }
+    // } catch(err) {
+    //   console.error(err)
+    // }
   },
 
-  async deleteFieldMappings({ commit }, payload){
-    try {
-      const resp = await OrderService.deleteFieldMapping(payload);
+  async deleteFieldMapping({ commit }, payload){
+    const fieldMappings = store.getters['user/getFieldMappings'];
+    delete fieldMappings[payload.mappingPrefId];
+    
+    commit(types.USER_FIELD_MAPPINGS_UPDATED, fieldMappings);
 
-      if(resp.status === 200 && !hasError(resp)) {
-        commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
-        return;
-      } else {
-        showToast(translate('Something went wrong'));
-      }
-    } catch(err) {
-      console.error(err)
-    }
+    // try {
+    //   const resp = await OrderService.deleteFieldMapping(payload);
+
+    //   if(resp.status === 200 && !hasError(resp)) {
+    //     commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
+    //     showToast(translate('Mapping deleted successfully'));
+    //     return;
+    //   } else {
+    //     showToast(translate('Something went wrong'));
+    //   }
+    // } catch(err) {
+    //   console.error(err)
+    // }
   }
 }
 

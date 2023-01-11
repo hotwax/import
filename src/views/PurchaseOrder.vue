@@ -20,8 +20,6 @@
           <ion-select :disabled="!Object.keys(fieldMappings).length || !file" interface="popover" @ionChange="mapFields">
             <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId">
               {{ mapping?.mappingPrefName }}
-              <ion-icon @click="saveMapping" slot="icon-only" :icon="pencilOutline" />
-              <ion-icon @click="deleteMapping($event)" slot="icon-only" :icon="trashOutline" />
             </ion-select-option>
           </ion-select>
         </ion-item>     
@@ -75,20 +73,22 @@
           <ion-input v-model="mappingName" />
         </ion-item>
         <ion-button @click="saveMapping">{{ $t("Save mapping") }}</ion-button>
+        <ion-button @click="deleteOrUpdateMapping()">{{ $t("Update/Delete mapping") }}</ion-button>
 
       </main>
     </ion-content>
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
-import { arrowForwardOutline, pencilOutline, trashOutline } from 'ionicons/icons';
+import { arrowForwardOutline } from 'ionicons/icons';
 import { DateTime } from 'luxon';
+import FieldMappingModal from '@/views/FieldMappingModal.vue';
 
 export default defineComponent({
     name: "purchase orders",
@@ -212,10 +212,11 @@ export default defineComponent({
       areAllFieldsSelected() {
         return Object.values(this.fieldMapping).every(field => field !== "");
       },
-      deleteMapping(event) {
-        const mappingPrefId = this.fieldMappings[event.target.value];
-        this.store.dispatch('user/deleteFieldMappings', { mappingPrefId })
-        showToast(translate("Mapping deleted successfully"));
+      async deleteOrUpdateMapping() {
+        const fieldMappingModal = await modalController.create({
+          component: FieldMappingModal,
+        });
+        return fieldMappingModal.present();
       }
     },
     setup() {
@@ -223,8 +224,6 @@ export default defineComponent({
     const store = useStore();
     return {
       arrowForwardOutline,
-      pencilOutline,
-      trashOutline,
       router,
       store
     }
