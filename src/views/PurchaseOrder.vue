@@ -157,8 +157,7 @@ export default defineComponent({
           this.parseFile();
           this.store.dispatch('order/updateFileName', this.file.name);
           showToast(translate("File uploaded successfully"));
-        }
-        else {
+        } else {
           showToast(translate("No new file upload. Please try again"));
         }
       },
