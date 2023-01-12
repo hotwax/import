@@ -5,8 +5,7 @@ import UserState from './UserState'
 import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
-import emitter from '@/event-bus'
-import { DateTime } from 'luxon';
+import { updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -32,7 +31,9 @@ const actions: ActionTree<UserState, RootState> = {
 
             if (checkPermissionResponse.status === 200 && !hasError(checkPermissionResponse) && checkPermissionResponse.data && checkPermissionResponse.data.hasPermission) {
               commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
+              updateToken(resp.data.token)
               dispatch('getProfile')
+              dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
               if (resp.data._EVENT_MESSAGE_ && resp.data._EVENT_MESSAGE_.startsWith("Alert:")) {
               // TODO Internationalise text
                 showToast(translate(resp.data._EVENT_MESSAGE_));
@@ -46,7 +47,9 @@ const actions: ActionTree<UserState, RootState> = {
             }
           } else {
             commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
+            updateToken(resp.data.token)
             dispatch('getProfile')
+            dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
             return resp.data;
           }
         } else if (hasError(resp)) {
@@ -59,7 +62,7 @@ const actions: ActionTree<UserState, RootState> = {
         console.error("error", resp.data._ERROR_MESSAGE_);
         return Promise.reject(new Error(resp.data._ERROR_MESSAGE_));
       }
-    } catch (err) {
+    } catch (err: any) {
       showToast(translate('Something went wrong'));
       console.error("error", err);
       return Promise.reject(new Error(err))
@@ -73,8 +76,8 @@ const actions: ActionTree<UserState, RootState> = {
   async logout ({ commit }) {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
-    this.dispatch('user/clearOrderList');
-    
+    resetConfig();
+    this.dispatch('order/clearOrderList');
   },
 
   /**
@@ -93,6 +96,10 @@ const actions: ActionTree<UserState, RootState> = {
   async setFacility ({ commit }, payload) {
     commit(types.USER_CURRENT_FACILITY_UPDATED, payload.facility);
   },
+
+  setDateTimeFormat ({ commit }, payload) {
+    commit(types.USER_DATETIME_FORMAT_UPDATED, payload)
+  },
   
   /**
    * Update user timeZone
@@ -110,8 +117,13 @@ const actions: ActionTree<UserState, RootState> = {
   /**
    * Set User Instance Url
    */
-  setUserInstanceUrl ({ state, commit }, payload){
+  setUserInstanceUrl ({ commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
+    updateInstanceUrl(payload)
+  },
+
+  updateFieldMappings({ commit }, payload){
+    commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
   }
 }
 
