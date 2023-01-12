@@ -26,6 +26,7 @@
           <ion-label>{{ mapping?.mappingPrefName }}</ion-label>
           <!-- <ion-icon @click="saveMapping" slot="end" :icon="pencilOutline" /> -->
           <ion-icon @click="deleteMapping(mapping)" slot="end" :icon="trashOutline" />
+          <ion-icon @click.stop="updateMapping(mapping, $event)" :icon="pencilOutline" />
         </ion-item>
       </ion-list>
     </div>
@@ -46,13 +47,15 @@ import {
   IonItem,
   IonList,
   modalController,
+  popoverController
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { close, save, trashOutline } from "ionicons/icons";
+import { close, save, trashOutline, pencilOutline } from "ionicons/icons";
 import { useStore, mapGetters } from "vuex";
 import { UserService } from "@/services/UserService";
 import { hasError } from '@/utils'
 import { DateTime } from 'luxon';
+import UpdateMappingPopover from '@/components/UpdateMappingPopover.vue'
 
 export default defineComponent({
   name: "FieldMappingModal",
@@ -125,6 +128,15 @@ export default defineComponent({
       }).then(() => {
         this.closeModal()
       }) 
+    },
+    async updateMapping(mapping: any, event: any) {
+      const popover = await popoverController.create({
+        component: UpdateMappingPopover,
+        showBackdrop: false,
+        event: event,
+        componentProps: { mapping }
+      });
+      return popover.present() 
     }
   },
   beforeMount () {
@@ -136,6 +148,7 @@ export default defineComponent({
       close,
       save,
       trashOutline,
+      pencilOutline,
       store
     };
   },
