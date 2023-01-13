@@ -1,3 +1,13 @@
+# Release 2.1.0
+
+## What's Changed
+* Fixed build issue due to eslint version mismatch in dependencies (#85zrhpak3) by @k2maan in https://github.com/hotwax/import/pull/146
+* Used npm package for global styles(#31nm26y) by @disha1202 in https://github.com/hotwax/import/pull/147
+* Improved handling for invalid date time. (#31nfzxk) by @k2maan in https://github.com/hotwax/import/pull/119
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.0.0...v2.1.0
+
 # Release 2.0.0
 
 ## What's Changed
