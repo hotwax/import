@@ -122,9 +122,9 @@
               <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
             </ion-chip>
 
-            <ion-chip outline class="tablet">
+            <ion-chip outline class="tablet" @click="configureDateTimeFormat(item.arrivalDate)">
               <ion-icon :icon="sendOutline" />
-              <ion-label>{{ item.arrivalDate }}</ion-label>
+              <ion-label>{{ showDateTime(item.arrivalDate) }}</ion-label>
             </ion-chip>
 
             <!-- Used :key as the changed value was not reflected -->
@@ -160,6 +160,7 @@ import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, Io
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
+import ConfigureDateTimeFormatModal from "@/components/ConfigureDateTimeFormatModal.vue"
 
 export default defineComponent({
   name: 'PurchaseOrderDetail',
@@ -402,6 +403,18 @@ export default defineComponent({
         })
         this.isParentProductUpdated = false;
       }
+    },
+    async configureDateTimeFormat(arrivalDate: string) {
+      const configureDateTimeFormatModal = await modalController.create({
+        component: ConfigureDateTimeFormatModal,
+        componentProps: {
+          arrivalDate
+        }
+      });
+      return configureDateTimeFormatModal.present();
+    },
+    showDateTime(date: string) {
+      return DateTime.fromFormat(date, this.dateTimeFormat).toFormat(this.dateTimeFormat)
     }
   },
   setup() {
