@@ -19,7 +19,7 @@
         <ion-button>{{ $t("Update") }}</ion-button>
       </div>
       
-      <ion-segment class="" v-model="segmentSelected">
+      <ion-segment v-model="segmentSelected">
         <ion-segment-button value="pending">
           <ion-label>{{ $t("Pending") }}</ion-label>
         </ion-segment-button>
@@ -123,8 +123,12 @@ export default defineComponent({
   div ion-item {
     flex-grow: 1;
   }
-  
+
   ion-button {
     margin: var(--spacer-sm);
+  }
+
+  ion-segment {
+    margin-top: var(--spacer-sm);
   }
 </style>
