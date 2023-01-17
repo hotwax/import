@@ -54,13 +54,13 @@
         </div>
       </div>  
 
-      <div v-if="searchedProduct?.internalName" class="list-item">
+      <div v-if="searchedProduct?.pseudoId" class="list-item">
         <ion-item  lines="none">
           <ion-thumbnail>
             <Image :src="searchedProduct.imageUrl" />
           </ion-thumbnail>
           <ion-label>
-            {{ searchedProduct.internalName }}
+            {{ searchedProduct.pseudoId }}
           </ion-label>
         </ion-item>
 
@@ -80,7 +80,7 @@
         <!-- Used :key as the changed value was not reflected -->
         <ion-checkbox :key="searchedProduct.isSelected" :checked="searchedProduct.isSelected" @ionChange="selectProduct(searchedProduct, $event)"/>
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.internalName, false, searchedProduct)">
+        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, searchedProduct.pseudoId, false, searchedProduct)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -110,7 +110,7 @@
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
-                {{ item.internalName }}
+                {{ item.pseudoId }}
               </ion-label>
             </ion-item>
 
@@ -122,15 +122,15 @@
               <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
             </ion-chip>
 
-            <ion-chip outline class="tablet">
+            <ion-chip outline class="tablet" @click="configureDateTimeFormat(item.arrivalDate)">
               <ion-icon :icon="sendOutline" />
-              <ion-label>{{ item.arrivalDate }}</ion-label>
+              <ion-label>{{ showDateTime(item.arrivalDate) }}</ion-label>
             </ion-chip>
 
             <!-- Used :key as the changed value was not reflected -->
             <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
             
-            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.internalName, false, item)">
+            <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.pseudoId, false, item)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button>
           </div>
@@ -160,6 +160,7 @@ import { IonPage, IonHeader, IonToolbar, IonBackButton, IonTitle, IonContent, Io
 import { ellipsisVerticalOutline, sendOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 import { hasError } from "@/utils";
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
+import ConfigureDateTimeFormatModal from "@/components/ConfigureDateTimeFormatModal.vue"
 
 export default defineComponent({
   name: 'PurchaseOrderDetail',
@@ -257,7 +258,7 @@ export default defineComponent({
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
       this.searchedProduct = this.ordersList.items.find((item: any) => {
-        return item.internalName === product.internalName;
+        return item.pseudoId === product.pseudoId;
       })
     },
     async save(){
@@ -308,7 +309,7 @@ export default defineComponent({
                 this.router.push("/purchase-order");
                 this.store.dispatch('order/clearOrderList');
               }).catch(() => {
-                showToast(translate("Something went wrong, please try again"));
+                showToast(translate("Something went wrong. Please try again"));
               })
             },
           },
@@ -376,6 +377,7 @@ export default defineComponent({
         }
       })
       this.store.dispatch('order/updatedOrderListItems', this.ordersList.items);
+      showToast(translate("Changes have been successfully applied"));
     },
     getGroupList (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
@@ -401,6 +403,18 @@ export default defineComponent({
         })
         this.isParentProductUpdated = false;
       }
+    },
+    async configureDateTimeFormat(arrivalDate: string) {
+      const configureDateTimeFormatModal = await modalController.create({
+        component: ConfigureDateTimeFormatModal,
+        componentProps: {
+          arrivalDate
+        }
+      });
+      return configureDateTimeFormatModal.present();
+    },
+    showDateTime(date: string) {
+      return DateTime.fromFormat(date, this.dateTimeFormat).toFormat(this.dateTimeFormat)
     }
   },
   setup() {
