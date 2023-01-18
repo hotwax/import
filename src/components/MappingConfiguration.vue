@@ -94,7 +94,7 @@ import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 
 export default defineComponent({
-  name: "FieldMappingModal",
+  name: "MappingConfiguration",
   data() {
     return {
       mappingName: "",

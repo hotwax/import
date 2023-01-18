@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import Menu from '@/components/Menu.vue';
-import { IonApp, IonRouterOutlet, IonSplitPane, loadingController } from '@ionic/vue';
+import { createAnimation, IonApp, IonRouterOutlet, IonSplitPane, loadingController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import emitter from "@/event-bus"
 import { mapGetters, useStore } from 'vuex';
@@ -46,6 +46,26 @@ export default defineComponent({
         this.loader.dismiss();
         this.loader = null as any;
       }
+    },
+    playAnimation() {
+      const aside = document.querySelector('aside') as Element
+      const main = document.querySelector('main') as Element
+      const revealAnimation = createAnimation()
+        .addElement(aside)
+        .duration(1500)
+        .easing('ease')
+        .keyframes([
+          { offset: 0, flex: '0', opacity: '0' },
+          { offset: 0.5, flex: '1', opacity: '0' },
+          { offset: 1, flex: '1', opacity: '1' }
+        ])
+      const gapAnimation = createAnimation()
+        .addElement(main)
+        .duration(500)
+        .fromTo('gap', '0', 'var(--spacer-2xl)');
+      createAnimation()
+        .addAnimation([gapAnimation, revealAnimation])
+        .play();
     }
   },
   async mounted() {

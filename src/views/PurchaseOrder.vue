@@ -12,17 +12,21 @@
         <ion-item>
           <ion-label>{{ $t("Purchase order") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
-          <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
+          <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile" placeholder="Select CSV" />
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item> 
-        <ion-item lines="none">
-          <ion-label>{{ $t("Select mapping") }}</ion-label>
-          <ion-select :disabled="!Object.keys(fieldMappings).length || !file" interface="popover" @ionChange="mapFields">
-            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId">
+        <ion-list>
+          <ion-list-header>{{ $t("Saved mappings") }}</ion-list-header>
+          <div>
+            <ion-chip :disabled="!file" outline="true" @click="addFieldMapping()">
+              <ion-icon :icon="addOutline" />
+              <ion-label>{{ $t("New mapping") }}</ion-label>
+            </ion-chip>
+            <ion-chip :disabled="!file" outline="true" v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId" @click="mapFields(mapping)">
               {{ mapping?.mappingPrefName }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>     
+            </ion-chip>
+          </div>
+        </ion-list>
 
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
@@ -67,39 +71,31 @@
           {{ $t("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
-
-        <ion-item>
-          <ion-label>{{ $t("Mapping name") }}</ion-label>
-          <ion-input v-model="mappingName" />
-        </ion-item>
-        <ion-button @click="saveMapping">{{ $t("Save mapping") }}</ion-button>
-        <ion-button @click="deleteOrUpdateMapping()">{{ $t("Update/Delete mapping") }}</ion-button>
-
       </main>
     </ion-content>
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
+import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
-import { arrowForwardOutline } from 'ionicons/icons';
+import { arrowForwardOutline, addOutline } from 'ionicons/icons';
 import { DateTime } from 'luxon';
 import FieldMappingModal from '@/views/FieldMappingModal.vue';
 
 export default defineComponent({
     name: "purchase orders",
     components: {
+      IonChip,
       IonPage,
       IonHeader,
       IonToolbar,
       IonTitle,
       IonContent,
       IonItem,
-      IonInput,
       IonLabel,
       IonButton,
       IonMenuButton,
@@ -192,9 +188,9 @@ export default defineComponent({
           showToast(translate("Select all the fields to continue"));
         } 
       },
-      mapFields(event) {
-        if(event && event.detail.value) {
-          const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
+      mapFields(mapping) {
+        if(mapping && mapping.mappingPrefValue) {
+          const fieldMapping = mapping
           const CsvFields = Object.keys(this.content[0]);
 
           const missingFields = Object.values(fieldMapping.mappingPrefValue).filter(field => {
@@ -207,15 +203,16 @@ export default defineComponent({
               fieldMapping.mappingPrefValue[field] = "";
             }
           })
-          this.fieldMapping = fieldMapping.mappingPrefValue;
+          this.fieldMapping = mapping.mappingPrefValue;
         }
       },
       areAllFieldsSelected() {
         return Object.values(this.fieldMapping).every(field => field !== "");
       },
-      async deleteOrUpdateMapping() {
+      async addFieldMapping() {
         const fieldMappingModal = await modalController.create({
           component: FieldMappingModal,
+          componentProps: { content: this.content, fieldMapping: this.fieldMapping }
         });
         return fieldMappingModal.present();
       }
@@ -225,6 +222,7 @@ export default defineComponent({
     const store = useStore();
     return {
       arrowForwardOutline,
+      addOutline,
       router,
       store
     }
