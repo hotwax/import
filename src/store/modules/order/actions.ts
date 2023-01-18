@@ -6,7 +6,7 @@ import * as types from './mutation-types'
 
 
 const actions: ActionTree<OrderState, RootState> = {
-  async updatedOrderList ({commit, rootGetters}, items) {
+  async updatedOrderList ({commit, rootGetters, state}, items) {
     const productIds = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
       return item.shopifyProductSKU
     })
@@ -53,6 +53,16 @@ const actions: ActionTree<OrderState, RootState> = {
   },  
   clearOrderList({ commit }){
     commit(types.ORDER_LIST_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
+  },
+  updateMissingSkusList({ commit, state }, payload: any) {
+    const original = JSON.parse(JSON.stringify(state.original.concat(payload.completedItems)));
+
+    const items = payload.completedItems.reduce((itemsByPoId: any, item: any) => {
+      itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
+      return itemsByPoId;
+    }, state.purchaseOrders);
+    
+    commit(types.ORDER_LIST_UPDATED, { items, original, unidentifiedProductItems: payload.unidentifiedProductItems});
   }
 }
 export default actions;

@@ -37,7 +37,7 @@ const actions: ActionTree<ProductState, RootState> = {
       return products;
     }
     // TODO Handle specific error
-    return resp;
+    return [];
   },
 
   // Find Product

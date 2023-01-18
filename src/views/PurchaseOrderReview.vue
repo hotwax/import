@@ -8,7 +8,7 @@
           <ion-button @click="selectAllItems()">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
-          <ion-button>
+          <ion-button @click="revertAll()">
             <ion-icon :icon="arrowUndoOutline" />
           </ion-button>
         </ion-buttons>
@@ -192,8 +192,7 @@ export default defineComponent({
     },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
-        component: MissingSkuModal,
-        componentProps: { 'unidentifiedProductItems': this.unidentifiedProductItems }
+        component: MissingSkuModal
       });
       return missingSkuModal.present();
     },
@@ -285,6 +284,14 @@ export default defineComponent({
         item.isSelected = true;
       })
     },
+    revertAll() {
+      let original = JSON.parse(JSON.stringify(this.originalItems));
+      original = original.reduce((itemsByPoId: any, item: any) => {
+        itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
+        return itemsByPoId;
+      }, {});
+      this.store.dispatch('order/updatedOrderListItems', original);
+    }  
   },
   setup() {
     const router = useRouter();
