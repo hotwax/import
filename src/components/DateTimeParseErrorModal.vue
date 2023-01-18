@@ -12,43 +12,32 @@
 
   <ion-content>
     <ion-item lines="none">
-      <p>
-        <ion-note class="overline">{{ $t("File upload") }}</ion-note>
-        <ion-label>{{ $t("Date format") }}</ion-label> 
-      </p>
+      <ion-label>
+        <p class="overline">{{ $t("File upload") }}</p>
+        <h1>{{ $t("Date format") }}</h1> 
+        <p class="ion-text-wrap">{{ $t("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}</p>
+      </ion-label>
+    </ion-item>
+    
+    <ion-item>
+      <ion-input clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
+    </ion-item>
+    
+    <ion-item>
+      <ion-label>{{ sampleDateTime }}</ion-label>
+      <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
     </ion-item>
 
-    <ion-list>
-
-      <ion-item lines="none">
-        <ion-label class="ion-text-wrap">
-          <p>{{ $t("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}</p>
-        </ion-label>
-      </ion-item>
-        
-      <ion-item>
-        <ion-input clear-input='true' value="DD/MM/YYYY" />
-      </ion-item>
-
-      <ion-item >
-        <ion-label>02/02/2022</ion-label>
-        <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
-      </ion-item>
-
-    </ion-list>
-
-    <div>
-      <ion-button class="ion-padding-start" fill="outline">
-        {{ $t("Check sample") }}
-      </ion-button>
-    </div>
+    <ion-button class="ion-margin-top ion-margin-start" fill="outline" @click="parse">
+      {{ $t("Check sample") }}
+    </ion-button>
     
     <ion-item lines="none">
-      <ion-label color="medium">{{ $t("This will update 50 products across 3 POs") }}</ion-label>
+      <ion-label color="medium">{{ $t("This will update products across POs", {numberOfProducts, numberOfPos}) }}</ion-label>
     </ion-item>
     
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button>
+      <ion-fab-button @click="updateDateTimeFormat">
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
@@ -74,6 +63,10 @@ import {
 import { defineComponent } from "vue";
 import { close, saveOutline } from "ionicons/icons";
 import { useStore } from "@/store";
+import { mapGetters } from "vuex";
+import { DateTime } from "luxon";
+import { showToast } from "@/utils";
+import { translate } from "@/i18n";
 export default defineComponent({
   name: "DateTimeParseErrorModal",
   components: {
@@ -91,15 +84,38 @@ export default defineComponent({
     IonTitle,
     IonToolbar 
   },
-  props: [""],
   data() {
-    return { }
+    return { 
+      sampleDateTime: '',
+      dateTimeFormat: '',
+      defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy'
+    }
   },
-  computed: { },
+  props: ["numberOfProducts", "numberOfPos"],
+  computed: {
+    ...mapGetters({
+      currentDateTimeFormat: 'user/getDateTimeFormat'
+    })
+  },
+  mounted(){
+    this.dateTimeFormat = this.currentDateTimeFormat
+    this.parse();
+  },
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });
-    }
+    },
+    updateDateTimeFormat(){
+      this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
+      this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
+      this.parse();
+      modalController.dismiss({ dismissed: true });
+      showToast(translate("Date time format has been updated successfully"));
+
+    },
+    parse(){
+      this.sampleDateTime = DateTime.now().toFormat(this.dateTimeFormat);
+    },
   },
   setup() {
     const store = useStore();

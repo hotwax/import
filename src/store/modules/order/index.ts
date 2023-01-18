@@ -8,11 +8,9 @@ import RootState from '../../RootState'
 const orderModule: Module<OrderState, RootState> = {
   namespaced: true,
   state: {
-    list: {
-      items: [],
-      original: [],
-      unidentifiedProductItems: [],
-    },
+    purchaseOrders: {},
+    original: {},
+    unidentifiedProductItems: {},
     fileName: ""
   },
   actions,
