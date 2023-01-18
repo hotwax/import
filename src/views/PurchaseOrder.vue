@@ -152,6 +152,7 @@ export default defineComponent({
         const mappingPrefId = this.fieldMappings[this.mappingName] ? this.fieldMappings[this.mappingName] : this.generateUniqueMappingPrefId();
         this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
         showToast(translate("Mapping saved successfully"));
+        this.mappingName = "";
       },
       getFile(event) {
         this.file = event.target.files[0];
@@ -161,7 +162,7 @@ export default defineComponent({
           this.store.dispatch('order/updateFileName', this.file.name);
         }
         else {
-          showToast(translate("Something went wrong, Please try again"));
+          showToast(translate("Something went wrong. Please try again"));
         }
       },
       async parseFile(){
@@ -177,7 +178,7 @@ export default defineComponent({
             return {
               orderId: item[this.fieldMapping.orderId],
               shopifyProductSKU: item[this.fieldMapping.productSku],
-              arrivalDate: DateTime.fromFormat(item[this.fieldMapping.orderDate], this.dateTimeFormat).toFormat(this.dateTimeFormat), //This is to verify whether the date format is correct.
+              arrivalDate: item[this.fieldMapping.orderDate], 
               quantityOrdered: item[this.fieldMapping.quantity],
               facilityId: '',
               externalFacilityId: item[this.fieldMapping.facility]

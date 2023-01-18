@@ -23,6 +23,7 @@ import '@ionic/vue/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import '@hotwax/apps-theme';
 
 import i18n from './i18n'
 import store from './store'
@@ -50,15 +51,6 @@ app.config.globalProperties.$filters = {
     const userProfile = store.getters['user/getUserProfile'];
     // TODO Fix this setDefault should set the default timezone instead of getting it everytiem and setting the tz
     return DateTime.utc(value, inFormat).setZone(userProfile.userTimeZone).toFormat(outFormat ? outFormat : 'MM-DD-YYYY')
-  },
-  getFeature(featureHierarchy: any, featureKey: string) {
-    let  featureValue = ''
-    if (featureHierarchy) {
-      const feature = featureHierarchy.find((featureItem: any) => featureItem.startsWith(featureKey))
-      const featureSplit = feature ? feature.split('/') : [];
-      featureValue = featureSplit[2] ? featureSplit[2] : '';
-    }
-    return featureValue;
   }
 }
 
