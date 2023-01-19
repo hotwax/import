@@ -3,6 +3,8 @@ import RootState from '@/store/RootState'
 import ProductState from './ProductState'
 import * as types from './mutation-types'
 import { fetchProducts, isError } from "@/adapter";
+import logger from "@/logger";
+
 
 const actions: ActionTree<ProductState, RootState> = {
 
@@ -30,7 +32,7 @@ const actions: ActionTree<ProductState, RootState> = {
       // Handled empty response in case of failed query
       if (resp.total) commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
     } else {
-      console.error(resp.serverResponse)
+      logger.error(resp.serverResponse)
     }
     // TODO Handle specific error
     return resp;
