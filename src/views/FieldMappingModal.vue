@@ -61,7 +61,7 @@
       </ion-list>
     </div>
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="setFieldMapping()">
+      <ion-fab-button @click="saveMapping">
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
@@ -75,6 +75,7 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonInput,
   IonTitle,
   IonToolbar,
   IonLabel,
@@ -152,7 +153,7 @@ export default defineComponent({
         this.closeModal()
       }) 
     },
-    async setFieldMapping() {
+    async saveMapping() {
       if(!this.mappingName) {
         showToast(translate("Enter mapping name"));
         return
@@ -161,9 +162,8 @@ export default defineComponent({
         showToast(translate("Map all fields"));
         return
       }
-      const mappingPrefId = this.fieldMappings[this.mappingName] ? this.fieldMappings[this.mappingName] : this.generateUniqueMappingPrefId();
-      this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
-      return this.store.dispatch("user/updateFieldMapping", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) }).then(() => {
+      const mappingPrefId = this.generateUniqueMappingPrefId();
+      return this.store.dispatch("user/updateFieldMappings", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) }).then(() => {
         showToast(translate("Mapping saved successfully"));
         this.closeModal()
       })
@@ -194,6 +194,7 @@ export default defineComponent({
     IonContent,
     IonHeader,
     IonIcon,
+    IonInput,
     IonSelect,
     IonSelectOption,
     IonTitle,

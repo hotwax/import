@@ -129,7 +129,7 @@ const actions: ActionTree<UserState, RootState> = {
     //   const resp = await OrderService.setFieldMapping(payload);
 
     //   if(resp.status === 200 && !hasError(resp)) {
-        commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
+    commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
     //     return;
     //   } else {
     //     showToast(translate('Something went wrong'));
@@ -142,22 +142,7 @@ const actions: ActionTree<UserState, RootState> = {
   async deleteFieldMapping({ commit }, payload){
     const fieldMappings = store.getters['user/getFieldMappings'];
     delete fieldMappings[payload.mappingPrefId];
-    
     commit(types.USER_FIELD_MAPPINGS_UPDATED, fieldMappings);
-
-    // try {
-    //   const resp = await OrderService.deleteFieldMapping(payload);
-
-    //   if(resp.status === 200 && !hasError(resp)) {
-    //     commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
-    //     showToast(translate('Mapping deleted successfully'));
-    //     return;
-    //   } else {
-    //     showToast(translate('Something went wrong'));
-    //   }
-    // } catch(err) {
-    //   console.error(err)
-    // }
   },
 
   async updateCurrentMapping({ commit }, payload) {

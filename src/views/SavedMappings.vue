@@ -10,25 +10,18 @@
     <ion-content>
       <main>
         <section>
-          <!-- Empty state -->
-          <div v-if="fieldMappings?.length === 0">
-            <p class="ion-text-center">{{ $t("There are no saved mappings right now")}}</p>
-          </div>
-
-          <div v-else>
-            <ion-item>
-              <ion-label>{{ $t("Mapping Category") }}</ion-label>
-              <ion-input v-model="mappingName" />
+          <ion-item>
+            <ion-label>{{ $t("Mapping Category") }}</ion-label>
+            <ion-input v-model="mappingName" />
+          </ion-item>
+          <ion-list>
+            <ion-item v-for="mapping in fieldMappings" :key="mapping.mappingPrefId" @click="viewMappingConfiguration(mapping)" detail button>
+              <ion-label>{{ mapping.mappingPrefName }}</ion-label>
             </ion-item>
-            <ion-list>
-              <ion-item v-for="mapping in fieldMappings" :key="mapping.mappingPrefId" @click="viewMappingConfiguration(mapping)" detail button>
-                <ion-label>{{ mapping.mappingPrefName }}</ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
+          </ion-list>
         </section>
 
-        <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping && Object.keys(currentMapping).length">
+        <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping">
           <MappingConfiguration />
         </aside>
       </main>
@@ -109,3 +102,33 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped>
+
+@media (min-width: 991px) {
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    max-width: 990px;
+    margin: var(--spacer-base) auto 0;
+  }
+
+  main > section {
+    max-width: 50ch;
+  }
+
+  .desktop-only {
+    display: unset;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  aside {
+    width: 0px;
+    opacity: 0;
+  }
+}
+</style>

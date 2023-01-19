@@ -6,46 +6,48 @@
     </div> -->
 
     <!-- Mappings -->
+    <ion-item>
+      <ion-label>{{ $t("Mapping name") }}</ion-label>
+      <ion-input :placeholder="currentMapping.mappingPrefName" v-model="mappingName" />
+    </ion-item>
+
+    <ion-list>
       <ion-item>
-        <ion-label>{{ $t("Mapping name") }}</ion-label>
-        <ion-input :placeholder="currentMapping.mappingPrefName" v-model="mappingName" />
+        <ion-label>{{ $t("Order ID") }}</ion-label>
+        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.orderId" />
       </ion-item>
 
-      <ion-list>
-        <ion-item>
-          <ion-label>{{ $t("Order ID") }}</ion-label>
-          <ion-input :placeholder="currentMapping.orderId" />
-        </ion-item>
+      <ion-item>
+        <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
+        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.productSku" />
+      </ion-item>
 
-        <ion-item>
-          <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-          <ion-input :placeholder="currentMapping.orderId" />
-        </ion-item>
+      <ion-item>
+        <ion-label>{{ $t("Arrival date") }}</ion-label>
+        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.orderDate" />
+      </ion-item>
 
-        <ion-item>
-          <ion-label>{{ $t("Arrival date") }}</ion-label>
-          <ion-input :placeholder="currentMapping.orderId" />
-        </ion-item>
+      <ion-item>
+        <ion-label>{{ $t("Ordered quantity") }}</ion-label>
+        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.quantity" />
+      </ion-item>
 
-        <ion-item>
-          <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-          <ion-input :placeholder="currentMapping.orderId" />
-        </ion-item>
+      <ion-item>
+        <ion-label>{{ $t("Facility ID") }}</ion-label>
+        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.facility" />
+      </ion-item>
+    </ion-list>
 
-        <ion-item>
-          <ion-label>{{ $t("Facility ID") }}</ion-label>
-          <ion-input :placeholder="currentMapping.orderId" />
-        </ion-item>
-      </ion-list>
-
-      <ion-button>
-        <ion-icon :icon="saveOutline"/>
-        {{ $t("SAVE CHANGES") }}
+    <div class="ion-padding-top">
+      <ion-button @click="saveMapping">
+        <ion-icon slot="start" :icon="saveOutline"/>
+        {{ $t("Save Changes") }}
       </ion-button>
-      <ion-button fill="outline" color="danger">
-        <ion-icon :iocn="trashOutline" color="danger" />
-        {{ $t("DELETE MAPPING") }}
+      <ion-button @click="deleteMapping" fill="outline" color="danger">
+        <ion-icon slot="start" :icon="trashOutline" />
+        {{ $t("Delete Mapping") }}
       </ion-button>
+    </div>
 </section>
 </template>
 
@@ -76,7 +78,14 @@ export default defineComponent({
       queryString: '',
       filteredTimeZones: [],
       timeZones: [],
-      timeZoneId: ''
+      timeZoneId: '',
+      fieldMapping: {
+        orderId: "",
+        productSku: "",
+        orderDate: "",
+        quantity: "",
+        facility: ""
+      }
     }
   },
   computed: {
@@ -84,9 +93,6 @@ export default defineComponent({
       fieldMappings: 'user/getFieldMappings',
       currentMapping: 'user/getCurrentMapping'
     })
-  },
-  mounted() {
-    this.mapFields(this.currentMapping)
   },
   methods: {
     generateUniqueMappingPrefId(): any {
@@ -124,18 +130,10 @@ export default defineComponent({
       })
     },
     async deleteMapping(mapping: any) {
-      return this.store.dispatch("user/deleteFieldMapping", {
-          mappingPrefId: mapping.mappingPrefId
-      }).then(() => {
-        this.closeModal()
-      }) 
+      this.store.dispatch("user/deleteFieldMapping", { mappingPrefId: this.currentMapping.mappingPrefId })
     },
-    async setFieldMapping() {
-      console.log("Set");
-      
-    },
-    mapFields(mapping: any) {
-      console.log("Set");
+    saveMapping() {
+      this.store.dispatch('user/updateFieldMappings', { mappingPrefId: this.currentMapping.mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
     }
   },
   beforeMount () {
@@ -162,32 +160,3 @@ export default defineComponent({
 });
 </script>
 
-<style>
-@media (min-width: 991px) {
-  main {
-    display: flex;
-    justify-content: center;
-    align-items: start;
-    gap: var(--spacer-2xl);
-    max-width: 990px;
-    margin: var(--spacer-base) auto 0;
-  }
-
-  main > section {
-    max-width: 50ch;
-  }
-
-  .desktop-only {
-    display: unset;
-  }
-
-  .mobile-only {
-    display: none;
-  }
-
-  aside {
-    width: 0px;
-    opacity: 0;
-  }
-}
-</style>
