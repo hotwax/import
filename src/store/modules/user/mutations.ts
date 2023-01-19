@@ -22,7 +22,7 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_FIELD_MAPPINGS_UPDATED] (state, payload) {
         if(payload.mappingPrefId) {
-            state.fieldMappings[payload.mappingPrefId] = payload;
+            return state.fieldMappings[payload.mappingPrefId] = payload;
         }
         state.fieldMappings = payload;
     },    

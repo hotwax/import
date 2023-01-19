@@ -133,8 +133,19 @@ export default defineComponent({
       this.store.dispatch("user/deleteFieldMapping", { mappingPrefId: this.currentMapping.mappingPrefId })
     },
     saveMapping() {
+      if(!this.mappingName) {
+        showToast(translate("Enter mapping name"));
+        return
+      }
+      if (!this.areAllFieldsSelected()) {
+        showToast(translate("Map all fields"));
+        return
+      }
       this.store.dispatch('user/updateFieldMappings', { mappingPrefId: this.currentMapping.mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
-    }
+    },
+    areAllFieldsSelected() {
+      return Object.values(this.fieldMapping).every(field => field !== "");
+    },
   },
   beforeMount () {
     this.getAvailableTimeZones();
