@@ -77,12 +77,14 @@ export default defineComponent({
       });
     emitter.on('presentLoader', this.presentLoader);
     emitter.on('dismissLoader', this.dismissLoader);
+    emitter.on('playAnimation', this.playAnimation);
 
     init(this.userToken, this.instanceUrl, this.maxAge)
   },
   unmounted() {
     emitter.off('presentLoader', this.presentLoader);
     emitter.off('dismissLoader', this.dismissLoader);
+    emitter.off('playAnimation', this.playAnimation);
     resetConfig()
   },
   computed: {

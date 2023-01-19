@@ -115,10 +115,6 @@ export default defineComponent({
     this.fieldMappings = this.fieldMapping;
   },
   methods: {
-    generateUniqueMappingPrefId() {
-      const id = Math.floor(Math.random() * 1000);
-      return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
-    },
     closeModal() {
       modalController.dismiss({ dismissed: true });
     },
@@ -174,6 +170,10 @@ export default defineComponent({
     },
     areAllFieldsSelected() {
       return Object.values(this.fieldMapping).every(field => field !== "");
+    },
+    generateUniqueMappingPrefId(): any {
+      const id = Math.floor(Math.random() * 1000);
+      return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
     }
   },
   beforeMount () {

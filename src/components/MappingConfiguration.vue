@@ -1,91 +1,66 @@
 <template>
-  <ion-header>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-button @click="closeModal"> 
-          <ion-icon :icon="close" />
-        </ion-button>
-      </ion-buttons>
-      <ion-title>{{ $t("CSV Mapping") }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-item>
-    <ion-label>{{ $t("Mapping name") }}</ion-label>
-    <ion-input v-model="mappingName" />
-  </ion-item>
-
-  <ion-content class="ion-padding">
+  <section>
     <!-- Empty state -->
-    <div class="empty-state" v-if="fieldMappings.length === 0">
+    <!-- <div class="empty-state" v-if="Object.keys(currentMapping).length === 0">
       <p>{{ $t("No fieldMapping found. Please create new.")}}</p>
-    </div>
+    </div> -->
 
     <!-- Mappings -->
-    <div v-else>
+      <ion-item>
+        <ion-label>{{ $t("Mapping name") }}</ion-label>
+        <ion-input :placeholder="currentMapping.mappingPrefName" v-model="mappingName" />
+      </ion-item>
+
       <ion-list>
         <ion-item>
-            <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.orderId">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+          <ion-label>{{ $t("Order ID") }}</ion-label>
+          <ion-input :placeholder="currentMapping.orderId" />
+        </ion-item>
 
-          <ion-item>
-            <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.productSku">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-item>
+          <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
+          <ion-input :placeholder="currentMapping.orderId" />
+        </ion-item>
 
-          <ion-item>
-            <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.orderDate">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-item>
+          <ion-label>{{ $t("Arrival date") }}</ion-label>
+          <ion-input :placeholder="currentMapping.orderId" />
+        </ion-item>
 
-          <ion-item>
-            <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.quantity">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-item>
+          <ion-label>{{ $t("Ordered quantity") }}</ion-label>
+          <ion-input :placeholder="currentMapping.orderId" />
+        </ion-item>
 
-          <ion-item>
-            <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.facility">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-item>
+          <ion-label>{{ $t("Facility ID") }}</ion-label>
+          <ion-input :placeholder="currentMapping.orderId" />
+        </ion-item>
       </ion-list>
-    </div>
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="setFieldMapping()">
-        <ion-icon :icon="saveOutline" />
-      </ion-fab-button>
-    </ion-fab>
-  </ion-content>
+
+      <ion-button>
+        <ion-icon :icon="saveOutline"/>
+        {{ $t("SAVE CHANGES") }}
+      </ion-button>
+      <ion-button fill="outline" color="danger">
+        <ion-icon :iocn="trashOutline" color="danger" />
+        {{ $t("DELETE MAPPING") }}
+      </ion-button>
+</section>
 </template>
 
 <script lang="ts">
 import { 
-  IonButtons,
   IonButton,
-  IonContent,
-  IonHeader,
   IonIcon,
-  IonTitle,
-  IonToolbar,
+  IonInput,
   IonLabel,
   IonItem,
   IonList,
-  IonSelect,
-  IonSelectOption,
   modalController
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { close, save, saveOutline } from "ionicons/icons";
+import { close, save, saveOutline, trashOutline } from "ionicons/icons";
 import { useStore, mapGetters } from "vuex";
 import { UserService } from "@/services/UserService";
 import { hasError } from '@/utils'
@@ -101,21 +76,20 @@ export default defineComponent({
       queryString: '',
       filteredTimeZones: [],
       timeZones: [],
-      timeZoneId: '',
-      fieldMappings: {}
+      timeZoneId: ''
     }
   },
-  props: ["content", "fieldMapping"],
   computed: {
     ...mapGetters({
-      fieldMappings: 'user/getFieldMappings'
+      fieldMappings: 'user/getFieldMappings',
+      currentMapping: 'user/getCurrentMapping'
     })
   },
   mounted() {
-    this.fieldMappings = this.fieldMapping;
+    this.mapFields(this.currentMapping)
   },
   methods: {
-    generateUniqueMappingPrefId() {
+    generateUniqueMappingPrefId(): any {
       const id = Math.floor(Math.random() * 1000);
       return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
     },
@@ -157,23 +131,11 @@ export default defineComponent({
       }) 
     },
     async setFieldMapping() {
-      if(!this.mappingName) {
-        showToast(translate("Enter mapping name"));
-        return
-      }
-      if (!this.areAllFieldsSelected()) {
-        showToast(translate("Map all fields"));
-        return
-      }
-      const mappingPrefId = this.fieldMappings[this.mappingName] ? this.fieldMappings[this.mappingName] : this.generateUniqueMappingPrefId();
-      this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
-      return this.store.dispatch("user/updateFieldMapping", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) }).then(() => {
-        showToast(translate("Mapping saved successfully"));
-        this.closeModal()
-      })
+      console.log("Set");
+      
     },
-    areAllFieldsSelected() {
-      return Object.values(this.fieldMapping).every(field => field !== "");
+    mapFields(mapping: any) {
+      console.log("Set");
     }
   },
   beforeMount () {
@@ -185,22 +147,47 @@ export default defineComponent({
       close,
       save,
       saveOutline,
+      trashOutline,
       store
     };
   },
   components: { 
-    IonButtons,
     IonButton,
-    IonContent,
-    IonHeader,
     IonIcon,
-    IonSelect,
-    IonSelectOption,
-    IonTitle,
-    IonToolbar,
+    IonInput,
     IonLabel,
     IonItem,
     IonList
-    },
+  },
 });
 </script>
+
+<style>
+@media (min-width: 991px) {
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    gap: var(--spacer-2xl);
+    max-width: 990px;
+    margin: var(--spacer-base) auto 0;
+  }
+
+  main > section {
+    max-width: 50ch;
+  }
+
+  .desktop-only {
+    display: unset;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  aside {
+    width: 0px;
+    opacity: 0;
+  }
+}
+</style>

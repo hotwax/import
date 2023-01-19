@@ -17,7 +17,7 @@
 
           <div v-else>
             <ion-item>
-              <ion-label>{{ $t("Name") }}</ion-label>
+              <ion-label>{{ $t("Mapping Category") }}</ion-label>
               <ion-input v-model="mappingName" />
             </ion-item>
             <ion-list>
@@ -28,8 +28,8 @@
           </div>
         </section>
 
-        <aside class="desktop-only" v-if="isDesktop" v-show="fieldMappings && Object.keys(fieldMappings).length">
-          <MappingConfiguration :fieldMappings="fieldMappings" />
+        <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping && Object.keys(currentMapping).length">
+          <MappingConfiguration />
         </aside>
       </main>
     </ion-content>
@@ -40,30 +40,37 @@
 import { DateTime } from 'luxon';
 import {
   IonContent,
-  IonHeader,
-
   IonItem,
   IonLabel,
-  IonList,
-  IonListHeader,
+  IonInput,
   IonMenuButton,
-  IonNote,
-  IonPage,
-  IonSpinner,
-  IonTitle,
+  IonList,
+  IonHeader,
   IonToolbar,
+  IonTitle,
+  IonPage,
   isPlatform,
 } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router'
 import { mapGetters, useStore } from 'vuex'
 import emitter from '@/event-bus';
-import MappingConfiguration from '@/components/MappingConfiguration.vue';
+import MappingConfiguration from '@/components/MappingConfiguration.vue'
 
 export default defineComponent({
-  name: 'Miscellaneous',
+  name: 'SavedMappings',
   components: {
-    
+    IonContent,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonMenuButton,
+    IonList,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonPage,
+    MappingConfiguration
   },
   data() {
     return {
@@ -74,14 +81,13 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      fieldMappings: 'user/getFieldMappings'
+      fieldMappings: 'user/getFieldMappings',
+      currentMapping: 'user/getCurrentMapping'
     })
   },
   methods: {
     async viewMappingConfiguration(mapping: any) {
-
-      
-      // await this.store.dispatch('job/updateCurrentJob', { mapping });
+      await this.store.dispatch('user/updateCurrentMapping', { mapping });
       if(!this.isDesktop && mapping?.mappingPrefId) {
         // this.router.push({name: 'JobDetails', params: { title: this.currentJobTitle, jobId: job?.jobId, category: "miscellaneous"}});
         return;

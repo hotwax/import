@@ -200,6 +200,7 @@ http://ionicframework.com/docs/theming/ */
     --ion-toolbar-border-color: var(--ion-color-step-250);
   }
 
+
   /*
    * Material Design Dark Theme
    * -------------------------------------------
@@ -241,5 +242,63 @@ http://ionicframework.com/docs/theming/ */
     --ion-tab-bar-background: #1f1f1f;
 
     --ion-card-background: #1e1e1e;
+  }
+}
+
+body {
+  /** Border variable **/
+  --border-medium: 1px solid var(--ion-color-medium);
+}
+
+ion-select {
+  max-width: 100%;
+}
+
+aside {
+  flex: 1 0 355px;
+  position: sticky;
+  top: var(--spacer-lg);
+  flex: 1;
+}
+
+.desktop-only {
+  display: none;
+}
+
+.mobile-only {
+  display: unset;
+}
+
+.date-time-modal {
+  --width: 290px;
+  --height: 385px;
+  --border-radius: 8px;
+}
+
+@media (min-width: 991px) {
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    gap: var(--spacer-2xl);
+    max-width: 990px;
+    margin: var(--spacer-base) auto 0;
+  }
+
+  main > section {
+    max-width: 50ch;
+  }
+
+  .desktop-only {
+    display: unset;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  aside {
+    width: 0px;
+    opacity: 0;
   }
 }

@@ -164,6 +164,7 @@ export default defineComponent({
       async parseFile(){
         await parseCsv(this.file).then(res => {
           this.content = res;
+          console.log(this.content);
         })
       },
       review() {

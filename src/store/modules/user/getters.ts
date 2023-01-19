@@ -27,6 +27,9 @@ const getters: GetterTree <UserState, RootState> = {
     },
     getDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
+    },
+    getCurrentMapping (state) {
+        return state.currentMapping;
     }
 }
 export default getters;

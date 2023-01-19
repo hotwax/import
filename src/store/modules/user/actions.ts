@@ -158,6 +158,13 @@ const actions: ActionTree<UserState, RootState> = {
     // } catch(err) {
     //   console.error(err)
     // }
+  },
+
+  async updateCurrentMapping({ commit }, payload) {
+    if(payload?.mapping) {
+      commit(types.USER_CURRENT_MAPPING_UPDATED, payload.mapping);
+      return payload?.mapping;
+    }
   }
 }
 
