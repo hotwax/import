@@ -129,7 +129,7 @@ export default defineComponent({
     },
     save(){
       this.store.dispatch('order/updateMissingSkusList', { completedItems: this.completedItems, unidentifiedProductItems: this.unidentifiedProductItems });
-      this.store.dispatch('order/updateCompletedItems', {});
+      this.store.dispatch('order/updateCompletedItems', []);
       this.closeModal();
     },
     async update() {
@@ -155,6 +155,7 @@ export default defineComponent({
         this.unidentifiedProduct.imageUrl = item[0].mainImageUrl;
         this.unidentifiedProduct.isNewProduct = "N";
         this.unidentifiedProduct.isSelected = true;
+
         this.completedItems.push(this.unidentifiedProduct);
         
         this.store.dispatch('order/updateCompletedItems', this.completedItems);

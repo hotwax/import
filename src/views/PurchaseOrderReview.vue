@@ -147,6 +147,9 @@ export default defineComponent({
   ionViewDidEnter(){
     this.store.dispatch('util/fetchFacilities');
   },
+  ionViewDidLeave(){
+    this.store.dispatch('order/updateCompletedItems', []);
+  },
   async beforeRouteLeave() {
     let canLeave = false;
     const alert = await alertController.create({
