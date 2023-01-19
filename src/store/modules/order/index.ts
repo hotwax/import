@@ -11,6 +11,7 @@ const orderModule: Module<OrderState, RootState> = {
     purchaseOrders: {},
     original: [],
     unidentifiedProductItems: [],
+    completedItems: [],
     fileName: ""
   },
   actions,

@@ -14,6 +14,9 @@ const getters: GetterTree<OrderState, RootState> = {
   },
   getFileName(state) {
     return state.fileName;
+  },
+  getCompletedItems(state) {
+    return state.completedItems;
   }
 };
 export default getters;   

@@ -63,6 +63,9 @@ const actions: ActionTree<OrderState, RootState> = {
     }, state.purchaseOrders);
     
     commit(types.ORDER_LIST_UPDATED, { items, original, unidentifiedProductItems: payload.unidentifiedProductItems});
+  },
+  updateCompletedItems({commit}, payload){
+    commit(types.ORDER_UPDATE_COMPLETED_ITEMS, payload);
   }
 }
 export default actions;

@@ -17,7 +17,7 @@
           <ion-note slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
           <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
         </ion-item>
-        <ion-button @click="update">{{ $t("Update") }}</ion-button>
+        <ion-button @click="update" :disabled="!Object.keys(unidentifiedProduct).length">{{ $t("Update") }}</ion-button>
       </div>
       
       <ion-segment v-model="segmentSelected">
@@ -113,13 +113,13 @@ export default defineComponent({
   },
   data(){
     return {
-      updatedSku: (this as any).unidentifiedProduct?.shopifyProductSKU,
-      completedItems: [] as any,
+      updatedSku: '',
       unidentifiedProduct: {} as any
     }
   },
   computed: {
     ...mapGetters({
+      completedItems: 'order/getCompletedItems',
       unidentifiedProductItems: 'order/getUnidentifiedProductItems',
     })
   },
@@ -128,7 +128,8 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     save(){
-      this.store.dispatch('order/updateMissingSkusList', { completedItems: this.completedItems, unidentifiedProductItems: this.unidentifiedProductItems })
+      this.store.dispatch('order/updateMissingSkusList', { completedItems: this.completedItems, unidentifiedProductItems: this.unidentifiedProductItems });
+      this.store.dispatch('order/updateCompletedItems', {});
       this.closeModal();
     },
     async update() {
@@ -140,7 +141,7 @@ export default defineComponent({
       }
       const item = await this.store.dispatch("product/fetchProducts", payload);
       if (item.length) {
-
+        
         if (this.unidentifiedProductItems.findIndex((item: any) => item.shopifyProductSKU === this.unidentifiedProduct.shopifyProductSKU) >= 0){
           this.unidentifiedProductItems.splice(this.unidentifiedProductItems.findIndex((item: any) => item.shopifyProductSKU === this.unidentifiedProduct.shopifyProductSKU), 1);
         } else {
@@ -156,6 +157,7 @@ export default defineComponent({
         this.unidentifiedProduct.isSelected = true;
         this.completedItems.push(this.unidentifiedProduct);
         
+        this.store.dispatch('order/updateCompletedItems', this.completedItems);
         this.$el.querySelector('ion-note[slot=helper]').style.display = 'unset';
       } else {
         this.$el.querySelector('#update-sku').classList.add('ion-invalid');

@@ -24,7 +24,7 @@ const actions: ActionTree<ProductState, RootState> = {
     }, '');
 
     // If there are no products skip the API call
-    if (productIdFilter === '') return productIds.map((productId: any) => state.cached[productId]);
+    if (productIdFilter === '') return productIds.map((productId: any) => state.cached[productId]).filter((product: any) => product);
 
     const resp = await ProductService.fetchProducts({
       "filters": ['internalName: (' + productIdFilter + ')'],
