@@ -8,33 +8,33 @@
     <!-- Mappings -->
     <ion-item>
       <ion-label>{{ $t("Mapping name") }}</ion-label>
-      <ion-input :placeholder="currentMapping.mappingPrefName" v-model="mappingName" />
+      <ion-input :value="currentMapping.mappingPrefName" />
     </ion-item>
 
     <ion-list>
       <ion-item>
         <ion-label>{{ $t("Order ID") }}</ion-label>
-        <ion-input :value="currentMapping.orderId" v-model="fieldMapping.orderId" />
+        <ion-input :value="currentMapping.mappingPrefValue.orderId" v-model="currentMapping.orderId" />
       </ion-item>
 
       <ion-item>
         <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-        <ion-input :value="currentMapping.productSku" v-model="fieldMapping.productSku" />
+        <ion-input :value="currentMapping.mappingPrefValue.productSku" v-model="currentMapping.productSku" />
       </ion-item>
 
       <ion-item>
         <ion-label>{{ $t("Arrival date") }}</ion-label>
-        <ion-input :value="currentMapping.arrivalDate" v-model="fieldMapping.orderDate" />
+        <ion-input :value="currentMapping.mappingPrefValue.arrivalDate" v-model="currentMapping.arrivalDate" />
       </ion-item>
 
       <ion-item>
         <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-        <ion-input :value="currentMapping.quantity" v-model="fieldMapping.quantity" />
+        <ion-input :value="currentMapping.mappingPrefValue.quantity" v-model="currentMapping.quantity" />
       </ion-item>
 
       <ion-item>
         <ion-label>{{ $t("Facility ID") }}</ion-label>
-        <ion-input :placeholder="currentMapping.facilityId" v-model="fieldMapping.facility" />
+        <ion-input :placeholder="currentMapping.mappingPrefValue.facilityId" v-model="currentMapping.facilityId" />
       </ion-item>
     </ion-list>
 

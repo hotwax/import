@@ -10,11 +10,8 @@
     <ion-content>
       <main>
         <section>
-          <ion-item>
-            <ion-label>{{ $t("Mapping Category") }}</ion-label>
-            <ion-input v-model="mappingName" />
-          </ion-item>
           <ion-list>
+            <ion-list-header>{{ $t("Mapping") }}</ion-list-header>
             <ion-item v-for="mapping in fieldMappings" :key="mapping.mappingPrefId" @click="viewMappingConfiguration(mapping)" detail button>
               <ion-label>{{ mapping.mappingPrefName }}</ion-label>
             </ion-item>
@@ -35,7 +32,6 @@ import {
   IonContent,
   IonItem,
   IonLabel,
-  IonInput,
   IonMenuButton,
   IonList,
   IonHeader,
@@ -56,7 +52,6 @@ export default defineComponent({
     IonContent,
     IonItem,
     IonLabel,
-    IonInput,
     IonMenuButton,
     IonList,
     IonHeader,
@@ -115,7 +110,7 @@ export default defineComponent({
   }
 
   main > section {
-    max-width: 50ch;
+    width: 50ch;
   }
 
   .desktop-only {
