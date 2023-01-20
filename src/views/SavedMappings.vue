@@ -27,11 +27,11 @@
 </template>
 
 <script lang="ts">
-import { DateTime } from 'luxon';
 import {
   IonContent,
   IonItem,
   IonLabel,
+  IonListHeader,
   IonMenuButton,
   IonList,
   IonHeader,
@@ -52,6 +52,7 @@ export default defineComponent({
     IonContent,
     IonItem,
     IonLabel,
+    IonListHeader,
     IonMenuButton,
     IonList,
     IonHeader,
