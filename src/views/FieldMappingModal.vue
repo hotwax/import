@@ -26,35 +26,35 @@
       <ion-list>
         <ion-item>
           <ion-label>{{ $t("Order ID") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.orderId">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.orderId">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.productSku">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.productSku">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Arrival date") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.orderDate">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.orderDate">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.quantity">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.quantity">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Facility ID") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.facility">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.facility">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -102,17 +102,23 @@ export default defineComponent({
       filteredTimeZones: [],
       timeZones: [],
       timeZoneId: '',
-      fieldMappings: {}
+      draftFieldMapping: {
+        orderId: "",
+        productSku: "",
+        orderDate: "",
+        quantity: "",
+        facility: "",
+      }
     }
   },
-  props: ["content", "fieldMapping"],
+  props: ["content", "selectedFieldMapping"],
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings'
     })
   },
   mounted() {
-    this.fieldMappings = this.fieldMapping;
+    this.draftFieldMapping = JSON.parse(JSON.stringify(this.selectedFieldMapping));
   },
   methods: {
     closeModal() {
@@ -152,13 +158,13 @@ export default defineComponent({
         return
       }
       const mappingPrefId = this.generateUniqueMappingPrefId();
-      return this.store.dispatch("user/createFieldMapping", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) }).then(() => {
+      return this.store.dispatch("user/createFieldMapping", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.draftFieldMapping)) }).then(() => {
         showToast(translate("Mapping saved successfully"));
         this.closeModal()
       })
     },
     areAllFieldsSelected() {
-      return Object.values(this.fieldMapping).every(field => field !== "");
+      return Object.values(this.draftFieldMapping).every(field => field !== "");
     },
     generateUniqueMappingPrefId(): any {
       const id = Math.floor(Math.random() * 1000);

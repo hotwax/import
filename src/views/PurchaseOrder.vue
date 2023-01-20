@@ -212,7 +212,7 @@ export default defineComponent({
       async addFieldMapping() {
         const fieldMappingModal = await modalController.create({
           component: FieldMappingModal,
-          componentProps: { content: this.content, fieldMapping: this.fieldMapping }
+          componentProps: { content: this.content,  selectedFieldMapping: this.fieldMapping }
         });
         return fieldMappingModal.present();
       }

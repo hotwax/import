@@ -19,7 +19,7 @@
         </section>
 
         <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping">
-          <MappingConfiguration />
+          <MappingConfiguration :mappingPrefId="mappingPrefId" />
         </aside>
       </main>
     </ion-content>
@@ -66,6 +66,7 @@ export default defineComponent({
       mappingName: "",
       isJobDetailAnimationCompleted: false,
       isDesktop: isPlatform('desktop'),
+      mappingPrefId: ""
     }
   },
   computed: {
@@ -76,6 +77,7 @@ export default defineComponent({
   },
   methods: {
     async viewMappingConfiguration(mapping: any) {
+      this.mappingPrefId = mapping.mappingPrefId;
       await this.store.dispatch('user/updateCurrentMapping', { mapping });
       if(!this.isDesktop && mapping?.mappingPrefId) {
         // this.router.push({name: 'JobDetails', params: { title: this.currentJobTitle, jobId: job?.jobId, category: "miscellaneous"}});

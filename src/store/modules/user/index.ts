@@ -14,7 +14,17 @@ const userModule: Module<UserState, RootState> = {
       instanceUrl: '',
       fieldMappings: {},
       preferredDateTimeFormat: '',
-      currentMapping: {}
+      currentMapping: {
+        mappingPrefValue: {
+          orderId: "",
+          productSku: "",
+          orderDate: "",
+          quantity: "",
+          facility: ""
+        },
+        mappingPrefName: '',
+        mappingPrefId: ''
+      }
     },
     getters,
     actions,
