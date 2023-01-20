@@ -25,39 +25,39 @@
     <div v-else>
       <ion-list>
         <ion-item>
-            <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.orderId">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+          <ion-label>{{ $t("Order ID") }}</ion-label>
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.orderId">
+            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+          </ion-select>
+        </ion-item>
 
-          <ion-item>
-            <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.productSku">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-item>
+          <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.productSku">
+            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+          </ion-select>
+        </ion-item>
 
-          <ion-item>
-            <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.orderDate">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-item>
+          <ion-label>{{ $t("Arrival date") }}</ion-label>
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.orderDate">
+            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+          </ion-select>
+        </ion-item>
 
-          <ion-item>
-            <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.quantity">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-item>
+          <ion-label>{{ $t("Ordered quantity") }}</ion-label>
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.quantity">
+            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+          </ion-select>
+        </ion-item>
 
-          <ion-item>
-            <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.facility">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-item>
+          <ion-label>{{ $t("Facility ID") }}</ion-label>
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMappings.facility">
+            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+          </ion-select>
+        </ion-item>
       </ion-list>
     </div>
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -90,9 +90,6 @@ import {
 import { defineComponent } from "vue";
 import { close, save, saveOutline } from "ionicons/icons";
 import { useStore, mapGetters } from "vuex";
-import { UserService } from "@/services/UserService";
-import { hasError } from '@/utils'
-import { DateTime } from 'luxon';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 
@@ -133,16 +130,6 @@ export default defineComponent({
         return regularExp.test(timeZone.id) || regularExp.test(timeZone.label);
       });
     },
-    async getAvailableTimeZones() {
-      UserService.getAvailableTimeZones().then((resp: any) => {
-        if (resp.status === 200 && !hasError(resp)) {
-           this.timeZones = resp.data.filter((timeZone: any) => {
-              return DateTime.local().setZone(timeZone.id).isValid;
-          });
-          this.findTimeZone();
-        }
-      })
-    },
     selectSearchBarText(event: any) {
       event.target.getInputElement().then((element: any) => {
         element.select();
@@ -177,9 +164,6 @@ export default defineComponent({
       const id = Math.floor(Math.random() * 1000);
       return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
     }
-  },
-  beforeMount () {
-    this.getAvailableTimeZones();
   },
   setup() {
     const store = useStore();

@@ -66,9 +66,8 @@ import { defineComponent } from "vue";
 import { close, save, saveOutline, trashOutline } from "ionicons/icons";
 import { useStore, mapGetters } from "vuex";
 import { UserService } from "@/services/UserService";
-import { hasError } from '@/utils'
+import { hasError, showToast } from '@/utils'
 import { DateTime } from 'luxon';
-import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 
 export default defineComponent({
