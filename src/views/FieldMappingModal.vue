@@ -75,6 +75,8 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonFab,
+  IonFabButton,
   IonInput,
   IonTitle,
   IonToolbar,
@@ -163,7 +165,7 @@ export default defineComponent({
         return
       }
       const mappingPrefId = this.generateUniqueMappingPrefId();
-      return this.store.dispatch("user/updateFieldMappings", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) }).then(() => {
+      return this.store.dispatch("user/createFieldMapping", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) }).then(() => {
         showToast(translate("Mapping saved successfully"));
         this.closeModal()
       })
@@ -192,6 +194,8 @@ export default defineComponent({
     IonButtons,
     IonButton,
     IonContent,
+    IonFab,
+    IonFabButton,
     IonHeader,
     IonIcon,
     IonInput,

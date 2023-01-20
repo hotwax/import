@@ -125,18 +125,7 @@ const actions: ActionTree<UserState, RootState> = {
   },
 
   async updateFieldMappings({ commit }, payload){
-    // try {
-    //   const resp = await OrderService.setFieldMapping(payload);
-
-    //   if(resp.status === 200 && !hasError(resp)) {
     commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
-    //     return;
-    //   } else {
-    //     showToast(translate('Something went wrong'));
-    //   }
-    // } catch(err) {
-    //   console.error(err)
-    // }
   },
 
   async deleteFieldMapping({ commit }, payload){
@@ -146,10 +135,11 @@ const actions: ActionTree<UserState, RootState> = {
   },
 
   async updateCurrentMapping({ commit }, payload) {
-    if(payload?.mapping) {
-      commit(types.USER_CURRENT_MAPPING_UPDATED, payload.mapping);
-      return payload?.mapping;
-    }
+    commit(types.USER_CURRENT_MAPPING_UPDATED, payload.mapping);
+  },
+
+  async createFieldMapping({ commit }, payload) {
+    commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
   }
 }
 

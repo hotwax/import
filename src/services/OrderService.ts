@@ -10,7 +10,7 @@ const getFacilities= async (payload: any): Promise <any> => {
 
 const setFieldMapping = async (payload: any): Promise <any> => {
   return api({
-    url: "/createDataManagerMapping",
+    url: "/service/createDataManagerMapping",
     method: "POST",
     data: payload
   });
@@ -18,7 +18,7 @@ const setFieldMapping = async (payload: any): Promise <any> => {
 
 const updateFieldMapping = async (payload: any): Promise <any> => {
   return api({
-    url: "/updateDataManagerMapping",
+    url: "/service/updateDataManagerMapping",
     method: "POST",
     data: payload
   });
@@ -26,7 +26,7 @@ const updateFieldMapping = async (payload: any): Promise <any> => {
 
 const deleteFieldMapping = async (payload: any): Promise <any> => {
   return api({
-    url: "/deleteDataManagerMapping",
+    url: "/service/deleteDataManagerMapping",
     method: "POST",
     data: payload
   });

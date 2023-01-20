@@ -14,27 +14,27 @@
     <ion-list>
       <ion-item>
         <ion-label>{{ $t("Order ID") }}</ion-label>
-        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.orderId" />
+        <ion-input :value="currentMapping.orderId" v-model="fieldMapping.orderId" />
       </ion-item>
 
       <ion-item>
         <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.productSku" />
+        <ion-input :value="currentMapping.productSku" v-model="fieldMapping.productSku" />
       </ion-item>
 
       <ion-item>
         <ion-label>{{ $t("Arrival date") }}</ion-label>
-        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.orderDate" />
+        <ion-input :value="currentMapping.arrivalDate" v-model="fieldMapping.orderDate" />
       </ion-item>
 
       <ion-item>
         <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.quantity" />
+        <ion-input :value="currentMapping.quantity" v-model="fieldMapping.quantity" />
       </ion-item>
 
       <ion-item>
         <ion-label>{{ $t("Facility ID") }}</ion-label>
-        <ion-input :placeholder="currentMapping.orderId" v-model="fieldMapping.facility" />
+        <ion-input :placeholder="currentMapping.facilityId" v-model="fieldMapping.facility" />
       </ion-item>
     </ion-list>
 
@@ -59,6 +59,7 @@ import {
   IonLabel,
   IonItem,
   IonList,
+  alertController,
   modalController
 } from "@ionic/vue";
 import { defineComponent } from "vue";
@@ -129,10 +130,25 @@ export default defineComponent({
         element.select();
       })
     },
-    async deleteMapping(mapping: any) {
-      this.store.dispatch("user/deleteFieldMapping", { mappingPrefId: this.currentMapping.mappingPrefId })
+    async deleteMapping() {
+      const message = this.$t("Are you sure you want to delete this CSV mapping? This action cannot be undone.");
+      const alert = await alertController.create({
+        header: this.$t("Delete mapping"),
+        message,
+        buttons: [
+          {
+            text: this.$t("Cancel"),
+          },
+          {
+            text: this.$t("Delete"),
+            handler: () => {
+              this.store.dispatch("user/deleteFieldMapping", { mappingPrefId: this.currentMapping.mappingPrefId })            }
+          }
+        ],
+      });
+      return alert.present();
     },
-    saveMapping() {
+    async saveMapping() {
       if(!this.mappingName) {
         showToast(translate("Enter mapping name"));
         return
@@ -141,7 +157,23 @@ export default defineComponent({
         showToast(translate("Map all fields"));
         return
       }
-      this.store.dispatch('user/updateFieldMappings', { mappingPrefId: this.currentMapping.mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
+      const message = this.$t("Are you sure you want to update this CSV mapping? This action cannot be undone.");
+      const alert = await alertController.create({
+        header: this.$t("Update mapping"),
+        message,
+        buttons: [
+          {
+            text: this.$t("Cancel"),
+          },
+          {
+            text: this.$t("Update"),
+            handler: () => {
+              this.store.dispatch('user/updateFieldMappings', { mappingPrefId: this.currentMapping.mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.stringify(this.fieldMapping) })
+            }
+          }
+        ],
+      });
+      return alert.present();
     },
     areAllFieldsSelected() {
       return Object.values(this.fieldMapping).every(field => field !== "");
