@@ -23,14 +23,12 @@ const getters: GetterTree <UserState, RootState> = {
         return baseUrl ? baseUrl : state.instanceUrl;
     },
     getFieldMappings(state) {
-        console.log('state.fieldMappings', state.fieldMappings)
         return state.fieldMappings;
     },
     getDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
     },
     getCurrentMapping (state) {
-        console.log('state.currentMapping', state.currentMapping)
         return state.currentMapping;
     }
 }
