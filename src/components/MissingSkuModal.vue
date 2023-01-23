@@ -11,11 +11,40 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <ion-list v-for="item in unidentifiedProductItems" :key="item.shopifyProductSKU">
-        <ion-item lines="none">
-          <ion-label>{{ item.shopifyProductSKU }}</ion-label>
+      <div>
+        <ion-item>
+          <ion-input :clear-input="true" />
+          <ion-note slot="helper">Helper and error text</ion-note>
         </ion-item>
+        <ion-button>{{ $t("Update") }}</ion-button>
+      </div>
+      
+      <ion-segment v-model="segmentSelected">
+        <ion-segment-button value="pending">
+          <ion-label>{{ $t("Pending") }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="completed">
+          <ion-label>{{ $t("Completed") }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      
+      <ion-list>
+        <ion-radio-group>
+          <ion-item v-for="item in unidentifiedProductItems" :key="item.shopifyProductSKU">
+            <ion-label>
+              {{ item.shopifyProductSKU }}
+              <p>{{ item.orderId }}</p>
+            </ion-label>
+            <ion-radio slot="end" :value="item" />
+          </ion-item>
+        </ion-radio-group>
       </ion-list>
+
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button>
+          <ion-icon :icon="saveOutline" />
+        </ion-fab-button>
+      </ion-fab>
     </ion-content>
   </ion-page>
 </template>
@@ -25,18 +54,27 @@ import {
   IonButton,
   IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
   IonList,
+  IonNote,
   IonPage,
+  IonRadio,
+  IonRadioGroup,
+  IonSegment,
+  IonSegmentButton,
   IonHeader,
   IonTitle,
   IonToolbar,
   modalController
 } from "@ionic/vue";
-import { closeOutline } from 'ionicons/icons';
+import { closeOutline, saveOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
+import { ref } from "vue";
 
 export default defineComponent({
   name: "MissingSkuModal",
@@ -44,11 +82,19 @@ export default defineComponent({
   IonButton,
   IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
   IonList,
+  IonNote,
   IonPage,
+  IonRadio,
+  IonRadioGroup,
+  IonSegment,
+  IonSegmentButton,
   IonHeader,
   IonTitle,
   IonToolbar
@@ -60,9 +106,29 @@ export default defineComponent({
     }
   },
   setup() {
+    const segmentSelected = ref('pending');
     return {
-      closeOutline
+      closeOutline,
+      saveOutline,
+      segmentSelected
     }
   }
 })
 </script>
+<style scoped>
+  div {
+    display: flex;
+  }
+
+  div ion-item {
+    flex-grow: 1;
+  }
+
+  ion-button {
+    margin: var(--spacer-sm);
+  }
+
+  ion-segment {
+    margin-top: var(--spacer-sm);
+  }
+</style>

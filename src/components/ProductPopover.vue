@@ -23,12 +23,13 @@ import {
   arrowUndoOutline
 } from 'ionicons/icons';
 export default defineComponent({
-  props: ['id', 'isVirtual', 'item'],
+  props: ['id', 'isVirtual', 'item', 'poId'],
   name: 'parentProductPopover',
   components: { IonContent, IonIcon, IonLabel, IonItem },
   computed: {
     ...mapGetters({
       ordersList: 'order/getOrder',
+      originalItems: 'order/getOriginalItems'
     }),
   },
   methods: {
@@ -39,21 +40,21 @@ export default defineComponent({
       this.isVirtual ? this.onlySelectParentProduct() : this.onlySelectSingleProduct();
     },
     onlySelectParentProduct() {
-      this.ordersList.items.forEach(element => {
+      Object.values(this.ordersList).flat(1).map(element => {
         element.isSelected = element.parentProductId === this.id;
       });
       popoverController.dismiss({ dismissed: true });
     },
     onlySelectSingleProduct() {
-      this.ordersList.items.forEach(element => {
-        element.isSelected = element.pseudoId === this.id;
+      Object.values(this.ordersList).flat(1).map(element => {
+        element.isSelected = element.internalName === this.id;
       });
       popoverController.dismiss({ dismissed: true });
     },
     revertProduct() {
-      const original = JSON.parse(JSON.stringify(this.ordersList.original));
-      const items = this.ordersList.items.map(element => {
-        if(element.pseudoId === this.id) {
+      const original = JSON.parse(JSON.stringify(this.originalItems));
+      this.ordersList[this.poId] = this.ordersList[this.poId].map(element => {
+        if(element.internalName === this.id) {
           const item = original.find(item => {
             return item.pseudoId === this.id;
           })
@@ -61,12 +62,12 @@ export default defineComponent({
         }
         return element;
       });
-      this.store.dispatch('order/updatedOrderListItems', items)
+      this.store.dispatch('order/updatedOrderListItems', this.ordersList)
       popoverController.dismiss({ dismissed: true });
     },
     revertParentProduct(){
-      const original = JSON.parse(JSON.stringify(this.ordersList.original));
-      const items = this.ordersList.items.map(element => {
+      const original = JSON.parse(JSON.stringify(this.originalItems));
+      this.ordersList[this.poId] = this.ordersList[this.poId].map(element => {
         if(element.parentProductId === this.id) {
           const item = original.find(item => {
             return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
@@ -75,7 +76,7 @@ export default defineComponent({
         }
         return element;
       });
-      this.store.dispatch('order/updatedOrderListItems', items)
+      this.store.dispatch('order/updatedOrderListItems', this.ordersList)
       popoverController.dismiss({ dismissed: true });
     }
   },

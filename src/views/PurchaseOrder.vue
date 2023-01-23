@@ -80,7 +80,6 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
@@ -174,7 +173,7 @@ export default defineComponent({
             return {
               orderId: item[this.fieldMapping.orderId],
               shopifyProductSKU: item[this.fieldMapping.productSku],
-              arrivalDate: item[this.fieldMapping.orderDate], 
+              arrivalDate: item[this.fieldMapping.orderDate], //This is to verify whether the date format is correct.
               quantityOrdered: item[this.fieldMapping.quantity],
               facilityId: '',
               externalFacilityId: item[this.fieldMapping.facility]
@@ -182,7 +181,7 @@ export default defineComponent({
           })
           this.store.dispatch('order/updatedOrderList', this.orderItemsList);
           this.router.push({
-            name:'PurchaseOrderDetail'
+            name:'PurchaseOrderReview'
           })
         } else {
           showToast(translate("Select all the fields to continue"));
