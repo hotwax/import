@@ -336,7 +336,7 @@ export default defineComponent({
           this.facilities = resp.data.docs;
         }
       } catch(err) {
-        console.error(err)
+        this.$log.error(err)
       }
     },
     async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any) {
