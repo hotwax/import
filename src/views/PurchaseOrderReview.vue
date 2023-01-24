@@ -22,28 +22,28 @@
         </div>
 
         <div class="filters">
-          <ion-item @click="bulkAdjustmentModal()"> 
+          <ion-item @click="bulkAdjustmentModal()" button> 
             <ion-icon slot="start" :icon="calculatorOutline" />
             <ion-label>{{ $t("Bulk adjustment") }}</ion-label>
             <ion-note slot="end">{{ getSelectedItems() }} {{ $t("items selected") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item @click="dateTimeParseErrorModal()">
+          <ion-item @click="dateTimeParseErrorModal()" button>
             <ion-icon slot="start" :icon="timeOutline" />
             <ion-label>{{ $t("Date time parse error") }}</ion-label>
             <ion-note slot="end">{{ getItemsWithInvalidDateFormat() }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item @click="missingFacilityModal()">
+          <ion-item @click="missingFacilityModal()" button>
             <ion-icon slot="start" :icon="businessOutline" />
             <ion-label>{{ $t("Missing facilities") }}</ion-label>
             <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" mode="ios" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item @click="listMissingSkus()">
+          <ion-item @click="listMissingSkus()" button>
             <ion-icon slot="start" :icon="shirtOutline" />
             <ion-label>{{ $t("Missing products") }}</ion-label>
             <ion-note slot="end">{{ purchaseOrders.unidentifiedItems.length }} {{ $t("items") }}</ion-note>
