@@ -138,7 +138,7 @@ export default defineComponent({
       return items.find((item: any) => item.parentProductId == id)
     },
     selectParentProduct(parentProductId: any, event: any, poItems: any) {
-      // Todo: Need to find a better approach.
+      // TODO: Need to find a better approach.
       if(this.isParentProductUpdated){
         poItems = poItems.map((item: any) => {
           if (item.parentProductId === parentProductId) {

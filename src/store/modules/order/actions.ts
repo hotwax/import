@@ -44,16 +44,16 @@ const actions: ActionTree<OrderState, RootState> = {
 
     const original = JSON.parse(JSON.stringify(items));
     
-    commit(types.ORDER_LIST_UPDATED, {items, original, unidentifiedItems});
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, {items, original, unidentifiedItems});
   },
   updatePurchaseOrderItems({ commit }, purchaseOrders){
-    commit(types.ORDER_LIST_ITEMS_UPDATED, purchaseOrders)
+    commit(types.ORDER_PURCHASEORDERS_ITEMS_UPDATED, purchaseOrders)
   },
   updateFileName({ commit }, fileName){
     commit(types.ORDER_FILE_NAME_UPDATED, fileName)
   },  
   clearOrder({ commit }){
-    commit(types.ORDER_LIST_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
   }
 }
 export default actions;
