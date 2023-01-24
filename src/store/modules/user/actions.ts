@@ -77,7 +77,7 @@ const actions: ActionTree<UserState, RootState> = {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
     resetConfig();
-    this.dispatch('order/clearOrder');
+    this.dispatch('order/clearPurchaseOrders');
   },
 
   /**

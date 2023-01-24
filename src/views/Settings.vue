@@ -158,7 +158,7 @@ export default defineComponent({
     ...mapGetters({
       userProfile: 'user/getUserProfile',
       instanceUrl: 'user/getInstanceUrl',
-      currentDateTimeFormat: 'user/getDateTimeFormat'
+      currentDateTimeFormat: 'user/getPreferredDateTimeFormat'
     })
   },
   mounted(){

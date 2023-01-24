@@ -4,7 +4,7 @@
       <h3>{{ index }}</h3>
     </ion-item>
     
-    <div v-for="id in getGroupList(poItems)" :key="id" >
+    <div v-for="id in getGroupPurchaseOrders(poItems)" :key="id" >
       <div class="list-item list-header">
         <ion-item color="light" lines="none">
           <ion-label>{{ getParentInformation(id, poItems).parentProductName }}</ion-label>
@@ -22,7 +22,7 @@
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
-      <div v-for="(item, index) in getGroupItems(id, poItems)" :key="index">
+      <div v-for="(item, index) in getGroupedItems(id, poItems)" :key="index">
         <div class="list-item">
           <ion-item lines="none">
             <ion-thumbnail slot="start">
@@ -92,7 +92,7 @@ export default defineComponent({
     ...mapGetters({
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
-      dateTimeFormat : 'user/getDateTimeFormat',
+      dateTimeFormat : 'user/getPreferredDateTimeFormat',
       fileName: 'order/getFileName'
     })
   },
@@ -122,16 +122,16 @@ export default defineComponent({
       return DateTime.fromFormat(date, this.dateTimeFormat).toFormat(this.dateTimeFormat)
     },
     isParentProductChecked(parentProductId: string, poItems: any) {
-      const items = this.getGroupItems(parentProductId, poItems);
+      const items = this.getGroupedItems(parentProductId, poItems);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
     },
-    getGroupList (items: any) {
+    getGroupPurchaseOrders (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
     },
-    getGroupItems(parentProductId: any, items: any) {
+    getGroupedItems(parentProductId: any, items: any) {
       return items.filter((item: any) => item.parentProductId == parentProductId)
     },
     getParentInformation(id: any, items: any) {
@@ -139,6 +139,7 @@ export default defineComponent({
     },
     selectParentProduct(parentProductId: any, event: any, poItems: any) {
       // TODO: Need to find a better approach.
+      // Added a flag isParentProductUpdated so that it does not deselect all the products under parent product on deselcting a single product.
       if(this.isParentProductUpdated){
         poItems = poItems.map((item: any) => {
           if (item.parentProductId === parentProductId) {

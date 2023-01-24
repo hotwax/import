@@ -82,7 +82,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      currentDateTimeFormat: 'user/getDateTimeFormat'
+      currentDateTimeFormat: 'user/getPreferredDateTimeFormat'
     })
   },
   mounted(){

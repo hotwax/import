@@ -69,6 +69,7 @@ export default defineComponent({
       this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.parentProductId === this.id) {
           const item = original[this.poId].find(item => {
+            // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
             return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
           })
           element = item;

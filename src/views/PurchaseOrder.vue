@@ -107,7 +107,7 @@ export default defineComponent({
     },
     computed: {
       ...mapGetters({
-        dateTimeFormat : 'user/getDateTimeFormat',
+        dateTimeFormat : 'user/getPreferredDateTimeFormat',
         fieldMappings: 'user/getFieldMappings'
       })
     },

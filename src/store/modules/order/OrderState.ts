@@ -1,7 +1,7 @@
 export default interface OrderState { 
     purchaseOrders: {
       parsed: {},
-      original: [],
+      original: {},
       unidentifiedItems: []
     }
     fileName: string

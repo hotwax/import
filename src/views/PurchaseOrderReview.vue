@@ -123,7 +123,7 @@ export default defineComponent({
       purchaseOrders: 'order/getPurchaseOrders',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
-      dateTimeFormat : 'user/getDateTimeFormat',
+      dateTimeFormat : 'user/getPreferredDateTimeFormat',
       fileName: 'order/getFileName'
     })
   },
@@ -249,7 +249,7 @@ export default defineComponent({
                   }
                 }])
                 this.router.push("/purchase-order");
-                this.store.dispatch('order/clearOrder');
+                this.store.dispatch('order/clearPurchaseOrders');
               }).catch(() => {
                 showToast(translate("Something went wrong, please try again"));
               })
@@ -266,10 +266,10 @@ export default defineComponent({
       return bulkAdjustmentModal.present();
     },
     async missingFacilityModal() {
-      const ItemsWithMissingFacility = this.getItemsWithMissingFacility();
+      const itemsWithMissingFacility = this.getItemsWithMissingFacility();
       const missingFacilityModal = await modalController.create({
         component: MissingFacilityModal,
-        componentProps: { ItemsWithMissingFacility, facilities: this.facilities }
+        componentProps: { itemsWithMissingFacility, facilities: this.facilities }
       });
       return missingFacilityModal.present();
     },

@@ -99,7 +99,7 @@ export default defineComponent({
     ...mapGetters({
       facilities: 'util/getFacilities',
       purchaseOrders: 'order/getPurchaseOrders',
-      dateTimeFormat : 'user/getDateTimeFormat',
+      dateTimeFormat : 'user/getPreferredDateTimeFormat',
     })
   },
   methods: {

@@ -12,7 +12,7 @@
 
   <ion-content>
 
-    <ion-item v-for="(items, facilityId) in items" :key="facilityId" lines="full">
+    <ion-item v-for="(items, facilityId) in itemsByFacilityId" :key="facilityId" lines="full">
       <ion-label>
         {{ facilityId }}
         <p>{{ items?.length }} {{ $t("line items") }}</p>
@@ -70,10 +70,10 @@ export default defineComponent({
     IonTitle,
     IonToolbar 
   },
-  props: ["ItemsWithMissingFacility", "facilities"],
+  props: ["itemsWithMissingFacility", "facilities"],
   data() {
     return {
-      items: {},
+      itemsByFacilityId: {},
       mapFacility: {} as any
     }
   },
@@ -88,7 +88,6 @@ export default defineComponent({
   methods: {
     save(){
       Object.keys(this.mapFacility).map((facilityId: any) => {
-        console.log(this.purchaseOrders)
         Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
           if(item.externalFacilityId === facilityId){
             item.externalFacilityId = "";
@@ -107,7 +106,7 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     groupItemsByFacilityId(){
-      this.items = this.ItemsWithMissingFacility.reduce((itemsByFacilityId: any, item: any) => {
+      this.itemsByFacilityId = this.itemsWithMissingFacility.reduce((itemsByFacilityId: any, item: any) => {
         itemsByFacilityId[item.externalFacilityId] ? itemsByFacilityId[item.externalFacilityId].push(item) : itemsByFacilityId[item.externalFacilityId] = [item];
         return itemsByFacilityId;
       }, {});

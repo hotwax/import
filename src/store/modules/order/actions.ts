@@ -52,7 +52,7 @@ const actions: ActionTree<OrderState, RootState> = {
   updateFileName({ commit }, fileName){
     commit(types.ORDER_FILE_NAME_UPDATED, fileName)
   },  
-  clearOrder({ commit }){
+  clearPurchaseOrders({ commit }){
     commit(types.ORDER_PURCHASEORDERS_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
   }
 }

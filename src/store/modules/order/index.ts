@@ -10,7 +10,7 @@ const orderModule: Module<OrderState, RootState> = {
   state: {
     purchaseOrders: {
       parsed: {},
-      original: [],
+      original: {},
       unidentifiedItems: []
     },
     fileName: ""
