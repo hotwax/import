@@ -20,7 +20,7 @@
     </ion-item>
     
     <ion-item>
-      <ion-input clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" />
+      <ion-input clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" @ionChange="dateTimeFormatUpdated = true" />
     </ion-item>
     
     <ion-item>
@@ -37,7 +37,7 @@
     </ion-item>
     
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="updateDateTimeFormat">
+      <ion-fab-button :disabled="!(dateTimeFormat && dateTimeFormatUpdated)" @click="updateDateTimeFormat">
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
@@ -88,6 +88,7 @@ export default defineComponent({
     return { 
       sampleDateTime: '',
       dateTimeFormat: '',
+      dateTimeFormatUpdated: false,
     }
   },
   props: ["numberOfProducts", "numberOfPos"],
@@ -108,6 +109,7 @@ export default defineComponent({
       this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);
       modalController.dismiss({ dismissed: true });
       showToast(translate("Date time format has been updated successfully"));
+      this.dateTimeFormatUpdated = false;
     },
     parseSampleDateTime(){
       this.sampleDateTime = DateTime.now().toFormat(this.dateTimeFormat);
