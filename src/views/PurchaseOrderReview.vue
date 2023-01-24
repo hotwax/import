@@ -199,7 +199,7 @@ export default defineComponent({
     async dateTimeParseErrorModal() {
       const dateTimeParseErrorModal = await modalController.create({
         component: DateTimeParseErrorModal,
-        componentProps: { numberOfProducts: Object.values(this.purchaseOrders.parsed).flat().length, numberOfPos: Object.keys(this.purchaseOrders.parsed).length }
+        componentProps: { numberOfItems: Object.values(this.purchaseOrders.parsed).flat().length, numberOfPos: Object.keys(this.purchaseOrders.parsed).length }
       });
       return dateTimeParseErrorModal.present();
     },
