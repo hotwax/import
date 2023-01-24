@@ -46,17 +46,16 @@
           <ion-item @click="listMissingSkus()">
             <ion-icon slot="start" :icon="shirtOutline" />
             <ion-label>{{ $t("Missing products") }}</ion-label>
-            <ion-note slot="end">{{ unidentifiedProductItems.length }} {{ $t("items") }}</ion-note>
+            <ion-note slot="end">{{ purchaseOrders.unidentifiedItems.length }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
         </div>
       </div>
-
       <div v-if="segmentSelected === 'all'">
-        <PurchaseOrderDetail :ordersList="ordersList" />
+        <PurchaseOrderDetail :purchaseOrders="purchaseOrders.parsed" />
       </div>
-      <div v-for="(po, poId) in ordersList" :key="poId" >
-        <PurchaseOrderDetail v-if="segmentSelected === poId" :ordersList="{[poId]: po}" />
+      <div v-for="(po, poId) in purchaseOrders.parsed" :key="poId" >
+        <PurchaseOrderDetail v-if="segmentSelected === poId" :purchaseOrders="{[poId]: po}" />
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -72,7 +71,7 @@
         <ion-segment-button value="all">
           <ion-label>{{ $t("All") }}</ion-label>
         </ion-segment-button>
-        <ion-segment-button v-for="(po, poId) in ordersList" :key="poId" :value="poId">
+        <ion-segment-button v-for="(po, poId) in purchaseOrders.parsed" :key="poId" :value="poId">
           <ion-label>{{ poId }}</ion-label>
         </ion-segment-button>
       </ion-segment>
@@ -123,9 +122,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       facilities: 'util/getFacilities',
-      ordersList: 'order/getOrder',
-      originalItems: 'order/getOriginalItems',
-      unidentifiedProductItems: 'order/getUnidentifiedProductItems',
+      purchaseOrders: 'order/getPurchaseOrders',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
       dateTimeFormat : 'user/getDateTimeFormat',
@@ -134,10 +131,8 @@ export default defineComponent({
   },
   data() {
     return {
-      numberOfDays: 0,
-      numberOfPieces: 0,
       catalog: "N",
-      facilityId: (this as any)?.ordersList?.items[0]?.facilityId,
+      facilityId: "",
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
@@ -177,41 +172,41 @@ export default defineComponent({
   },
   methods: {
     getSelectedItems(){
-      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => item.isSelected).length;
+      return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => item.isSelected).length;
     },
     getItemsWithInvalidDateFormat(){
-      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid).length;
+      return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid).length;
     },
     getItemsWithMissingFacility() {
       const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
-      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
+      return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
     },
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
-      return Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
+      return Object.values(this.purchaseOrders.parsed).flat().some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
     },
     async listMissingSkus() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
-        componentProps: { 'unidentifiedProductItems': this.unidentifiedProductItems }
+        componentProps: { 'unidentifiedItems': this.purchaseOrders.unidentifiedItems }
       });
       return missingSkuModal.present();
     },
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
-      this.searchedProduct = Object.values(this.ordersList).flat(1).find((item: any) => {
-        return item.internalName === product.internalName;
+      this.searchedProduct = Object.values(this.purchaseOrders).flat().find((item: any) => {
+        return item.pseudoId === product.pseudoId;
       })
     },
     async dateTimeParseErrorModal() {
       const dateTimeParseErrorModal = await modalController.create({
         component: DateTimeParseErrorModal,
-        componentProps: { numberOfProducts: Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().length, numberOfPos: Object.keys(this.ordersList).length }
+        componentProps: { numberOfProducts: Object.values(this.purchaseOrders.parsed).flat().length, numberOfPos: Object.keys(this.purchaseOrders.parsed).length }
       });
       return dateTimeParseErrorModal.present();
     },
     async save(){
-      const uploadData = Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().filter((item: any) => {
+      const uploadData = Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => {
         return item.isSelected;
       }).map((item: any) => {
         return {
@@ -256,7 +251,7 @@ export default defineComponent({
                   }
                 }])
                 this.router.push("/purchase-order");
-                this.store.dispatch('order/clearOrderList');
+                this.store.dispatch('order/clearOrder');
               }).catch(() => {
                 showToast(translate("Something went wrong, please try again"));
               })
@@ -281,10 +276,14 @@ export default defineComponent({
       return missingFacilityModal.present();
     },
     selectAllItems() {
-      Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().forEach((item: any) => {
+      Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
         item.isSelected = true;
       })
     },
+    revertAll() {
+      let original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
+      this.store.dispatch('order/updatedOrderListItems', original);
+    }
   },
   setup() {
     const router = useRouter();

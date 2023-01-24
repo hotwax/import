@@ -4,12 +4,12 @@ import * as types from './mutation-types'
 
 const mutations: MutationTree <OrderState> = {
   [types.ORDER_LIST_UPDATED] (state, payload) {
-    state.purchaseOrders = payload.items
-    state.original = payload.original
-    state.unidentifiedProductItems = payload.unidentifiedProductItems
+    state.purchaseOrders.parsed = payload.items
+    state.purchaseOrders.original = payload.original
+    state.purchaseOrders.unidentifiedItems = payload.unidentifiedItems
   },
   [types.ORDER_LIST_ITEMS_UPDATED] (state, payload) {
-    state.purchaseOrders = payload;
+    state.purchaseOrders.parsed = payload;
   },
   [types.ORDER_FILE_NAME_UPDATED] (state, payload) {
     state.fileName = payload;

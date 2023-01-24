@@ -35,12 +35,6 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: authGuard
   },
   {
-    path: '/purchase-order-detail',
-    name: 'PurchaseOrderDetail',
-    component: OrderDetail,
-    beforeEnter: authGuard
-  },
-  {
     path: '/purchase-order-review',
     name: 'PurchaseOrderReview',
     component: PurchaseOrderReview,

@@ -12,10 +12,10 @@
 
   <ion-content>
 
-    <ion-item v-for="(products, facilityId) in items" :key="facilityId" lines="full">
+    <ion-item v-for="(items, facilityId) in items" :key="facilityId" lines="full">
       <ion-label>
         {{ facilityId }}
-        <p>{{ products?.length }} {{ $t("line items") }}</p>
+        <p>{{ items?.length }} {{ $t("line items") }}</p>
       </ion-label>
       <ion-select interface="popover" slot="end" placeholder="Map facility" @ionChange="updateFacility($event, facilityId)">
         <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
@@ -79,33 +79,34 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      ordersList: 'order/getOrder'
+      purchaseOrders: 'order/getPurchaseOrders'
     })
   },
   mounted(){
-    this.itemsByFacilityId();
+    this.groupItemsByFacilityId();
   },
   methods: {
     save(){
-      Object.keys(this.mapFacility).map((missingFacility: any) => {
-        Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().map((item: any) => {
-          if(item.externalFacilityId === missingFacility){
+      Object.keys(this.mapFacility).map((facilityId: any) => {
+        console.log(this.purchaseOrders)
+        Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
+          if(item.externalFacilityId === facilityId){
             item.externalFacilityId = "";
-            item.facilityId = this.mapFacility[missingFacility];
+            item.facilityId = this.mapFacility[facilityId];
           }
         })
       })
-      this.store.dispatch('order/updatedOrderListItems', this.ordersList);
+      this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed);
       modalController.dismiss({ dismissed: true });
       showToast(translate("Changes have been successfully applied"));
     },
-    updateFacility(ev: any, missingFacility: any){
-      this.mapFacility[missingFacility] = ev.target.value
+    updateFacility(ev: any, facilityId: any){
+      this.mapFacility[facilityId] = ev.target.value
     },
     closeModal() {
       modalController.dismiss({ dismissed: true });
     },
-    itemsByFacilityId(){
+    groupItemsByFacilityId(){
       this.items = this.ItemsWithMissingFacility.reduce((itemsByFacilityId: any, item: any) => {
         itemsByFacilityId[item.externalFacilityId] ? itemsByFacilityId[item.externalFacilityId].push(item) : itemsByFacilityId[item.externalFacilityId] = [item];
         return itemsByFacilityId;

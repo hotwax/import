@@ -13,17 +13,17 @@
   <ion-content>
     <ion-item lines="full">
       <ion-label>{{ $t("Buffer days") }}</ion-label>
-      <ion-input v-model="numberOfDays" type="number" :placeholder = "$t('Lead time')" /> 
+      <ion-input v-model="bufferDays" type="number" :placeholder = "$t('Lead time')" /> 
     </ion-item>
 
     <ion-item lines="full">
       <ion-label>{{ $t("Order buffer") }}</ion-label>
-      <ion-input v-model="numberOfPieces" type="number" :placeholder = "$t('Safety stock')" />
+      <ion-input v-model="orderBuffer" type="number" :placeholder = "$t('Safety stock')" />
     </ion-item>
 
     <ion-item>
       <ion-label>{{ $t("Catalog") }}</ion-label>
-      <ion-select interface="popover" value="N" v-model="catalog">
+      <ion-select interface="popover" v-model="isNewProduct">
         <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
         <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
       </ion-select>
@@ -31,13 +31,13 @@
 
     <ion-item>
       <ion-label>{{ $t("Facility") }}</ion-label>
-      <ion-select interface="popover" value="facility" v-model="facilityId">
-        <ion-select-option v-for="facility in facilities" :key="facility" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
+      <ion-select interface="popover" v-model="facilityId">
+        <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
       </ion-select>
     </ion-item>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="saveChanges">
+      <ion-fab-button @click="save">
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
@@ -69,7 +69,7 @@ import { DateTime } from "luxon";
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
 export default defineComponent({
-  name: "BulkAdjustment",
+  name: "BulkAdjustmentModal",
   components: {
     IonButtons,
     IonButton,
@@ -88,16 +88,16 @@ export default defineComponent({
   },
   data() {
     return {
-      numberOfDays: 0,
-      numberOfPieces: 0,
-      catalog: "N",
+      bufferDays: 0,
+      orderBuffer: 0,
+      isNewProduct: "N",
       facilityId: "",
     }
   },
   computed: {
     ...mapGetters({
       facilities: 'util/getFacilities',
-      ordersList: 'order/getOrder',
+      purchaseOrders: 'order/getPurchaseOrders',
       dateTimeFormat : 'user/getDateTimeFormat',
     })
   },
@@ -105,19 +105,19 @@ export default defineComponent({
     closeModal() {
       modalController.dismiss({ dismissed: true });
     },
-    saveChanges() {
-      Object.values(this.ordersList).map((orderItems: any) => orderItems).flat().map((item: any) => {
+    save() {
+      Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
         if (item.isSelected) {
-          item.quantityOrdered -= this.numberOfPieces;
-          if(this.numberOfDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.numberOfDays }).toFormat(this.dateTimeFormat);
-          item.isNewProduct = this.catalog;
+          item.quantityOrdered -= this.orderBuffer;
+          if(this.bufferDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.bufferDays }).toFormat(this.dateTimeFormat);
+          item.isNewProduct = this.isNewProduct;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
             item.externalFacilityId = "";
           }
         }
       })
-      this.store.dispatch('order/updatedOrderListItems', this.ordersList);
+      this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed);
       modalController.dismiss({ dismissed: true });
       showToast(translate("Changes have been successfully applied"));
     },

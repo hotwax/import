@@ -1,6 +1,8 @@
 export default interface OrderState { 
-    purchaseOrders: {}
-    original: {}
-    unidentifiedProductItems: {}
+    purchaseOrders: {
+      parsed: {},
+      original: [],
+      unidentifiedItems: []
+    }
     fileName: string
   }

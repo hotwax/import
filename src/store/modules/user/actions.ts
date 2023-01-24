@@ -33,7 +33,7 @@ const actions: ActionTree<UserState, RootState> = {
               commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
               updateToken(resp.data.token)
               dispatch('getProfile')
-              dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+              dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
               if (resp.data._EVENT_MESSAGE_ && resp.data._EVENT_MESSAGE_.startsWith("Alert:")) {
               // TODO Internationalise text
                 showToast(translate(resp.data._EVENT_MESSAGE_));
@@ -49,7 +49,7 @@ const actions: ActionTree<UserState, RootState> = {
             commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
             updateToken(resp.data.token)
             dispatch('getProfile')
-            dispatch('setDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+            dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
             return resp.data;
           }
         } else if (hasError(resp)) {
@@ -77,7 +77,7 @@ const actions: ActionTree<UserState, RootState> = {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
     resetConfig();
-    this.dispatch('order/clearOrderList');
+    this.dispatch('order/clearOrder');
   },
 
   /**
@@ -97,7 +97,7 @@ const actions: ActionTree<UserState, RootState> = {
     commit(types.USER_CURRENT_FACILITY_UPDATED, payload.facility);
   },
 
-  setDateTimeFormat ({ commit }, payload) {
+  setPreferredDateTimeFormat ({ commit }, payload) {
     commit(types.USER_DATETIME_FORMAT_UPDATED, payload)
   },
   

@@ -30,7 +30,7 @@
       
       <ion-list>
         <ion-radio-group>
-          <ion-item v-for="item in unidentifiedProductItems" :key="item.shopifyProductSKU">
+          <ion-item v-for="item in unidentifiedItems" :key="item.shopifyProductSKU">
             <ion-label>
               {{ item.shopifyProductSKU }}
               <p>{{ item.orderId }}</p>
@@ -99,7 +99,7 @@ export default defineComponent({
   IonTitle,
   IonToolbar
   },
-  props: ['unidentifiedProductItems'],
+  props: ['unidentifiedItems'],
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });

@@ -28,12 +28,12 @@
       <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
     </ion-item>
 
-    <ion-button class="ion-margin-top ion-margin-start" fill="outline" @click="parse">
+    <ion-button class="ion-margin-top ion-margin-start" fill="outline" @click="parseSampleDateTime">
       {{ $t("Check sample") }}
     </ion-button>
     
     <ion-item lines="none">
-      <ion-label color="medium">{{ $t("This will update products across POs", {numberOfProducts, numberOfPos}) }}</ion-label>
+      <ion-label color="medium">{{ $t("This will update items across POs", {numberOfProducts, numberOfPos}) }}</ion-label>
     </ion-item>
     
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -99,7 +99,7 @@ export default defineComponent({
   },
   mounted(){
     this.dateTimeFormat = this.currentDateTimeFormat
-    this.parse();
+    this.parseSampleDateTime();
   },
   methods: {
     closeModal() {
@@ -107,13 +107,13 @@ export default defineComponent({
     },
     updateDateTimeFormat(){
       this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
-      this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
-      this.parse();
+      this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);
+      this.parseSampleDateTime();
       modalController.dismiss({ dismissed: true });
       showToast(translate("Date time format has been updated successfully"));
 
     },
-    parse(){
+    parseSampleDateTime(){
       this.sampleDateTime = DateTime.now().toFormat(this.dateTimeFormat);
     },
   },
