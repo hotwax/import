@@ -18,7 +18,7 @@
         
         <ion-checkbox :checked="isParentProductChecked(id, poItems)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, poItems)" />
         
-        <ion-button fill="clear" color="medium" @click="UpdateProduct($event, id, true, getParentInformation(id, poItems), getParentInformation(id, poItems).orderId)">
+        <ion-button fill="clear" color="medium" @click="openProductPopover($event, id, true, getParentInformation(id, poItems), getParentInformation(id, poItems).orderId)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
         </ion-button>
       </div>
@@ -45,7 +45,7 @@
           <!-- Used :key as the changed value was not reflected -->
           <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
           
-          <ion-button fill="clear" color="medium" @click="UpdateProduct($event, item.pseudoId, false, item, item.orderId)">
+          <ion-button fill="clear" color="medium" @click="openProductPopover($event, item.pseudoId, false, item, item.orderId)">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
@@ -107,7 +107,7 @@ export default defineComponent({
     }
   },
   methods: { 
-    async UpdateProduct(ev: Event, id: any, isVirtual: boolean, item: any, poId: string) {
+    async openProductPopover(ev: Event, id: any, isVirtual: boolean, item: any, poId: string) {
       const popover = await popoverController
         .create({
           component: ProductPopover,
