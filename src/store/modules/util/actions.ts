@@ -9,6 +9,7 @@ import { translate } from '@/i18n'
 const actions: ActionTree<UtilState, RootState> = {
 
   async fetchFacilities({ state, commit}){
+    if(state.facilities.length) return;
     const payload = {
       "inputFields": {
         "parentTypeId": "VIRTUAL_FACILITY",
@@ -30,6 +31,6 @@ const actions: ActionTree<UtilState, RootState> = {
       console.error(err)
     }
   },
-}  
+}
 
 export default actions;

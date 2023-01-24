@@ -20,7 +20,7 @@
     </ion-item>
     
     <ion-item>
-      <ion-input clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
+      <ion-input clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" />
     </ion-item>
     
     <ion-item>
@@ -88,7 +88,6 @@ export default defineComponent({
     return { 
       sampleDateTime: '',
       dateTimeFormat: '',
-      defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy'
     }
   },
   props: ["numberOfProducts", "numberOfPos"],
@@ -106,12 +105,9 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     updateDateTimeFormat(){
-      this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
       this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);
-      this.parseSampleDateTime();
       modalController.dismiss({ dismissed: true });
       showToast(translate("Date time format has been updated successfully"));
-
     },
     parseSampleDateTime(){
       this.sampleDateTime = DateTime.now().toFormat(this.dateTimeFormat);
