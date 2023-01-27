@@ -13,11 +13,11 @@
     <ion-content>
       <div>
         <ion-item id="update-sku" :class="showErrorText ? 'ion-invalid' : ''">
-          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" />
-          <ion-note v-show="showHelperText" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
+          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" />
+          <ion-note v-show="showHelperText && purchaseOrders.unidentifiedItems.length" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
           <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
         </ion-item>
-        <ion-button @click="update">{{ $t("Update") }}</ion-button>
+        <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ $t("Update") }}</ion-button>
       </div>
       
       <ion-segment v-model="segmentSelected">
@@ -28,7 +28,7 @@
           <ion-label>{{ $t("Completed") }}</ion-label>
         </ion-segment-button>
       </ion-segment>
-      
+      <!-- If two different POs contain same missing SKU then in MissingSkuModal, both the products will be selected. -->
       <ion-radio-group @ionChange="updatedSku = $event.detail.value; showHelperText = false; showErrorText = false;" v-model="unidentifiedProductSku">
         <ion-list v-if="segmentSelected === 'pending'">
           <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
@@ -46,7 +46,7 @@
               {{ item.updatedSku }}
               <p>{{ item.orderId }}</p>
             </ion-label>
-            <ion-radio slot="end" :value="item.shopifyProductSKU" />
+            <ion-radio slot="end" :value="item.updatedSku" />
           </ion-item>
         </ion-list>
       </ion-radio-group>
@@ -125,6 +125,11 @@ export default defineComponent({
     })
   },
   methods: {
+    selectInputText(event: any) {
+      event.target.getInputElement().then((element: any) => {
+        element.select();
+      })
+    },
     closeModal() {
       modalController.dismiss({ dismissed: true });
     },
@@ -136,13 +141,11 @@ export default defineComponent({
     },
     save(){
       this.store.dispatch('order/updateMissingSkusList', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
-      this.store.dispatch('order/updateCompletedItems', []);
       this.closeModal();
     },
     async update() {
       this.showHelperText = false;
       this.showErrorText = false;
-      this.$el.querySelector('#update-sku').classList.remove('ion-invalid');
       const payload = {
         viewSize: 1,
         viewIndex: 0,
@@ -156,7 +159,7 @@ export default defineComponent({
         unidentifiedProduct.updatedSku = this.updatedSku;
         unidentifiedProduct.parentProductId = item.parent.id;
         unidentifiedProduct.pseudoId = item.pseudoId;
-        unidentifiedProduct.parentProductName = item.parent.parentProductName;
+        unidentifiedProduct.parentProductName = item.parent.productName;
         unidentifiedProduct.imageUrl = item.images.mainImageUrl;
         unidentifiedProduct.isNewProduct = "N";
         unidentifiedProduct.isSelected = true;
