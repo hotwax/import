@@ -4,6 +4,7 @@ import RootState from '@/store/RootState'
 import UtilState from './UtilState'
 import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
+import logger from '@/logger'
 
 const actions: ActionTree<UtilState, RootState> = {
 
@@ -25,9 +26,11 @@ const actions: ActionTree<UtilState, RootState> = {
       const resp = await UtilService.getFacilities(payload);
       if(resp.status === 200 && resp.data.docs && !hasError(resp)){
         commit(types.UTIL_FACILITIES_UPDATED, resp.data.docs);
+      } else {
+        logger.error(resp)
       }
     } catch(err) {
-      console.error(err)
+      logger.error(err)
     }
   },
 }
