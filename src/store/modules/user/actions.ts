@@ -79,6 +79,9 @@ const actions: ActionTree<UserState, RootState> = {
     commit(types.USER_END_SESSION)
     resetConfig();
     this.dispatch('order/clearOrderList');
+    // clearning field mappings and current mapping when user logout
+    commit(types.USER_FIELD_MAPPING_UPDATED, {})
+    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {})
   },
 
   /**
@@ -150,7 +153,7 @@ const actions: ActionTree<UserState, RootState> = {
 
         commit(types.USER_FIELD_MAPPING_UPDATED, fieldMappings)
       } else {
-        console.error('Failed to fetch user mappings preference')
+        console.error('Failed to fetch user mapping preferences')
       }
     } catch(err) {
       console.error(err)
@@ -172,12 +175,12 @@ const actions: ActionTree<UserState, RootState> = {
       if(resp.status == 200 && !hasError(resp)) {
 
         const fieldMapping = {
-          id: params.mappingPrefId,
-          name: params.mappingPrefName,
-          value: params.mappingPrefValue
+          id: payload.id,
+          name: payload.name,
+          value: payload.value
         }
 
-        commit(types.USER_FIELD_MAPPING_UPDATED, fieldMapping)
+        commit(types.USER_FIELD_MAPPING_CREATED, fieldMapping)
       } else {
         console.error('Failed to create field mapping preference')
       }
@@ -201,9 +204,9 @@ const actions: ActionTree<UserState, RootState> = {
       if(resp.status == 200 && !hasError(resp)) {
 
         const fieldMapping = {
-          id: params.mappingPrefId,
-          name: params.mappingPrefName,
-          value: params.mappingPrefValue
+          id: payload.id,
+          name: payload.name,
+          value: payload.value
         }
 
         commit(types.USER_FIELD_MAPPING_UPDATED, fieldMapping)

@@ -118,7 +118,10 @@ export default defineComponent({
       }
     }
   },
-  props: ["content"],
+  props: ["content", "seletedFieldMapping"],
+  mounted() {
+    this.fieldMapping = { ...this.seletedFieldMapping }
+  },
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings'

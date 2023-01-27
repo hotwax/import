@@ -38,6 +38,9 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_CURRENT_FIELD_MAPPING_UPDATED] (state, payload) {
         state.currentMapping = payload
+    },
+    [types.USER_FIELD_MAPPING_CREATED] (state, payload) {
+        state.fieldMappings.purchaseOrder = payload;
     }
 }
 export default mutations;
