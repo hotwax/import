@@ -8,7 +8,10 @@
     </ion-header>
 
     <ion-content>
-      <main>
+      <div class="empty-state" v-if="Object.keys(fieldMappings['purchaseOrder']).length == 0">
+        <p>{{ $t("No fieldMapping found. Please create new.")}}</p>
+      </div>
+      <main v-else>
         <section>
           <ion-list>
             <ion-list-header>{{ $t("Mapping") }}</ion-list-header>

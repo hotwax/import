@@ -19,7 +19,7 @@
         <ion-list>
           <ion-list-header>{{ $t("Saved mappings") }}</ion-list-header>
           <div>
-            <ion-chip outline="true" @click="addFieldMapping()">
+            <ion-chip :disabled="!file" outline="true" @click="addFieldMapping()">
               <ion-icon :icon="addOutline" />
               <ion-label>{{ $t("New mapping") }}</ion-label>
             </ion-chip>

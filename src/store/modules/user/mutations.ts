@@ -40,7 +40,10 @@ const mutations: MutationTree <UserState> = {
         state.currentMapping = payload
     },
     [types.USER_FIELD_MAPPING_CREATED] (state, payload) {
-        state.fieldMappings.purchaseOrder = payload;
+        (state.fieldMappings.purchaseOrder as any)[payload.id] = {
+            name: payload.name,
+            value: payload.value
+        };
     }
 }
 export default mutations;
