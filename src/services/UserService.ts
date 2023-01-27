@@ -68,11 +68,20 @@ const deleteFieldMapping = async (payload: any): Promise <any> => {
   });
 }
 
+const getFieldMapping = async (payload: any): Promise <any> => {
+  return api({
+    url: "/performFind",
+    method: "POST",
+    data: payload
+  });
+}
+
 export const UserService = {
     createFieldMapping,
     deleteFieldMapping,
     login,
     getAvailableTimeZones,
+    getFieldMapping,
     getProfile,
     setUserTimeZone,
     checkPermission,
