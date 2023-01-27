@@ -29,9 +29,14 @@ import i18n from './i18n'
 import store from './store'
 import { DateTime } from 'luxon';
 
+import logger from './logger';
+
 const app = createApp(App)
   .use(IonicVue, {
     mode: 'md'
+  })
+  .use(logger, {
+    level: process.env.VUE_APP_DEFAULT_LOG_LEVEL
   })
   .use(router)
   .use(i18n)
