@@ -53,7 +53,22 @@ const actions: ActionTree<OrderState, RootState> = {
     commit(types.ORDER_FILE_NAME_UPDATED, fileName)
   },  
   clearPurchaseOrders({ commit }){
-    commit(types.ORDER_PURCHASEORDERS_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, { items: [], original: [], unidentifiedItems: []});
+  },
+  updateMissingSkusList({ commit, state }, payload: any) {
+    console.log(payload)
+    const items = state.purchaseOrders.parsed as any;
+    const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
+      if(item.updatedSku) {
+        item.shopifyProductSKU = item.updatedSku;
+        items[item.orderId].push(item);
+      } else {
+        return item;
+      }
+    }).filter((item: any) => item);
+    const original = JSON.parse(JSON.stringify(state.purchaseOrders.parsed));
+
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, { items, original, unidentifiedItems});
   }
 }
 export default actions;

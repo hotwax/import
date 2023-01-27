@@ -8,7 +8,7 @@
           <ion-button @click="selectAllItems()">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
-          <ion-button>
+          <ion-button @click="revertAll()">
             <ion-icon :icon="arrowUndoOutline" />
           </ion-button>
         </ion-buttons>

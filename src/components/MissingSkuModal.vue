@@ -12,11 +12,12 @@
     </ion-header>
     <ion-content>
       <div>
-        <ion-item>
-          <ion-input :clear-input="true" />
-          <ion-note slot="helper">Helper and error text</ion-note>
+        <ion-item id="update-sku" :class="showErrorText ? 'ion-invalid' : ''">
+          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" />
+          <ion-note v-show="showHelperText" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
+          <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
         </ion-item>
-        <ion-button>{{ $t("Update") }}</ion-button>
+        <ion-button @click="update">{{ $t("Update") }}</ion-button>
       </div>
       
       <ion-segment v-model="segmentSelected">
@@ -28,20 +29,30 @@
         </ion-segment-button>
       </ion-segment>
       
-      <ion-list>
-        <ion-radio-group>
-          <ion-item v-for="item in unidentifiedItems" :key="item.shopifyProductSKU">
+      <ion-radio-group @ionChange="updatedSku = $event.detail.value; showHelperText = false; showErrorText = false;" v-model="unidentifiedProductSku">
+        <ion-list v-if="segmentSelected === 'pending'">
+          <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
             <ion-label>
               {{ item.shopifyProductSKU }}
               <p>{{ item.orderId }}</p>
             </ion-label>
-            <ion-radio slot="end" :value="item" />
+            <ion-radio slot="end" :value="item.shopifyProductSKU" />
           </ion-item>
-        </ion-radio-group>
-      </ion-list>
+        </ion-list>
+
+        <ion-list v-if="segmentSelected === 'completed'">
+          <ion-item v-for="item in getCompletedItems()" :key="item.shopifyProductSKU">
+            <ion-label>
+              {{ item.updatedSku }}
+              <p>{{ item.orderId }}</p>
+            </ion-label>
+            <ion-radio slot="end" :value="item.shopifyProductSKU" />
+          </ion-item>
+        </ion-list>
+      </ion-radio-group>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button>
+        <ion-fab-button @click="save">
           <ion-icon :icon="saveOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -74,6 +85,7 @@ import {
 } from "@ionic/vue";
 import { closeOutline, saveOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
+import { mapGetters, useStore } from "vuex";
 import { ref } from "vue";
 
 export default defineComponent({
@@ -99,18 +111,70 @@ export default defineComponent({
   IonTitle,
   IonToolbar
   },
-  props: ['unidentifiedItems'],
+  data(){
+    return {
+      updatedSku: '',
+      unidentifiedProductSku: '',
+      showHelperText: false,
+      showErrorText: false
+    }
+  },
+  computed: {
+    ...mapGetters({
+      purchaseOrders: 'order/getPurchaseOrders',
+    })
+  },
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });
-    }
+    },
+    getPendingItems(){
+      return this.purchaseOrders.unidentifiedItems.filter((item: any) => !item.updatedSku);
+    },
+    getCompletedItems(){
+      return this.purchaseOrders.unidentifiedItems.filter((item: any) => item.updatedSku);
+    },
+    save(){
+      this.store.dispatch('order/updateMissingSkusList', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
+      this.store.dispatch('order/updateCompletedItems', []);
+      this.closeModal();
+    },
+    async update() {
+      this.showHelperText = false;
+      this.showErrorText = false;
+      this.$el.querySelector('#update-sku').classList.remove('ion-invalid');
+      const payload = {
+        viewSize: 1,
+        viewIndex: 0,
+        productIds: [this.updatedSku]
+      }
+      const products = await this.store.dispatch("product/fetchProducts", payload);
+      if (products.length) {
+        const item = products[0];
+        const unidentifiedProduct = this.purchaseOrders.unidentifiedItems.find((item: any) => item.shopifyProductSKU === this.unidentifiedProductSku);
+         
+        unidentifiedProduct.updatedSku = this.updatedSku;
+        unidentifiedProduct.parentProductId = item.parent.id;
+        unidentifiedProduct.pseudoId = item.pseudoId;
+        unidentifiedProduct.parentProductName = item.parent.parentProductName;
+        unidentifiedProduct.imageUrl = item.images.mainImageUrl;
+        unidentifiedProduct.isNewProduct = "N";
+        unidentifiedProduct.isSelected = true;
+
+        this.showHelperText = true;
+      } else {
+        this.showErrorText = true;
+      }
+    },
   },
   setup() {
+    const store = useStore();
     const segmentSelected = ref('pending');
     return {
       closeOutline,
       saveOutline,
-      segmentSelected
+      segmentSelected,
+      store
     }
   }
 })
