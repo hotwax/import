@@ -79,6 +79,7 @@ const actions: ActionTree<UserState, RootState> = {
     commit(types.USER_END_SESSION)
     resetConfig();
     this.dispatch('order/clearPurchaseOrders');
+    this.dispatch('util/clearFacilities');
   },
 
   /**

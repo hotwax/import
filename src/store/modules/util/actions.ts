@@ -33,6 +33,9 @@ const actions: ActionTree<UtilState, RootState> = {
       logger.error(err)
     }
   },
+  clearFacilities({commit}){
+    commit(types.UTIL_FACILITIES_UPDATED, []);
+  }
 }
 
 export default actions;
