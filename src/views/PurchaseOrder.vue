@@ -19,15 +19,12 @@
         <ion-list>
           <ion-list-header>{{ $t("Saved mappings") }}</ion-list-header>
           <div>
-            <ion-chip :disabled="!file" outline="true">
+            <ion-chip outline="true" @click="addFieldMapping()">
               <ion-icon :icon="addOutline" />
               <ion-label>{{ $t("New mapping") }}</ion-label>
             </ion-chip>
-            <ion-chip :disabled="!file" outline="true">
-              {{ 'mapping1' }}
-            </ion-chip>
-            <ion-chip :disabled="!file" outline="true">
-              {{ 'mapping2' }}
+            <ion-chip :disabled="!file" v-for="(mapping, index) in fieldMappings['purchaseOrder'] ?? []" :key="index" @click="mapFields(index, mapping)" :outline="!isMappingSeleted(index)">
+              {{ mapping.name }}
             </ion-chip>
           </div>
         </ion-list>   
@@ -81,17 +78,19 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
 import { addOutline, arrowForwardOutline } from 'ionicons/icons';
+import CreateMappingModal from "@/components/CreateMappingModal.vue";
 
 export default defineComponent({
     name: "purchase orders",
     components: {
+      IonChip,
       IonPage,
       IonHeader,
       IonToolbar,
@@ -124,34 +123,11 @@ export default defineComponent({
           quantity: "",
           facility: "",
         },
-        mappingName: "",
+        selectedMappingId: '', // stores id of currently selected mapping
         orderItemsList: [],
       }
     },
     methods: {
-      //Todo: Generating unique identifiers as we are currently storing in local storage. Need to remove it as we will be storing data on server.
-      generateUniqueMappingPrefId() {
-        const id = Math.floor(Math.random() * 1000);
-        return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
-      },
-      saveMapping() {
-        if(!this.mappingName) {
-          showToast(translate("Enter mapping name"));
-          return
-        }
-        if (!this.file) {
-          showToast(translate("Upload a file"));
-          return
-        }
-        if (!this.areAllFieldsSelected()) {
-          showToast(translate("Map all fields"));
-          return
-        }
-        const mappingPrefId = this.generateUniqueMappingPrefId();
-        this.store.dispatch('user/updateFieldMappings', { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.fieldMapping)) })
-        showToast(translate("Mapping saved successfully"));
-        this.mappingName = "";
-      },
       getFile(event) {
         this.file = event.target.files[0];
         if(this.file){
@@ -190,26 +166,38 @@ export default defineComponent({
           showToast(translate("Select all the fields to continue"));
         } 
       },
-      mapFields(event) {
-        if(event && event.detail.value) {
-          const fieldMapping = JSON.parse(JSON.stringify(event.detail.value));
-          const CsvFields = Object.keys(this.content[0]);
+      mapFields(id, mapping) {
+        this.selectedMappingId = id
+        const fieldMapping = JSON.parse(JSON.stringify(mapping));
 
-          const missingFields = Object.values(fieldMapping.mappingPrefValue).filter(field => {
-            if(!Object.keys(this.content[0]).includes(field)) return field;
-          });
-          if(missingFields.length) showToast(translate("Some of the mapping fields are missing in the CSV: ", { missingFields: missingFields.join(", ") }))
+        // TODO: Store an object in this.content variable, so everytime when accessing it, we don't need to use 0th index
+        const csvFields = Object.keys(this.content[0]);
 
-          Object.keys(fieldMapping.mappingPrefValue).map((field) => {
-            if(!CsvFields.includes(fieldMapping.mappingPrefValue[field])){
-              fieldMapping.mappingPrefValue[field] = "";
-            }
-          })
-          this.fieldMapping = fieldMapping.mappingPrefValue;
-        }
+        const missingFields = Object.values(fieldMapping.value).filter(field => {
+          if(!csvFields.includes(field)) return field;
+        });
+
+        if(missingFields.length) showToast(translate("Some of the mapping fields are missing in the CSV: ", { missingFields: missingFields.join(", ") }))
+
+        Object.keys(fieldMapping.value).map((key) => {
+          if(!csvFields.includes(fieldMapping.value[key])){
+            fieldMapping.value[key] = "";
+          }
+        })
+        this.fieldMapping = fieldMapping.value;
       },
       areAllFieldsSelected() {
         return Object.values(this.fieldMapping).every(field => field !== "");
+      },
+      async addFieldMapping() {
+        const fieldMappingModal = await modalController.create({
+          component: CreateMappingModal,
+          componentProps: { content: this.content }
+        });
+        return fieldMappingModal.present();
+      },
+      isMappingSeleted(id) {
+        return this.selectedMappingId === id
       }
     },
     setup() {

@@ -107,7 +107,7 @@ export default defineComponent({
         mdIcon: calendar
       },
       {
-        title: "Saved mappings",
+        title: "Saved Mappings",
         url: "/saved-mappings",
         iosIcon: bookmarkOutline,
         mdIcon: bookmarkOutline

@@ -20,9 +20,21 @@ const mutations: MutationTree <UserState> = {
     [types.USER_INSTANCE_URL_UPDATED] (state, payload) {
         state.instanceUrl = payload;
     },
-    [types.USER_FIELD_MAPPINGS_UPDATED] (state, payload) {
-        // state.fieldMappings[payload.mappingPrefId] = payload;
-    },    
+    [types.USER_FIELD_MAPPING_UPDATED] (state, payload) {
+        if(payload.id) {
+            (state.fieldMappings.purchaseOrder as any)[payload.id] = {
+                name: payload.name,
+                value: payload.value
+            };
+        } else {
+            state.fieldMappings.purchaseOrder = payload;
+        }
+
+        console.log('state.fieldMappings', state.fieldMappings)
+    },
+    [types.USER_FIELD_MAPPING_DELETED] (state, id) {
+        delete (state.fieldMappings.purchaseOrder as any)[id];
+    },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
     }

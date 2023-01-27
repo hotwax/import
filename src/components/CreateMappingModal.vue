@@ -16,45 +16,39 @@
   </ion-item>
 
   <ion-content class="ion-padding">
-    <!-- Empty state -->
-    <div class="empty-state" v-if="fieldMappings.length === 0">
-      <p>{{ $t("No fieldMapping found. Please create new.")}}</p>
-    </div>
-
-    <!-- Mappings -->
-    <div v-else>
+    <div>
       <ion-list>
         <ion-item>
           <ion-label>{{ $t("Order ID") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.orderId">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderId">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.productSku">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Arrival date") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.orderDate">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderDate">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.quantity">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Facility ID") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="draftFieldMapping.facility">
+          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -115,11 +109,7 @@ export default defineComponent({
   data() {
     return {
       mappingName: "",
-      queryString: '',
-      filteredTimeZones: [],
-      timeZones: [],
-      timeZoneId: '',
-      draftFieldMapping: {
+      fieldMapping: {
         orderId: "",
         productSku: "",
         orderDate: "",
@@ -128,42 +118,15 @@ export default defineComponent({
       }
     }
   },
-  props: ["content", "selectedFieldMapping"],
+  props: ["content"],
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings'
     })
   },
-  mounted() {
-    this.draftFieldMapping = JSON.parse(JSON.stringify(this.selectedFieldMapping));
-  },
   methods: {
     closeModal() {
       modalController.dismiss({ dismissed: true });
-    },
-    escapeRegExp(text: string) {
-      //TODO Handle it in a better way
-      // Currently when the user types special character as it part of Regex expressions it breaks the code
-      // so removed the characters for now
-      return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    },
-    findTimeZone() { 
-      const regularExp = new RegExp(`${this.escapeRegExp(this.queryString)}`, 'i');
-      this.filteredTimeZones = this.timeZones.filter((timeZone: any) => {
-        return regularExp.test(timeZone.id) || regularExp.test(timeZone.label);
-      });
-    },
-    selectSearchBarText(event: any) {
-      event.target.getInputElement().then((element: any) => {
-        element.select();
-      })
-    },
-    async deleteMapping(mapping: any) {
-      return this.store.dispatch("user/deleteFieldMapping", {
-          mappingPrefId: mapping.mappingPrefId
-      }).then(() => {
-        this.closeModal()
-      }) 
     },
     async saveMapping() {
       if(!this.mappingName) {
@@ -175,13 +138,13 @@ export default defineComponent({
         return
       }
       const mappingPrefId = this.generateUniqueMappingPrefId();
-      return this.store.dispatch("user/createFieldMapping", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.parse(JSON.stringify(this.draftFieldMapping)) }).then(() => {
+      return this.store.dispatch("user/createFieldMapping", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.stringify(this.fieldMapping) }).then(() => {
         showToast(translate("Mapping saved successfully"));
         this.closeModal()
       })
     },
     areAllFieldsSelected() {
-      return Object.values(this.draftFieldMapping).every(field => field !== "");
+      return Object.values(this.fieldMapping).every(field => field !== "");
     },
     generateUniqueMappingPrefId(): any {
       const id = Math.floor(Math.random() * 1000);

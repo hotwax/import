@@ -4,7 +4,7 @@ export default interface UserState {
     currentFacility: object;
     instanceUrl: string;
     fieldMappings: {
-        purchaseOrder: any;
+        purchaseOrder: object;
     };
     preferredDateTimeFormat: string;
 }

@@ -84,9 +84,10 @@ const actions: ActionTree<UserState, RootState> = {
   /**
    * Get User profile
    */
-  async getProfile ( { commit }) {
+  async getProfile ( { commit, dispatch }) {
     const resp = await UserService.getProfile()
     if (resp.status === 200) {
+      dispatch('getFieldMappings')
       commit(types.USER_INFO_UPDATED, resp.data);
     }
   },
@@ -124,7 +125,67 @@ const actions: ActionTree<UserState, RootState> = {
   },
 
   updateFieldMappings({ commit }, payload){
-    commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
+    commit(types.USER_FIELD_MAPPING_UPDATED, payload);
+  },
+
+  async getFieldMappings({ commit }) {
+    try {
+      const payload = {
+        "inputFields": {
+          "mappingPrefTypeEnumId": "IMPORT_MAPPING_PREF"
+        },
+        "fieldList": ["mappingPrefName", "mappingPrefId", "mappingPrefValue"],
+        "viewSize": 20, // considered a user won't have more than 20 saved mappings
+        "entityName": "DataManagerMapping"
+      }
+
+      const resp = await UserService.getFieldMappings(payload);
+
+      if(resp.status == 200 && !hasError(resp)) {
+
+        // updating the structure for mappings so as to directly store it in state
+        const fieldMappings = resp.data.docs.reduce((mappings: any, fieldMapping: any) => {
+          mappings[fieldMapping.mappingPrefId] = {
+            name: fieldMapping.mappingPrefName,
+            value: JSON.parse(fieldMapping.mappingPrefValue)
+          }
+          return mappings;
+        }, {})
+
+        commit(types.USER_FIELD_MAPPING_UPDATED, fieldMappings)
+      } else {
+        console.error('Failed to fetch user mappings preference')
+      }
+    } catch(err) {
+      console.error(err)
+    }
+  },
+
+  async createFieldMapping({ commit }, payload) {
+    try {
+
+      const params = {
+        ...payload,
+        mappingPrefTypeEnumId: 'IMPORT_MAPPING_PREF'
+      }
+
+      const resp = await UserService.createFieldMapping(params);
+
+      if(resp.status == 200 && !hasError(resp)) {
+
+        const fieldMapping = {
+          id: params.mappingPrefId,
+          name: params.mappingPrefName,
+          value: params.mappingPrefValue
+        }
+
+        commit(types.USER_FIELD_MAPPING_UPDATED, fieldMapping)
+      } else {
+        console.error('Failed to create field mapping preference')
+      }
+    } catch(err) {
+      console.error(err)
+    }
   }
 }
 
