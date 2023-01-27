@@ -137,8 +137,8 @@ export default defineComponent({
         showToast(translate("Map all fields"));
         return
       }
-      const mappingPrefId = this.generateUniqueMappingPrefId();
-      return this.store.dispatch("user/createFieldMapping", { mappingPrefId, mappingPrefName: this.mappingName, mappingPrefValue: JSON.stringify(this.fieldMapping) }).then(() => {
+      const id = this.generateUniqueMappingPrefId();
+      return this.store.dispatch("user/createFieldMapping", { id, name: this.mappingName, value: this.fieldMapping }).then(() => {
         showToast(translate("Mapping saved successfully"));
         this.closeModal()
       })

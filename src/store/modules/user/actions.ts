@@ -124,10 +124,6 @@ const actions: ActionTree<UserState, RootState> = {
     updateInstanceUrl(payload)
   },
 
-  updateFieldMappings({ commit }, payload){
-    commit(types.USER_FIELD_MAPPING_UPDATED, payload);
-  },
-
   async getFieldMappings({ commit }) {
     try {
       const payload = {
@@ -165,7 +161,9 @@ const actions: ActionTree<UserState, RootState> = {
     try {
 
       const params = {
-        ...payload,
+        mappingPrefId: payload.id,
+        mappingPrefName: payload.name,
+        mappingPrefValue: JSON.stringify(payload.value),
         mappingPrefTypeEnumId: 'IMPORT_MAPPING_PREF'
       }
 
@@ -186,6 +184,55 @@ const actions: ActionTree<UserState, RootState> = {
     } catch(err) {
       console.error(err)
     }
+  },
+
+  async updateFieldMapping({ commit }, payload) {
+    try {
+
+      const params = {
+        mappingPrefId: payload.id,
+        mappingPrefName: payload.name,
+        mappingPrefValue: JSON.stringify(payload.value),
+        mappingPrefTypeEnumId: 'IMPORT_MAPPING_PREF'
+      }
+
+      const resp = await UserService.updateFieldMapping(params);
+
+      if(resp.status == 200 && !hasError(resp)) {
+
+        const fieldMapping = {
+          id: params.mappingPrefId,
+          name: params.mappingPrefName,
+          value: params.mappingPrefValue
+        }
+
+        commit(types.USER_FIELD_MAPPING_UPDATED, fieldMapping)
+      } else {
+        console.error('Failed to update field mapping preference')
+      }
+    } catch(err) {
+      console.error(err)
+    }
+  },
+
+  async deleteFieldMapping({ commit }, mappingId) {
+    try {
+      const resp = await UserService.deleteFieldMapping({
+        'mappingPrefId': mappingId
+      });
+
+      if(resp.status == 200 && !hasError(resp)) {
+        commit(types.USER_FIELD_MAPPING_DELETED, mappingId)
+      } else {
+        console.error('Failed to delete mapping preference')
+      }
+    } catch(err) {
+      console.error(err)
+    }
+  },
+
+  async updateCurrentMapping({ commit }, payload) {
+    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, payload)
   }
 }
 

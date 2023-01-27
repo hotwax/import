@@ -15,7 +15,8 @@ const userModule: Module<UserState, RootState> = {
       fieldMappings: {
         purchaseOrder: {}
       },
-      preferredDateTimeFormat: ''
+      preferredDateTimeFormat: '',
+      currentMapping: {}
     },
     getters,
     actions,

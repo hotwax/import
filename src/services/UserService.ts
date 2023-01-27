@@ -45,7 +45,6 @@ const setUserTimeZone = async (payload: any): Promise <any>  => {
 }
 
 const createFieldMapping = async (payload: any): Promise <any> => {
-  console.log('payload in service', payload)
   return api({
     url: "/service/createDataManagerMapping",
     method: "POST",

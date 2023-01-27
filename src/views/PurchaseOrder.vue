@@ -23,7 +23,7 @@
               <ion-icon :icon="addOutline" />
               <ion-label>{{ $t("New mapping") }}</ion-label>
             </ion-chip>
-            <ion-chip :disabled="!file" v-for="(mapping, index) in fieldMappings['purchaseOrder'] ?? []" :key="index" @click="mapFields(index, mapping)" :outline="!isMappingSeleted(index)">
+            <ion-chip :disabled="!file" v-for="(mapping, index) in fieldMappings['purchaseOrder'] ?? []" :key="index" @click="mapFields(index, mapping)" outline="true">
               {{ mapping.name }}
             </ion-chip>
           </div>
@@ -123,7 +123,6 @@ export default defineComponent({
           quantity: "",
           facility: "",
         },
-        selectedMappingId: '', // stores id of currently selected mapping
         orderItemsList: [],
       }
     },
@@ -167,7 +166,6 @@ export default defineComponent({
         } 
       },
       mapFields(id, mapping) {
-        this.selectedMappingId = id
         const fieldMapping = JSON.parse(JSON.stringify(mapping));
 
         // TODO: Store an object in this.content variable, so everytime when accessing it, we don't need to use 0th index
@@ -195,9 +193,6 @@ export default defineComponent({
           componentProps: { content: this.content }
         });
         return fieldMappingModal.present();
-      },
-      isMappingSeleted(id) {
-        return this.selectedMappingId === id
       }
     },
     setup() {

@@ -7,4 +7,5 @@ export default interface UserState {
         purchaseOrder: object;
     };
     preferredDateTimeFormat: string;
+    currentMapping: object;
 }

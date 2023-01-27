@@ -29,14 +29,15 @@ const mutations: MutationTree <UserState> = {
         } else {
             state.fieldMappings.purchaseOrder = payload;
         }
-
-        console.log('state.fieldMappings', state.fieldMappings)
     },
     [types.USER_FIELD_MAPPING_DELETED] (state, id) {
         delete (state.fieldMappings.purchaseOrder as any)[id];
     },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
+    },
+    [types.USER_CURRENT_FIELD_MAPPING_UPDATED] (state, payload) {
+        state.currentMapping = payload
     }
 }
 export default mutations;
