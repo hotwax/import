@@ -3,6 +3,7 @@ import { RouteRecordRaw } from 'vue-router';
 import PurchaseOrder from '@/views/PurchaseOrder.vue'
 import OrderDetail from '@/views/OrderDetail.vue'
 import Login from '@/views/Login.vue'
+import SavedMappings from '@/views/SavedMappings.vue'
 import Settings from "@/views/Settings.vue"
 import store from '@/store'
 
@@ -49,6 +50,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/settings",
     name: "Settings",
     component: Settings,
+    beforeEnter: authGuard
+  },
+  {
+    path: "/saved-mappings",
+    name: "SavedMappings",
+    component: SavedMappings,
     beforeEnter: authGuard
   }
 ]

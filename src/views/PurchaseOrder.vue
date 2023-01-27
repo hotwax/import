@@ -14,13 +14,23 @@
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
           <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
-        </ion-item> 
-        <ion-item lines="none">
-          <ion-label>{{ $t("Select mapping") }}</ion-label>
-          <ion-select :disabled="!Object.keys(fieldMappings).length || !file" interface="popover" @ionChange="mapFields">
-            <ion-select-option v-for="mapping in fieldMappings" :value="mapping" :key="mapping?.mappingPrefId">{{ mapping?.mappingPrefName }}</ion-select-option>
-          </ion-select>
-        </ion-item>     
+        </ion-item>
+
+        <ion-list>
+          <ion-list-header>{{ $t("Saved mappings") }}</ion-list-header>
+          <div>
+            <ion-chip :disabled="!file" outline="true">
+              <ion-icon :icon="addOutline" />
+              <ion-label>{{ $t("New mapping") }}</ion-label>
+            </ion-chip>
+            <ion-chip :disabled="!file" outline="true">
+              {{ 'mapping1' }}
+            </ion-chip>
+            <ion-chip :disabled="!file" outline="true">
+              {{ 'mapping2' }}
+            </ion-chip>
+          </div>
+        </ion-list>   
 
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
@@ -66,25 +76,18 @@
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
 
-        <ion-item>
-          <ion-label>{{ $t("Mapping name") }}</ion-label>
-          <ion-input v-model="mappingName" />
-        </ion-item>
-        <ion-button @click="saveMapping">{{ $t("Save mapping") }}</ion-button>
-
       </main>
     </ion-content>
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters } from "vuex";
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
-import { arrowForwardOutline } from 'ionicons/icons';
-import { DateTime } from 'luxon';
+import { addOutline, arrowForwardOutline } from 'ionicons/icons';
 
 export default defineComponent({
     name: "purchase orders",
@@ -95,7 +98,6 @@ export default defineComponent({
       IonTitle,
       IonContent,
       IonItem,
-      IonInput,
       IonLabel,
       IonButton,
       IonMenuButton,
@@ -214,6 +216,7 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     return {
+      addOutline,
       arrowForwardOutline,
       router,
       store
