@@ -181,6 +181,7 @@ const actions: ActionTree<UserState, RootState> = {
         }
 
         commit(types.USER_FIELD_MAPPING_CREATED, fieldMapping)
+        showToast(translate('Field mapping preference created'))
       } else {
         console.error('Failed to create field mapping preference')
         showToast(translate('Failed to create field mapping preference'))
@@ -212,6 +213,7 @@ const actions: ActionTree<UserState, RootState> = {
         }
 
         commit(types.USER_FIELD_MAPPING_UPDATED, fieldMapping)
+        showToast(translate('Field mapping preference updated'))
       } else {
         console.error('Failed to update field mapping preference')
         showToast(translate('Failed to update field mapping preference'))
@@ -230,6 +232,7 @@ const actions: ActionTree<UserState, RootState> = {
 
       if(resp.status == 200 && !hasError(resp)) {
         commit(types.USER_FIELD_MAPPING_DELETED, mappingId)
+        showToast(translate('Field mapping preference deleted'))
       } else {
         console.error('Failed to delete field mapping preference')
         showToast(translate('Failed to delete field mapping preference'))
