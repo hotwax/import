@@ -22,28 +22,28 @@
         </div>
 
         <div class="filters">
-          <ion-item @click="bulkAdjustmentModal()" button> 
+          <ion-item @click="openBulkAdjustmentModal()" button> 
             <ion-icon slot="start" :icon="calculatorOutline" />
             <ion-label>{{ $t("Bulk adjustment") }}</ion-label>
             <ion-note slot="end">{{ getSelectedItems() }} {{ $t("items selected") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item @click="dateTimeParseErrorModal()" button>
+          <ion-item @click="openDateTimeParseErrorModal()" button>
             <ion-icon slot="start" :icon="timeOutline" />
             <ion-label>{{ $t("Date time parse error") }}</ion-label>
             <ion-note slot="end">{{ getItemsWithInvalidDateFormat() }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item @click="missingFacilityModal()" button>
+          <ion-item @click="openMissingFacilityModal()" button>
             <ion-icon slot="start" :icon="businessOutline" />
             <ion-label>{{ $t("Missing facilities") }}</ion-label>
             <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" mode="ios" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item @click="listMissingSkus()" button>
+          <ion-item @click="openMissingSkuModal()" button>
             <ion-icon slot="start" :icon="shirtOutline" />
             <ion-label>{{ $t("Missing products") }}</ion-label>
             <ion-note slot="end">{{ purchaseOrders.unidentifiedItems.length }} {{ $t("items") }}</ion-note>
@@ -183,7 +183,7 @@ export default defineComponent({
       // Checked if any of the date format is different than the selected format.
       return Object.values(this.purchaseOrders.parsed).flat().some((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid);
     },
-    async listMissingSkus() {
+    async openMissingSkuModal() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
         componentProps: { 'unidentifiedItems': this.purchaseOrders.unidentifiedItems }
@@ -196,7 +196,7 @@ export default defineComponent({
         return item.pseudoId === product.pseudoId;
       })
     },
-    async dateTimeParseErrorModal() {
+    async openDateTimeParseErrorModal() {
       const dateTimeParseErrorModal = await modalController.create({
         component: DateTimeParseErrorModal,
         componentProps: { numberOfItems: Object.values(this.purchaseOrders.parsed).flat().length, numberOfPos: Object.keys(this.purchaseOrders.parsed).length }
@@ -259,13 +259,13 @@ export default defineComponent({
       });
       return alert.present();  
     },
-    async bulkAdjustmentModal() {
+    async openBulkAdjustmentModal() {
       const bulkAdjustmentModal = await modalController.create({
         component: BulkAdjustmentModal,
       });
       return bulkAdjustmentModal.present();
     },
-    async missingFacilityModal() {
+    async openMissingFacilityModal() {
       const itemsWithMissingFacility = this.getItemsWithMissingFacility();
       const missingFacilityModal = await modalController.create({
         component: MissingFacilityModal,
