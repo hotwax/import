@@ -140,7 +140,7 @@ export default defineComponent({
       return this.purchaseOrders.unidentifiedItems.filter((item: any) => item.updatedSku);
     },
     save(){
-      this.store.dispatch('order/updateMissingSkusList', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
+      this.store.dispatch('order/updateUnidentifiedItem', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
       this.closeModal();
     },
     async update() {

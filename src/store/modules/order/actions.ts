@@ -55,7 +55,7 @@ const actions: ActionTree<OrderState, RootState> = {
   clearPurchaseOrders({ commit }){
     commit(types.ORDER_PURCHASEORDERS_UPDATED, { items: [], original: [], unidentifiedItems: []});
   },
-  updateMissingSkusList({ commit, state }, payload: any) {
+  updateUnidentifiedItem({ commit, state }, payload: any) {
     const items = state.purchaseOrders.parsed as any;
     const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
       if(item.updatedSku) {
