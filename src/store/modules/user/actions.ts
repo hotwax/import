@@ -153,10 +153,10 @@ const actions: ActionTree<UserState, RootState> = {
 
         commit(types.USER_FIELD_MAPPING_UPDATED, fieldMappings)
       } else {
-        console.error('No field mapping preference found')
+        logger.error('error', 'No field mapping preference found')
       }
     } catch(err) {
-      console.error(err)
+      logger.error('error', err)
     }
   },
 
@@ -183,11 +183,11 @@ const actions: ActionTree<UserState, RootState> = {
         commit(types.USER_FIELD_MAPPING_CREATED, fieldMapping)
         showToast(translate('Field mapping preference created'))
       } else {
-        console.error('Failed to create field mapping preference')
+        logger.error('error', 'Failed to create field mapping preference')
         showToast(translate('Failed to create field mapping preference'))
       }
     } catch(err) {
-      console.error(err)
+      logger.error('error', err)
       showToast(translate('Failed to create field mapping preference'))
     }
   },
@@ -215,11 +215,11 @@ const actions: ActionTree<UserState, RootState> = {
         commit(types.USER_FIELD_MAPPING_UPDATED, fieldMapping)
         showToast(translate('Field mapping preference updated'))
       } else {
-        console.error('Failed to update field mapping preference')
+        logger.error('error', 'Failed to update field mapping preference')
         showToast(translate('Failed to update field mapping preference'))
       }
     } catch(err) {
-      console.error(err)
+      logger.error('error', err)
       showToast(translate('Failed to update field mapping preference'))
     }
   },
@@ -234,11 +234,11 @@ const actions: ActionTree<UserState, RootState> = {
         commit(types.USER_FIELD_MAPPING_DELETED, mappingId)
         showToast(translate('Field mapping preference deleted'))
       } else {
-        console.error('Failed to delete field mapping preference')
+        logger.error('error', 'Failed to delete field mapping preference')
         showToast(translate('Failed to delete field mapping preference'))
       }
     } catch(err) {
-      console.error(err)
+      logger.error('error', err)
       showToast(translate('Failed to delete field mapping preference'))
     }
   },
