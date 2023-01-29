@@ -22,16 +22,16 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_FIELD_MAPPING_UPDATED] (state, payload) {
         if(payload.id) {
-            (state.fieldMappings.purchaseOrder as any)[payload.id] = {
+            (state.fieldMappings as any)[payload.id] = {
                 name: payload.name,
                 value: payload.value
             };
         } else {
-            state.fieldMappings.purchaseOrder = payload;
+            state.fieldMappings = payload;
         }
     },
     [types.USER_FIELD_MAPPING_DELETED] (state, id) {
-        delete (state.fieldMappings.purchaseOrder as any)[id];
+        delete (state.fieldMappings as any)[id];
     },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
@@ -40,7 +40,7 @@ const mutations: MutationTree <UserState> = {
         state.currentMapping = payload
     },
     [types.USER_FIELD_MAPPING_CREATED] (state, payload) {
-        (state.fieldMappings.purchaseOrder as any)[payload.id] = {
+        (state.fieldMappings as any)[payload.id] = {
             name: payload.name,
             value: payload.value
         };

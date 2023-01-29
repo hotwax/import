@@ -3,9 +3,7 @@ export default interface UserState {
     current: object | null;
     currentFacility: object;
     instanceUrl: string;
-    fieldMappings: {
-        purchaseOrder: object;
-    };
+    fieldMappings: {};
     preferredDateTimeFormat: string;
     currentMapping: object;
 }

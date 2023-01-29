@@ -8,14 +8,14 @@
     </ion-header>
 
     <ion-content>
-      <div class="empty-state" v-if="Object.keys(fieldMappings['purchaseOrder']).length == 0">
+      <div class="empty-state" v-if="Object.keys(fieldMappings).length == 0">
         <p>{{ $t("No fieldMapping found. Please create new.")}}</p>
       </div>
       <main v-else>
         <section>
           <ion-list>
             <ion-list-header>{{ $t("Mapping") }}</ion-list-header>
-            <ion-item v-for="(mapping, index) in fieldMappings['purchaseOrder']" :key="index" @click="viewMappingConfiguration(mapping, index)" detail button>
+            <ion-item v-for="(mapping, index) in fieldMappings" :key="index" @click="viewMappingConfiguration(mapping, index)" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>

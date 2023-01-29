@@ -153,7 +153,7 @@ const actions: ActionTree<UserState, RootState> = {
 
         commit(types.USER_FIELD_MAPPING_UPDATED, fieldMappings)
       } else {
-        console.error('Failed to fetch user mapping preferences')
+        console.error('No field mapping preference found')
       }
     } catch(err) {
       console.error(err)
