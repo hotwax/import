@@ -174,6 +174,8 @@ const actions: ActionTree<UserState, RootState> = {
 
       if(resp.status == 200 && !hasError(resp)) {
 
+        // using id coming from server, as the random generated id sent in payload is not set as mapping id
+        // and an auto generated mapping from server is set as id
         const fieldMapping = {
           id: resp.data.mappingPrefId,
           name: payload.name,
