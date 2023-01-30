@@ -8,10 +8,10 @@ import RootState from '../../RootState'
 const orderModule: Module<StockState, RootState> = {
   namespaced: true,
   state: {
-    list: {
-      items: [],
+    items: {
+      parsed: [],
       original: [],
-      unidentifiedProductItems: [],
+      unidentifiedItems: [],
     },
     fileName: ""
   },

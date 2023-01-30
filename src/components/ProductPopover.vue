@@ -29,7 +29,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       ordersList: 'order/getOrder',
-      stock: 'stock/getStock'
+      stock: 'stock/getItemsStock'
     }),
   },
   methods: {
@@ -40,21 +40,22 @@ export default defineComponent({
       this.isVirtual ? this.onlySelectParentProduct() : this.onlySelectSingleProduct();
     },
     onlySelectParentProduct() {
-      const items = this.type === 'order' ? this.ordersList.items : this.stock.items;
-      items.forEach(element => {
-        element.isSelected = element.parentProductId === this.id;
+      let items = this.type === 'order' ? this.ordersList.items : this.stock.parsed;
+      items = items.map(item => {
+        item.isSelected = item.parentProductId === this.id;
+        return item;
       });
       popoverController.dismiss({ dismissed: true });
     },
     onlySelectSingleProduct() {
-      const items = this.type === 'order' ? this.ordersList.items : this.stock.items;
-      items.forEach(element => {
-        element.isSelected = element.pseudoId === this.id;
+      let items = this.type === 'order' ? this.ordersList.items : this.stock.parsed;
+      items = items.map(item => {
+        item.isSelected = item.pseudoId === this.id;
       });
       popoverController.dismiss({ dismissed: true });
     },
     revertProduct() {
-      const items = this.type === 'order' ? this.ordersList.items : this.stock.items;
+      const items = this.type === 'order' ? this.ordersList.items : this.stock.parsed;
       const original = this.type === 'order' ? JSON.parse(JSON.stringify(this.ordersList.original)) : JSON.parse(JSON.stringify(this.stock.original));
       const itemsList = items.map(element => {
         if(element.pseudoId === this.id) {
@@ -69,7 +70,7 @@ export default defineComponent({
       popoverController.dismiss({ dismissed: true });
     },
     revertParentProduct(){
-      const items = this.type === 'order' ? this.ordersList.items : this.stock.items;
+      const items = this.type === 'order' ? this.ordersList.items : this.stock.parsed;
       const original = this.type === 'order' ? JSON.parse(JSON.stringify(this.ordersList.original)) : JSON.parse(JSON.stringify(this.stock.original));
       const itemsList = items.map(element => {
         if(element.parentProductId === this.id) {

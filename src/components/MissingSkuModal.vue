@@ -11,9 +11,9 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <ion-list v-for="item in unidentifiedProductItems" :key="item.shopifyProductSKU">
+      <ion-list v-for="item in unidentifiedItems" :key="item.shopifyProductSKU">
         <ion-item lines="none">
-          <ion-label>{{ item.shopifyProductSKU }}</ion-label>
+          <ion-label>{{ item.shopifyProductSKU ? item.shopifyProductSKU : item.productSKU }}</ion-label>
         </ion-item>
       </ion-list>
     </ion-content>

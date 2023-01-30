@@ -3,8 +3,8 @@ import OrderState from "./StockState";
 import RootState from "../../RootState";
 
 const getters: GetterTree<OrderState, RootState> = {
-  getStock(state) {
-    return state.list;
+  getItemsStock(state) {
+    return state.items;
   },
 };
 export default getters;   

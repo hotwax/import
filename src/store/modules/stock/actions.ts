@@ -17,7 +17,7 @@ const actions: ActionTree<StockState, RootState> = {
     }
     await store.dispatch('user/fetchFacilityLocations', facilityIds);
     await store.dispatch("product/fetchProducts", payload);
-    const unidentifiedProductItems = [] as any;
+    const unidentifiedItems = [] as any;
     items = items.map((item: any) => {
       const product = rootGetters['product/getProduct'](item.productSKU)
       
@@ -30,18 +30,18 @@ const actions: ActionTree<StockState, RootState> = {
         item.isSelected = true;
         return item;
       }
-      unidentifiedProductItems.push(item);
+      unidentifiedItems.push(item);
       return ;
     }).filter((item: any) => item);
     const original = JSON.parse(JSON.stringify(items))
 
-    commit(types.STOCK_LIST_UPDATED, { items, original, unidentifiedProductItems });
+    commit(types.STOCK_LIST_UPDATED, { items, original, unidentifiedItems });
   },
   updatedStockListItems({ commit }, stockItems){
     commit(types.STOCK_LIST_ITEMS_UPDATED, stockItems);
   },
   clearStockList({ commit }){
-    commit(types.STOCK_LIST_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
+    commit(types.STOCK_LIST_UPDATED, { items: [], original: [], unidentifiedItems: []});
   }
 }
 export default actions;

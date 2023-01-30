@@ -4,12 +4,12 @@ import * as types from './mutation-types'
 
 const mutations: MutationTree <StockState> = {
   [types.STOCK_LIST_UPDATED] (state, payload) {
-    state.list.items = payload.items;
-    state.list.original = payload.original;
-    state.list.unidentifiedProductItems = payload.unidentifiedProductItems;
+    state.items.parsed = payload.items;
+    state.items.original = payload.original;
+    state.items.unidentifiedItems = payload.unidentifiedItems;
   },
   [types.STOCK_LIST_ITEMS_UPDATED] (state, payload) {
-    state.list.items = payload;
+    state.items.parsed = payload;
   },
 }
 export default mutations;

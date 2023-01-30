@@ -1,8 +1,8 @@
 export default interface StockState { 
-  list: {
-    items: any,
+  items: {
+    parsed: any,
     original: any,
-    unidentifiedProductItems: any,
-  },  
+    unidentifiedItems: any,
+  }, 
   fileName: string
 }
