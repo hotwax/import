@@ -74,14 +74,14 @@ const actions: ActionTree<UserState, RootState> = {
   /**
    * Logout user
    */
-  async logout ({ commit }) {
+  async logout ({ commit, dispatch }) {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
     resetConfig();
     this.dispatch('order/clearOrderList');
     // clearning field mappings and current mapping when user logout
     commit(types.USER_FIELD_MAPPING_UPDATED, {})
-    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', name: '', value: {} })
+    dispatch('updateCurrentMapping', '')
   },
 
   /**
@@ -226,7 +226,7 @@ const actions: ActionTree<UserState, RootState> = {
     }
   },
 
-  async deleteFieldMapping({ commit }, mappingId) {
+  async deleteFieldMapping({ commit, dispatch }, mappingId) {
     try {
       const resp = await UserService.deleteFieldMapping({
         'mappingPrefId': mappingId
@@ -234,7 +234,7 @@ const actions: ActionTree<UserState, RootState> = {
 
       if(resp.status == 200 && !hasError(resp)) {
         commit(types.USER_FIELD_MAPPING_DELETED, mappingId)
-        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', name: '', value: {} })
+        dispatch('updateCurrentMapping', '')
         showToast(translate('Field mapping preference deleted'))
       } else {
         logger.error('error', 'Failed to delete field mapping preference')
@@ -246,8 +246,16 @@ const actions: ActionTree<UserState, RootState> = {
     }
   },
 
-  async updateCurrentMapping({ commit }, payload) {
-    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, payload)
+  async updateCurrentMapping({ commit, state }, id) {
+    const currentMapping = id ? {
+      id,
+      ...(state.fieldMappings as any)[id]
+    } : {
+      id: '',
+      name: '',
+      value: {}
+    }
+    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, currentMapping)
   }
 }
 

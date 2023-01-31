@@ -8,12 +8,12 @@
     </ion-header>
 
     <ion-content>
-      <div class="empty-state" v-if="Object.keys(fieldMappings).length == 0">
-        <p>{{ $t("No fieldMapping found. Please create new.")}}</p>
-      </div>
-      <main v-else>
+      <main>
         <section>
-          <ion-list>
+          <div class="empty-state" v-if="Object.keys(fieldMappings).length == 0">
+            <p>{{ $t("No field mapping found. Please create new.")}}</p>
+          </div>
+          <ion-list v-else>
             <ion-list-header>{{ $t("Mapping") }}</ion-list-header>
             <ion-item v-for="(mapping, index) in fieldMappings" :key="index" @click="viewMappingConfiguration(mapping, index)" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
@@ -22,7 +22,7 @@
         </section>
 
         <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping.id">
-          <MappingConfiguration :mapping="currentMapping"/>
+          <MappingConfiguration />
         </aside>
       </main>
     </ion-content>
@@ -85,12 +85,12 @@ export default defineComponent({
         ...mapping
       }
                                       
-      await this.store.dispatch('user/updateCurrentMapping', this.currentMapping);
+      await this.store.dispatch('user/updateCurrentMapping', id);
 
-      // TODO: add support for mobile view
-      // if(!this.isDesktop && mapping?.mappingPrefId) {
-      //   return;
-      // }
+      if(!this.isDesktop && id) {
+        this.router.push({name: 'MappingDetail', params: { id: this.mappingPrefId }});
+        return;
+      }
 
       if (this.mappingPrefId && !this.isMappingConfigAnimationCompleted) {
         emitter.emit('playAnimation');
