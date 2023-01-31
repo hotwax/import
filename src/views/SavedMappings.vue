@@ -117,18 +117,6 @@ aside {
   flex: 1;
 }
 
-.desktop-only {
-  display: none;
-}
-
-.mobile-only {
-  display: unset;
-}
-
-.actions > ion-button {
-  margin: var(--spacer-sm);
-}
-
 @media (min-width: 991px) {
   main {
     display: flex;
@@ -143,18 +131,9 @@ aside {
     width: 50ch;
   }
 
-  .desktop-only {
-    display: unset;
-  }
-
-  .mobile-only {
-    display: none;
-  }
-
   aside {
     width: 0px;
     opacity: 0;
   }
 }
-
 </style>

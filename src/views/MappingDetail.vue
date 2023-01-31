@@ -16,7 +16,7 @@
 <script lang="ts">
 import {
   IonBackButton,
-  IonContent, 
+  IonContent,
   IonHeader, 
   IonPage, 
   IonTitle, 
