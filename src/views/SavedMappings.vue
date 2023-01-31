@@ -71,7 +71,6 @@ export default defineComponent({
   },
   data() {
     return {
-      mappingPrefId: '',
       isDesktop: isPlatform('desktop'),
       isMappingConfigAnimationCompleted: false,
       currentMapping: {}
@@ -79,7 +78,6 @@ export default defineComponent({
   },
   methods: {
     async viewMappingConfiguration(mapping: any, id: string) {
-      this.mappingPrefId = id;
       this.currentMapping = {
         id,
         ...mapping
@@ -88,11 +86,11 @@ export default defineComponent({
       await this.store.dispatch('user/updateCurrentMapping', id);
 
       if(!this.isDesktop && id) {
-        this.router.push({name: 'MappingDetail', params: { id: this.mappingPrefId }});
+        this.router.push({name: 'MappingDetail', params: { id }});
         return;
       }
 
-      if (this.mappingPrefId && !this.isMappingConfigAnimationCompleted) {
+      if (id && !this.isMappingConfigAnimationCompleted) {
         emitter.emit('playAnimation');
         this.isMappingConfigAnimationCompleted = true;
       }

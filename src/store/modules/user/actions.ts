@@ -247,7 +247,7 @@ const actions: ActionTree<UserState, RootState> = {
   },
 
   async updateCurrentMapping({ commit, state }, id) {
-    const currentMapping = id ? {
+    const currentMapping = id && (state.fieldMappings as any)[id] ? {
       id,
       ...(state.fieldMappings as any)[id]
     } : {
