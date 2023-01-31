@@ -142,7 +142,6 @@ export default defineComponent({
       }
       const id = this.generateUniqueMappingPrefId();
       return this.store.dispatch("user/createFieldMapping", { id, name: this.mappingName, value: this.fieldMapping }).then(() => {
-        showToast(translate("Mapping saved successfully"));
         this.closeModal()
       })
     },
