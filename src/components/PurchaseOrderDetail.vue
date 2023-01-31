@@ -141,7 +141,7 @@ export default defineComponent({
       // TODO: Need to find a better approach.
       // Added a flag isParentProductUpdated so that it does not deselect all the products under parent product on deselcting a single product.
       if(this.isParentProductUpdated){
-        poItems = poItems.map((item: any) => {
+        poItems.map((item: any) => {
           if (item.parentProductId === parentProductId) {
             item.isSelected = event.detail.checked;
           }

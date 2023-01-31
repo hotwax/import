@@ -12,9 +12,9 @@
     </ion-header>
     <ion-content>
       <div>
-        <ion-item id="update-sku" :class="showErrorText ? 'ion-invalid' : ''">
+        <ion-item id="update-sku" :class="isSkuInvalid ? 'ion-invalid' : ''">
           <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" />
-          <ion-note v-show="showHelperText && purchaseOrders.unidentifiedItems.length" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
+          <ion-note v-show="hasSkuUpdated && purchaseOrders.unidentifiedItems.length" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
           <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
         </ion-item>
         <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ $t("Update") }}</ion-button>
@@ -29,7 +29,7 @@
         </ion-segment-button>
       </ion-segment>
       <!-- If two different POs contain same missing SKU then in MissingSkuModal, both the products will be selected. -->
-      <ion-radio-group @ionChange="updatedSku = $event.detail.value; showHelperText = false; showErrorText = false;" v-model="unidentifiedProductSku">
+      <ion-radio-group @ionChange="updatedSku = $event.detail.value; hasSkuUpdated = false; isSkuInvalid = false;" v-model="unidentifiedProductSku">
         <ion-list v-if="segmentSelected === 'pending'">
           <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
             <ion-label>
@@ -115,8 +115,8 @@ export default defineComponent({
     return {
       updatedSku: '',
       unidentifiedProductSku: '',
-      showHelperText: false,
-      showErrorText: false
+      hasSkuUpdated: false,
+      isSkuInvalid: false
     }
   },
   computed: {
@@ -144,8 +144,8 @@ export default defineComponent({
       this.closeModal();
     },
     async update() {
-      this.showHelperText = false;
-      this.showErrorText = false;
+      this.hasSkuUpdated = false;
+      this.isSkuInvalid = false;
       const payload = {
         viewSize: 1,
         viewIndex: 0,
@@ -164,9 +164,9 @@ export default defineComponent({
         unidentifiedProduct.isNewProduct = "N";
         unidentifiedProduct.isSelected = true;
 
-        this.showHelperText = true;
+        this.hasSkuUpdated = true;
       } else {
-        this.showErrorText = true;
+        this.isSkuInvalid = true;
       }
     },
   },
