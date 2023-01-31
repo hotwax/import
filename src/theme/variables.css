@@ -259,6 +259,10 @@ aside {
   display: unset;
 }
 
+.actions > ion-button {
+  margin: var(--spacer-sm);
+}
+
 @media (min-width: 991px) {
   main {
     display: flex;
