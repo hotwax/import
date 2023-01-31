@@ -108,3 +108,53 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+aside {
+  flex: 1 0 355px;
+  position: sticky;
+  top: var(--spacer-lg);
+  flex: 1;
+}
+
+.desktop-only {
+  display: none;
+}
+
+.mobile-only {
+  display: unset;
+}
+
+.actions > ion-button {
+  margin: var(--spacer-sm);
+}
+
+@media (min-width: 991px) {
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    gap: var(--spacer-2xl);
+    max-width: 990px;
+    margin: var(--spacer-base) auto 0;
+  }
+
+  main > section {
+    width: 50ch;
+  }
+
+  .desktop-only {
+    display: unset;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  aside {
+    width: 0px;
+    opacity: 0;
+  }
+}
+
+</style>
