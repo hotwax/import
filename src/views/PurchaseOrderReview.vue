@@ -36,7 +36,7 @@
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-item @click="openMissingFacilityModal()" button>
+          <ion-item @click="openMissingFacilitiesModal()" button>
             <ion-icon slot="start" :icon="businessOutline" />
             <ion-label>{{ $t("Missing facilities") }}</ion-label>
             <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ $t("items") }}</ion-note>
@@ -265,13 +265,13 @@ export default defineComponent({
       });
       return bulkAdjustmentModal.present();
     },
-    async openMissingFacilityModal() {
+    async openMissingFacilitiesModal() {
       const itemsWithMissingFacility = this.getItemsWithMissingFacility();
-      const missingFacilityModal = await modalController.create({
+      const missingFacilitiesModal = await modalController.create({
         component: MissingFacilityModal,
         componentProps: { itemsWithMissingFacility, facilities: this.facilities }
       });
-      return missingFacilityModal.present();
+      return missingFacilitiesModal.present();
     },
     selectAllItems() {
       Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {

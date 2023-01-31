@@ -17,7 +17,7 @@
         {{ facilityId }}
         <p>{{ items?.length }} {{ $t("line items") }}</p>
       </ion-label>
-      <ion-select interface="popover" slot="end" placeholder="Map facility" @ionChange="updateFacility($event, facilityId)">
+      <ion-select interface="popover" slot="end" :placeholder="$t('Map facility')" @ionChange="updateFacility($event, facilityId)">
         <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
       </ion-select>
     </ion-item>
@@ -54,7 +54,7 @@ import { mapGetters } from "vuex";
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
 export default defineComponent({
-  name: "MissingFacilityModal",
+  name: "MissingFacilitiesModal",
   components: {
     IonButtons,
     IonButton,
