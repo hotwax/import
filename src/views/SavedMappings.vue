@@ -69,7 +69,7 @@ export default defineComponent({
       fieldMappings: 'user/getFieldMappings'
     })
   },
-   data() {
+  data() {
     return {
       mappingPrefId: '',
       isDesktop: isPlatform('desktop'),
