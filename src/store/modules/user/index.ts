@@ -14,7 +14,11 @@ const userModule: Module<UserState, RootState> = {
       instanceUrl: '',
       fieldMappings: {},
       preferredDateTimeFormat: '',
-      currentMapping: {}
+      currentMapping: {
+        id: '',
+        name: '',
+        value: {}
+      }
     },
     getters,
     actions,

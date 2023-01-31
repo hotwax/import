@@ -234,6 +234,7 @@ const actions: ActionTree<UserState, RootState> = {
 
       if(resp.status == 200 && !hasError(resp)) {
         commit(types.USER_FIELD_MAPPING_DELETED, mappingId)
+        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', name: '', value: {} })
         showToast(translate('Field mapping preference deleted'))
       } else {
         logger.error('error', 'Failed to delete field mapping preference')
