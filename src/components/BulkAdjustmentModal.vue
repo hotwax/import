@@ -92,7 +92,6 @@ export default defineComponent({
       orderBuffer: 0,
       isNewProduct: "N",
       facilityId: "",
-      orderBufferOverflow: false
     }
   },
   computed: {
@@ -107,11 +106,12 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     save() {
+      let orderBufferOverflow = false;
       Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
         if (item.isSelected) {
           if(item.quantityOrdered <= this.orderBuffer) {
             item.quantityOrdered = 1;
-            this.orderBufferOverflow = true;
+            orderBufferOverflow = true;
           } 
           else item.quantityOrdered -= this.orderBuffer;
           if(this.bufferDays) item.arrivalDate = DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).plus({ days: this.bufferDays }).toFormat(this.dateTimeFormat);
@@ -122,11 +122,10 @@ export default defineComponent({
           }
         }
       })
-      if (this.orderBufferOverflow) showToast(translate("Some of the selected items have quantity less than or equal to order buffer. The quantity of those items is set to 1."));
+      if (orderBufferOverflow) showToast(translate("Some of the selected items have quantity less than or equal to order buffer. The quantity of those items is set to 1."));
       this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed);
       modalController.dismiss({ dismissed: true });
       showToast(translate("Changes have been successfully applied"));
-      this.orderBufferOverflow = false;
     },
   },
   setup() {
