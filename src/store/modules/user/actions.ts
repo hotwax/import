@@ -81,7 +81,7 @@ const actions: ActionTree<UserState, RootState> = {
     this.dispatch('order/clearOrderList');
     // clearning field mappings and current mapping when user logout
     commit(types.USER_FIELD_MAPPING_UPDATED, {})
-    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {})
+    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', name: '', value: {} })
   },
 
   /**
