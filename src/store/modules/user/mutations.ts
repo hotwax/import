@@ -25,6 +25,12 @@ const mutations: MutationTree <UserState> = {
     },    
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
+    },
+    [types.USER_PWA_REGISTRATION_UPDATED] (state, payload) {
+        state.pwaState.registration = payload;
+    },
+    [types.USER_PWA_UPDATE_STATE_UPDATED] (state, payload) {
+        state.pwaState.updateExists = payload;
     }
 }
 export default mutations;

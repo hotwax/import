@@ -27,6 +27,9 @@ const getters: GetterTree <UserState, RootState> = {
     },
     getDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
+    },
+    getPwaState (state) {
+        return state.pwaState;
     }
 }
 export default getters;

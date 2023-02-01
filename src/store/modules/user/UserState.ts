@@ -5,4 +5,5 @@ export default interface UserState {
     instanceUrl: string;
     fieldMappings: any;
     preferredDateTimeFormat: string;
+    pwaState: any;
 }

@@ -58,7 +58,10 @@
           {{ $t('App') }}
           <p class="overline" >{{ "Version: " + appVersion }}</p>
         </h1>
-        <p class="overline">{{ "Built: " + getDateTime(appInfo.builtTime) }}</p>
+        <div class="ion-text-end">
+          <p class="overline">{{ "Built: " + getDateTime(appInfo.builtTime) }}</p>
+          <ion-button v-if="pwaState.updateExists" @click="refreshApp()" fill="outline" color="dark" size="small">{{ $t("Update") }}</ion-button>
+        </div>
       </div>
       
       <section>
@@ -158,7 +161,8 @@ export default defineComponent({
     ...mapGetters({
       userProfile: 'user/getUserProfile',
       instanceUrl: 'user/getInstanceUrl',
-      currentDateTimeFormat: 'user/getDateTimeFormat'
+      currentDateTimeFormat: 'user/getDateTimeFormat',
+      pwaState: 'user/getPwaState'
     })
   },
   mounted(){
@@ -191,6 +195,11 @@ export default defineComponent({
     },
     getDateTime(time: any) {
       return DateTime.fromMillis(time).toLocaleString(DateTime.DATETIME_MED);
+    },
+    refreshApp() {
+      this.store.dispatch('user/updatePwaUpdateState', false);
+      if (!this.pwaState.registration || !this.pwaState.registration.waiting) return
+      this.pwaState.registration.waiting.postMessage({ type: 'SKIP_WAITING' })
     }
   },
   setup(){

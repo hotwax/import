@@ -125,7 +125,15 @@ const actions: ActionTree<UserState, RootState> = {
 
   updateFieldMappings({ commit }, payload){
     commit(types.USER_FIELD_MAPPINGS_UPDATED, payload);
-  }
+  },
+
+  updatePwaRegistration({commit}, payload) {
+    commit(types.USER_PWA_REGISTRATION_UPDATED, payload);
+  },
+
+  updatePwaUpdateState({commit}, payload) {
+    commit(types.USER_PWA_UPDATE_STATE_UPDATED, payload);
+  },
 }
 
 export default actions;

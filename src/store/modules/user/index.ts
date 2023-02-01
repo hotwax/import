@@ -13,7 +13,11 @@ const userModule: Module<UserState, RootState> = {
       currentFacility: {},
       instanceUrl: '',
       fieldMappings: {},
-      preferredDateTimeFormat: ''
+      preferredDateTimeFormat: '',
+      pwaState: {
+        updateExists: false,
+        registration: null,
+      }
     },
     getters,
     actions,
