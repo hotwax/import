@@ -5,7 +5,7 @@
         <ion-back-button slot="start" default-href="/purchase-order" />
         <ion-title>{{ $t("Review PO details") }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button @click="selectAllItems()">
+          <ion-button @click="selectAllItems(segmentSelected)">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
           </ion-button>
           <ion-button @click="revertAll()">
@@ -67,7 +67,7 @@
     </ion-content>
 
     <ion-footer>
-      <ion-segment v-model="segmentSelected">
+      <ion-segment @ionChange="selectAllItems($event.target.value)" v-model="segmentSelected">
         <ion-segment-button value="all">
           <ion-label>{{ $t("All") }}</ion-label>
         </ion-segment-button>
@@ -274,10 +274,20 @@ export default defineComponent({
       });
       return missingFacilitiesModal.present();
     },
-    selectAllItems() {
-      Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
-        item.isSelected = true;
-      })
+    selectAllItems(segmentSelected: string) {
+      if(segmentSelected === 'all'){
+        Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
+          item.isSelected = true;
+        })
+      } else {
+        Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
+          if(item.orderId === segmentSelected){
+            item.isSelected = true;
+          } else {
+            item.isSelected = false;
+          }
+        })
+      }
     },
     revertAll() {
       let original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
