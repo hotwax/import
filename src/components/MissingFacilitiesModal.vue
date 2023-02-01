@@ -74,7 +74,7 @@ export default defineComponent({
   data() {
     return {
       itemsByFacilityId: {},
-      mapFacility: {} as any
+      facilityMapping: {} as any
     }
   },
   computed: {
@@ -87,11 +87,11 @@ export default defineComponent({
   },
   methods: {
     save(){
-      Object.keys(this.mapFacility).map((facilityId: any) => {
+      Object.keys(this.facilityMapping).map((facilityId: any) => {
         Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
           if(item.externalFacilityId === facilityId){
             item.externalFacilityId = "";
-            item.facilityId = this.mapFacility[facilityId];
+            item.facilityId = this.facilityMapping[facilityId];
           }
         })
       })
@@ -100,7 +100,7 @@ export default defineComponent({
       showToast(translate("Changes have been successfully applied"));
     },
     updateFacility(ev: any, facilityId: any){
-      this.mapFacility[facilityId] = ev.target.value
+      this.facilityMapping[facilityId] = ev.target.value
     },
     closeModal() {
       modalController.dismiss({ dismissed: true });
