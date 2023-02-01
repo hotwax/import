@@ -106,7 +106,7 @@ export default defineComponent({
     },
     updateDateTimeFormat(){
       this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);
-      modalController.dismiss({ dismissed: true });
+      this.closeModal();
       showToast(translate("Date time format has been updated successfully"));
     },
     parseSampleDateTime(){

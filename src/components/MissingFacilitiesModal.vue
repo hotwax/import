@@ -96,7 +96,7 @@ export default defineComponent({
         })
       })
       this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed);
-      modalController.dismiss({ dismissed: true });
+      this.closeModal();
       showToast(translate("Changes have been successfully applied"));
     },
     updateFacility(ev: any, facilityId: any){
