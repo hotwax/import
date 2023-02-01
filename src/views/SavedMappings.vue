@@ -15,13 +15,13 @@
           </div>
           <ion-list v-else>
             <ion-list-header>{{ $t("Mapping") }}</ion-list-header>
-            <ion-item v-for="(mapping, index) in fieldMappings" :key="index" @click="viewMappingConfiguration(mapping, index)" detail button>
+            <ion-item v-for="(mapping, index) in fieldMappings" :key="index" @click="viewMappingConfiguration(index)" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
         </section>
 
-        <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping.id">
+        <aside class="desktop-only" v-if="isDesktop" v-show="currentMappingId">
           <MappingConfiguration />
         </aside>
       </main>
@@ -73,16 +73,12 @@ export default defineComponent({
     return {
       isDesktop: isPlatform('desktop'),
       isMappingConfigAnimationCompleted: false,
-      currentMapping: {}
+      currentMappingId: ''
     }
   },
   methods: {
-    async viewMappingConfiguration(mapping: any, id: string) {
-      this.currentMapping = {
-        id,
-        ...mapping
-      }
-                                      
+    async viewMappingConfiguration(id: string) {
+      this.currentMappingId = id
       await this.store.dispatch('user/updateCurrentMapping', id);
 
       if(!this.isDesktop && id) {

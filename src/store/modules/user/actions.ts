@@ -74,14 +74,14 @@ const actions: ActionTree<UserState, RootState> = {
   /**
    * Logout user
    */
-  async logout ({ commit, dispatch }) {
+  async logout ({ commit }) {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
     resetConfig();
     this.dispatch('order/clearOrderList');
-    // clearning field mappings and current mapping when user logout
+    // clearing field mappings and current mapping when the user logout
     commit(types.USER_FIELD_MAPPING_UPDATED, {})
-    dispatch('updateCurrentMapping', '')
+    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', name: '', value: {}})
   },
 
   /**
@@ -134,6 +134,7 @@ const actions: ActionTree<UserState, RootState> = {
           "mappingPrefTypeEnumId": "IMPORT_MAPPING_PREF"
         },
         "fieldList": ["mappingPrefName", "mappingPrefId", "mappingPrefValue"],
+        "filterByDate": "Y",
         "viewSize": 20, // considered a user won't have more than 20 saved mappings
         "entityName": "DataManagerMapping"
       }
@@ -194,7 +195,7 @@ const actions: ActionTree<UserState, RootState> = {
     }
   },
 
-  async updateFieldMapping({ commit }, payload) {
+  async updateFieldMapping({ commit, state }, payload) {
     try {
 
       const params = {
@@ -208,13 +209,15 @@ const actions: ActionTree<UserState, RootState> = {
 
       if(resp.status == 200 && !hasError(resp)) {
 
-        const fieldMapping = {
-          id: payload.id,
+        const mappings = JSON.parse(JSON.stringify(state.fieldMappings))
+        mappings[payload.id] = {
           name: payload.name,
           value: payload.value
         }
 
-        commit(types.USER_FIELD_MAPPING_UPDATED, fieldMapping)
+        console.log('mappings', mappings)
+
+        commit(types.USER_FIELD_MAPPING_UPDATED, mappings)
         showToast(translate('Changes to the CSV mapping has been saved.'))
       } else {
         logger.error('error', 'Failed to update CSV mapping.')
@@ -226,15 +229,17 @@ const actions: ActionTree<UserState, RootState> = {
     }
   },
 
-  async deleteFieldMapping({ commit, dispatch }, mappingId) {
+  async deleteFieldMapping({ commit, state }, mappingId) {
     try {
       const resp = await UserService.deleteFieldMapping({
         'mappingPrefId': mappingId
       });
 
       if(resp.status == 200 && !hasError(resp)) {
-        commit(types.USER_FIELD_MAPPING_DELETED, mappingId)
-        dispatch('updateCurrentMapping', '')
+        const mappings = JSON.parse(JSON.stringify(state.fieldMappings))
+        delete mappings[mappingId]
+        commit(types.USER_FIELD_MAPPING_UPDATED, mappings)
+        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', name: '', value: {} })
         showToast(translate('This CSV mapping has been deleted.'))
       } else {
         logger.error('error', 'Failed to delete CSV mapping.')
@@ -247,13 +252,9 @@ const actions: ActionTree<UserState, RootState> = {
   },
 
   async updateCurrentMapping({ commit, state }, id) {
-    const currentMapping = id && (state.fieldMappings as any)[id] ? {
+    const currentMapping = {
       id,
       ...(state.fieldMappings as any)[id]
-    } : {
-      id: '',
-      name: '',
-      value: {}
     }
     commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, currentMapping)
   }

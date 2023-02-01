@@ -21,17 +21,7 @@ const mutations: MutationTree <UserState> = {
         state.instanceUrl = payload;
     },
     [types.USER_FIELD_MAPPING_UPDATED] (state, payload) {
-        if(payload.id) {
-            (state.fieldMappings as any)[payload.id] = {
-                name: payload.name,
-                value: payload.value
-            };
-        } else {
-            state.fieldMappings = payload;
-        }
-    },
-    [types.USER_FIELD_MAPPING_DELETED] (state, id) {
-        delete (state.fieldMappings as any)[id];
+        state.fieldMappings = payload;
     },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;

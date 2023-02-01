@@ -20,35 +20,35 @@
       <ion-list>
         <ion-item>
           <ion-label>{{ $t("Order ID") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderId">
+          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.orderId">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
+          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Arrival date") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderDate">
+          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.orderDate">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
+          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>{{ $t("Facility ID") }}</ion-label>
-          <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
+          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
             <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -141,9 +141,8 @@ export default defineComponent({
         return
       }
       const id = this.generateUniqueMappingPrefId();
-      return this.store.dispatch("user/createFieldMapping", { id, name: this.mappingName, value: this.fieldMapping }).then(() => {
-        this.closeModal()
-      })
+      await this.store.dispatch("user/createFieldMapping", { id, name: this.mappingName, value: this.fieldMapping })
+      this.closeModal();
     },
     areAllFieldsSelected() {
       return Object.values(this.fieldMapping).every(field => field !== "");

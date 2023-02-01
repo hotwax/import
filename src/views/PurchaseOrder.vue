@@ -188,11 +188,15 @@ export default defineComponent({
         return Object.values(this.fieldMapping).every(field => field !== "");
       },
       async addFieldMapping() {
-        const fieldMappingModal = await modalController.create({
+        if(this.content.length <= 0) {
+          showToast(translate("Please upload a valid purchase order csv to continue"));
+          return;
+        }
+        const createMappingModal = await modalController.create({
           component: CreateMappingModal,
           componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping }
         });
-        return fieldMappingModal.present();
+        return createMappingModal.present();
       }
     },
     setup() {
