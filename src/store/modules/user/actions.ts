@@ -215,8 +215,6 @@ const actions: ActionTree<UserState, RootState> = {
           value: payload.value
         }
 
-        console.log('mappings', mappings)
-
         commit(types.USER_FIELD_MAPPING_UPDATED, mappings)
         showToast(translate('Changes to the CSV mapping has been saved.'))
       } else {
