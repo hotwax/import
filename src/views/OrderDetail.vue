@@ -215,7 +215,8 @@ export default defineComponent({
   ionViewDidEnter(){
    this.fetchFacilities();
   },
-  async beforeRouteLeave() {
+  async beforeRouteLeave(to) {
+    if(to.path === "/login" ) return;
     let canLeave = false;
     const alert = await alertController.create({
         header: this.$t("Leave page"),

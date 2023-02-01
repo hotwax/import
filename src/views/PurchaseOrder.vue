@@ -114,7 +114,7 @@ export default defineComponent({
     },
     data() {
       return {
-        file: "",
+        file: {},
         content: [],
         fieldMapping: {
           orderId: "",
@@ -128,14 +128,14 @@ export default defineComponent({
     },
     methods: {
       getFile(event) {
-        this.file = event.target.files[0];
-        if(this.file){
-          showToast(translate("File uploaded successfully"));
+        const file = event.target.files[0];
+        if(file){
+          this.file = file;
           this.parseFile();
           this.store.dispatch('order/updateFileName', this.file.name);
-        }
-        else {
-          showToast(translate("Something went wrong. Please try again"));
+          showToast(translate("File uploaded successfully"));
+        } else {
+          showToast(translate("No new file upload. Please try again"));
         }
       },
       async parseFile(){
