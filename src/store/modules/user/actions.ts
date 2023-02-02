@@ -78,7 +78,7 @@ const actions: ActionTree<UserState, RootState> = {
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
     resetConfig();
-    this.dispatch('order/clearPurchaseOrders');
+    this.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
     this.dispatch('util/clearFacilities');
     // clearing field mappings and current mapping when the user logout
     commit(types.USER_FIELD_MAPPING_UPDATED, {})

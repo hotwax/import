@@ -123,7 +123,7 @@ export default defineComponent({
         }
       })
       if (orderBufferOverflow) showToast(translate("Some of the selected items have quantity less than or equal to order buffer. The quantity of those items is set to 1."));
-      this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed);
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
     },

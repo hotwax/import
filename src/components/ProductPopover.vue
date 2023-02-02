@@ -61,7 +61,7 @@ export default defineComponent({
         }
         return element;
       });
-      this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed)
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       popoverController.dismiss({ dismissed: true });
     },
     revertParentProduct(){
@@ -76,7 +76,7 @@ export default defineComponent({
         }
         return element;
       });
-      this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed)
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       popoverController.dismiss({ dismissed: true });
     }
   },

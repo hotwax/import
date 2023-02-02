@@ -250,7 +250,7 @@ export default defineComponent({
                   }
                 }])
                 this.router.push("/purchase-order");
-                this.store.dispatch('order/clearPurchaseOrders');
+                this.store.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
               }).catch(() => {
                 showToast(translate("Something went wrong, please try again"));
               })
