@@ -17,8 +17,8 @@
     <ion-content >
       <div class="header">
         <div class="search">
-          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)"></ion-searchbar>
-          <ion-chip outline @click="openMissingSkuModal()">
+          <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
+          <ion-chip outline>
             <ion-label>{{ $t("Missing SKUs") }}</ion-label>
           </ion-chip>
         </div> 
@@ -136,7 +136,7 @@ import ProductPopover from '@/components/ProductPopover.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
-import { showToast, hasError } from '@/utils';
+import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController, modalController } from '@ionic/vue'
 import { ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
@@ -181,7 +181,7 @@ export default defineComponent({
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
-      isPOUploadedSuccessfully: false,
+      isCsvUploadedSuccessfully: false,
       facilityLocations: {}
     }
   },
@@ -209,10 +209,10 @@ export default defineComponent({
         },
       ],
     });
-    if(!this.isPOUploadedSuccessfully){
+    if(!this.isCsvUploadedSuccessfully){
       alert.present();
       await alert.onDidDismiss();
-      this.isPOUploadedSuccessfully = false;
+      this.isCsvUploadedSuccessfully = false;
       return canLeave;
     }
   },
@@ -225,13 +225,6 @@ export default defineComponent({
         }
       });
       this.store.dispatch('stock/updatedStockListItems', this.stock.parsed);
-    },
-    async openMissingSkuModal() {
-      const missingSkuModal = await modalController.create({
-        component: MissingSkuModal,
-        componentProps: { 'unidentifiedProductItems': this.stock.unidentifiedItems }
-      });
-      return missingSkuModal.present();
     }, 
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
@@ -272,7 +265,7 @@ export default defineComponent({
                   fileName,
                   params
                 })).then(() => {
-                  this.isPOUploadedSuccessfully = true;
+                  this.isCsvUploadedSuccessfully = true;
                   showToast(translate("The inventory has been updated successfully"), [{
                     text: translate('View'),
                     role: 'view',

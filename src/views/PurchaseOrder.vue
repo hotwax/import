@@ -83,7 +83,6 @@ import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { showToast, parseCsv } from '@/utils';
 import { translate } from "@/i18n";
-import { DateTime } from 'luxon';
 import parseFileMixin from '@/mixins/parseFileMixin';
 import { mapGetters, useStore } from "vuex";
 import { addOutline, arrowForwardOutline } from 'ionicons/icons';
