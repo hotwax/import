@@ -61,7 +61,7 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters } from "vuex";
-import { showToast, parseCsv } from '@/utils';
+import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
 import parseFileMixin from '@/mixins/parseFileMixin';
@@ -106,7 +106,7 @@ export default defineComponent({
   methods: {
     async parse(event) {
       this.file = event.target.files[0];
-      this.content = await this.getFile(this.file);
+      this.content = await this.parseCsv(this.file);
     },
     mapFields() {
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");

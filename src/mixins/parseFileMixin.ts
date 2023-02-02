@@ -4,7 +4,7 @@ import { showToast, parseCsv } from "@/utils";
 
 export default {
   methods: {
-    async getFile(file: any) {
+    async parseCsv(file: any) {
       if (file) {
           showToast(translate("File uploaded successfully"));
           store.dispatch('order/updateFileName', file.name);

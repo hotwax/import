@@ -12,7 +12,7 @@
         <ion-item>
           <ion-label>{{ $t("Purchase order") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
-          <input @change="parseFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
+          <input @change="parse" ref="file" class="ion-hide" type="file" id="inputFile"/>
           <label for="inputFile">{{ $t("Upload") }}</label>
         </ion-item>
 
@@ -81,7 +81,7 @@
 import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { showToast, parseCsv } from '@/utils';
+import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import parseFileMixin from '@/mixins/parseFileMixin';
 import { mapGetters, useStore } from "vuex";
@@ -134,18 +134,9 @@ export default defineComponent({
         const id = Math.floor(Math.random() * 1000);
         return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
       },
-      async parseFile(event) {
-        const file = event.target.files[0];
-        if(file){
-          this.file = file;
-          await parseCsv(this.file).then(res => {
-            this.content = res;
-          })
-          this.store.dispatch('order/updateFileName', this.file.name);
-          showToast(translate("File uploaded successfully"));
-        } else {
-          showToast(translate("No new file upload. Please try again"));
-        }
+      async parse(event) {
+        this.file = event.target.files[0];
+        this.content = await this.parseCsv(this.file);
       },
       review() {
         if (this.content.length <= 0) {
