@@ -25,11 +25,14 @@ const getters: GetterTree <UserState, RootState> = {
     getFieldMappings(state) {
         return state.fieldMappings;
     },
-    getDateTimeFormat (state) {
+    getPreferredDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
     },
     getPwaState (state) {
         return state.pwaState;
+    },
+    getCurrentMapping(state) {
+        return JSON.parse(JSON.stringify(state.currentMapping))
     }
 }
 export default getters;
