@@ -154,17 +154,19 @@ export default defineComponent({
       const products = await this.store.dispatch("product/fetchProducts", payload);
       if (products.length) {
         const item = products[0];
-        const unidentifiedProduct = this.purchaseOrders.unidentifiedItems.find((item: any) => item.shopifyProductSKU === this.unidentifiedProductSku);
-         
-        unidentifiedProduct.updatedSku = this.updatedSku;
-        unidentifiedProduct.parentProductId = item.parent.id;
-        unidentifiedProduct.pseudoId = item.pseudoId;
-        unidentifiedProduct.parentProductName = item.parent.productName;
-        unidentifiedProduct.imageUrl = item.images.mainImageUrl;
-        unidentifiedProduct.isNewProduct = "N";
-        unidentifiedProduct.isSelected = true;
-
+        this.purchaseOrders.unidentifiedItems.map((unidentifiedItem: any) => {
+          if(unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku){
+            unidentifiedItem.updatedSku = this.updatedSku;
+            unidentifiedItem.parentProductId = item.parent.id;
+            unidentifiedItem.pseudoId = item.pseudoId;
+            unidentifiedItem.parentProductName = item.parent.productName;
+            unidentifiedItem.imageUrl = item.images.mainImageUrl;
+            unidentifiedItem.isNewProduct = "N";
+            unidentifiedItem.isSelected = true;
+          }
+        })
         this.hasSkuUpdated = true;
+        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
       } else {
         this.isSkuInvalid = true;
       }

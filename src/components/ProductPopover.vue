@@ -79,7 +79,7 @@ export default defineComponent({
           }
           return element;
         });
-        this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed)
+        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       } else {
         const original = JSON.parse(JSON.stringify(this.stock.original));
         this.stock.parsed = this.stock.parsed.map(element => {
@@ -110,7 +110,7 @@ export default defineComponent({
           }
           return element;
         });
-        this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed)
+        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       } else {
         const original = JSON.parse(JSON.stringify(this.stock.original));
         this.stock.parsed = this.stock.parsed.map(element => {

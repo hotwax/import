@@ -36,37 +36,34 @@ const actions: ActionTree<OrderState, RootState> = {
       return ;
     }).filter((item: any) => item);
     
-    const original = JSON.parse(JSON.stringify(items));
-
-    items = items.reduce((itemsByPoId: any, item: any) => {
+    const parsed = items.reduce((itemsByPoId: any, item: any) => {
       itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
       return itemsByPoId;
     }, {});
+
+    const original = JSON.parse(JSON.stringify(parsed));
     
-    commit(types.ORDER_PURCHASEORDERS_UPDATED, {items, original, unidentifiedItems});
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, {parsed, original, unidentifiedItems});
   },
-  updatePurchaseOrderItems({ commit }, purchaseOrders){
-    commit(types.ORDER_PURCHASEORDERS_ITEMS_UPDATED, purchaseOrders)
+  updatePurchaseOrders({ commit }, purchaseOrders){
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, purchaseOrders)
   },
   updateFileName({ commit }, fileName){
     commit(types.ORDER_FILE_NAME_UPDATED, fileName)
-  },  
-  clearPurchaseOrders({ commit }){
-    commit(types.ORDER_PURCHASEORDERS_UPDATED, { items: [], original: [], unidentifiedItems: []});
   },
   updateUnidentifiedItem({ commit, state }, payload: any) {
-    const items = state.purchaseOrders.parsed as any;
+    const parsed = state.purchaseOrders.parsed as any;
     const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
       if(item.updatedSku) {
         item.shopifyProductSKU = item.updatedSku;
-        items[item.orderId].push(item);
+        parsed[item.orderId].push(item);
       } else {
         return item;
       }
     }).filter((item: any) => item);
     const original = JSON.parse(JSON.stringify(state.purchaseOrders.parsed));
 
-    commit(types.ORDER_PURCHASEORDERS_UPDATED, { items, original, unidentifiedItems});
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, { parsed, original, unidentifiedItems});
   }
 }
 export default actions;

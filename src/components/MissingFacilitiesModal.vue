@@ -95,7 +95,7 @@ export default defineComponent({
           }
         })
       })
-      this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed);
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
     },
