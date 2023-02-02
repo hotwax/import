@@ -15,8 +15,8 @@
               <Image :src="userProfile.partyImageUrl"/>
             </ion-avatar>
             <ion-card-header>
-              <ion-card-subtitle>{{ userProfile.userLoginId }}</ion-card-subtitle>
-              <ion-card-title>{{ userProfile.partyName }}</ion-card-title>
+              <ion-card-subtitle>{{ userProfile?.userLoginId }}</ion-card-subtitle>
+              <ion-card-title>{{ userProfile?.partyName }}</ion-card-title>
             </ion-card-header>
           </ion-item>
           <ion-button fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
@@ -93,7 +93,7 @@
             <p>{{ $t('Luxon date time formats can be found') }} <a target="_blank" rel="noopener noreferrer" href="https://moment.github.io/luxon/#/formatting?id=table-of-tokens">{{ $t("here") }}</a></p>
           </ion-card-content> 
           <ion-item>
-            <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
+            <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parseSampleDateTime()" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
           </ion-item>
           <ion-item>
             <ion-label>{{ sampleDateTime }}</ion-label>
@@ -158,12 +158,12 @@ export default defineComponent({
     ...mapGetters({
       userProfile: 'user/getUserProfile',
       instanceUrl: 'user/getInstanceUrl',
-      currentDateTimeFormat: 'user/getDateTimeFormat'
+      currentDateTimeFormat: 'user/getPreferredDateTimeFormat'
     })
   },
   mounted(){
     this.dateTimeFormat = this.currentDateTimeFormat
-    this.parse();
+    this.parseSampleDateTime();
     this.appVersion = this.appInfo.branch ? (this.appInfo.branch + "-" + this.appInfo.revision) : this.appInfo.tag;
   },
   methods: {
@@ -172,8 +172,8 @@ export default defineComponent({
     },
     updateDateTimeFormat(){
       this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
-      this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
-      this.parse();
+      this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);
+      this.parseSampleDateTime();
     },
     async changeTimeZone() {
       const timeZoneModal = await modalController.create({
@@ -181,7 +181,7 @@ export default defineComponent({
       });
       return timeZoneModal.present();
     },
-    parse(){
+    parseSampleDateTime(){
       this.sampleDateTime = DateTime.now().toFormat(this.dateTimeFormat);
     },
     logout () {

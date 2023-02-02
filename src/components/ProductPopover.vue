@@ -23,12 +23,12 @@ import {
   arrowUndoOutline
 } from 'ionicons/icons';
 export default defineComponent({
-  props: ['id', 'isVirtual', 'item'],
+  props: ['id', 'isVirtual', 'item', 'poId'],
   name: 'parentProductPopover',
   components: { IonContent, IonIcon, IonLabel, IonItem },
   computed: {
     ...mapGetters({
-      ordersList: 'order/getOrder',
+      purchaseOrders: 'order/getPurchaseOrders',
     }),
   },
   methods: {
@@ -39,43 +39,44 @@ export default defineComponent({
       this.isVirtual ? this.onlySelectParentProduct() : this.onlySelectSingleProduct();
     },
     onlySelectParentProduct() {
-      this.ordersList.items.forEach(element => {
-        element.isSelected = element.parentProductId === this.id;
+      Object.values(this.purchaseOrders.parsed).flat().map(item => {
+        item.isSelected = item.parentProductId === this.id && item.orderId === this.poId;
       });
       popoverController.dismiss({ dismissed: true });
     },
     onlySelectSingleProduct() {
-      this.ordersList.items.forEach(element => {
-        element.isSelected = element.pseudoId === this.id;
+      Object.values(this.purchaseOrders.parsed).flat().map(item => {
+        item.isSelected = item.pseudoId === this.id && item.orderId === this.poId;
       });
       popoverController.dismiss({ dismissed: true });
     },
     revertProduct() {
-      const original = JSON.parse(JSON.stringify(this.ordersList.original));
-      const items = this.ordersList.items.map(element => {
+      const original = JSON.parse(JSON.stringify(this.getPurchaseOrders.original));
+      this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.pseudoId === this.id) {
-          const item = original.find(item => {
+          const item = original[this.poId].find(item => {
             return item.pseudoId === this.id;
           })
           element = item;
         }
         return element;
       });
-      this.store.dispatch('order/updatedOrderListItems', items)
+      this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed)
       popoverController.dismiss({ dismissed: true });
     },
     revertParentProduct(){
-      const original = JSON.parse(JSON.stringify(this.ordersList.original));
-      const items = this.ordersList.items.map(element => {
+      const original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
+      this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.parentProductId === this.id) {
-          const item = original.find(item => {
+          const item = original[this.poId].find(item => {
+            // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
             return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
           })
           element = item;
         }
         return element;
       });
-      this.store.dispatch('order/updatedOrderListItems', items)
+      this.store.dispatch('order/updatePurchaseOrderItems', this.purchaseOrders.parsed)
       popoverController.dismiss({ dismissed: true });
     }
   },
