@@ -8,7 +8,7 @@ import userModule from './modules/user';
 import productModule from "./modules/product";
 import orderModule from "./modules/order";
 import stockModule from "./modules/stock";
-import utilModule from "./modules/util";
+import utilModule from "./modules/util"
 
 
 // TODO check how to register it from the components only

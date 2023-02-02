@@ -36,7 +36,7 @@ const actions: ActionTree<OrderState, RootState> = {
       return ;
     }).filter((item: any) => item);
     
-    const original = JSON.parse(JSON.stringify(items))
+    const original = JSON.parse(JSON.stringify(items));
 
     items = items.reduce((itemsByPoId: any, item: any) => {
       itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
