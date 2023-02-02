@@ -67,6 +67,9 @@ export default defineComponent({
             this.$log.warn("Image doesn't exist", imageUrl);
           })
         }
+      } else {
+        this.$log.warn("Image URL empty");
+        this.imageUrl = require("@/assets/images/defaultImage.png") ;
       }
     }
   },
