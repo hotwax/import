@@ -7,6 +7,6 @@ const getFacilities= async (payload: any): Promise <any> => {
       data: payload
     });
   }
-export const OrderService = {
+export const UtilService = {
     getFacilities
   }

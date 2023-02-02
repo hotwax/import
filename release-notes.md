@@ -1,3 +1,11 @@
+# Release 2.2.0
+
+## What's Changed
+* Implemented: Code to show app version & build information on Settings page(#85zrhn8w8) by @shashwatbangar in https://github.com/hotwax/import/pull/145
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.1.0...v2.2.0
+
 # Release 2.1.0
 
 ## What's Changed

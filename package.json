@@ -1,6 +1,6 @@
 {
   "name": "import",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "description": "Import App",
   "scripts": {
@@ -14,6 +14,7 @@
   "dependencies": {
     "@capacitor/android": "^2.4.7",
     "@capacitor/core": "^2.4.7",
+    "@hotwax/app-version-info": "^1.0.0",
     "@hotwax/apps-theme": "^1.1.0",
     "@hotwax/oms-api": "1.1.0",
     "@ionic/core": "6.2.9",
@@ -26,11 +27,12 @@
     "core-js": "^3.6.5",
     "file-saver": "^2.0.5",
     "http-status-codes": "^2.1.4",
-    "luxon": "^2.3.0",
+    "luxon": "^3.2.0",
     "mitt": "^2.1.0",
     "register-service-worker": "^1.7.1",
     "vue": "^3.2.26",
     "vue-i18n": "~9.1.6",
+    "vue-logger-plugin": "^2.2.3",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.1",
     "vuex-persistedstate": "^4.0.0-beta.3"
@@ -39,7 +41,7 @@
     "@capacitor/cli": "^2.4.7",
     "@intlify/vue-i18n-loader": "^2.1.0",
     "@types/jest": "^27.5.0",
-    "@types/luxon": "^2.0.9",
+    "@types/luxon": "^3.2.0",
     "@typescript-eslint/eslint-plugin": "~5.26.0",
     "@typescript-eslint/parser": "~5.26.0",
     "@vue/cli-plugin-babel": "~4.5.0",

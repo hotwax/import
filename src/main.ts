@@ -29,9 +29,14 @@ import i18n from './i18n'
 import store from './store'
 import { DateTime } from 'luxon';
 
+import logger from './logger';
+
 const app = createApp(App)
   .use(IonicVue, {
     mode: 'md'
+  })
+  .use(logger, {
+    level: process.env.VUE_APP_DEFAULT_LOG_LEVEL
   })
   .use(router)
   .use(i18n)
@@ -50,7 +55,7 @@ app.config.globalProperties.$filters = {
     // TODO Make default format configurable and from environment variables
     const userProfile = store.getters['user/getUserProfile'];
     // TODO Fix this setDefault should set the default timezone instead of getting it everytiem and setting the tz
-    return DateTime.utc(value, inFormat).setZone(userProfile.userTimeZone).toFormat(outFormat ? outFormat : 'MM-DD-YYYY')
+    return DateTime.fromISO(value, { zone: 'utc' }).setZone(userProfile.userTimeZone).toFormat(outFormat ? outFormat : 'MM-dd-yyyy')  
   }
 }
 

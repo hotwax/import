@@ -82,7 +82,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      currentDateTimeFormat: 'user/getDateTimeFormat'
+      currentDateTimeFormat: 'user/getPreferredDateTimeFormat'
     })
   },
   mounted(){
@@ -117,7 +117,7 @@ export default defineComponent({
     },
     updateDateTimeFormat(){
       this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
-      this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat).then(() => this.closeModal());
+      this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat).then(() => this.closeModal());
     },
   },
   setup() {

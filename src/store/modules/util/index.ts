@@ -2,24 +2,13 @@ import actions from './actions'
 import getters from './getters'
 import mutations from './mutations'
 import { Module } from 'vuex'
-import UserState from './UserState'
+import UserState from './UtilState'
 import RootState from '@/store/RootState'
 
 const userModule: Module<UserState, RootState> = {
     namespaced: true,
     state: {
-      token: '',
-      current: null,
-      currentFacility: {},
-      instanceUrl: '',
-      preferredDateTimeFormat: '',
-      facilityLocationsByFacilityId: {},
-      fieldMappings: {},
-      currentMapping: {
-        id: '',
-        name: '',
-        value: {}
-      }
+      facilities: []
     },
     getters,
     actions,

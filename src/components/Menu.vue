@@ -55,7 +55,7 @@ import {
 import { defineComponent, ref } from "vue";
 import { mapGetters } from "vuex";
 
-import { settings, calendar, albumsOutline } from "ionicons/icons";
+import { albumsOutline, bookmarkOutline, settings, calendar } from "ionicons/icons";
 import { useStore } from "@/store";
 
 export default defineComponent({
@@ -112,6 +112,12 @@ export default defineComponent({
         url: "/purchase-order",
         iosIcon: calendar,
         mdIcon: calendar
+      },
+      {
+        title: "Saved Mappings",
+        url: "/saved-mappings",
+        iosIcon: bookmarkOutline,
+        mdIcon: bookmarkOutline
       },
       {
         title: "Settings",

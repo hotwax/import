@@ -131,7 +131,6 @@
 </template>   
 <script lang="ts">
 import { UploadService } from "@/services/UploadService";
-import { OrderService } from "@/services/OrderService";
 import Image from '@/components/Image.vue';
 import ProductPopover from '@/components/ProductPopover.vue'
 import { defineComponent } from 'vue';
@@ -171,6 +170,7 @@ export default defineComponent({
       stock: 'stock/getItemsStock',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
+      facilities: 'util/getFacilities',
       fileName: 'order/getFileName',
       getFacilityLocationsByFacilityId: 'user/getFacilityLocationsByFacilityId'
     })
@@ -178,7 +178,6 @@ export default defineComponent({
   data() {
     return {
       facilityId: (this as any)?.stock?.parsed[0]?.facilityId,
-      facilities: [] as any,
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
@@ -187,7 +186,7 @@ export default defineComponent({
     }
   },
   ionViewDidEnter(){
-    this.fetchFacilities();
+    this.store.dispatch('util/fetchFacilities');
   },
   async beforeRouteLeave(to) {
     if(to.path === '/login') return;
@@ -291,28 +290,6 @@ export default defineComponent({
           ],
         });
       return alert.present();  
-    },
-    async fetchFacilities(){
-      const payload = {
-        "inputFields": {
-          "parentTypeId": "VIRTUAL_FACILITY",
-          "parentTypeId_op": "notEqual",
-          "facilityTypeId": "VIRTUAL_FACILITY",
-          "facilityTypeId_op": "notEqual",
-        },
-        "fieldList": ["facilityId", "facilityName", "parentTypeId"],
-        "viewSize": 50,
-        "entityName": "FacilityAndType",
-        "noConditionFind": "Y"
-      }
-      try {
-        const resp = await OrderService.getFacilities(payload);
-        if(resp.status === 200 && !hasError(resp)){
-          this.facilities = resp.data.docs;
-        }
-      } catch(err) {
-        console.error(err)
-      }
     },
     async openProductPopover(ev: Event, id: any, isVirtual: boolean, item: any, type: string) {
       const productPopover = await popoverController

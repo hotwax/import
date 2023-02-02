@@ -14,10 +14,10 @@
             <ion-avatar slot="start" v-if="userProfile?.partyImageUrl">
               <Image :src="userProfile.partyImageUrl"/>
             </ion-avatar>
-            <ion-label>
-              {{ userProfile?.partyName }}
-              <p>{{ userProfile?.userLoginId }}</p>
-            </ion-label>
+            <ion-card-header>
+              <ion-card-subtitle>{{ userProfile?.userLoginId }}</ion-card-subtitle>
+              <ion-card-title>{{ userProfile?.partyName }}</ion-card-title>
+            </ion-card-header>
           </ion-item>
           <ion-button fill="outline" color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
           <!-- Commenting this code as we currently do not have reset password functionality -->
@@ -25,7 +25,9 @@
         </ion-card>
       </div>
       
-      <h1>{{ $t('OMS') }}</h1>
+      <div class="section-header">
+        <h1>{{ $t('OMS') }}</h1>
+      </div>
 
       <section>
         <ion-card>
@@ -51,7 +53,13 @@
 
       <hr />
 
-      <h1>{{ $t('App') }}</h1>
+      <div class="section-header">
+        <h1>
+          {{ $t('App') }}
+          <p class="overline" >{{ "Version: " + appVersion }}</p>
+        </h1>
+        <p class="overline">{{ "Built: " + getDateTime(appInfo.builtTime) }}</p>
+      </div>
       
       <section>
         <ion-card>
@@ -85,7 +93,7 @@
             <p>{{ $t('Luxon date time formats can be found') }} <a target="_blank" rel="noopener noreferrer" href="https://moment.github.io/luxon/#/formatting?id=table-of-tokens">{{ $t("here") }}</a></p>
           </ion-card-content> 
           <ion-item>
-            <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parse()" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
+            <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parseSampleDateTime()" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
           </ion-item>
           <ion-item>
             <ion-label>{{ sampleDateTime }}</ion-label>
@@ -141,19 +149,22 @@ export default defineComponent({
       baseURL: process.env.VUE_APP_BASE_URL,
       sampleDateTime: '',
       dateTimeFormat: '',
-      defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy'
+      defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy',
+      appInfo: (process.env.VUE_APP_VERSION_INFO ? JSON.parse(process.env.VUE_APP_VERSION_INFO) : {}) as any,
+      appVersion: ""
     };
   },
   computed: {
     ...mapGetters({
       userProfile: 'user/getUserProfile',
       instanceUrl: 'user/getInstanceUrl',
-      currentDateTimeFormat: 'user/getDateTimeFormat'
+      currentDateTimeFormat: 'user/getPreferredDateTimeFormat'
     })
   },
   mounted(){
     this.dateTimeFormat = this.currentDateTimeFormat
-    this.parse();
+    this.parseSampleDateTime();
+    this.appVersion = this.appInfo.branch ? (this.appInfo.branch + "-" + this.appInfo.revision) : this.appInfo.tag;
   },
   methods: {
     goToOms(){
@@ -161,8 +172,8 @@ export default defineComponent({
     },
     updateDateTimeFormat(){
       this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
-      this.store.dispatch('user/setDateTimeFormat', this.dateTimeFormat);
-      this.parse();
+      this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);
+      this.parseSampleDateTime();
     },
     async changeTimeZone() {
       const timeZoneModal = await modalController.create({
@@ -170,13 +181,16 @@ export default defineComponent({
       });
       return timeZoneModal.present();
     },
-    parse(){
+    parseSampleDateTime(){
       this.sampleDateTime = DateTime.now().toFormat(this.dateTimeFormat);
     },
     logout () {
       this.store.dispatch('user/logout').then(() => {
         this.router.push('/login');
       })
+    },
+    getDateTime(time: any) {
+      return DateTime.fromMillis(time).toLocaleString(DateTime.DATETIME_MED);
     }
   },
   setup(){
@@ -198,26 +212,29 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  ion-card > ion-button {
-    margin: var(--spacer-xs);
-  }
+ion-card > ion-button {
+  margin: var(--spacer-xs);
+}
 
-  h1 {
-    padding: var(--spacer-xs) 10px 0;
-  }
+section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  align-items: start;
+}
 
-  section {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    align-items: start;
-  }
+.user-profile {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
 
-  .user-profile {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  }
+hr {
+  border-top: 1px solid var(--ion-color-medium);
+}
 
-  hr {
-    border-top: 1px solid var(--ion-color-medium);
-  }
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacer-xs) 10px 0px;
+}
 </style>

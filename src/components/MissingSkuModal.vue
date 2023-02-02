@@ -11,11 +11,51 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <ion-list v-for="item in unidentifiedItems" :key="item.shopifyProductSKU">
-        <ion-item lines="none">
-          <ion-label>{{ item.shopifyProductSKU ? item.shopifyProductSKU : item.productSKU }}</ion-label>
+      <div>
+        <ion-item id="update-sku" :class="isSkuInvalid ? 'ion-invalid' : ''">
+          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" />
+          <ion-note v-show="hasSkuUpdated && purchaseOrders.unidentifiedItems.length" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
+          <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
         </ion-item>
-      </ion-list>
+        <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ $t("Update") }}</ion-button>
+      </div>
+      
+      <ion-segment v-model="segmentSelected">
+        <ion-segment-button value="pending">
+          <ion-label>{{ $t("Pending") }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="completed">
+          <ion-label>{{ $t("Completed") }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <!-- If two different POs contain same missing SKU then in MissingSkuModal, both the products will be selected. -->
+      <ion-radio-group @ionChange="updatedSku = $event.detail.value; hasSkuUpdated = false; isSkuInvalid = false;" v-model="unidentifiedProductSku">
+        <ion-list v-if="segmentSelected === 'pending'">
+          <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
+            <ion-label>
+              {{ item.shopifyProductSKU }}
+              <p>{{ item.orderId }}</p>
+            </ion-label>
+            <ion-radio slot="end" :value="item.shopifyProductSKU" />
+          </ion-item>
+        </ion-list>
+
+        <ion-list v-if="segmentSelected === 'completed'">
+          <ion-item v-for="item in getCompletedItems()" :key="item.shopifyProductSKU">
+            <ion-label>
+              {{ item.updatedSku }}
+              <p>{{ item.orderId }}</p>
+            </ion-label>
+            <ion-radio slot="end" :value="item.updatedSku" />
+          </ion-item>
+        </ion-list>
+      </ion-radio-group>
+
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button @click="save">
+          <ion-icon :icon="saveOutline" />
+        </ion-fab-button>
+      </ion-fab>
     </ion-content>
   </ion-page>
 </template>
@@ -25,18 +65,28 @@ import {
   IonButton,
   IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
   IonList,
+  IonNote,
   IonPage,
+  IonRadio,
+  IonRadioGroup,
+  IonSegment,
+  IonSegmentButton,
   IonHeader,
   IonTitle,
   IonToolbar,
   modalController
 } from "@ionic/vue";
-import { closeOutline } from 'ionicons/icons';
+import { closeOutline, saveOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
+import { mapGetters, useStore } from "vuex";
+import { ref } from "vue";
 
 export default defineComponent({
   name: "MissingSkuModal",
@@ -44,25 +94,108 @@ export default defineComponent({
   IonButton,
   IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
   IonList,
+  IonNote,
   IonPage,
+  IonRadio,
+  IonRadioGroup,
+  IonSegment,
+  IonSegmentButton,
   IonHeader,
   IonTitle,
   IonToolbar
   },
-  props: ['unidentifiedProductItems'],
-  methods: {
-    closeModal() {
-      modalController.dismiss({ dismissed: true });
+  data(){
+    return {
+      updatedSku: '',
+      unidentifiedProductSku: '',
+      hasSkuUpdated: false,
+      isSkuInvalid: false
     }
   },
+  computed: {
+    ...mapGetters({
+      purchaseOrders: 'order/getPurchaseOrders',
+    })
+  },
+  methods: {
+    selectInputText(event: any) {
+      event.target.getInputElement().then((element: any) => {
+        element.select();
+      })
+    },
+    closeModal() {
+      modalController.dismiss({ dismissed: true });
+    },
+    getPendingItems(){
+      return this.purchaseOrders.unidentifiedItems.filter((item: any) => !item.updatedSku);
+    },
+    getCompletedItems(){
+      return this.purchaseOrders.unidentifiedItems.filter((item: any) => item.updatedSku);
+    },
+    save(){
+      this.store.dispatch('order/updateUnidentifiedItem', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
+      this.closeModal();
+    },
+    async update() {
+      this.hasSkuUpdated = false;
+      this.isSkuInvalid = false;
+      const payload = {
+        viewSize: 1,
+        viewIndex: 0,
+        productIds: [this.updatedSku]
+      }
+      const products = await this.store.dispatch("product/fetchProducts", payload);
+      if (products.length) {
+        const item = products[0];
+        const unidentifiedProduct = this.purchaseOrders.unidentifiedItems.find((item: any) => item.shopifyProductSKU === this.unidentifiedProductSku);
+         
+        unidentifiedProduct.updatedSku = this.updatedSku;
+        unidentifiedProduct.parentProductId = item.parent.id;
+        unidentifiedProduct.pseudoId = item.pseudoId;
+        unidentifiedProduct.parentProductName = item.parent.productName;
+        unidentifiedProduct.imageUrl = item.images.mainImageUrl;
+        unidentifiedProduct.isNewProduct = "N";
+        unidentifiedProduct.isSelected = true;
+
+        this.hasSkuUpdated = true;
+      } else {
+        this.isSkuInvalid = true;
+      }
+    },
+  },
   setup() {
+    const store = useStore();
+    const segmentSelected = ref('pending');
     return {
-      closeOutline
+      closeOutline,
+      saveOutline,
+      segmentSelected,
+      store
     }
   }
 })
 </script>
+<style scoped>
+  div {
+    display: flex;
+  }
+
+  div ion-item {
+    flex-grow: 1;
+  }
+
+  ion-button {
+    margin: var(--spacer-sm);
+  }
+
+  ion-segment {
+    margin-top: var(--spacer-sm);
+  }
+</style>
