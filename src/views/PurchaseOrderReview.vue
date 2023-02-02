@@ -52,10 +52,10 @@
         </div>
       </div>
       <div v-if="segmentSelected === 'all'">
-        <PurchaseOrderDetail :purchaseOrders="purchaseOrders.parsed" />
+        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :ItemsByPO ="purchaseOrders.parsed"  />
       </div>
       <div v-for="(po, poId) in purchaseOrders.parsed" :key="poId" >
-        <PurchaseOrderDetail v-if="segmentSelected === poId" :purchaseOrders="{[poId]: po}" />
+        <PurchaseOrderDetail v-if="segmentSelected === poId" :ItemsByPO="{[poId]: po}" :purchaseOrders="purchaseOrders" />
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
