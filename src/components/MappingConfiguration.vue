@@ -33,12 +33,12 @@
     </ion-list>
 
     <div class="ion-padding-top actions desktop-only">
-      <ion-button @click="updateMapping()">
-        <ion-icon size="small" slot="start" :icon="saveOutline"/>
+      <ion-button size="small" @click="updateMapping()">
+        <ion-icon slot="start" :icon="saveOutline"/>
         {{ $t("Save Changes") }}
       </ion-button>
-      <ion-button fill="outline" color="danger" @click="deleteMapping()">
-        <ion-icon size="small" slot="start" :icon="trashOutline" />
+      <ion-button size="small" fill="outline" color="danger" @click="deleteMapping()">
+        <ion-icon slot="start" :icon="trashOutline" />
         {{ $t("Delete mapping") }}
       </ion-button>
     </div>
