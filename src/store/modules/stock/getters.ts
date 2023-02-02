@@ -4,7 +4,7 @@ import RootState from "../../RootState";
 
 const getters: GetterTree<OrderState, RootState> = {
   getItemsStock(state) {
-    return state.items;
+    return JSON.parse(JSON.stringify(state.items));
   },
 };
 export default getters;   

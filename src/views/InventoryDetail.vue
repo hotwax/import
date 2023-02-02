@@ -311,6 +311,7 @@ export default defineComponent({
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
+      this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
     },
     revertAll() {
       const original = JSON.parse(JSON.stringify(this.stock.original));
@@ -343,6 +344,7 @@ export default defineComponent({
       this.stock.parsed.forEach((item: any) => {
         item.isSelected = true;
       })
+      this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
     },
     selectParentProduct(parentProductId: any, event: any) {
       // Todo: Need to find a better approach.
@@ -354,6 +356,7 @@ export default defineComponent({
         })
         this.isParentProductUpdated = false;
       }
+      this.store.dispatch('stock/updatedStockListItems', this.stock.parsed);
     }
   },
   setup() {

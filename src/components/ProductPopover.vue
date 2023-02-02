@@ -40,29 +40,30 @@ export default defineComponent({
       this.isVirtual ? this.onlySelectParentProduct() : this.onlySelectSingleProduct();
     },
     onlySelectParentProduct() {
-      let items = this.type === 'order' ? this.ordersList.items : this.stock.parsed;
       if(this.type === 'order') {
         Object.values(this.purchaseOrders.parsed).flat().map(item => {
           item.isSelected = item.parentProductId === this.id && item.orderId === this.poId;
         });
+        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       } else {
         this.stock.parsed.map(item => {
           item.isSelected = item.parentProductId === this.id;
         })
+        this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
       }
       popoverController.dismiss({ dismissed: true });
     },
-    onlySelectSingleProduct() {
-      let items = this.type === 'order' ? this.ordersList.items : this.stock.parsed;
-      
+    onlySelectSingleProduct() {      
       if(this.type === 'order') {
         Object.values(this.purchaseOrders.parsed).flat().map(item => {
           item.isSelected = item.pseudoId === this.id && item.orderId === this.poId;
         });
+        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       } else {
         this.stock.parsed.map(item => {
           item.isSelected = item.pseudoId === this.id;
         });
+        this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
       }
       
       popoverController.dismiss({ dismissed: true });
@@ -97,7 +98,6 @@ export default defineComponent({
       popoverController.dismiss({ dismissed: true });
     },
     revertParentProduct(){
-
       if(this.type === 'order') {
         const original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
         this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
