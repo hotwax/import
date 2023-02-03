@@ -1,5 +1,5 @@
 <template> 
-  <div v-for="(poItems, index) in ItemsByPoId" :key="index">
+  <div v-for="(poItems, index) in itemsByPoId" :key="index">
     <ion-item lines="none">
       <h3>{{ index }}</h3>
     </ion-item>
@@ -87,7 +87,7 @@ export default defineComponent({
     purchaseOrders: {
       type: Object
     },
-    ItemsByPoId: {
+    itemsByPoId: {
       type: Object
     }
   },
