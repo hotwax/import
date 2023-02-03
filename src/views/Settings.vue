@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ $t("Settings (test change)") }}</ion-title>
+        <ion-title>{{ $t("Settings") }}</ion-title>
       </ion-toolbar>
     </ion-header>
     
