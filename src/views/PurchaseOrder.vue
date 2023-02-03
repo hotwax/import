@@ -133,6 +133,7 @@ export default defineComponent({
           this.file = file;
           this.parseFile();
           this.store.dispatch('order/updateFileName', this.file.name);
+          Object.keys(this.fieldMapping).map(key => { this.fieldMapping[key] = '' })
           showToast(translate("File uploaded successfully"));
         } else {
           showToast(translate("No new file upload. Please try again"));
