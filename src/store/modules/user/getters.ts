@@ -22,6 +22,9 @@ const getters: GetterTree <UserState, RootState> = {
         const baseUrl = process.env.VUE_APP_BASE_URL;
         return baseUrl ? baseUrl : state.instanceUrl;
     },
+    getPwaState (state) {
+        return state.pwaState;
+    },
     getFieldMappings(state) {
         return state.fieldMappings;
     },

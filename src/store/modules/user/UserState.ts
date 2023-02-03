@@ -5,6 +5,7 @@ export default interface UserState {
     instanceUrl: string;
     fieldMappings: object;
     preferredDateTimeFormat: string;
+    pwaState: any;
     currentMapping: {
         id: string;
         name: string;
