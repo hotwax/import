@@ -14,6 +14,10 @@ const userModule: Module<UserState, RootState> = {
       instanceUrl: '',
       fieldMappings: {},
       preferredDateTimeFormat: '',
+      pwaState: {
+        updateExists: false,
+        registration: null,
+      },
       currentMapping: {
         id: '',
         name: '',

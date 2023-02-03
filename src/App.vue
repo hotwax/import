@@ -14,6 +14,8 @@ import { defineComponent } from 'vue';
 import emitter from "@/event-bus"
 import { mapGetters, useStore } from 'vuex';
 import { init, resetConfig } from '@/adapter'
+import { showToast } from "@/utils";
+import { translate } from "@/i18n";
 
 export default defineComponent({
   name: 'App',
@@ -26,7 +28,8 @@ export default defineComponent({
   data() {
     return {
       loader: null as any,
-      maxAge: process.env.VUE_APP_CACHE_MAX_AGE ? parseInt(process.env.VUE_APP_CACHE_MAX_AGE) : 0
+      maxAge: process.env.VUE_APP_CACHE_MAX_AGE ? parseInt(process.env.VUE_APP_CACHE_MAX_AGE) : 0,
+      refreshing: false,
     }
   },
   methods: {
@@ -69,7 +72,13 @@ export default defineComponent({
       createAnimation()
         .addAnimation([gapAnimation, revealAnimation])
         .play();
-    }
+    },
+    updateAvailable($event: any) {
+      const registration = $event.detail;
+      const updateExists = true;
+      this.store.dispatch('user/updatePwaState', { registration, updateExists });
+      showToast(translate("New version available, please update the app."));
+    },
   },
   async mounted() {
     this.loader = await loadingController
@@ -83,6 +92,14 @@ export default defineComponent({
     emitter.on('playAnimation', this.playAnimation);
 
     init(this.userToken, this.instanceUrl, this.maxAge)
+  },
+  created() {
+    document.addEventListener('swUpdated', this.updateAvailable, { once: true })
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (this.refreshing) return
+      this.refreshing = true
+      window.location.reload()
+    })
   },
   unmounted() {
     emitter.off('presentLoader', this.presentLoader);
