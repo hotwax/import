@@ -51,8 +51,11 @@ export default defineComponent({
       }
     },
     updateAvailable($event: any) {
+      console.log('inside updateAvailable')
       const registration = $event.detail;
       const updateExists = true;
+      console.log("registration", registration)
+      console.log("updateExists", updateExists)
       this.store.dispatch('user/updatePwaState', { registration, updateExists });
       showToast(translate("New version available, please update the app."));
     },
