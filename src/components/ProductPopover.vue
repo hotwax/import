@@ -51,7 +51,7 @@ export default defineComponent({
       popoverController.dismiss({ dismissed: true });
     },
     revertProduct() {
-      const original = JSON.parse(JSON.stringify(this.getPurchaseOrders.original));
+      const original = this.purchaseOrders.original;
       this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.pseudoId === this.id) {
           const item = original[this.poId].find(item => {
@@ -65,7 +65,7 @@ export default defineComponent({
       popoverController.dismiss({ dismissed: true });
     },
     revertParentProduct(){
-      const original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
+      const original = this.purchaseOrders.original;
       this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.parentProductId === this.id) {
           const item = original[this.poId].find(item => {

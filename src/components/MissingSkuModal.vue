@@ -154,17 +154,16 @@ export default defineComponent({
       const products = await this.store.dispatch("product/fetchProducts", payload);
       if (products.length) {
         const item = products[0];
-        this.purchaseOrders.unidentifiedItems.map((unidentifiedItem: any) => {
-          if(unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku){
-            unidentifiedItem.updatedSku = this.updatedSku;
-            unidentifiedItem.parentProductId = item.parent.id;
-            unidentifiedItem.pseudoId = item.pseudoId;
-            unidentifiedItem.parentProductName = item.parent.productName;
-            unidentifiedItem.imageUrl = item.images.mainImageUrl;
-            unidentifiedItem.isNewProduct = "N";
-            unidentifiedItem.isSelected = true;
-          }
-        })
+        const unidentifiedItem = this.purchaseOrders.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
+        
+        unidentifiedItem.updatedSku = this.updatedSku;
+        unidentifiedItem.parentProductId = item.parent.id;
+        unidentifiedItem.pseudoId = item.pseudoId;
+        unidentifiedItem.parentProductName = item.parent.productName;
+        unidentifiedItem.imageUrl = item.images.mainImageUrl;
+        unidentifiedItem.isNewProduct = "N";
+        unidentifiedItem.isSelected = true;
+    
         this.hasSkuUpdated = true;
         this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
       } else {
