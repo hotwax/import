@@ -290,7 +290,7 @@ export default defineComponent({
       }
     },
     revertAll() {
-      this.purchaseOrders.parsed = this.purchaseOrders.original;
+      this.purchaseOrders.parsed = JSON.parse(JSON.stringify(this.purchaseOrders.original));
       this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
     }
   },
