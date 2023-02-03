@@ -128,17 +128,10 @@ const actions: ActionTree<UserState, RootState> = {
     updateInstanceUrl(payload)
   },
 
-  updateFieldMappings({ commit }, payload){
-    commit(types.USER_FIELD_MAPPING_UPDATED, payload);
+  updatePwaState({commit}, payload) {
+    commit(types.USER_PWA_STATE_UPDATED, payload);
   },
-
-  updatePwaRegistration({commit}, payload) {
-    commit(types.USER_PWA_REGISTRATION_UPDATED, payload);
-  },
-
-  updatePwaUpdateState({commit}, payload) {
-    commit(types.USER_PWA_UPDATE_STATE_UPDATED, payload);
-  },
+  
   async getFieldMappings({ commit }) {
     try {
       const payload = {

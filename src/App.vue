@@ -30,8 +30,6 @@ export default defineComponent({
       loader: null as any,
       maxAge: process.env.VUE_APP_CACHE_MAX_AGE ? parseInt(process.env.VUE_APP_CACHE_MAX_AGE) : 0,
       refreshing: false,
-      registration: null,
-      updateExists: false,
     }
   },
   methods: {
@@ -53,10 +51,9 @@ export default defineComponent({
       }
     },
     updateAvailable($event: any) {
-      this.registration = $event.detail;
-      this.updateExists = true;
-      this.store.dispatch('user/updatePwaRegistration', this.registration);
-      this.store.dispatch('user/updatePwaUpdateState', this.updateExists);
+      const registration = $event.detail;
+      const updateExists = true;
+      this.store.dispatch('user/updatePwaState', { registration, updateExists });
       showToast(translate("New version available, please update the app."));
     },
     playAnimation() {

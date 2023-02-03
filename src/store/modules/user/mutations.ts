@@ -26,11 +26,9 @@ const mutations: MutationTree <UserState> = {
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
     },
-    [types.USER_PWA_REGISTRATION_UPDATED] (state, payload) {
-        state.pwaState.registration = payload;
-    },
-    [types.USER_PWA_UPDATE_STATE_UPDATED] (state, payload) {
-        state.pwaState.updateExists = payload;
+    [types.USER_PWA_STATE_UPDATED] (state, payload) {
+        state.pwaState.registration = payload.registration;
+        state.pwaState.updateExists = payload.updateExists;
     },
     [types.USER_CURRENT_FIELD_MAPPING_UPDATED] (state, payload) {
         state.currentMapping = payload
