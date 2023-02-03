@@ -126,7 +126,7 @@
   "Select time zone": "Select time zone",
   "Select the column index for the following information in the uploaded CSV.": "Select the column index for the following information in the uploaded CSV.",
   "Some of the mapping fields are missing in the CSV: ": "Some of the mapping fields are missing in the CSV: {missingFields}",
-  "Some of the selected items have quantity less than or equal to order buffer. The quantity of those items is set to 1.": "Some of the selected items have quantity less than or equal to order buffer. The quantity of those items is set to 1.",
+  "Changes have been successfully applied. Some of the selected items have quantity less than or equal to order buffer. The quantity of those items is set to 1.": "Changes have been successfully applied. {newLine} Some of the selected items have quantity less than or equal to order buffer. The quantity of those items is set to 1.",
   "Something went wrong": "Something went wrong",
   "Something went wrong. Please try again": "Something went wrong. Please try again",
   "Sorry, your username or password is incorrect. Please try again.": "Sorry, your username or password is incorrect. Please try again.",

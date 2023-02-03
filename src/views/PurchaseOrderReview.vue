@@ -52,10 +52,10 @@
         </div>
       </div>
       <div v-if="segmentSelected === 'all'">
-        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :ItemsByPO ="purchaseOrders.parsed"  />
+        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="purchaseOrders.parsed"  />
       </div>
       <div v-for="(po, poId) in purchaseOrders.parsed" :key="poId" >
-        <PurchaseOrderDetail v-if="segmentSelected === poId" :ItemsByPO="{[poId]: po}" :purchaseOrders="purchaseOrders" />
+        <PurchaseOrderDetail v-if="segmentSelected === poId" :itemsByPoId="{[poId]: po}" :purchaseOrders="purchaseOrders" />
       </div>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -290,8 +290,8 @@ export default defineComponent({
       }
     },
     revertAll() {
-      let original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
-      this.store.dispatch('order/updatedOrderListItems', original);
+      this.purchaseOrders.parsed = JSON.parse(JSON.stringify(this.purchaseOrders.original));
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
     }
   },
   setup() {
