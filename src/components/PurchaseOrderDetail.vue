@@ -1,5 +1,5 @@
 <template> 
-  <div v-for="(poItems, index) in purchaseOrders" :key="index">
+  <div v-for="(poItems, index) in itemsByPoId" :key="index">
     <ion-item lines="none">
       <h3>{{ index }}</h3>
     </ion-item>
@@ -67,7 +67,7 @@ import {
 } from "@ionic/vue";
 import { sendOutline, ellipsisVerticalOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
-import { mapGetters } from 'vuex';
+import { mapGetters, useStore } from "vuex";
 import ProductPopover from '@/components/ProductPopover.vue'
 import { DateTime } from 'luxon'
 
@@ -85,6 +85,9 @@ export default defineComponent({
   },
   props: {
     purchaseOrders: {
+      type: Object
+    },
+    itemsByPoId: {
       type: Object
     }
   },
@@ -127,6 +130,7 @@ export default defineComponent({
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
     },
     getGroupPurchaseOrders (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
@@ -149,11 +153,14 @@ export default defineComponent({
         })
         this.isParentProductUpdated = false;
       }
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
     }
   },
   setup() {
+    const store = useStore();
     return {
       sendOutline,
+      store,
       ellipsisVerticalOutline
     }
   }
