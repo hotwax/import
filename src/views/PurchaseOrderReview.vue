@@ -250,7 +250,7 @@ export default defineComponent({
                   }
                 }])
                 this.router.push("/purchase-order");
-                this.store.dispatch('order/clearPurchaseOrders');
+                this.store.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
               }).catch(() => {
                 showToast(translate("Something went wrong, please try again"));
               })
@@ -290,8 +290,8 @@ export default defineComponent({
       }
     },
     revertAll() {
-      let original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
-      this.store.dispatch('order/updatedOrderListItems', original);
+      this.purchaseOrders.parsed = JSON.parse(JSON.stringify(this.purchaseOrders.original));
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
     }
   },
   setup() {
