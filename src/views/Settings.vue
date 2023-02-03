@@ -197,7 +197,6 @@ export default defineComponent({
       return DateTime.fromMillis(time).toLocaleString(DateTime.DATETIME_MED);
     },
     refreshApp() {
-      console.log('inside refreshApp')
       this.store.dispatch('user/updatePwaState', { registration: this.pwaState.registration, updateExists: false });
       if (!this.pwaState.registration || !this.pwaState.registration.waiting) return
       this.pwaState.registration.waiting.postMessage({ type: 'SKIP_WAITING' })

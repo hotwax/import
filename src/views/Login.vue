@@ -58,7 +58,7 @@ export default defineComponent({
       password: "",
       instanceUrl: "",
       baseURL: process.env.VUE_APP_BASE_URL,
-      // alias: JSON.parse(process.env.VUE_APP_ALIAS as string)
+      alias: JSON.parse(process.env.VUE_APP_ALIAS as string)
     };
   },
   computed: {
@@ -72,7 +72,7 @@ export default defineComponent({
   methods: {
     login: function () {
       const instanceURL = this.instanceUrl.trim().toLowerCase();
-      if(!this.baseURL) this.store.dispatch("user/setUserInstanceUrl", instanceURL);
+      if(!this.baseURL) this.store.dispatch("user/setUserInstanceUrl", this.alias[instanceURL] ? this.alias[instanceURL] : instanceURL);
       
       const { username, password } = this;
       this.store.dispatch("user/login", { username: username.trim(), password }).then((data: any) => {

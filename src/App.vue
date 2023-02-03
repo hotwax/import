@@ -51,11 +51,8 @@ export default defineComponent({
       }
     },
     updateAvailable($event: any) {
-      console.log('inside updateAvailable')
       const registration = $event.detail;
       const updateExists = true;
-      console.log("registration", registration)
-      console.log("updateExists", updateExists)
       this.store.dispatch('user/updatePwaState', { registration, updateExists });
       showToast(translate("New version available, please update the app."));
     },
@@ -97,10 +94,8 @@ export default defineComponent({
     init(this.userToken, this.instanceUrl, this.maxAge)
   },
   created() {
-    console.log('inside created')
     document.addEventListener('swUpdated', this.updateAvailable, { once: true })
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('inside controller change')
       if (this.refreshing) return
       this.refreshing = true
       window.location.reload()
