@@ -94,8 +94,10 @@ export default defineComponent({
     init(this.userToken, this.instanceUrl, this.maxAge)
   },
   created() {
+    console.log('inside created')
     document.addEventListener('swUpdated', this.updateAvailable, { once: true })
     navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log('inside controller change')
       if (this.refreshing) return
       this.refreshing = true
       window.location.reload()
