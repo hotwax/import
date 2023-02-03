@@ -58,7 +58,7 @@ export default defineComponent({
       password: "",
       instanceUrl: "",
       baseURL: process.env.VUE_APP_BASE_URL,
-      alias: JSON.parse(process.env.VUE_APP_ALIAS as string)
+      // alias: JSON.parse(process.env.VUE_APP_ALIAS as string)
     };
   },
   computed: {
