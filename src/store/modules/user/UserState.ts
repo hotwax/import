@@ -3,7 +3,10 @@ export default interface UserState {
     current: object | null;
     currentFacility: object;
     instanceUrl: string;
-    fieldMappings: object;
+    fieldMappings: {
+        purchaseOrder: any;
+        inventory: any;
+    };
     preferredDateTimeFormat: string;
     pwaState: any;
     currentMapping: {

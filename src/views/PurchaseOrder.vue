@@ -23,7 +23,7 @@
               <ion-icon :icon="addOutline" />
               <ion-label>{{ $t("New mapping") }}</ion-label>
             </ion-chip>
-            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings ?? []" :key="index" @click="mapFields(mapping)" outline="true">
+            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('purchaseOrder') ?? []" :key="index" @click="mapFields(mapping)" outline="true">
               {{ mapping.name }}
             </ion-chip>
           </div>
@@ -195,7 +195,7 @@ export default defineComponent({
         }
         const createMappingModal = await modalController.create({
           component: CreateMappingModal,
-          componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping }
+          componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'purchaseOrder' }
         });
         return createMappingModal.present();
       }
