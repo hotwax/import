@@ -9,13 +9,19 @@
 
     <ion-content>
       <main>
-        <section>
-          <div class="empty-state" v-if="Object.keys(fieldMappings).length == 0">
-            <p>{{ $t("No field mapping found. Please create new.")}}</p>
-          </div>
-          <ion-list v-else>
-            <ion-list-header>{{ $t("Mapping") }}</ion-list-header>
-            <ion-item v-for="(mapping, index) in fieldMappings" :key="index" @click="viewMappingConfiguration(index)" detail button>
+        <div class="empty-state" v-if="!areFieldMappingsAvailable">
+          <p>{{ $t("No field mapping found. Please create new.")}}</p>
+        </div>
+        <section v-else>
+          <ion-list>
+            <ion-list-header>{{ $t("Purchase Order") }}</ion-list-header>
+            <ion-item v-for="(mapping, index) in fieldMappings('purchaseOrder')" :key="index" @click="viewMappingConfiguration(index, 'purchaseOrder')" detail button>
+              <ion-label>{{ mapping.name }}</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-list-header>{{ $t("Inventory") }}</ion-list-header>
+            <ion-item v-for="(mapping, index) in fieldMappings('inventory')" :key="index" @click="viewMappingConfiguration(index, 'inventory')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
@@ -67,7 +73,11 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings'
-    })
+    }),
+    areFieldMappingsAvailable() {
+      // using below logic to check mappings as we are storing mappings as objects of objects of object
+      return Object.values((this as any).fieldMappings()).some((mappings: any) => Object.keys(mappings).length)
+    }
   },
   data() {
     return {
@@ -77,12 +87,12 @@ export default defineComponent({
     }
   },
   methods: {
-    async viewMappingConfiguration(id: string) {
+    async viewMappingConfiguration(id: string, mappingType: string) {
       this.currentMappingId = id
-      await this.store.dispatch('user/updateCurrentMapping', id);
+      await this.store.dispatch('user/updateCurrentMapping', { id, mappingType });
 
       if(!this.isDesktop && id) {
-        this.router.push({name: 'MappingDetail', params: { id }});
+        this.router.push({name: 'MappingDetail', params: { mappingType, id }});
         return;
       }
 

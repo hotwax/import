@@ -60,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: authGuard
   },
   {
-    path: "/mapping/:id",
+    path: "/mapping/:mappingType/:id",
     name: "MappingDetail",
     component: MappingDetail,
     beforeEnter: authGuard

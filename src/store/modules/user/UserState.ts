@@ -11,6 +11,7 @@ export default interface UserState {
     pwaState: any;
     currentMapping: {
         id: string;
+        mappingType: string;
         name: string;
         value: object;
     };

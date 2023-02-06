@@ -82,7 +82,7 @@ const actions: ActionTree<UserState, RootState> = {
     this.dispatch('util/clearFacilities');
     // clearing field mappings and current mapping when the user logout
     commit(types.USER_FIELD_MAPPING_UPDATED, { purchaseOrder: {}, inventory: {} })
-    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', name: '', value: {}})
+    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', mappingType: '', name: '', value: {}})
   },
 
   /**
@@ -229,22 +229,29 @@ const actions: ActionTree<UserState, RootState> = {
   async updateFieldMapping({ commit, state }, payload) {
     try {
 
+      const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
+      let mappingType = '';
+
+      Object.entries(mappingTypes).map(([key, value]) => {
+        if(value === payload.mappingType) {
+          mappingType = key;
+          return;
+        }
+      })
+
       const params = {
         mappingPrefId: payload.id,
         mappingPrefName: payload.name,
         mappingPrefValue: JSON.stringify(payload.value),
-        mappingPrefTypeEnumId: payload.mappingType
+        mappingPrefTypeEnumId: mappingType
       }
 
       const resp = await UserService.updateFieldMapping(params);
 
       if(resp.status == 200 && !hasError(resp)) {
-
-        const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
-        const mappingType = mappingTypes[payload.mappingType]
-
         const mappings = JSON.parse(JSON.stringify(state.fieldMappings))
-        mappings[mappingType][payload.id] = {
+
+        mappings[payload.mappingType][payload.id] = {
           name: payload.name,
           value: payload.value
         }
@@ -264,16 +271,16 @@ const actions: ActionTree<UserState, RootState> = {
   async deleteFieldMapping({ commit, state }, payload) {
     try {
       const resp = await UserService.deleteFieldMapping({
-        'mappingPrefId': payload.mappingId
+        'mappingPrefId': payload.id
       });
 
       if(resp.status == 200 && !hasError(resp)) {
-        const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
 
         const mappings = JSON.parse(JSON.stringify(state.fieldMappings))
-        delete mappings[mappingTypes[payload.mappingPrefTypeEnumId]][payload.mappingId]
+        delete mappings[payload.mappingType][payload.id]
+
         commit(types.USER_FIELD_MAPPING_UPDATED, mappings)
-        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', name: '', value: {} })
+        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', mappingType:'', name: '', value: {} })
         showToast(translate('This CSV mapping has been deleted.'))
       } else {
         logger.error('error', 'Failed to delete CSV mapping.')
@@ -285,10 +292,11 @@ const actions: ActionTree<UserState, RootState> = {
     }
   },
 
-  async updateCurrentMapping({ commit, state }, id) {
+  async updateCurrentMapping({ commit, state }, payload) {
     const currentMapping = {
-      id,
-      ...(state.fieldMappings as any)[id]
+      id: payload.id,
+      mappingType: payload.mappingType,
+      ...(state.fieldMappings as any)[payload.mappingType][payload.id]
     }
     commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, currentMapping)
   }

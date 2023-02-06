@@ -23,6 +23,7 @@ const userModule: Module<UserState, RootState> = {
       },
       currentMapping: {
         id: '',
+        mappingType: '',
         name: '',
         value: {}
       }
