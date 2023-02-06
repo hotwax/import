@@ -28,6 +28,13 @@
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
+          <ion-item @click="openMissingFacilitiesModal()" button>
+            <ion-icon slot="start" :icon="businessOutline" />
+            <ion-label>{{ $t("Missing facilities") }}</ion-label>
+            <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ $t("items") }}</ion-note>
+            <ion-icon slot="end" mode="ios" :icon="chevronForwardOutline" />
+          </ion-item>
+
         </div>
       </div>  
 
@@ -130,13 +137,14 @@ import { UploadService } from "@/services/UploadService";
 import Image from '@/components/Image.vue';
 import ProductPopover from '@/components/ProductPopover.vue'
 import BulkInventoryAdjustmentModal from '@/components/BulkInventoryAdjustmentModal.vue'
+import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote } from '@ionic/vue'
-import { calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
+import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 
 export default defineComponent({
   name: 'InventoryDetail',
@@ -215,6 +223,18 @@ export default defineComponent({
   },
   
   methods: {
+    getItemsWithMissingFacility() {
+      const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
+      return this.stock.parsed.filter((item: any) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
+    },
+    async openMissingFacilitiesModal() {
+      const itemsWithMissingFacility = this.getItemsWithMissingFacility();
+      const missingFacilitiesModal = await modalController.create({
+        component: MissingFacilitiesModal,
+        componentProps: { itemsWithMissingFacility, facilities: this.facilities, type: 'stock' }
+      });
+      return missingFacilitiesModal.present();
+    },
     getSelectedItems(){
       return Object.values(this.stock.parsed).filter((item: any) => item.isSelected).length;
     },
@@ -363,6 +383,7 @@ export default defineComponent({
     const store = useStore();
     
     return {
+      businessOutline,
       calculatorOutline,
       chevronForwardOutline,
       checkboxOutline,

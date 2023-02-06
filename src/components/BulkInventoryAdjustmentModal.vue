@@ -88,18 +88,21 @@ export default defineComponent({
     closeModal() {
       modalController.dismiss({ dismissed: true });
     },
-    save() {
-      this.stock.parsed.map((item: any) => {
+    async save() {
+      const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', [this.facilityId]);
+      await this.stock.parsed.map((item: any) => {
         if (item.isSelected) {
           if(this.quantityBuffer != '')
           item.quantity = this.quantityBuffer;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
             item.externalFacilityId = "";
+            //TODO: Need to improve the handling of locationSeqId.
+            item.locationSeqId = facilityLocations && facilityLocations[0] && facilityLocations[0].locationSeqId ? facilityLocations[0].locationSeqId : "";
           }
         }
       })
-      this.store.dispatch('stock/updateStockItems', this.stock.parsed)
+      await this.store.dispatch('stock/updateStockItems', this.stock.parsed)
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
     },

@@ -88,7 +88,7 @@ import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, ch
 import PurchaseOrderDetail from '@/components/PurchaseOrderDetail.vue'
 import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
 import BulkAdjustmentModal from '@/components/BulkAdjustmentModal.vue';
-import MissingFacilityModal from '@/components/MissingFacilitiesModal.vue';
+import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue';
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
 import { UploadService } from "@/services/UploadService";
 import { showToast } from '@/utils';
@@ -269,8 +269,8 @@ export default defineComponent({
     async openMissingFacilitiesModal() {
       const itemsWithMissingFacility = this.getItemsWithMissingFacility();
       const missingFacilitiesModal = await modalController.create({
-        component: MissingFacilityModal,
-        componentProps: { itemsWithMissingFacility, facilities: this.facilities }
+        component: MissingFacilitiesModal,
+        componentProps: { itemsWithMissingFacility, facilities: this.facilities, type: 'order' }
       });
       return missingFacilitiesModal.present();
     },

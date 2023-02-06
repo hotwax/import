@@ -70,7 +70,7 @@ export default defineComponent({
     IonTitle,
     IonToolbar 
   },
-  props: ["itemsWithMissingFacility", "facilities"],
+  props: ["itemsWithMissingFacility", "facilities", "type"],
   data() {
     return {
       itemsByFacilityId: {},
@@ -79,23 +79,41 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      purchaseOrders: 'order/getPurchaseOrders'
+      purchaseOrders: 'order/getPurchaseOrders',
+      stock: 'stock/getItemsStock',
+      getFacilityLocationsByFacilityId: 'user/getFacilityLocationsByFacilityId',
     })
   },
   mounted(){
     this.groupItemsByFacilityId();
   },
   methods: {
-    save(){
-      Object.keys(this.facilityMapping).map((facilityId: any) => {
-        Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
-          if(item.externalFacilityId === facilityId){
-            item.externalFacilityId = "";
-            item.facilityId = this.facilityMapping[facilityId];
-          }
+    async save(){
+      if(this.type === 'order'){
+        Object.keys(this.facilityMapping).map((facilityId: any) => {
+          Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
+            if(item.externalFacilityId === facilityId){
+              item.externalFacilityId = "";
+              item.facilityId = this.facilityMapping[facilityId];
+            }
+          })
         })
-      })
-      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
+        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
+      } else {
+        await this.store.dispatch('user/fetchFacilityLocations', Object.values(this.facilityMapping));
+        Object.keys(this.facilityMapping).map((facilityId: any) => {
+          const locationSeqId = this.getFacilityLocationsByFacilityId(this.facilityMapping[facilityId]).length ? this.getFacilityLocationsByFacilityId(this.facilityMapping[facilityId])[0].locationSeqId : '';
+          this.stock.parsed.map((item: any) => {
+            if(item.externalFacilityId === facilityId){
+              item.externalFacilityId = "";
+              item.facilityId = this.facilityMapping[facilityId];
+              item.locationSeqId = locationSeqId;
+            }
+          })
+        })
+        this.store.dispatch('stock/updateStockItems', this.stock.parsed);
+      }
+      
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
     },
