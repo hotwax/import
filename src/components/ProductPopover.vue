@@ -49,7 +49,7 @@ export default defineComponent({
         this.stock.parsed.map(item => {
           item.isSelected = item.parentProductId === this.id;
         })
-        this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
+        this.store.dispatch('stock/updateStockItems', this.stock.parsed)
       }
       popoverController.dismiss({ dismissed: true });
     },
@@ -63,7 +63,7 @@ export default defineComponent({
         this.stock.parsed.map(item => {
           item.isSelected = item.pseudoId === this.id;
         });
-        this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
+        this.store.dispatch('stock/updateStockItems', this.stock.parsed)
       }
       
       popoverController.dismiss({ dismissed: true });
@@ -92,7 +92,7 @@ export default defineComponent({
           }
           return element;
         });
-        this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
+        this.store.dispatch('stock/updateStockItems', this.stock.parsed)
       }
       
       popoverController.dismiss({ dismissed: true });
@@ -122,7 +122,7 @@ export default defineComponent({
           }
           return element;
         });
-        this.store.dispatch('stock/updatedStockListItems', this.stock.parsed);
+        this.store.dispatch('stock/updateStockItems', this.stock.parsed);
       }
       popoverController.dismiss({ dismissed: true });
     }

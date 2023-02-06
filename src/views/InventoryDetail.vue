@@ -18,20 +18,16 @@
       <div class="header">
         <div class="search">
           <ion-searchbar  :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
-          <ion-chip outline>
-            <ion-label>{{ $t("Missing SKUs") }}</ion-label>
-          </ion-chip>
-        </div> 
+        </div>
 
         <div class="filters">
-          <ion-item>
-            <ion-label>{{ $t("Facility") }}</ion-label>
-            <ion-select interface="popover" v-model="facilityId">
-              <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
-            </ion-select>
+          <ion-item @click="openBulkInventoryAdjustmentModal()" button> 
+            <ion-icon slot="start" :icon="calculatorOutline" />
+            <ion-label>{{ $t("Bulk adjustment") }}</ion-label>
+            <ion-note slot="end">{{ getSelectedItems() }} {{ $t("items selected") }}</ion-note>
+            <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
-          <ion-button expand="block" fill="outline" @click="apply">{{ $t("Apply") }}</ion-button>
         </div>
       </div>  
 
@@ -133,13 +129,14 @@
 import { UploadService } from "@/services/UploadService";
 import Image from '@/components/Image.vue';
 import ProductPopover from '@/components/ProductPopover.vue'
+import BulkInventoryAdjustmentModal from '@/components/BulkInventoryAdjustmentModal.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import { IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, alertController } from '@ionic/vue'
-import { ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
+import { IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote } from '@ionic/vue'
+import { calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 
 export default defineComponent({
   name: 'InventoryDetail',
@@ -162,7 +159,8 @@ export default defineComponent({
     IonSelectOption,
     IonButtons,
     IonFab,
-    IonFabButton
+    IonFabButton,
+    IonNote
   },
   computed: {
     ...mapGetters({
@@ -217,14 +215,17 @@ export default defineComponent({
   },
   
   methods: {
+    getSelectedItems(){
+      return Object.values(this.stock.parsed).filter((item: any) => item.isSelected).length;
+    },
     setFacilityLocation(ev: CustomEvent, product: any){
       this.stock.parsed.map((item: any) => { 
         if(item.pseudoId === product.pseudoId){
           item.locationSeqId = ev.detail.value;
         }
       });
-      this.store.dispatch('stock/updatedStockListItems', this.stock.parsed);
-    }, 
+      this.store.dispatch('stock/updateStockItems', this.stock.parsed);
+    },
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
       this.searchedProduct = this.stock.parsed.find((item: any) => {
@@ -303,11 +304,11 @@ export default defineComponent({
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
-      this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
+      this.store.dispatch('stock/updateStockItems', this.stock.parsed)
     },
     revertAll() {
       const original = JSON.parse(JSON.stringify(this.stock.original));
-      this.store.dispatch('stock/updatedStockListItems', original);
+      this.store.dispatch('stock/updateStockItems', original);
     },
     async apply() {
       if(this.facilityId) {
@@ -321,7 +322,7 @@ export default defineComponent({
           }
         })
       }
-      await this.store.dispatch('stock/updatedStockListItems', this.stock.parsed);
+      await this.store.dispatch('stock/updateStockItems', this.stock.parsed);
     },
     getParentProductIds (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
@@ -336,7 +337,7 @@ export default defineComponent({
       this.stock.parsed.forEach((item: any) => {
         item.isSelected = true;
       })
-      this.store.dispatch('stock/updatedStockListItems', this.stock.parsed)
+      this.store.dispatch('stock/updateStockItems', this.stock.parsed)
     },
     selectParentProduct(parentProductId: any, event: any) {
       // Todo: Need to find a better approach.
@@ -348,14 +349,22 @@ export default defineComponent({
         })
         this.isParentProductUpdated = false;
       }
-      this.store.dispatch('stock/updatedStockListItems', this.stock.parsed);
-    }
+      this.store.dispatch('stock/updateStockItems', this.stock.parsed);
+    },
+    async openBulkInventoryAdjustmentModal() {
+      const bulkInventoryAdjustmentModal = await modalController.create({
+        component: BulkInventoryAdjustmentModal,
+      });
+      return bulkInventoryAdjustmentModal.present();
+    },
   },
   setup() {
     const router = useRouter();
     const store = useStore();
     
     return {
+      calculatorOutline,
+      chevronForwardOutline,
       checkboxOutline,
       ellipsisVerticalOutline,
       locationOutline,
