@@ -35,6 +35,12 @@
             <ion-icon slot="end" mode="ios" :icon="chevronForwardOutline" />
           </ion-item>
 
+          <ion-item @click="openMissingSkuModal()" button>
+            <ion-icon slot="start" :icon="shirtOutline" />
+            <ion-label>{{ $t("Missing products") }}</ion-label>
+            <ion-note slot="end">{{ stock.unidentifiedItems.length }} {{ $t("items") }}</ion-note>
+            <ion-icon slot="end" :icon="chevronForwardOutline" />
+          </ion-item>
         </div>
       </div>  
 
@@ -138,13 +144,14 @@ import Image from '@/components/Image.vue';
 import ProductPopover from '@/components/ProductPopover.vue'
 import BulkInventoryAdjustmentModal from '@/components/BulkInventoryAdjustmentModal.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
+import MissingSkuModal from "@/components/MissingSkuModal.vue"
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote } from '@ionic/vue'
-import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
+import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, shirtOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
 
 export default defineComponent({
   name: 'InventoryDetail',
@@ -223,6 +230,13 @@ export default defineComponent({
   },
   
   methods: {
+    async openMissingSkuModal() {
+      const missingSkuModal = await modalController.create({
+        component: MissingSkuModal,
+        componentProps: { 'unidentifiedItems': this.stock.unidentifiedItems, type: 'stock' }
+      });
+      return missingSkuModal.present();
+    },
     getItemsWithMissingFacility() {
       const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
       return this.stock.parsed.filter((item: any) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
@@ -244,7 +258,7 @@ export default defineComponent({
           item.locationSeqId = ev.detail.value;
         }
       });
-      this.store.dispatch('stock/updateStockItems', this.stock.parsed);
+      this.store.dispatch('stock/updateStockItems', this.stock);
     },
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
@@ -324,11 +338,11 @@ export default defineComponent({
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
-      this.store.dispatch('stock/updateStockItems', this.stock.parsed)
+      this.store.dispatch('stock/updateStockItems', this.stock)
     },
     revertAll() {
-      const original = JSON.parse(JSON.stringify(this.stock.original));
-      this.store.dispatch('stock/updateStockItems', original);
+      this.stock.parsed = JSON.parse(JSON.stringify(this.stock.original));
+      this.store.dispatch('stock/updateStockItems', this.stock);
     },
     async apply() {
       if(this.facilityId) {
@@ -342,7 +356,7 @@ export default defineComponent({
           }
         })
       }
-      await this.store.dispatch('stock/updateStockItems', this.stock.parsed);
+      await this.store.dispatch('stock/updateStockItems', this.stock);
     },
     getParentProductIds (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
@@ -357,7 +371,7 @@ export default defineComponent({
       this.stock.parsed.forEach((item: any) => {
         item.isSelected = true;
       })
-      this.store.dispatch('stock/updateStockItems', this.stock.parsed)
+      this.store.dispatch('stock/updateStockItems', this.stock)
     },
     selectParentProduct(parentProductId: any, event: any) {
       // Todo: Need to find a better approach.
@@ -369,7 +383,7 @@ export default defineComponent({
         })
         this.isParentProductUpdated = false;
       }
-      this.store.dispatch('stock/updateStockItems', this.stock.parsed);
+      this.store.dispatch('stock/updateStockItems', this.stock);
     },
     async openBulkInventoryAdjustmentModal() {
       const bulkInventoryAdjustmentModal = await modalController.create({
@@ -390,6 +404,7 @@ export default defineComponent({
       ellipsisVerticalOutline,
       locationOutline,
       arrowUndoOutline,
+      shirtOutline,
       cloudUploadOutline,
       router,
       store,

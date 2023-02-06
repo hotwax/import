@@ -102,7 +102,7 @@ export default defineComponent({
           }
         }
       })
-      await this.store.dispatch('stock/updateStockItems', this.stock.parsed)
+      await this.store.dispatch('stock/updateStockItems', this.stock)
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
     },

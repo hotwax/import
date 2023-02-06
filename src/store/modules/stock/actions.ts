@@ -18,7 +18,7 @@ const actions: ActionTree<StockState, RootState> = {
     await store.dispatch('user/fetchFacilityLocations', facilityIds);
     await store.dispatch("product/fetchProducts", payload);
     const unidentifiedItems = [] as any;
-    items = items.map((item: any) => {
+    const parsed = items.map((item: any) => {
       const product = rootGetters['product/getProduct'](item.productSKU)
       
       if(Object.keys(product).length > 0){
@@ -26,7 +26,6 @@ const actions: ActionTree<StockState, RootState> = {
         item.pseudoId = product.pseudoId;
         item.parentProductName = product?.parent?.productName;
         item.imageUrl = product.images?.mainImageUrl;
-        item.isNewProduct = "N";
         item.isSelected = true;
         return item;
       }
@@ -35,13 +34,27 @@ const actions: ActionTree<StockState, RootState> = {
     }).filter((item: any) => item);
     const original = JSON.parse(JSON.stringify(items))
 
-    commit(types.STOCK_LIST_UPDATED, { items, original, unidentifiedItems });
+    commit(types.STOCK_ITEMS_UPDATED, { parsed, original, unidentifiedItems });
   },
   updateStockItems({ commit }, stockItems){
-    commit(types.STOCK_LIST_ITEMS_UPDATED, stockItems);
+    commit(types.STOCK_ITEMS_UPDATED, stockItems);
   },
   clearStockList({ commit }){
-    commit(types.STOCK_LIST_UPDATED, { items: [], original: [], unidentifiedItems: []});
+    commit(types.STOCK_ITEMS_UPDATED, { parsed: [], original: [], unidentifiedItems: []});
+  },
+  updateUnidentifiedItem({ commit, state }, payload: any) {
+    const parsed = state.items.parsed as any;
+    const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
+      if(item.updatedSku) {
+        item.shopifyProductSKU = item.updatedSku;
+        parsed.push(item);
+      } else {
+        return item;
+      }
+    }).filter((item: any) => item);
+    const original = JSON.parse(JSON.stringify(state.items.parsed));
+
+    commit(types.STOCK_ITEMS_UPDATED, { parsed, original, unidentifiedItems});
   }
 }
 export default actions;

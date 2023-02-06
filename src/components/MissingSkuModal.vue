@@ -14,7 +14,7 @@
       <div>
         <ion-item id="update-sku" :class="isSkuInvalid ? 'ion-invalid' : ''">
           <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" />
-          <ion-note v-show="hasSkuUpdated && purchaseOrders.unidentifiedItems.length" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
+          <ion-note v-show="hasSkuUpdated && (purchaseOrders.unidentifiedItems.length || stock.unidentifiedItems.length)" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
           <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
         </ion-item>
         <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ $t("Update") }}</ion-button>
@@ -31,12 +31,12 @@
       <!-- If two different POs contain same missing SKU then in MissingSkuModal, both the products will be selected. -->
       <ion-radio-group @ionChange="updatedSku = $event.detail.value; hasSkuUpdated = false; isSkuInvalid = false;" v-model="unidentifiedProductSku">
         <ion-list v-if="segmentSelected === 'pending'">
-          <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
+          <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU ? item.shopifyProductSKU : item.productSKU">
             <ion-label>
-              {{ item.shopifyProductSKU }}
+              {{ item.shopifyProductSKU ? item.shopifyProductSKU : item.productSKU }}
               <p>{{ item.orderId }}</p>
             </ion-label>
-            <ion-radio slot="end" :value="item.shopifyProductSKU" />
+            <ion-radio slot="end" :value="item.shopifyProductSKU ? item.shopifyProductSKU : item.productSKU" />
           </ion-item>
         </ion-list>
 
@@ -122,8 +122,10 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       purchaseOrders: 'order/getPurchaseOrders',
+      stock: 'stock/getItemsStock',
     })
   },
+  props: ['type'],
   methods: {
     selectInputText(event: any) {
       event.target.getInputElement().then((element: any) => {
@@ -134,13 +136,16 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     getPendingItems(){
-      return this.purchaseOrders.unidentifiedItems.filter((item: any) => !item.updatedSku);
+      if(this.type === 'order') return this.purchaseOrders.unidentifiedItems.filter((item: any) => !item.updatedSku);
+      return this.stock.unidentifiedItems.filter((item: any) => !item.updatedSku); 
     },
     getCompletedItems(){
-      return this.purchaseOrders.unidentifiedItems.filter((item: any) => item.updatedSku);
+      if(this.type === 'order') return this.purchaseOrders.unidentifiedItems.filter((item: any) => item.updatedSku);
+      return this.stock.unidentifiedItems.filter((item: any) => item.updatedSku);
     },
     save(){
-      this.store.dispatch('order/updateUnidentifiedItem', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
+      if(this.type === 'order') this.store.dispatch('order/updateUnidentifiedItem', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
+      else this.store.dispatch('stock/updateUnidentifiedItem', { unidentifiedItems: this.stock.unidentifiedItems });
       this.closeModal();
     },
     async update() {
@@ -154,18 +159,23 @@ export default defineComponent({
       const products = await this.store.dispatch("product/fetchProducts", payload);
       if (products.length) {
         const item = products[0];
-        const unidentifiedItem = this.purchaseOrders.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
-        
+        let unidentifiedItem;
+        if (this.type === 'order'){
+          unidentifiedItem = this.purchaseOrders.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
+          unidentifiedItem.isNewProduct = "N";
+        } else {
+          unidentifiedItem = this.stock.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.productSKU === this.unidentifiedProductSku);
+        }
         unidentifiedItem.updatedSku = this.updatedSku;
         unidentifiedItem.parentProductId = item.parent.id;
         unidentifiedItem.pseudoId = item.pseudoId;
         unidentifiedItem.parentProductName = item.parent.productName;
         unidentifiedItem.imageUrl = item.images.mainImageUrl;
-        unidentifiedItem.isNewProduct = "N";
         unidentifiedItem.isSelected = true;
     
         this.hasSkuUpdated = true;
-        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
+        if (this.type === 'order') this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
+        else this.store.dispatch('stock/updateStockItems', this.stock);
       } else {
         this.isSkuInvalid = true;
       }

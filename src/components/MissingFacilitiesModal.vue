@@ -111,7 +111,7 @@ export default defineComponent({
             }
           })
         })
-        this.store.dispatch('stock/updateStockItems', this.stock.parsed);
+        this.store.dispatch('stock/updateStockItems', this.stock);
       }
       
       this.closeModal();
