@@ -136,7 +136,7 @@ const actions: ActionTree<UserState, RootState> = {
     try {
       const payload = {
         "inputFields": {
-          "mappingPrefTypeEnumId": ["PO_MAPPING_PREF", "INV_MAPPING_PREF"],
+          "mappingPrefTypeEnumId": Object.keys(JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)),
           "mappingPrefTypeEnumId_op": "in"
         },
         "fieldList": ["mappingPrefName", "mappingPrefId", "mappingPrefValue", "mappingPrefTypeEnumId"],
@@ -185,14 +185,7 @@ const actions: ActionTree<UserState, RootState> = {
     try {
 
       const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
-      let mappingType = '';
-
-      Object.entries(mappingTypes).map(([key, value]) => {
-        if(value === payload.mappingType) {
-          mappingType = key;
-          return;
-        }
-      })
+      const mappingType = Object.keys(mappingTypes).find(types => mappingTypes[types] === payload.mappingType);
 
       const params = {
         mappingPrefId: payload.id,
@@ -230,14 +223,7 @@ const actions: ActionTree<UserState, RootState> = {
     try {
 
       const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
-      let mappingType = '';
-
-      Object.entries(mappingTypes).map(([key, value]) => {
-        if(value === payload.mappingType) {
-          mappingType = key;
-          return;
-        }
-      })
+      const mappingType = Object.keys(mappingTypes).find(types => mappingTypes[types] === payload.mappingType);
 
       const params = {
         mappingPrefId: payload.id,
