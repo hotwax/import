@@ -14,7 +14,7 @@
         </div>
         <section v-else>
           <ion-list>
-            <ion-list-header>{{ $t("Purchase Order") }}</ion-list-header>
+            <ion-list-header>{{ $t("Purchase order") }}</ion-list-header>
             <ion-item v-for="(mapping, index) in fieldMappings('purchaseOrder')" :key="index" @click="viewMappingConfiguration(index, 'purchaseOrder')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
