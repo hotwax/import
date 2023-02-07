@@ -201,9 +201,18 @@ export default defineComponent({
     },
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
-      this.searchedProduct = Object.values(this.purchaseOrders).flat().find((item: any) => {
-        return item.pseudoId === product.pseudoId;
-      })
+      if(!Object.keys(product).length) this.searchedProduct = {};
+      if(this.segmentSelected === 'all'){
+        this.searchedProduct = Object.values(this.purchaseOrders.parsed).flat().find((item: any) => {
+          return item.pseudoId === product.pseudoId;
+        })
+      } else {
+        console.log(this.purchaseOrders.parsed[this.segmentSelected]);
+        this.searchedProduct = this.purchaseOrders.parsed[this.segmentSelected].find((item: any) => {
+          return item.pseudoId === product.pseudoId;
+        })
+      }
+      
     },
     async openDateTimeParseErrorModal() {
       const dateTimeParseErrorModal = await modalController.create({
