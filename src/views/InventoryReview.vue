@@ -349,6 +349,7 @@ export default defineComponent({
     revertAll() {
       this.stock.parsed = JSON.parse(JSON.stringify(this.stock.original));
       this.store.dispatch('stock/updateStockItems', this.stock);
+      if(this.queryString) this.searchProduct(this.queryString);
     },
     getParentProductIds (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
