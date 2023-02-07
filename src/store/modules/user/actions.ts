@@ -168,6 +168,10 @@ const actions: ActionTree<UserState, RootState> = {
     return state.facilityLocationsByFacilityId;
   },    
   
+  updatePwaState({commit}, payload) {
+    commit(types.USER_PWA_STATE_UPDATED, payload);
+  },
+
   async getFieldMappings({ commit }) {
     try {
       const payload = {

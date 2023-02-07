@@ -6,6 +6,7 @@ export default interface UserState {
     fieldMappings: object;
     preferredDateTimeFormat: string;
     facilityLocationsByFacilityId: any;
+    pwaState: any;
     currentMapping: {
         id: string;
         name: string;

@@ -15,6 +15,10 @@ const userModule: Module<UserState, RootState> = {
       preferredDateTimeFormat: '',
       facilityLocationsByFacilityId: {},
       fieldMappings: {},
+      pwaState: {
+        updateExists: false,
+        registration: null,
+      },
       currentMapping: {
         id: '',
         name: '',
