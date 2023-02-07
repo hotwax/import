@@ -51,8 +51,8 @@
           </ion-item>
         </div>
       </div>
-      <div v-if="Object.keys(searchedProduct).length">
-        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="{[searchedProduct.orderId]: [searchedProduct]}"  />
+      <div v-if="searchedProduct?.pseudoId">
+        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="{[searchedProduct?.orderId]: [searchedProduct]}"  />
       </div>
 
       <div v-else>
@@ -201,7 +201,10 @@ export default defineComponent({
     },
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
-      if(!Object.keys(product).length) this.searchedProduct = {};
+      if (!product?.pseudoId) {
+        this.searchedProduct = {};
+        return;
+      }  
       if(this.segmentSelected === 'all'){
         this.searchedProduct = Object.values(this.purchaseOrders.parsed).flat().find((item: any) => {
           return item.pseudoId === product.pseudoId;
@@ -212,7 +215,6 @@ export default defineComponent({
           return item.pseudoId === product.pseudoId;
         })
       }
-      
     },
     async openDateTimeParseErrorModal() {
       const dateTimeParseErrorModal = await modalController.create({
