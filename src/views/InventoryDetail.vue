@@ -116,7 +116,7 @@
             <ion-chip outline class="tablet location">
               <ion-icon :icon="locationOutline" />
               <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event, item)">
-                <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.externalFacilityId ? item.externalFacilityId : item.facilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
+                <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.externalFacilityId ? item.externalFacilityId : item.facilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationPath }}</ion-select-option>
               </ion-select>
             </ion-chip>
 
@@ -347,11 +347,11 @@ export default defineComponent({
     async apply() {
       if(this.facilityId) {
         const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', [this.facilityId]);
-        await this.stock.parsed.map((item: any) => {
+        const locationSeqId = facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0] && facilityLocations[this.facilityId][0].locaionSeqId ? facilityLocations[this.facilityId][0].locaionSeqId : '';
+        this.stock.parsed.map((item: any) => {
           if (item.isSelected) {
             item.facilityId = this.facilityId;
-            //TODO: Need to improve the handling of locationSeqId.
-            item.locationSeqId = facilityLocations && facilityLocations[0] && facilityLocations[0].locationSeqId ? facilityLocations[0].locationSeqId : "";
+            item.locationSeqId = locationSeqId;
             item.externalFacilityId = "";
           }
         })

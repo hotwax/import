@@ -81,7 +81,6 @@ export default defineComponent({
     ...mapGetters({
       purchaseOrders: 'order/getPurchaseOrders',
       stock: 'stock/getItemsStock',
-      getFacilityLocationsByFacilityId: 'user/getFacilityLocationsByFacilityId',
     })
   },
   mounted(){
@@ -100,9 +99,9 @@ export default defineComponent({
         })
         this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
       } else {
-        await this.store.dispatch('user/fetchFacilityLocations', Object.values(this.facilityMapping));
+        const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', Object.values(this.facilityMapping));
         Object.keys(this.facilityMapping).map((facilityId: any) => {
-          const locationSeqId = this.getFacilityLocationsByFacilityId(this.facilityMapping[facilityId]).length ? this.getFacilityLocationsByFacilityId(this.facilityMapping[facilityId])[0].locationSeqId : '';
+          const locationSeqId = facilityLocations[this.facilityMapping[facilityId]].length ? facilityLocations[this.facilityMapping[facilityId]][0].locationSeqId : '';
           this.stock.parsed.map((item: any) => {
             if(item.externalFacilityId === facilityId){
               item.externalFacilityId = "";
