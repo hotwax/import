@@ -116,7 +116,7 @@ export default defineComponent({
         this.stock.parsed = this.stock.parsed.map(element => {
           if(element.parentProductId === this.id) {
             const item = original.find(item => {
-              return item.parentProductId === this.id && item.productSKU === element.productSKU;
+              return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
             })
             element = item;
           }

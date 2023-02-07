@@ -122,7 +122,7 @@ export default defineComponent({
 
       this.productsList = this.content.map(item => {
         return {
-          productSKU: item[this.fieldMapping.productSku],
+          shopifyProductSKU: item[this.fieldMapping.productSku],
           quantity: item[this.fieldMapping.quantity],
           facilityId: '',
           externalFacilityId: item[this.fieldMapping.facility],

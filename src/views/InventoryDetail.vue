@@ -273,7 +273,7 @@ export default defineComponent({
         return {
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
-          "idValue": item.productSKU,
+          "idValue": item.shopifyProductSKU,
           "idType": "SKU",
           "locationSeqId": item.locationSeqId,
           "availableQty": item.quantity

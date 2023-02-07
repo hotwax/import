@@ -31,12 +31,12 @@
       <!-- If two different POs contain same missing SKU then in MissingSkuModal, both the products will be selected. -->
       <ion-radio-group @ionChange="updatedSku = $event.detail.value; hasSkuUpdated = false; isSkuInvalid = false;" v-model="unidentifiedProductSku">
         <ion-list v-if="segmentSelected === 'pending'">
-          <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU ? item.shopifyProductSKU : item.productSKU">
+          <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
             <ion-label>
-              {{ item.shopifyProductSKU ? item.shopifyProductSKU : item.productSKU }}
+              {{ item.shopifyProductSKU }}
               <p>{{ item.orderId }}</p>
             </ion-label>
-            <ion-radio slot="end" :value="item.shopifyProductSKU ? item.shopifyProductSKU : item.productSKU" />
+            <ion-radio slot="end" :value="item.shopifyProductSKU" />
           </ion-item>
         </ion-list>
 
@@ -157,27 +157,29 @@ export default defineComponent({
         productIds: [this.updatedSku]
       }
       const products = await this.store.dispatch("product/fetchProducts", payload);
-      if (products.length) {
-        const item = products[0];
-        let unidentifiedItem;
-        if (this.type === 'order'){
-          unidentifiedItem = this.purchaseOrders.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
-          unidentifiedItem.isNewProduct = "N";
-        } else {
-          unidentifiedItem = this.stock.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.productSKU === this.unidentifiedProductSku);
-        }
-        unidentifiedItem.updatedSku = this.updatedSku;
-        unidentifiedItem.parentProductId = item.parent.id;
-        unidentifiedItem.pseudoId = item.pseudoId;
-        unidentifiedItem.parentProductName = item.parent.productName;
-        unidentifiedItem.imageUrl = item.images.mainImageUrl;
-        unidentifiedItem.isSelected = true;
-    
-        this.hasSkuUpdated = true;
-        if (this.type === 'order') this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
-        else this.store.dispatch('stock/updateStockItems', this.stock);
-      } else {
+      if (!products.length) {
         this.isSkuInvalid = true;
+        return;
+      }  
+      const item = products[0];
+      let unidentifiedItem;
+      const unidentifiedItems = this.type === 'order' ? this.purchaseOrders.unidentifiedItems : this.stock.unidentifiedItems;
+      
+      unidentifiedItem = unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
+      
+      unidentifiedItem.updatedSku = this.updatedSku;
+      unidentifiedItem.parentProductId = item.parent.id;
+      unidentifiedItem.pseudoId = item.pseudoId;
+      unidentifiedItem.parentProductName = item.parent.productName;
+      unidentifiedItem.imageUrl = item.images.mainImageUrl;
+      unidentifiedItem.isSelected = true;
+  
+      this.hasSkuUpdated = true;
+      if (this.type === 'order'){
+        unidentifiedItem.isProductNew = 'N';
+        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
+      } else {
+        this.store.dispatch('stock/updateStockItems', this.stock);
       }
     },
   },
