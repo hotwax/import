@@ -51,12 +51,20 @@
           </ion-item>
         </div>
       </div>
-      <div v-if="segmentSelected === 'all'">
-        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="purchaseOrders.parsed"  />
+      <div v-if="Object.keys(searchedProduct).length">
+        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="{[searchedProduct.orderId]: [searchedProduct]}"  />
       </div>
-      <div v-for="(po, poId) in purchaseOrders.parsed" :key="poId" >
-        <PurchaseOrderDetail v-if="segmentSelected === poId" :itemsByPoId="{[poId]: po}" :purchaseOrders="purchaseOrders" />
+
+      <div v-else>
+        <div v-if="segmentSelected === 'all'">
+          <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="purchaseOrders.parsed"  />
+        </div>
+        <div v-for="(po, poId) in purchaseOrders.parsed" :key="poId" >
+          <PurchaseOrderDetail v-if="segmentSelected === poId" :itemsByPoId="{[poId]: po}" :purchaseOrders="purchaseOrders" />
+        </div>
       </div>
+
+      
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button :disabled="isDateInvalid()" @click="save">
