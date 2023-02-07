@@ -59,13 +59,13 @@
         </ion-chip>
 
         <ion-chip outline class="tablet">
-          <ion-label>{{ searchedProduct.externalFacilityId }}</ion-label>
+          <ion-label>{{ searchedProduct.externalFacilityId ? searchedProduct.externalFacilityId : searchedProduct.facilityId }}</ion-label>
         </ion-chip>
 
-        <ion-chip outline class="tablet">
+        <ion-chip outline class="tablet location">
           <ion-icon :icon="locationOutline" />
           <ion-select interface="popover" :value="searchedProduct.locationSeqId" @ionChange="setFacilityLocation($event, searchedProduct)">
-            <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(searchedProduct.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
+            <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(searchedProduct.externalFacilityId ? searchedProduct.externalFacilityId : searchedProduct.facilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
           </ion-select>
         </ion-chip>
 
@@ -235,6 +235,9 @@ export default defineComponent({
         component: MissingSkuModal,
         componentProps: { 'unidentifiedItems': this.stock.unidentifiedItems, type: 'stock' }
       });
+      missingSkuModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
       return missingSkuModal.present();
     },
     getItemsWithMissingFacility() {
@@ -246,6 +249,9 @@ export default defineComponent({
       const missingFacilitiesModal = await modalController.create({
         component: MissingFacilitiesModal,
         componentProps: { itemsWithMissingFacility, facilities: this.facilities, type: 'stock' }
+      });
+      missingFacilitiesModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
       });
       return missingFacilitiesModal.present();
     },
@@ -344,20 +350,6 @@ export default defineComponent({
       this.stock.parsed = JSON.parse(JSON.stringify(this.stock.original));
       this.store.dispatch('stock/updateStockItems', this.stock);
     },
-    async apply() {
-      if(this.facilityId) {
-        const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', [this.facilityId]);
-        const locationSeqId = facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0] && facilityLocations[this.facilityId][0].locaionSeqId ? facilityLocations[this.facilityId][0].locaionSeqId : '';
-        this.stock.parsed.map((item: any) => {
-          if (item.isSelected) {
-            item.facilityId = this.facilityId;
-            item.locationSeqId = locationSeqId;
-            item.externalFacilityId = "";
-          }
-        })
-      }
-      await this.store.dispatch('stock/updateStockItems', this.stock);
-    },
     getParentProductIds (items: any) {
       return Array.from(new Set(items.map((ele: any) => ele.parentProductId)));
     },
@@ -388,6 +380,9 @@ export default defineComponent({
     async openBulkInventoryAdjustmentModal() {
       const bulkInventoryAdjustmentModal = await modalController.create({
         component: BulkInventoryAdjustmentModal,
+      });
+      bulkInventoryAdjustmentModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
       });
       return bulkInventoryAdjustmentModal.present();
     },
