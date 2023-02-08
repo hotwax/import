@@ -85,6 +85,9 @@ export default defineComponent({
       this.router.push("/login")
     }
   },
+  created() {
+    init(this.userToken, this.instanceUrl, this.maxAge)
+  },
   async mounted() {
     this.loader = await loadingController
       .create({
@@ -95,8 +98,6 @@ export default defineComponent({
     emitter.on('presentLoader', this.presentLoader);
     emitter.on('dismissLoader', this.dismissLoader);
     emitter.on('playAnimation', this.playAnimation);
-
-    init(this.userToken, this.instanceUrl, this.maxAge)
   },
   created() {
     document.addEventListener('swUpdated', this.updateAvailable, { once: true })
