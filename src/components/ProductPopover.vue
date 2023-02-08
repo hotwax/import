@@ -39,91 +39,99 @@ export default defineComponent({
     onlySelect() {
       this.isVirtual ? this.onlySelectParentProduct() : this.onlySelectSingleProduct();
     },
+    onlySelectParentProductForOrder() {
+      Object.values(this.purchaseOrders.parsed).flat().map(item => {
+        item.isSelected = item.parentProductId === this.id && item.orderId === this.poId;
+      });
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
+    },
+    onlySelectParentProductForStock() {
+      this.stockItems.parsed.map(item => {
+        item.isSelected = item.parentProductId === this.id;
+      })
+      this.store.dispatch('stock/updateStockItems', this.stockItems)
+    },
     onlySelectParentProduct() {
-      if(this.type === 'order') {
-        Object.values(this.purchaseOrders.parsed).flat().map(item => {
-          item.isSelected = item.parentProductId === this.id && item.orderId === this.poId;
-        });
-        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
-      } else {
-        this.stockItems.parsed.map(item => {
-          item.isSelected = item.parentProductId === this.id;
-        })
-        this.store.dispatch('stock/updateStockItems', this.stockItems)
-      }
+      this.type === 'order' ? this.onlySelectParentProductForOrder() : this.onlySelectParentProductForStock();
       popoverController.dismiss({ dismissed: true });
+    },
+    onlySelectSingleProductForOrder() {
+      Object.values(this.purchaseOrders.parsed).flat().map(item => {
+        item.isSelected = item.pseudoId === this.id && item.orderId === this.poId;
+      });
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
+    },
+    onlySelectSingleProductForStock() {
+      this.stockItems.parsed.map(item => {
+        item.isSelected = item.pseudoId === this.id;
+      });
+      this.store.dispatch('stock/updateStockItems', this.stockItems)
     },
     onlySelectSingleProduct() {      
-      if(this.type === 'order') {
-        Object.values(this.purchaseOrders.parsed).flat().map(item => {
-          item.isSelected = item.pseudoId === this.id && item.orderId === this.poId;
-        });
-        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
-      } else {
-        this.stockItems.parsed.map(item => {
-          item.isSelected = item.pseudoId === this.id;
-        });
-        this.store.dispatch('stock/updateStockItems', this.stockItems)
-      }
-      
+      this.type === 'order' ? this.onlySelectSingleProductForOrder() : this.onlySelectSingleProductForStock();
       popoverController.dismiss({ dismissed: true });
+    },
+    revertProductForOrder() {
+      const original = JSON.parse(JSON.stringify(this.getPurchaseOrders.original));
+      this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
+        if(element.pseudoId === this.id) {
+          const item = original[this.poId].find(item => {
+            return item.pseudoId === this.id;
+          })
+          element = item;
+        }
+        return element;
+      });
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
+    },
+    revertProductForStock() {
+      const original = JSON.parse(JSON.stringify(this.stockItems.original));
+      this.stockItems.parsed = this.stockItems.parsed.map(element => {
+        if(element.pseudoId === this.id) {
+          const item = original.find(item => {
+            return item.pseudoId === this.id;
+          })
+          element = item;
+        }
+        return element;
+      });
+      this.store.dispatch('stock/updateStockItems', this.stockItems)
     },
     revertProduct() {
-      if(this.type === 'order') {
-        const original = JSON.parse(JSON.stringify(this.getPurchaseOrders.original));
-        this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
-          if(element.pseudoId === this.id) {
-            const item = original[this.poId].find(item => {
-              return item.pseudoId === this.id;
-            })
-            element = item;
-          }
-          return element;
-        });
-        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
-      } else {
-        const original = JSON.parse(JSON.stringify(this.stockItems.original));
-        this.stockItems.parsed = this.stockItems.parsed.map(element => {
-          if(element.pseudoId === this.id) {
-            const item = original.find(item => {
-              return item.pseudoId === this.id;
-            })
-            element = item;
-          }
-          return element;
-        });
-        this.store.dispatch('stock/updateStockItems', this.stockItems)
-      }
-      
+      this.type === 'order' ? this.revertProductForOrder() : this.revertProductForStock();
       popoverController.dismiss({ dismissed: true });
     },
-    revertParentProduct(){
-      if(this.type === 'order') {
-        const original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
-        this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
-          if(element.parentProductId === this.id) {
-            const item = original[this.poId].find(item => {
+    revertParentProductForOrder(){
+      const original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
+      this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
+        if(element.parentProductId === this.id) {
+          const item = original[this.poId].find(item => {
+            // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
               // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
-              return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
-            })
-            element = item;
-          }
-          return element;
-        });
-        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
-      } else {
-        const original = JSON.parse(JSON.stringify(this.stockItems.original));
-        this.stockItems.parsed = this.stockItems.parsed.map(element => {
-          if(element.parentProductId === this.id) {
-            const item = original.find(item => {
-              return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
-            })
-            element = item;
-          }
-          return element;
-        });
-        this.store.dispatch('stock/updateStockItems', this.stockItems);
-      }
+            // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
+            return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
+          })
+          element = item;
+        }
+        return element;
+      });
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
+    },
+    revertParentProductForStock(){
+      const original = JSON.parse(JSON.stringify(this.stockItems.original));
+      this.stockItems.parsed = this.stockItems.parsed.map(element => {
+        if(element.parentProductId === this.id) {
+          const item = original.find(item => {
+            return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
+          })
+          element = item;
+        }
+        return element;
+      });
+      this.store.dispatch('stock/updateStockItems', this.stockItems);
+    },
+    revertParentProduct(){
+      this.type === 'order' ? this.revertParentProductForOrder() : this.revertParentProductForStock();
       popoverController.dismiss({ dismissed: true });
     }
   },
@@ -135,5 +143,5 @@ export default defineComponent({
       store
     }
   }
-});
+}) 
 </script>

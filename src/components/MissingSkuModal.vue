@@ -116,7 +116,8 @@ export default defineComponent({
       updatedSku: '',
       unidentifiedProductSku: '',
       hasSkuUpdated: false,
-      isSkuInvalid: false
+      isSkuInvalid: false,
+      unidentifiedItems: [] as any
     }
   },
   computed: {
@@ -124,6 +125,9 @@ export default defineComponent({
       purchaseOrders: 'order/getPurchaseOrders',
       stockItems: 'stock/getItemsStock',
     })
+  },
+  mounted() {
+    this.unidentifiedItems =  this.type ==='order' ? this.purchaseOrders.unidentifiedItems : this.stockItems.unidentifiedItems;  
   },
   props: ['type'],
   methods: {
@@ -136,14 +140,12 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     getPendingItems(){
-      if(this.type === 'order') return this.purchaseOrders.unidentifiedItems.filter((item: any) => !item.updatedSku);
-      return this.stockItems.unidentifiedItems.filter((item: any) => !item.updatedSku); 
+      return this.unidentifiedItems.filter((item: any) => !item.updatedSku);
     },
     getCompletedItems(){
-      if(this.type === 'order') return this.purchaseOrders.unidentifiedItems.filter((item: any) => item.updatedSku);
-      return this.stockItems.unidentifiedItems.filter((item: any) => item.updatedSku);
+      return this.unidentifiedItems.filter((item: any) => item.updatedSku);
     },
-    save(){
+    save() {
       if(this.type === 'order') this.store.dispatch('order/updateUnidentifiedItem', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
       else this.store.dispatch('stock/updateUnidentifiedItem', { unidentifiedItems: this.stockItems.unidentifiedItems });
       this.closeModal();
@@ -161,22 +163,20 @@ export default defineComponent({
         this.isSkuInvalid = true;
         return;
       }  
-      const item = products[0];
-      let unidentifiedItem;
-      const unidentifiedItems = this.type === 'order' ? this.purchaseOrders.unidentifiedItems : this.stockItems.unidentifiedItems;
+      const product = products[0];
       
-      unidentifiedItem = unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
+      const unidentifiedItem = this.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
       
       unidentifiedItem.updatedSku = this.updatedSku;
-      unidentifiedItem.parentProductId = item.parent.id;
-      unidentifiedItem.pseudoId = item.pseudoId;
-      unidentifiedItem.parentProductName = item.parent.productName;
-      unidentifiedItem.imageUrl = item.images.mainImageUrl;
+      unidentifiedItem.parentProductId = product.parent.id;
+      unidentifiedItem.pseudoId = product.pseudoId;
+      unidentifiedItem.parentProductName = product.parent.productName;
+      unidentifiedItem.imageUrl = product.images.mainImageUrl;
       unidentifiedItem.isSelected = true;
   
       this.hasSkuUpdated = true;
       if (this.type === 'order'){
-        unidentifiedItem.isProductNew = 'N';
+        unidentifiedItem.isNewProduct = 'N';
         this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
       } else {
         this.store.dispatch('stock/updateStockItems', this.stockItems);
