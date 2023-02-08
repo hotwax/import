@@ -104,11 +104,12 @@ export default defineComponent({
       this.content = await this.parseCsv(this.file);
     },
     mapFields() {
-      const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       if (this.content.length <= 0) {
         showToast(translate("Please upload a valid reset inventory csv to continue"));
         return;
       }
+      
+      const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       
       if (!areAllFieldsSelected) {
         showToast(translate("Select all the fields to continue"));

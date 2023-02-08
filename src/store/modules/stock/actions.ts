@@ -19,6 +19,7 @@ const actions: ActionTree<StockState, RootState> = {
     await store.dispatch("product/fetchProducts", payload);
     const unidentifiedItems = [] as any;
     const parsed = items.map((item: any) => {
+      //TODO: use action instead of getter
       const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
       
       if(Object.keys(product).length > 0){
