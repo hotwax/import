@@ -32,7 +32,8 @@ const actions: ActionTree<StockState, RootState> = {
       unidentifiedItems.push(item);
       return;
     }).filter((item: any) => item);
-    const original = JSON.parse(JSON.stringify(items))
+
+    const original = JSON.parse(JSON.stringify(parsed));
 
     commit(types.STOCK_ITEMS_UPDATED, { parsed, original, unidentifiedItems });
   },
@@ -48,11 +49,13 @@ const actions: ActionTree<StockState, RootState> = {
       if(item.updatedSku) {
         item.shopifyProductSKU = item.updatedSku;
         parsed.push(item);
+        state.items.original.push(item);
       } else {
         return item;
       }
     }).filter((item: any) => item);
-    const original = JSON.parse(JSON.stringify(state.items.parsed));
+
+    const original = JSON.parse(JSON.stringify(state.items.original));
 
     commit(types.STOCK_ITEMS_UPDATED, { parsed, original, unidentifiedItems});
   }
