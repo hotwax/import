@@ -16,6 +16,7 @@ import { mapGetters, useStore } from 'vuex';
 import { init, resetConfig } from '@/adapter'
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'App',
@@ -79,6 +80,10 @@ export default defineComponent({
       this.store.dispatch('user/updatePwaState', { registration, updateExists });
       showToast(translate("New version available, please update the app."));
     },
+    async unauthorized() {
+      this.store.dispatch("user/logout");
+      this.router.push("/login")
+    }
   },
   async mounted() {
     this.loader = await loadingController
@@ -115,8 +120,10 @@ export default defineComponent({
   },
   setup(){
     const store = useStore();
+    const router = useRouter();
     return {
-      store,
+      router,
+      store
     }
   },
 });

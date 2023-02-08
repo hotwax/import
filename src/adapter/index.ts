@@ -1,4 +1,6 @@
 import {
+  api,
+  client,
   fetchProducts,
   init,
   isError,
@@ -9,6 +11,8 @@ import {
 } from '@hotwax/oms-api'
 
 export {
+  api,
+  client,
   fetchProducts,
   init,
   isError,
