@@ -14,7 +14,7 @@
       <div>
         <ion-item id="update-sku" :class="isSkuInvalid ? 'ion-invalid' : ''">
           <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" />
-          <ion-note v-show="hasSkuUpdated && (purchaseOrders.unidentifiedItems.length || stock.unidentifiedItems.length)" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
+          <ion-note v-show="hasSkuUpdated && (purchaseOrders.unidentifiedItems.length || stockItems.unidentifiedItems.length)" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
           <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
         </ion-item>
         <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ $t("Update") }}</ion-button>
@@ -122,7 +122,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       purchaseOrders: 'order/getPurchaseOrders',
-      stock: 'stock/getItemsStock',
+      stockItems: 'stock/getItemsStock',
     })
   },
   props: ['type'],
@@ -137,15 +137,15 @@ export default defineComponent({
     },
     getPendingItems(){
       if(this.type === 'order') return this.purchaseOrders.unidentifiedItems.filter((item: any) => !item.updatedSku);
-      return this.stock.unidentifiedItems.filter((item: any) => !item.updatedSku); 
+      return this.stockItems.unidentifiedItems.filter((item: any) => !item.updatedSku); 
     },
     getCompletedItems(){
       if(this.type === 'order') return this.purchaseOrders.unidentifiedItems.filter((item: any) => item.updatedSku);
-      return this.stock.unidentifiedItems.filter((item: any) => item.updatedSku);
+      return this.stockItems.unidentifiedItems.filter((item: any) => item.updatedSku);
     },
     save(){
       if(this.type === 'order') this.store.dispatch('order/updateUnidentifiedItem', { unidentifiedItems: this.purchaseOrders.unidentifiedItems });
-      else this.store.dispatch('stock/updateUnidentifiedItem', { unidentifiedItems: this.stock.unidentifiedItems });
+      else this.store.dispatch('stock/updateUnidentifiedItem', { unidentifiedItems: this.stockItems.unidentifiedItems });
       this.closeModal();
     },
     async update() {
@@ -163,7 +163,7 @@ export default defineComponent({
       }  
       const item = products[0];
       let unidentifiedItem;
-      const unidentifiedItems = this.type === 'order' ? this.purchaseOrders.unidentifiedItems : this.stock.unidentifiedItems;
+      const unidentifiedItems = this.type === 'order' ? this.purchaseOrders.unidentifiedItems : this.stockItems.unidentifiedItems;
       
       unidentifiedItem = unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
       
@@ -179,7 +179,7 @@ export default defineComponent({
         unidentifiedItem.isProductNew = 'N';
         this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
       } else {
-        this.store.dispatch('stock/updateStockItems', this.stock);
+        this.store.dispatch('stock/updateStockItems', this.stockItems);
       }
     },
   },

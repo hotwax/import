@@ -38,7 +38,7 @@
           <ion-item @click="openMissingSkuModal()" button>
             <ion-icon slot="start" :icon="shirtOutline" />
             <ion-label>{{ $t("Missing products") }}</ion-label>
-            <ion-note slot="end">{{ stock.unidentifiedItems.length }} {{ $t("items") }}</ion-note>
+            <ion-note slot="end">{{ stockItems.unidentifiedItems.length }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
         </div>
@@ -77,10 +77,10 @@
         </ion-button>
       </div>
 
-      <div v-else v-for="id in getParentProductIds(stock.parsed)" :key="id">
+      <div v-else v-for="id in getParentProductIds(stockItems.parsed)" :key="id">
         <div class="list-item list-header">
           <ion-item color="light" lines="none">
-            <ion-label>{{ getParentInformation(id, stock.parsed).parentProductName }}</ion-label>
+            <ion-label>{{ getParentInformation(id, stockItems.parsed).parentProductName }}</ion-label>
           </ion-item>
 
           <div class="tablet" />
@@ -91,11 +91,11 @@
           
           <ion-checkbox :checked="isParentProductChecked(id)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event)" />
 
-          <ion-button fill="clear" color="medium" @click="openProductPopover($event, id, true, getParentInformation(id, stock.parsed), 'stock')">
+          <ion-button fill="clear" color="medium" @click="openProductPopover($event, id, true, getParentInformation(id, stockItems.parsed), 'stock')">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
           </ion-button>
         </div>
-        <div v-for="(item, index) in getItemsByParentProduct(id, stock.parsed)" :key="index">
+        <div v-for="(item, index) in getItemsByParentProduct(id, stockItems.parsed)" :key="index">
           <div class="list-item">
             <ion-item lines="none">
               <ion-thumbnail slot="start">
@@ -179,7 +179,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      stock: 'stock/getItemsStock',
+      stockItems: 'stock/getItemsStock',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
       facilities: 'util/getFacilities',
@@ -189,7 +189,7 @@ export default defineComponent({
   },
   data() {
     return {
-      facilityId: (this as any)?.stock?.parsed[0]?.facilityId,
+      facilityId: (this as any)?.stockItems?.parsed[0]?.facilityId,
       queryString: "",
       searchedProduct: {} as any,
       isParentProductUpdated: false,
@@ -233,7 +233,7 @@ export default defineComponent({
     async openMissingSkuModal() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
-        componentProps: { 'unidentifiedItems': this.stock.unidentifiedItems, type: 'stock' }
+        componentProps: { 'unidentifiedItems': this.stockItems.unidentifiedItems, type: 'stock' }
       });
       missingSkuModal.onDidDismiss().then(() => {
         this.searchProduct(this.queryString);
@@ -242,7 +242,7 @@ export default defineComponent({
     },
     getItemsWithMissingFacility() {
       const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
-      return this.stock.parsed.filter((item: any) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
+      return this.stockItems.parsed.filter((item: any) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
     },
     async openMissingFacilitiesModal() {
       const itemsWithMissingFacility = this.getItemsWithMissingFacility();
@@ -256,24 +256,24 @@ export default defineComponent({
       return missingFacilitiesModal.present();
     },
     getSelectedItems(){
-      return Object.values(this.stock.parsed).filter((item: any) => item.isSelected).length;
+      return Object.values(this.stockItems.parsed).filter((item: any) => item.isSelected).length;
     },
     setFacilityLocation(ev: CustomEvent, product: any){
-      this.stock.parsed.map((item: any) => { 
+      this.stockItems.parsed.map((item: any) => { 
         if(item.pseudoId === product.pseudoId){
           item.locationSeqId = ev.detail.value;
         }
       });
-      this.store.dispatch('stock/updateStockItems', this.stock);
+      this.store.dispatch('stock/updateStockItems', this.stockItems);
     },
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
-      this.searchedProduct = this.stock.parsed.find((item: any) => {
+      this.searchedProduct = this.stockItems.parsed.find((item: any) => {
         return item.pseudoId === product.pseudoId;
       })
     },
     async save(){
-      const uploadData = this.stock.parsed.filter((item: any) => {
+      const uploadData = this.stockItems.parsed.filter((item: any) => {
         return item.isSelected;
       }).map((item: any) => {
         return {
@@ -339,17 +339,17 @@ export default defineComponent({
       return productPopover.present();
     },
     isParentProductChecked(parentProductId: string) {
-      const items = this.getItemsByParentProduct(parentProductId, this.stock.parsed);
+      const items = this.getItemsByParentProduct(parentProductId, this.stockItems.parsed);
       return items.every((item: any) => item.isSelected)
     },
     selectProduct(item: any, event: any) {
       item.isSelected = event.detail.checked;
-      this.store.dispatch('stock/updateStockItems', this.stock)
+      this.store.dispatch('stock/updateStockItems', this.stockItems)
     },
     revertAll() {
-      this.stock.parsed = JSON.parse(JSON.stringify(this.stock.original));
+      this.stockItems.parsed = JSON.parse(JSON.stringify(this.stockItems.original));
       
-      this.store.dispatch('stock/updateStockItems', this.stock);
+      this.store.dispatch('stock/updateStockItems', this.stockItems);
       if(this.queryString) this.searchProduct(this.queryString);
     },
     getParentProductIds (items: any) {
@@ -362,22 +362,22 @@ export default defineComponent({
       return items.find((item: any) => item.parentProductId == id)
     },
     selectAllItems() {
-      this.stock.parsed.forEach((item: any) => {
+      this.stockItems.parsed.forEach((item: any) => {
         item.isSelected = true;
       })
-      this.store.dispatch('stock/updateStockItems', this.stock)
+      this.store.dispatch('stock/updateStockItems', this.stockItems)
     },
     selectParentProduct(parentProductId: any, event: any) {
       // Todo: Need to find a better approach.
       if(this.isParentProductUpdated){
-        this.stock.parsed.forEach((item: any) => {
+        this.stockItems.parsed.forEach((item: any) => {
           if (item.parentProductId === parentProductId) {
             item.isSelected = event.detail.checked;
           }
         })
         this.isParentProductUpdated = false;
       }
-      this.store.dispatch('stock/updateStockItems', this.stock);
+      this.store.dispatch('stock/updateStockItems', this.stockItems);
     },
     async openBulkInventoryAdjustmentModal() {
       const bulkInventoryAdjustmentModal = await modalController.create({

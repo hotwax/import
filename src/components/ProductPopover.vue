@@ -28,7 +28,7 @@ export default defineComponent({
   components: { IonContent, IonIcon, IonLabel, IonItem },
   computed: {
     ...mapGetters({
-      stock: 'stock/getItemsStock',
+      stockItems: 'stock/getItemsStock',
       purchaseOrders: 'order/getPurchaseOrders',
     }),
   },
@@ -46,10 +46,10 @@ export default defineComponent({
         });
         this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       } else {
-        this.stock.parsed.map(item => {
+        this.stockItems.parsed.map(item => {
           item.isSelected = item.parentProductId === this.id;
         })
-        this.store.dispatch('stock/updateStockItems', this.stock)
+        this.store.dispatch('stock/updateStockItems', this.stockItems)
       }
       popoverController.dismiss({ dismissed: true });
     },
@@ -60,10 +60,10 @@ export default defineComponent({
         });
         this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       } else {
-        this.stock.parsed.map(item => {
+        this.stockItems.parsed.map(item => {
           item.isSelected = item.pseudoId === this.id;
         });
-        this.store.dispatch('stock/updateStockItems', this.stock)
+        this.store.dispatch('stock/updateStockItems', this.stockItems)
       }
       
       popoverController.dismiss({ dismissed: true });
@@ -82,8 +82,8 @@ export default defineComponent({
         });
         this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       } else {
-        const original = JSON.parse(JSON.stringify(this.stock.original));
-        this.stock.parsed = this.stock.parsed.map(element => {
+        const original = JSON.parse(JSON.stringify(this.stockItems.original));
+        this.stockItems.parsed = this.stockItems.parsed.map(element => {
           if(element.pseudoId === this.id) {
             const item = original.find(item => {
               return item.pseudoId === this.id;
@@ -92,7 +92,7 @@ export default defineComponent({
           }
           return element;
         });
-        this.store.dispatch('stock/updateStockItems', this.stock)
+        this.store.dispatch('stock/updateStockItems', this.stockItems)
       }
       
       popoverController.dismiss({ dismissed: true });
@@ -112,8 +112,8 @@ export default defineComponent({
         });
         this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
       } else {
-        const original = JSON.parse(JSON.stringify(this.stock.original));
-        this.stock.parsed = this.stock.parsed.map(element => {
+        const original = JSON.parse(JSON.stringify(this.stockItems.original));
+        this.stockItems.parsed = this.stockItems.parsed.map(element => {
           if(element.parentProductId === this.id) {
             const item = original.find(item => {
               return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
@@ -122,7 +122,7 @@ export default defineComponent({
           }
           return element;
         });
-        this.store.dispatch('stock/updateStockItems', this.stock);
+        this.store.dispatch('stock/updateStockItems', this.stockItems);
       }
       popoverController.dismiss({ dismissed: true });
     }

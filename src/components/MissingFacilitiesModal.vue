@@ -80,7 +80,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       purchaseOrders: 'order/getPurchaseOrders',
-      stock: 'stock/getItemsStock',
+      stockItems: 'stock/getItemsStock',
     })
   },
   mounted(){
@@ -102,7 +102,7 @@ export default defineComponent({
         const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', Object.values(this.facilityMapping));
         Object.keys(this.facilityMapping).map((facilityId: any) => {
           const locationSeqId = facilityLocations[this.facilityMapping[facilityId]].length ? facilityLocations[this.facilityMapping[facilityId]][0].locationSeqId : '';
-          this.stock.parsed.map((item: any) => {
+          this.stockItems.parsed.map((item: any) => {
             if(item.externalFacilityId === facilityId){
               item.externalFacilityId = "";
               item.facilityId = this.facilityMapping[facilityId];
@@ -110,7 +110,7 @@ export default defineComponent({
             }
           })
         })
-        this.store.dispatch('stock/updateStockItems', this.stock);
+        this.store.dispatch('stock/updateStockItems', this.stockItems);
       }
       
       this.closeModal();

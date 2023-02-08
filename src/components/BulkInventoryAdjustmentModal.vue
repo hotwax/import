@@ -13,7 +13,7 @@
   <ion-content>
     <ion-item lines="full">
       <ion-label>{{ $t("Buffer quantity") }}</ion-label>
-      <ion-input v-model="quantityBuffer" :placeholder = "$t('Quantity')" />
+      <ion-input v-model="quantityBuffer" type="number" min="0" :placeholder = "$t('Quantity')" />
     </ion-item>
 
     <ion-item>
@@ -74,13 +74,13 @@ export default defineComponent({
   },
   data() {
     return {
-      quantityBuffer: "",
+      quantityBuffer: 0,
       facilityId: "",
     }
   },
   computed: {
     ...mapGetters({
-      stock: 'stock/getItemsStock',  
+      stockItems: 'stock/getItemsStock',  
       facilities: 'util/getFacilities',
     })
   },
@@ -91,10 +91,9 @@ export default defineComponent({
     async save() {
       const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', [this.facilityId]);
       const locationSeqId = facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0] ? facilityLocations[this.facilityId][0].locationSeqId : '';
-      await this.stock.parsed.map((item: any) => {
+      await this.stockItems.parsed.map((item: any) => {
         if (item.isSelected) {
-          if(this.quantityBuffer != '')
-          item.quantity = this.quantityBuffer;
+          item.quantity -= this.quantityBuffer;
           if(this.facilityId) {
             item.facilityId = this.facilityId;
             item.externalFacilityId = "";
@@ -102,7 +101,7 @@ export default defineComponent({
           }
         }
       })
-      await this.store.dispatch('stock/updateStockItems', this.stock)
+      await this.store.dispatch('stock/updateStockItems', this.stockItems)
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
     },
