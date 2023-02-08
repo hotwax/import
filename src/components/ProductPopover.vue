@@ -72,7 +72,7 @@ export default defineComponent({
       popoverController.dismiss({ dismissed: true });
     },
     revertProductForOrder() {
-      const original = JSON.parse(JSON.stringify(this.getPurchaseOrders.original));
+      const original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
       this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.pseudoId === this.id) {
           const item = original[this.poId].find(item => {
