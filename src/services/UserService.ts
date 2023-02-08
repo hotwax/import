@@ -43,14 +43,6 @@ const setUserTimeZone = async (payload: any): Promise <any>  => {
     data: payload
   });
 }
-
-const getFacilityLocations = async (payload: any): Promise<any> => {
-  return api({
-    url: "/performFind",
-    method: "POST",
-    data: payload
-  })
-}
     
 const createFieldMapping = async (payload: any): Promise <any> => {
   return api({
@@ -85,14 +77,13 @@ const getFieldMappings = async (payload: any): Promise <any> => {
 }
 
 export const UserService = {
-  createFieldMapping,
-  deleteFieldMapping,
-  login,
-  getAvailableTimeZones,
-  getFacilityLocations,
-  getFieldMappings,
-  getProfile,
-  setUserTimeZone,
-  checkPermission,
-  updateFieldMapping
+    createFieldMapping,
+    deleteFieldMapping,
+    login,
+    getAvailableTimeZones,
+    getFieldMappings,
+    getProfile,
+    setUserTimeZone,
+    checkPermission,
+    updateFieldMapping
 }

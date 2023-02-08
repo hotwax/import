@@ -126,47 +126,7 @@ const actions: ActionTree<UserState, RootState> = {
   setUserInstanceUrl ({ commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
     updateInstanceUrl(payload)
-  },
-
-  async fetchFacilityLocations({ commit, state }, facilityIds){
-    facilityIds = facilityIds.filter((facilityId: any) => !state.facilityLocationsByFacilityId[facilityId])
-    if(!facilityIds.length) return state.facilityLocationsByFacilityId;
-
-    let resp;
-    const params = {
-      "inputFields": {
-        facilityId: facilityIds,
-        "facilityId_op": 'in'
-      },
-      // Assuming we will not have more than 20 facility locations, hardcoded the viewSize value 20.
-      "viewSize": 20,
-      "fieldList": ["locationSeqId", "areaId", "aisleId", "sectionId", "levelId", "positionId", "facilityId"],
-      "entityName": "FacilityLocation",
-      "distinct": "Y",
-      "noConditionFind": "Y"
-    }
-    try {
-      resp = await UserService.getFacilityLocations(params);
-      if(resp.status === 200 && !hasError(resp) && resp.data?.count > 0) {
-        let facilityLocations = resp.data.docs
-        facilityLocations = facilityLocations.reduce((locations: any, location: any) => {
-          const locationPath = [location.areaId, location.aisleId, location.sectionId, location.levelId, location.positionId].filter((value: any) => value).join("");
-          const facilityLocation = {
-            locationSeqId: location.locationSeqId,
-            locationPath: locationPath
-          }
-          locations[location.facilityId] ? locations[location.facilityId].push(facilityLocation) : locations[location.facilityId] = [facilityLocation];
-          return locations;
-        }, {});
-        commit(types.USER_FACILITY_LOCATIONS_BY_FACILITY_ID, facilityLocations);
-      } else {
-        console.error(resp);
-      }
-    } catch(err) {
-      console.error(err);
-    }
-    return state.facilityLocationsByFacilityId;
-  },    
+  }, 
   
   updatePwaState({commit}, payload) {
     commit(types.USER_PWA_STATE_UPDATED, payload);

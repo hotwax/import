@@ -89,7 +89,7 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     async save() {
-      const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', [this.facilityId]);
+      const facilityLocations = await this.store.dispatch('util/fetchFacilityLocations', [this.facilityId]);
       const locationSeqId = facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0] ? facilityLocations[this.facilityId][0].locationSeqId : '';
       await this.stockItems.parsed.map((item: any) => {
         if (item.isSelected) {

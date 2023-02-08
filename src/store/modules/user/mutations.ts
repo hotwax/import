@@ -8,7 +8,6 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_END_SESSION] (state) {
       state.token = ''
-      state.facilityLocationsByFacilityId = {}
       state.current = {}
       state.currentFacility = {}
     },
@@ -30,11 +29,6 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
-    },
-    [types.USER_FACILITY_LOCATIONS_BY_FACILITY_ID] (state, facilityLocations) {
-        Object.keys(facilityLocations).map((facilityId: any) => {
-            state.facilityLocationsByFacilityId[facilityId] = facilityLocations[facilityId];
-        })
     },    
     [types.USER_CURRENT_FIELD_MAPPING_UPDATED] (state, payload) {
         state.currentMapping = payload

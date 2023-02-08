@@ -60,7 +60,7 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { useStore, mapGetters } from "vuex";
+import { useStore } from "vuex";
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import { arrowForwardOutline } from 'ionicons/icons';
@@ -83,11 +83,6 @@ export default defineComponent({
     IonIcon,
     IonListHeader,
     IonList
-  },
-  computed: {
-    ...mapGetters({
-      dateTimeFormat : 'user/getDateTimeFormat',
-    })
   },
   data() {
     return {
@@ -129,7 +124,7 @@ export default defineComponent({
           locationSeqId: item[this.fieldMapping.locationSeqId]
         }
       })
-      this.store.dispatch('stock/updatedStockList', this.productsList);
+      this.store.dispatch('stock/updateStock', this.productsList);
       this.router.push({
         name:'InventoryDetail'
       })

@@ -13,7 +13,6 @@ const userModule: Module<UserState, RootState> = {
       currentFacility: {},
       instanceUrl: '',
       preferredDateTimeFormat: '',
-      facilityLocationsByFacilityId: {},
       fieldMappings: {},
       pwaState: {
         updateExists: false,

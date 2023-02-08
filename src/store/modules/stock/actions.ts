@@ -5,7 +5,7 @@ import StockState from './StockState'
 import * as types from './mutation-types'
 
 const actions: ActionTree<StockState, RootState> = {
-  async updatedStockList ({commit, rootGetters}, items) {
+  async updateStock ({commit, rootGetters}, items) {
     const productIds = items.map((item: any) => item.shopifyProductSKU)
     const facilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))]
     const viewSize = productIds.length;
@@ -15,7 +15,7 @@ const actions: ActionTree<StockState, RootState> = {
       viewIndex,
       productIds
     }
-    await store.dispatch('user/fetchFacilityLocations', facilityIds);
+    await store.dispatch('util/fetchFacilityLocations', facilityIds);
     await store.dispatch("product/fetchProducts", payload);
     const unidentifiedItems = [] as any;
     const parsed = items.map((item: any) => {
@@ -40,7 +40,7 @@ const actions: ActionTree<StockState, RootState> = {
   updateStockItems({ commit }, stockItems){
     commit(types.STOCK_ITEMS_UPDATED, stockItems);
   },
-  clearStockList({ commit }){
+  clearStock({ commit }){
     commit(types.STOCK_ITEMS_UPDATED, { parsed: [], original: [], unidentifiedItems: []});
   },
   updateUnidentifiedItem({ commit, state }, payload: any) {
@@ -60,7 +60,7 @@ const actions: ActionTree<StockState, RootState> = {
     commit(types.STOCK_ITEMS_UPDATED, { parsed, original, unidentifiedItems});
   },
   async updateMissingFacilities({ state }, facilityMapping){
-    const facilityLocations = await this.dispatch('user/fetchFacilityLocations', Object.values(facilityMapping));
+    const facilityLocations = await this.dispatch('util/fetchFacilityLocations', Object.values(facilityMapping));
     Object.keys(facilityMapping).map((facilityId: any) => {
       const locationSeqId = facilityLocations[facilityMapping[facilityId]].length ? facilityLocations[facilityMapping[facilityId]][0].locationSeqId : '';
       state.items.parsed.map((item: any) => {

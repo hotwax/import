@@ -30,9 +30,6 @@ const getters: GetterTree <UserState, RootState> = {
     },
     getPreferredDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
-    },
-    getFacilityLocationsByFacilityId: (state) => (facilityId: string) => {
-        return state.facilityLocationsByFacilityId[facilityId]
     },    
     getCurrentMapping(state) {
         return JSON.parse(JSON.stringify(state.currentMapping))

@@ -184,7 +184,7 @@ export default defineComponent({
       instanceUrl: 'user/getInstanceUrl',
       facilities: 'util/getFacilities',
       fileName: 'order/getFileName',
-      getFacilityLocationsByFacilityId: 'user/getFacilityLocationsByFacilityId'
+      getFacilityLocationsByFacilityId: 'util/getFacilityLocationsByFacilityId'
     })
   },
   data() {
@@ -314,7 +314,7 @@ export default defineComponent({
                     }
                   }])
                   this.router.push("/inventory");
-                  this.store.dispatch('stock/clearStockList');
+                  this.store.dispatch('stock/clearStock');
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
                 })
