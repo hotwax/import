@@ -125,7 +125,7 @@ export default defineComponent({
           quantity: "",
           facility: "",
         },
-        PurchaseOrderItems: [],
+        purchaseOrderItems: [],
       }
     },
     methods: {
@@ -149,7 +149,7 @@ export default defineComponent({
           return;
         }
 
-        this.PurchaseOrderItems = this.content.map(item => {
+        this.purchaseOrderItems = this.content.map(item => {
           return {
             orderId: item[this.fieldMapping.orderId],
             shopifyProductSKU: item[this.fieldMapping.productSku],
@@ -159,7 +159,7 @@ export default defineComponent({
             externalFacilityId: item[this.fieldMapping.facility]
           }
         })
-        this.store.dispatch('order/fetchOrderDetails', this.PurchaseOrderItems);
+        this.store.dispatch('order/fetchOrderDetails', this.purchaseOrderItems);
         this.router.push({
           name:'PurchaseOrderReview'
         })

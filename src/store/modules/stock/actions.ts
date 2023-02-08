@@ -30,7 +30,7 @@ const actions: ActionTree<StockState, RootState> = {
         return item;
       }
       unidentifiedItems.push(item);
-      return ;
+      return;
     }).filter((item: any) => item);
     const original = JSON.parse(JSON.stringify(items))
 
