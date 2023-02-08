@@ -1,4 +1,4 @@
-import api from '../api'
+import { api } from '@/adapter';
 import { UploadRequest } from '@/types'
 
 const uploadJsonFile = async (payload: any): Promise <any>  => {
