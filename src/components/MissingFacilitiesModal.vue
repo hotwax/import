@@ -89,28 +89,9 @@ export default defineComponent({
   methods: {
     async save(){
       if(this.type === 'order'){
-        Object.keys(this.facilityMapping).map((facilityId: any) => {
-          Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
-            if(item.externalFacilityId === facilityId){
-              item.externalFacilityId = "";
-              item.facilityId = this.facilityMapping[facilityId];
-            }
-          })
-        })
-        this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
+        this.store.dispatch('order/updateMissingFacilities', this.facilityMapping)
       } else {
-        const facilityLocations = await this.store.dispatch('user/fetchFacilityLocations', Object.values(this.facilityMapping));
-        Object.keys(this.facilityMapping).map((facilityId: any) => {
-          const locationSeqId = facilityLocations[this.facilityMapping[facilityId]].length ? facilityLocations[this.facilityMapping[facilityId]][0].locationSeqId : '';
-          this.stockItems.parsed.map((item: any) => {
-            if(item.externalFacilityId === facilityId){
-              item.externalFacilityId = "";
-              item.facilityId = this.facilityMapping[facilityId];
-              item.locationSeqId = locationSeqId;
-            }
-          })
-        })
-        this.store.dispatch('stock/updateStockItems', this.stockItems);
+        this.store.dispatch('stock/updateMissingFacilities', this.facilityMapping)
       }
       
       this.closeModal();

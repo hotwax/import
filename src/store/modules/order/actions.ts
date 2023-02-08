@@ -64,6 +64,17 @@ const actions: ActionTree<OrderState, RootState> = {
     const original = JSON.parse(JSON.stringify(state.purchaseOrders.parsed));
 
     commit(types.ORDER_PURCHASEORDERS_UPDATED, { parsed, original, unidentifiedItems});
+  },
+  updateMissingFacilities({state, dispatch}, facilityMapping){
+    Object.keys(facilityMapping).map((facilityId: any) => {
+      Object.values(state.purchaseOrders.parsed).flat().map((item: any) => {
+        if(item.externalFacilityId === facilityId){
+          item.externalFacilityId = "";
+          item.facilityId = facilityMapping[facilityId];
+        }
+      })
+    })
+    this.dispatch('order/updatePurchaseOrders', state.purchaseOrders);
   }
 }
 export default actions;

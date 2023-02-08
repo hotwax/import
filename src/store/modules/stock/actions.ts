@@ -58,6 +58,20 @@ const actions: ActionTree<StockState, RootState> = {
     const original = JSON.parse(JSON.stringify(state.items.original));
 
     commit(types.STOCK_ITEMS_UPDATED, { parsed, original, unidentifiedItems});
+  },
+  async updateMissingFacilities({ state }, facilityMapping){
+    const facilityLocations = await this.dispatch('user/fetchFacilityLocations', Object.values(facilityMapping));
+    Object.keys(facilityMapping).map((facilityId: any) => {
+      const locationSeqId = facilityLocations[facilityMapping[facilityId]].length ? facilityLocations[facilityMapping[facilityId]][0].locationSeqId : '';
+      state.items.parsed.map((item: any) => {
+        if(item.externalFacilityId === facilityId){
+          item.externalFacilityId = "";
+          item.facilityId = facilityMapping[facilityId];
+          item.locationSeqId = locationSeqId;
+        }
+      })
+    })
+    this.dispatch('stock/updateStockItems', state.items);
   }
 }
 export default actions;
