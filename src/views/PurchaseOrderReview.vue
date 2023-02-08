@@ -18,7 +18,7 @@
     <ion-content :fullscreen="true">
       <div class="header">
         <div class="search">
-          <ion-searchbar :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
+          <ion-searchbar :placeholder="$t('Search products')" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
         </div>
 
         <div class="filters">
@@ -51,7 +51,7 @@
           </ion-item>
         </div>
       </div>
-      <div v-if="searchedProduct?.pseudoId">
+      <div v-if="searchedProduct?.pseudoId && queryString">
         <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="{[searchedProduct?.orderId]: [searchedProduct]}"  />
       </div>
 
@@ -197,6 +197,9 @@ export default defineComponent({
         component: MissingSkuModal,
         componentProps: { 'unidentifiedItems': this.purchaseOrders.unidentifiedItems }
       });
+      missingSkuModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
       return missingSkuModal.present();
     },
     searchProduct(sku: any) {
@@ -210,7 +213,6 @@ export default defineComponent({
           return item.pseudoId === product.pseudoId;
         })
       } else {
-        console.log(this.purchaseOrders.parsed[this.segmentSelected]);
         this.searchedProduct = this.purchaseOrders.parsed[this.segmentSelected].find((item: any) => {
           return item.pseudoId === product.pseudoId;
         })
@@ -220,6 +222,9 @@ export default defineComponent({
       const dateTimeParseErrorModal = await modalController.create({
         component: DateTimeParseErrorModal,
         componentProps: { numberOfItems: Object.values(this.purchaseOrders.parsed).flat().length, numberOfPos: Object.keys(this.purchaseOrders.parsed).length }
+      });
+      dateTimeParseErrorModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
       });
       return dateTimeParseErrorModal.present();
     },
@@ -283,6 +288,9 @@ export default defineComponent({
       const bulkAdjustmentModal = await modalController.create({
         component: BulkAdjustmentModal,
       });
+      bulkAdjustmentModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
       return bulkAdjustmentModal.present();
     },
     async openMissingFacilitiesModal() {
@@ -290,6 +298,9 @@ export default defineComponent({
       const missingFacilitiesModal = await modalController.create({
         component: MissingFacilityModal,
         componentProps: { itemsWithMissingFacility, facilities: this.facilities }
+      });
+      missingFacilitiesModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
       });
       return missingFacilitiesModal.present();
     },
