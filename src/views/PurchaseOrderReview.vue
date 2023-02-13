@@ -145,7 +145,7 @@ export default defineComponent({
     let canLeave = false;
     const alert = await alertController.create({
       header: this.$t("Leave page"),
-      message: this.$t("Any edits made to this PO will be lost."),
+      message: this.$t("Any edits made on this page will be lost."),
       buttons: [
         {
           text: this.$t("STAY"),
