@@ -5,7 +5,7 @@ import StockState from './StockState'
 import * as types from './mutation-types'
 
 const actions: ActionTree<StockState, RootState> = {
-  async updateStock ({commit, rootGetters}, items) {
+  async updateStock ({ commit }, items) {
     const productIds = items.map((item: any) => item.shopifyProductSKU)
     const facilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))]
     const viewSize = productIds.length;
@@ -16,13 +16,12 @@ const actions: ActionTree<StockState, RootState> = {
       productIds
     }
     await store.dispatch('util/fetchFacilityLocations', facilityIds);
-    await store.dispatch("product/fetchProducts", payload);
+    const cachedProducts = await store.dispatch("product/fetchProducts", payload);
     const unidentifiedItems = [] as any;
     const parsed = items.map((item: any) => {
-      //TODO: use action instead of getter
-      const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
+      const product = cachedProducts[item.shopifyProductSKU];
       
-      if(Object.keys(product).length > 0){
+      if(product){
         item.parentProductId = product?.parent?.id;
         item.pseudoId = product.pseudoId;
         item.parentProductName = product?.parent?.productName;

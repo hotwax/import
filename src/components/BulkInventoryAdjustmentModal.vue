@@ -91,7 +91,7 @@ export default defineComponent({
     async save() {
       const facilityLocations = await this.store.dispatch('util/fetchFacilityLocations', [this.facilityId]);
       const locationSeqId = facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0] ? facilityLocations[this.facilityId][0].locationSeqId : '';
-      await this.stockItems.parsed.map((item: any) => {
+      this.stockItems.parsed.map((item: any) => {
         if (item.isSelected) {
           item.quantity -= this.quantityBuffer;
           if(this.facilityId) {

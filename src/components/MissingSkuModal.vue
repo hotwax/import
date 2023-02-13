@@ -159,11 +159,11 @@ export default defineComponent({
         productIds: [this.updatedSku]
       }
       const products = await this.store.dispatch("product/fetchProducts", payload);
-      if (!products.length) {
+      const product = products[this.updatedSku];
+      if (!product) {
         this.isSkuInvalid = true;
         return;
-      }  
-      const product = products[0];
+      }
       
       const unidentifiedItem = this.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
       

@@ -37,17 +37,19 @@ const actions: ActionTree<UtilState, RootState> = {
     commit(types.UTIL_FACILITIES_UPDATED, []);
   },
   async fetchFacilityLocations({ commit, state }, facilityIds){
-    facilityIds = facilityIds.filter((facilityId: any) => !state.facilityLocationsByFacilityId[facilityId])
-    if(!facilityIds.length) return state.facilityLocationsByFacilityId;
+    const unavailablefacilityIds = facilityIds.filter((facilityId: any) => !state.facilityLocationsByFacilityId[facilityId])
+
+    // We already have required facility locations in cache
+    if(!unavailablefacilityIds.length) return state.facilityLocationsByFacilityId;
 
     let resp;
     const params = {
       "inputFields": {
-        facilityId: facilityIds,
+        facilityId: unavailablefacilityIds,
         "facilityId_op": 'in'
       },
-      // Assuming we will not have more than 20 facility locations, hardcoded the viewSize value 20.
-      "viewSize": 20,
+      // Assuming we will not have more than 10 facility locations.
+      "viewSize": unavailablefacilityIds.length * 10,
       "fieldList": ["locationSeqId", "areaId", "aisleId", "sectionId", "levelId", "positionId", "facilityId"],
       "entityName": "FacilityLocation",
       "distinct": "Y",
@@ -56,8 +58,8 @@ const actions: ActionTree<UtilState, RootState> = {
     try {
       resp = await UtilService.getFacilityLocations(params);
       if(resp.status === 200 && !hasError(resp) && resp.data?.count > 0) {
-        let facilityLocations = resp.data.docs
-        facilityLocations = facilityLocations.reduce((locations: any, location: any) => {
+        const facilityLocations = resp.data.docs
+        const facilityLocationsByFacilityId = facilityLocations.reduce((locations: any, location: any) => {
           const locationPath = [location.areaId, location.aisleId, location.sectionId, location.levelId, location.positionId].filter((value: any) => value).join("");
           const facilityLocation = {
             locationSeqId: location.locationSeqId,
@@ -66,7 +68,7 @@ const actions: ActionTree<UtilState, RootState> = {
           locations[location.facilityId] ? locations[location.facilityId].push(facilityLocation) : locations[location.facilityId] = [facilityLocation];
           return locations;
         }, {});
-        commit(types.UTIL_FACILITY_LOCATIONS_BY_FACILITY_ID, facilityLocations);
+        commit(types.UTIL_FACILITY_LOCATIONS_BY_FACILITY_ID, facilityLocationsByFacilityId);
       } else {
         console.error(resp);
       }
