@@ -1,4 +1,4 @@
-import api from '@/api';
+import { api } from '@/adapter'
 
 const getFacilities= async (payload: any): Promise <any> => {
   return api({
