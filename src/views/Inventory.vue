@@ -125,7 +125,7 @@ export default defineComponent({
           locationSeqId: item[this.fieldMapping.locationSeqId]
         }
       })
-      this.store.dispatch('stock/updateStock', this.productsList);
+      this.store.dispatch('stock/processUpdateStockItems', this.productsList);
       this.router.push({
         name:'InventoryDetail'
       })

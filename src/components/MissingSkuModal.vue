@@ -123,7 +123,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       purchaseOrders: 'order/getPurchaseOrders',
-      stockItems: 'stock/getItemsStock',
+      stockItems: 'stock/getStockItems',
     })
   },
   mounted() {

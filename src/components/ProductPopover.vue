@@ -28,7 +28,7 @@ export default defineComponent({
   components: { IonContent, IonIcon, IonLabel, IonItem },
   computed: {
     ...mapGetters({
-      stockItems: 'stock/getItemsStock',
+      stockItems: 'stock/getStockItems',
       purchaseOrders: 'order/getPurchaseOrders',
     }),
   },

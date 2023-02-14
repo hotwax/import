@@ -137,7 +137,7 @@ export default defineComponent({
       isPOUploadedSuccessfully: false
     }
   },
-  ionViewDidEnter(){
+  mounted(){
     this.store.dispatch('util/fetchFacilities');
   },
   async beforeRouteLeave(to) {

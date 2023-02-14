@@ -3,7 +3,7 @@ import OrderState from "./StockState";
 import RootState from "../../RootState";
 
 const getters: GetterTree<OrderState, RootState> = {
-  getItemsStock(state) {
+  getStockItems(state) {
     return JSON.parse(JSON.stringify(state.items));
   },
 };

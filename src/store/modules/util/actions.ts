@@ -48,8 +48,8 @@ const actions: ActionTree<UtilState, RootState> = {
         facilityId: unavailablefacilityIds,
         "facilityId_op": 'in'
       },
-      // Assuming we will not have more than 10 facility locations.
-      "viewSize": unavailablefacilityIds.length * 10,
+      // Assuming we will not have more than 15 facility locations.
+      "viewSize": unavailablefacilityIds.length * 15,
       "fieldList": ["locationSeqId", "areaId", "aisleId", "sectionId", "levelId", "positionId", "facilityId"],
       "entityName": "FacilityLocation",
       "distinct": "Y",

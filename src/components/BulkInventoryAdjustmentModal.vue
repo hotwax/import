@@ -80,7 +80,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      stockItems: 'stock/getItemsStock',  
+      stockItems: 'stock/getStockItems',  
       facilities: 'util/getFacilities',
     })
   },

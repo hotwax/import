@@ -179,7 +179,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      stockItems: 'stock/getItemsStock',
+      stockItems: 'stock/getStockItems',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
       facilities: 'util/getFacilities',
@@ -197,7 +197,7 @@ export default defineComponent({
       facilityLocations: {}
     }
   },
-  ionViewDidEnter(){
+  mounted(){
     this.store.dispatch('util/fetchFacilities');
   },
   async beforeRouteLeave(to) {

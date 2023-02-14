@@ -31,7 +31,6 @@ const actions: ActionTree<ProductState, RootState> = {
     })
 
     if (!isError(resp)) {
-      console.log("resp", resp)
       const products = resp.products;
       // Handled empty response in case of failed query
       if (resp.total) commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
