@@ -17,20 +17,22 @@ const actions: ActionTree<UtilState, RootState> = {
         "facilityTypeId": "VIRTUAL_FACILITY",
         "facilityTypeId_op": "notEqual",
       },
-      "fieldList": ["facilityId", "facilityName", "parentTypeId"],
+      "fieldList": ["facilityId", "facilityName", "parentTypeId", "externalId"],
       "viewSize": 50,
       "entityName": "FacilityAndType",
       "noConditionFind": "Y"
     }
     try {
       const resp = await UtilService.getFacilities(payload);
-      if(resp.status === 200 && resp.data.docs && !hasError(resp)){
+      if(resp.status === 200 && !hasError(resp)){
         commit(types.UTIL_FACILITIES_UPDATED, resp.data.docs);
       } else {
         logger.error(resp)
+        commit(types.UTIL_FACILITIES_UPDATED, []);
       }
     } catch(err) {
       logger.error(err)
+      commit(types.UTIL_FACILITIES_UPDATED, []);
     }
   },
   clearFacilities({commit}){

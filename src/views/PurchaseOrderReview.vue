@@ -137,7 +137,7 @@ export default defineComponent({
       isPOUploadedSuccessfully: false
     }
   },
-  mounted(){
+  ionViewDidEnter(){
     this.store.dispatch('util/fetchFacilities');
   },
   async beforeRouteLeave(to) {
@@ -177,8 +177,15 @@ export default defineComponent({
       return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid).length;
     },
     getItemsWithMissingFacility() {
-      const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
-      return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
+      const externalFacilityIds = this.facilities.reduce((externalFacilityIds: any, facility: any) => {
+        if (facility.externalId) externalFacilityIds.push(facility.externalId);
+        return externalFacilityIds;
+      }, [])
+
+      // if facilityId is set, this is facility set from the facility list
+      // if externalFacilityId doesn't exist, case for missing facility
+      // if externalFacilityId exist and not found in facility list, case for missing facility
+      return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => !item.facilityId && (!item.externalFacilityId || (item.externalFacilityId && !externalFacilityIds.includes(item.externalFacilityId))));
     },
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
@@ -270,7 +277,7 @@ export default defineComponent({
       const itemsWithMissingFacility = this.getItemsWithMissingFacility();
       const missingFacilitiesModal = await modalController.create({
         component: MissingFacilitiesModal,
-        componentProps: { itemsWithMissingFacility, facilities: this.facilities, type: 'order' }
+        componentProps: { itemsWithMissingFacility, type: 'order' }
       });
       return missingFacilitiesModal.present();
     },

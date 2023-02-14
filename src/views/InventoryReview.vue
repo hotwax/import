@@ -111,7 +111,7 @@
             </ion-chip>
 
             <ion-chip outline class="tablet">
-              <ion-label>{{ item.externalFacilityId ? item.externalFacilityId : item.facilityId }}</ion-label>
+              <ion-label>{{ getFacilityName(item.facilityId, item.externalFacilityId) }}</ion-label>
             </ion-chip>
             <ion-chip outline class="tablet location">
               <ion-icon :icon="locationOutline" />
@@ -197,7 +197,7 @@ export default defineComponent({
       facilityLocations: {}
     }
   },
-  mounted(){
+  ionViewDidEnter(){
     this.store.dispatch('util/fetchFacilities');
   },
   async beforeRouteLeave(to) {
@@ -240,15 +240,31 @@ export default defineComponent({
       });
       return missingSkuModal.present();
     },
+    getFacilityName(facilityId: any, externalFacilityId: any) {
+      if (facilityId) {
+        const facility = this.facilities.find((facility: any) => facilityId === facility.facilityId );
+        return facility ? facility.facilityName : facilityId;
+      } else if (externalFacilityId) {
+        const facility = this.facilities.find((facility: any) => externalFacilityId === facility.externalId );
+        return facility ? facility.facilityName : externalFacilityId;
+      }
+      return externalFacilityId;
+    },
     getItemsWithMissingFacility() {
-      const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
-      return this.stockItems.parsed.filter((item: any) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
+      const externalFacilityIds = this.facilities.reduce((externalFacilityIds: any, facility: any) => {
+        if (facility.externalId) externalFacilityIds.push(facility.externalId);
+        return externalFacilityIds;
+      }, [])
+      // if facilityId is set, this is facility set from the facility list
+      // if externalFacilityId doesn't exist, case for missing facility
+      // if externalFacilityId exist and not found in facility list, case for missing facility
+      return this.stockItems.parsed.filter((item: any) =>  !item.facilityId && (!item.externalFacilityId || (item.externalFacilityId && !externalFacilityIds.includes(item.externalFacilityId))));
     },
     async openMissingFacilitiesModal() {
       const itemsWithMissingFacility = this.getItemsWithMissingFacility();
       const missingFacilitiesModal = await modalController.create({
         component: MissingFacilitiesModal,
-        componentProps: { itemsWithMissingFacility, facilities: this.facilities, type: 'stock' }
+        componentProps: { itemsWithMissingFacility, type: 'stock' }
       });
       missingFacilitiesModal.onDidDismiss().then(() => {
         this.searchProduct(this.queryString);

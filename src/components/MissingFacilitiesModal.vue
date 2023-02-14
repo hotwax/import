@@ -70,7 +70,7 @@ export default defineComponent({
     IonTitle,
     IonToolbar 
   },
-  props: ["itemsWithMissingFacility", "facilities", "type"],
+  props: ["itemsWithMissingFacility", "type"],
   data() {
     return {
       itemsByFacilityId: {},
@@ -81,6 +81,7 @@ export default defineComponent({
     ...mapGetters({
       purchaseOrders: 'order/getPurchaseOrders',
       stockItems: 'stock/getStockItems',
+      facilities: 'util/getFacilities',
     })
   },
   mounted(){

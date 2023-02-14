@@ -86,7 +86,7 @@ export default defineComponent({
   },
   data() {
     return {
-      file: "",
+      file: {},
       content: [],
       fieldMapping: {
         productSku: "",
@@ -98,10 +98,26 @@ export default defineComponent({
     }
   },
   mixins:[ parseFileMixin ],
+  ionViewDidLeave() {
+    this.file = {}
+    this.content = []
+    this.fieldMapping = {
+      productSku: "",
+      quantity: "",
+      facility: "",
+      locationSeqId: "",
+    }
+  },
   methods: {
     async parse(event) {
-      this.file = event.target.files[0];
-      this.content = await this.parseCsv(this.file);
+      const file = event.target.files[0];
+      if(file){
+        this.file = file;
+        this.content = await this.parseCsv(this.file);
+        showToast(translate("File uploaded successfully"));
+      } else {
+        showToast(translate("No new file upload. Please try again"));
+      }
     },
     mapFields() {
       if (this.content.length <= 0) {

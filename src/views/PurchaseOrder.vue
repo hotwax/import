@@ -124,9 +124,19 @@ export default defineComponent({
           orderDate: "",
           quantity: "",
           facility: "",
-        },
-        purchaseOrderItems: [],
+        }
       }
+    },
+    ionViewDidLeave() {
+      this.file = {}
+      this.content = []
+      this.fieldMapping = {
+          orderId: "",
+          productSku: "",
+          orderDate: "",
+          quantity: "",
+          facility: "",
+        }
     },
     methods: {
       //Todo: Generating unique identifiers as we are currently storing in local storage. Need to remove it as we will be storing data on server.
@@ -135,8 +145,14 @@ export default defineComponent({
         return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
       },
       async parse(event) {
-        this.file = event.target.files[0];
-        this.content = await this.parseCsv(this.file);
+        const file = event.target.files[0];
+        if(file){
+          this.file = file;
+          this.content = await this.parseCsv(this.file);
+          showToast(translate("File uploaded successfully"));
+        } else {
+          showToast(translate("No new file upload. Please try again"));
+        }
       },
       review() {
         if (this.content.length <= 0) {
@@ -149,7 +165,7 @@ export default defineComponent({
           return;
         }
 
-        this.purchaseOrderItems = this.content.map(item => {
+        const purchaseOrderItems = this.content.map(item => {
           return {
             orderId: item[this.fieldMapping.orderId],
             shopifyProductSKU: item[this.fieldMapping.productSku],
@@ -159,7 +175,7 @@ export default defineComponent({
             externalFacilityId: item[this.fieldMapping.facility]
           }
         })
-        this.store.dispatch('order/fetchOrderDetails', this.purchaseOrderItems);
+        this.store.dispatch('order/fetchOrderDetails', purchaseOrderItems);
         this.router.push({
           name:'PurchaseOrderReview'
         })
