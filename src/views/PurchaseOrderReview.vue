@@ -18,7 +18,7 @@
     <ion-content :fullscreen="true">
       <div class="header">
         <div class="search">
-          <ion-searchbar :placeholder="$t('Search products')" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
+          <ion-searchbar :placeholder="$t('Search products')" @keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
         </div>
 
         <div class="filters">
@@ -51,8 +51,12 @@
           </ion-item>
         </div>
       </div>
-      <div v-if="searchedProduct?.pseudoId && queryString">
+      <div v-if="searchedProduct?.pseudoId">
         <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="{[searchedProduct?.orderId]: [searchedProduct]}"  />
+      </div>
+
+      <div class="empty-state" v-else-if="queryString">
+        <p>{{ $t("No results found")}}</p>
       </div>
 
       <div v-else>
@@ -75,7 +79,7 @@
     </ion-content>
 
     <ion-footer>
-      <ion-segment @ionChange="selectAllItems($event.target.value)" v-model="segmentSelected">
+      <ion-segment @ionChange="selectAllItems($event.target.value); searchProduct(queryString);" v-model="segmentSelected">
         <ion-segment-button value="all">
           <ion-label>{{ $t("All") }}</ion-label>
         </ion-segment-button>
@@ -197,9 +201,8 @@ export default defineComponent({
         component: MissingSkuModal,
         componentProps: { 'unidentifiedItems': this.purchaseOrders.unidentifiedItems }
       });
-      missingSkuModal.onDidDismiss().then(() => {
-        this.searchProduct(this.queryString);
-      });
+      await missingSkuModal.onDidDismiss();
+      this.searchProduct(this.queryString);
       return missingSkuModal.present();
     },
     searchProduct(sku: any) {
@@ -223,9 +226,8 @@ export default defineComponent({
         component: DateTimeParseErrorModal,
         componentProps: { numberOfItems: Object.values(this.purchaseOrders.parsed).flat().length, numberOfPos: Object.keys(this.purchaseOrders.parsed).length }
       });
-      dateTimeParseErrorModal.onDidDismiss().then(() => {
-        this.searchProduct(this.queryString);
-      });
+      await dateTimeParseErrorModal.onDidDismiss();
+      this.searchProduct(this.queryString);
       return dateTimeParseErrorModal.present();
     },
     async save(){
@@ -288,9 +290,8 @@ export default defineComponent({
       const bulkAdjustmentModal = await modalController.create({
         component: BulkAdjustmentModal,
       });
-      bulkAdjustmentModal.onDidDismiss().then(() => {
-        this.searchProduct(this.queryString);
-      });
+      await bulkAdjustmentModal.onDidDismiss();
+      this.searchProduct(this.queryString);
       return bulkAdjustmentModal.present();
     },
     async openMissingFacilitiesModal() {
@@ -299,9 +300,8 @@ export default defineComponent({
         component: MissingFacilityModal,
         componentProps: { itemsWithMissingFacility, facilities: this.facilities }
       });
-      missingFacilitiesModal.onDidDismiss().then(() => {
-        this.searchProduct(this.queryString);
-      });
+      await missingFacilitiesModal.onDidDismiss()
+      this.searchProduct(this.queryString);
       return missingFacilitiesModal.present();
     },
     selectAllItems(segmentSelected: string) {
@@ -367,6 +367,12 @@ export default defineComponent({
     --background: white;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 4px 5px rgba(0, 0, 0, 0.12), 0px 1px 10px rgba(0, 0, 0, 0.2);
     border-radius: 0px 4px 0px 0px;
+  }
+
+  .empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   @media (min-width: 991px) {
