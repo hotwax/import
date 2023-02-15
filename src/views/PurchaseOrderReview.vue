@@ -88,7 +88,7 @@ import { ellipsisVerticalOutline, businessOutline, shirtOutline, sendOutline, ch
 import PurchaseOrderDetail from '@/components/PurchaseOrderDetail.vue'
 import DateTimeParseErrorModal from '@/components/DateTimeParseErrorModal.vue';
 import BulkAdjustmentModal from '@/components/BulkAdjustmentModal.vue';
-import MissingFacilityModal from '@/components/MissingFacilitiesModal.vue';
+import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue';
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
 import { UploadService } from "@/services/UploadService";
 import { showToast } from '@/utils';
@@ -145,7 +145,7 @@ export default defineComponent({
     let canLeave = false;
     const alert = await alertController.create({
       header: this.$t("Leave page"),
-      message: this.$t("Any edits made to this PO will be lost."),
+      message: this.$t("Any edits made on this page will be lost."),
       buttons: [
         {
           text: this.$t("STAY"),
@@ -177,8 +177,15 @@ export default defineComponent({
       return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => !DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).isValid).length;
     },
     getItemsWithMissingFacility() {
-      const facilityIds = this.facilities.map((facility: any) => facility.facilityId)
-      return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => !facilityIds.includes(item.externalFacilityId) && item.externalFacilityId !== "");
+      const externalFacilityIds = this.facilities.reduce((externalFacilityIds: any, facility: any) => {
+        if (facility.externalId) externalFacilityIds.push(facility.externalId);
+        return externalFacilityIds;
+      }, [])
+
+      // if facilityId is set, this is facility set from the facility list
+      // if externalFacilityId doesn't exist, case for missing facility
+      // if externalFacilityId exist and not found in facility list, case for missing facility
+      return Object.values(this.purchaseOrders.parsed).flat().filter((item: any) => !item.facilityId && (!item.externalFacilityId || (item.externalFacilityId && !externalFacilityIds.includes(item.externalFacilityId))));
     },
     isDateInvalid(){
       // Checked if any of the date format is different than the selected format.
@@ -187,7 +194,7 @@ export default defineComponent({
     async openMissingSkuModal() {
       const missingSkuModal = await modalController.create({
         component: MissingSkuModal,
-        componentProps: { 'unidentifiedItems': this.purchaseOrders.unidentifiedItems }
+        componentProps: { 'unidentifiedItems': this.purchaseOrders.unidentifiedItems, type: 'order' }
       });
       return missingSkuModal.present();
     },
@@ -269,8 +276,8 @@ export default defineComponent({
     async openMissingFacilitiesModal() {
       const itemsWithMissingFacility = this.getItemsWithMissingFacility();
       const missingFacilitiesModal = await modalController.create({
-        component: MissingFacilityModal,
-        componentProps: { itemsWithMissingFacility, facilities: this.facilities }
+        component: MissingFacilitiesModal,
+        componentProps: { itemsWithMissingFacility, type: 'order' }
       });
       return missingFacilitiesModal.present();
     },

@@ -126,8 +126,8 @@ const actions: ActionTree<UserState, RootState> = {
   setUserInstanceUrl ({ commit }, payload){
     commit(types.USER_INSTANCE_URL_UPDATED, payload)
     updateInstanceUrl(payload)
-  },
-
+  }, 
+  
   updatePwaState({commit}, payload) {
     commit(types.USER_PWA_STATE_UPDATED, payload);
   },

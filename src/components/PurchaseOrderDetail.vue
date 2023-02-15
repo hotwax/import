@@ -117,7 +117,7 @@ export default defineComponent({
           event: ev,
           translucent: true,
           showBackdrop: true,
-          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item, poId }
+          componentProps: { 'id': id, 'isVirtual': isVirtual, 'item': item, poId, 'type': 'order' }
         });
       return popover.present();
     },

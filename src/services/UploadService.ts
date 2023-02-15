@@ -11,7 +11,7 @@ const uploadJsonFile = async (payload: any): Promise <any>  => {
 const prepareUploadJsonPayload = (request: UploadRequest) => {
       const blob = new Blob([JSON.stringify(request.uploadData)], { type: 'application/json'});
       const formData = new FormData();
-      const fileName =  (request.fileName ? request.fileName : Date.now() ) +".json";
+      const fileName =  request.fileName ? request.fileName : Date.now() + ".json" ;
       formData.append("uploadedFile", blob, fileName);
       if (request.params) {
         for (const key in request.params) {

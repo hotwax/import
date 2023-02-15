@@ -12,8 +12,8 @@ const userModule: Module<UserState, RootState> = {
       current: null,
       currentFacility: {},
       instanceUrl: '',
-      fieldMappings: {},
       preferredDateTimeFormat: '',
+      fieldMappings: {},
       pwaState: {
         updateExists: false,
         registration: null,

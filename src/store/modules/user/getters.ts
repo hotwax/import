@@ -30,7 +30,7 @@ const getters: GetterTree <UserState, RootState> = {
     },
     getPreferredDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
-    },
+    },    
     getCurrentMapping(state) {
         return JSON.parse(JSON.stringify(state.currentMapping))
     }

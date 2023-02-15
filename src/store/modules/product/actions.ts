@@ -9,6 +9,9 @@ import logger from "@/logger";
 const actions: ActionTree<ProductState, RootState> = {
 
   async fetchProducts ( { commit, state }, { productIds }) {
+
+    // TODO Add try-catch block
+
     const cachedProductIds = Object.keys(state.cached);
     const productIdFilter= productIds.reduce((filter: Array<any>, productId: any) => {
       // If product does not exist in cached products then add the id
@@ -19,7 +22,7 @@ const actions: ActionTree<ProductState, RootState> = {
     }, []);
 
     // If there are no product ids to search skip the API call
-    if (productIdFilter.length == 0) return productIds.map((productId: any) => state.cached[productId]).filter((product: any) => product);
+    if (productIdFilter.length == 0) return state.cached;
 
     const resp = await fetchProducts({
       filters: { 'internalName': { 'value': productIdFilter }},
@@ -31,12 +34,11 @@ const actions: ActionTree<ProductState, RootState> = {
       const products = resp.products;
       // Handled empty response in case of failed query
       if (resp.total) commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
-      return resp.products;
     } else {
       logger.error(resp.serverResponse)
     }
     // TODO Handle specific error
-    return [];
+    return state.cached;
   },
 }
 

@@ -29,7 +29,7 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
-    },
+    },    
     [types.USER_CURRENT_FIELD_MAPPING_UPDATED] (state, payload) {
         state.currentMapping = payload
     },
