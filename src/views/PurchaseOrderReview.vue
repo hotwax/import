@@ -201,8 +201,10 @@ export default defineComponent({
         component: MissingSkuModal,
         componentProps: { 'unidentifiedItems': this.purchaseOrders.unidentifiedItems }
       });
-      await missingSkuModal.onDidDismiss();
-      this.searchProduct(this.queryString);
+      missingSkuModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
+      
       return missingSkuModal.present();
     },
     searchProduct(sku: any) {
@@ -226,8 +228,10 @@ export default defineComponent({
         component: DateTimeParseErrorModal,
         componentProps: { numberOfItems: Object.values(this.purchaseOrders.parsed).flat().length, numberOfPos: Object.keys(this.purchaseOrders.parsed).length }
       });
-      await dateTimeParseErrorModal.onDidDismiss();
-      this.searchProduct(this.queryString);
+      dateTimeParseErrorModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
+     
       return dateTimeParseErrorModal.present();
     },
     async save(){
@@ -290,8 +294,10 @@ export default defineComponent({
       const bulkAdjustmentModal = await modalController.create({
         component: BulkAdjustmentModal,
       });
-      await bulkAdjustmentModal.onDidDismiss();
-      this.searchProduct(this.queryString);
+      bulkAdjustmentModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      })
+      
       return bulkAdjustmentModal.present();
     },
     async openMissingFacilitiesModal() {
@@ -300,8 +306,10 @@ export default defineComponent({
         component: MissingFacilityModal,
         componentProps: { itemsWithMissingFacility, facilities: this.facilities }
       });
-      await missingFacilitiesModal.onDidDismiss()
-      this.searchProduct(this.queryString);
+      missingFacilitiesModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
+      
       return missingFacilitiesModal.present();
     },
     selectAllItems(segmentSelected: string) {
