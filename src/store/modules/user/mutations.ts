@@ -34,7 +34,7 @@ const mutations: MutationTree <UserState> = {
         state.currentMapping = payload
     },
     [types.USER_FIELD_MAPPING_CREATED] (state, payload) {
-        (state.fieldMappings as any)[payload.id] = {
+        (state.fieldMappings as any)[payload.type][payload.id] = {
             name: payload.name,
             value: payload.value
         };

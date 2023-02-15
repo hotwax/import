@@ -81,8 +81,8 @@ const actions: ActionTree<UserState, RootState> = {
     this.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
     this.dispatch('util/clearFacilities');
     // clearing field mappings and current mapping when the user logout
-    commit(types.USER_FIELD_MAPPING_UPDATED, {})
-    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', name: '', value: {}})
+    commit(types.USER_FIELD_MAPPING_UPDATED, { purchaseOrder: {}, inventory: {} })
+    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', mappingType: '', name: '', value: {}})
   },
 
   /**
@@ -136,9 +136,10 @@ const actions: ActionTree<UserState, RootState> = {
     try {
       const payload = {
         "inputFields": {
-          "mappingPrefTypeEnumId": "IMPORT_MAPPING_PREF"
+          "mappingPrefTypeEnumId": Object.keys(JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)),
+          "mappingPrefTypeEnumId_op": "in"
         },
-        "fieldList": ["mappingPrefName", "mappingPrefId", "mappingPrefValue"],
+        "fieldList": ["mappingPrefName", "mappingPrefId", "mappingPrefValue", "mappingPrefTypeEnumId"],
         "filterByDate": "Y",
         "viewSize": 20, // considered a user won't have more than 20 saved mappings
         "entityName": "DataManagerMapping"
@@ -148,12 +149,26 @@ const actions: ActionTree<UserState, RootState> = {
 
       if(resp.status == 200 && !hasError(resp) && resp.data.count > 0) {
 
+        const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
+
         // updating the structure for mappings so as to directly store it in state
         const fieldMappings = resp.data.docs.reduce((mappings: any, fieldMapping: any) => {
-          mappings[fieldMapping.mappingPrefId] = {
-            name: fieldMapping.mappingPrefName,
-            value: JSON.parse(fieldMapping.mappingPrefValue)
+          const mappingType = mappingTypes[fieldMapping.mappingPrefTypeEnumId]
+
+          if(mappings[mappingType]) {
+            mappings[mappingType][fieldMapping.mappingPrefId] = {
+              name: fieldMapping.mappingPrefName,
+              value: JSON.parse(fieldMapping.mappingPrefValue)
+            }
+          } else {
+            mappings[mappingType] = {
+              [fieldMapping.mappingPrefId]: {
+                name: fieldMapping.mappingPrefName,
+                value: JSON.parse(fieldMapping.mappingPrefValue)
+              }
+            }
           }
+
           return mappings;
         }, {})
 
@@ -169,11 +184,14 @@ const actions: ActionTree<UserState, RootState> = {
   async createFieldMapping({ commit }, payload) {
     try {
 
+      const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
+      const mappingType = Object.keys(mappingTypes).find(types => mappingTypes[types] === payload.mappingType);
+
       const params = {
         mappingPrefId: payload.id,
         mappingPrefName: payload.name,
         mappingPrefValue: JSON.stringify(payload.value),
-        mappingPrefTypeEnumId: 'IMPORT_MAPPING_PREF'
+        mappingPrefTypeEnumId: mappingType
       }
 
       const resp = await UserService.createFieldMapping(params);
@@ -185,7 +203,8 @@ const actions: ActionTree<UserState, RootState> = {
         const fieldMapping = {
           id: resp.data.mappingPrefId,
           name: payload.name,
-          value: payload.value
+          value: payload.value,
+          type: payload.mappingType
         }
 
         commit(types.USER_FIELD_MAPPING_CREATED, fieldMapping)
@@ -203,19 +222,22 @@ const actions: ActionTree<UserState, RootState> = {
   async updateFieldMapping({ commit, state }, payload) {
     try {
 
+      const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
+      const mappingType = Object.keys(mappingTypes).find(types => mappingTypes[types] === payload.mappingType);
+
       const params = {
         mappingPrefId: payload.id,
         mappingPrefName: payload.name,
         mappingPrefValue: JSON.stringify(payload.value),
-        mappingPrefTypeEnumId: 'IMPORT_MAPPING_PREF'
+        mappingPrefTypeEnumId: mappingType
       }
 
       const resp = await UserService.updateFieldMapping(params);
 
       if(resp.status == 200 && !hasError(resp)) {
-
         const mappings = JSON.parse(JSON.stringify(state.fieldMappings))
-        mappings[payload.id] = {
+
+        mappings[payload.mappingType][payload.id] = {
           name: payload.name,
           value: payload.value
         }
@@ -232,17 +254,19 @@ const actions: ActionTree<UserState, RootState> = {
     }
   },
 
-  async deleteFieldMapping({ commit, state }, mappingId) {
+  async deleteFieldMapping({ commit, state }, payload) {
     try {
       const resp = await UserService.deleteFieldMapping({
-        'mappingPrefId': mappingId
+        'mappingPrefId': payload.id
       });
 
       if(resp.status == 200 && !hasError(resp)) {
+
         const mappings = JSON.parse(JSON.stringify(state.fieldMappings))
-        delete mappings[mappingId]
+        delete mappings[payload.mappingType][payload.id]
+
         commit(types.USER_FIELD_MAPPING_UPDATED, mappings)
-        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', name: '', value: {} })
+        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', mappingType:'', name: '', value: {} })
         showToast(translate('This CSV mapping has been deleted.'))
       } else {
         logger.error('error', 'Failed to delete CSV mapping.')
@@ -254,10 +278,11 @@ const actions: ActionTree<UserState, RootState> = {
     }
   },
 
-  async updateCurrentMapping({ commit, state }, id) {
+  async updateCurrentMapping({ commit, state }, payload) {
     const currentMapping = {
-      id,
-      ...(state.fieldMappings as any)[id]
+      id: payload.id,
+      mappingType: payload.mappingType,
+      ...(state.fieldMappings as any)[payload.mappingType][payload.id]
     }
     commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, currentMapping)
   }

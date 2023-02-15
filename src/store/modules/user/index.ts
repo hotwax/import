@@ -12,14 +12,18 @@ const userModule: Module<UserState, RootState> = {
       current: null,
       currentFacility: {},
       instanceUrl: '',
+      fieldMappings: {
+        purchaseOrder: {},
+        inventory: {}
+      },
       preferredDateTimeFormat: '',
-      fieldMappings: {},
       pwaState: {
         updateExists: false,
         registration: null,
       },
       currentMapping: {
         id: '',
+        mappingType: '',
         name: '',
         value: {}
       }

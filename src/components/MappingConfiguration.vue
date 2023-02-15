@@ -102,7 +102,7 @@ export default defineComponent({
           {
             text: this.$t("Delete"),
             handler: () => {
-              this.store.dispatch("user/deleteFieldMapping", this.currentMapping.id)}
+              this.store.dispatch("user/deleteFieldMapping", this.currentMapping)}
           }
         ],
       });

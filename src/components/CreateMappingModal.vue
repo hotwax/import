@@ -118,7 +118,7 @@ export default defineComponent({
       }
     }
   },
-  props: ["content", "seletedFieldMapping"],
+  props: ["content", "seletedFieldMapping", "mappingType"],
   mounted() {
     this.fieldMapping = { ...this.seletedFieldMapping }
   },
@@ -141,7 +141,7 @@ export default defineComponent({
         return
       }
       const id = this.generateUniqueMappingPrefId();
-      await this.store.dispatch("user/createFieldMapping", { id, name: this.mappingName, value: this.fieldMapping })
+      await this.store.dispatch("user/createFieldMapping", { id, name: this.mappingName, value: this.fieldMapping, mappingType: this.mappingType })
       this.closeModal();
     },
     areAllFieldsSelected() {
