@@ -95,6 +95,7 @@ export default defineComponent({
     emitter.on('presentLoader', this.presentLoader);
     emitter.on('dismissLoader', this.dismissLoader);
     emitter.on('playAnimation', this.playAnimation);
+    emitter.on('unauthorized', this.unauthorized);
   },
   created() {
     init(this.userToken, this.instanceUrl, this.maxAge)
@@ -109,6 +110,7 @@ export default defineComponent({
     emitter.off('presentLoader', this.presentLoader);
     emitter.off('dismissLoader', this.dismissLoader);
     emitter.off('playAnimation', this.playAnimation);
+    emitter.off('unauthorized', this.unauthorized);
     resetConfig()
   },
   computed: {
