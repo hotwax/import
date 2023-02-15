@@ -51,7 +51,7 @@ const actions: ActionTree<StockState, RootState> = {
   updateStockItems({ commit }, stockItems){
     commit(types.STOCK_ITEMS_UPDATED, stockItems);
   },
-  clearStock({ commit }){
+  clearStockItems({ commit }){
     commit(types.STOCK_ITEMS_UPDATED, { parsed: [], original: [], unidentifiedItems: []});
   },
   updateUnidentifiedItem({ commit, state }, payload: any) {

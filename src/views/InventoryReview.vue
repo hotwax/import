@@ -330,7 +330,7 @@ export default defineComponent({
                     }
                   }])
                   this.router.push("/inventory");
-                  this.store.dispatch('stock/clearStock');
+                  this.store.dispatch('stock/clearStockItems');
                 }).catch(() => {
                   showToast(translate("Something went wrong, please try again"));
                 })
