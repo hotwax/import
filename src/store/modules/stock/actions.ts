@@ -7,7 +7,19 @@ import * as types from './mutation-types'
 const actions: ActionTree<StockState, RootState> = {
   async processUpdateStockItems ({ commit }, items) {
     const productIds = items.map((item: any) => item.shopifyProductSKU)
-    const facilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))]
+
+    // We are getting external facilityId from CSV, extract facilityId and pass for getting locations
+    const externalFacilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))]
+    const facilities = await store.dispatch('util/fetchFacilities');
+    const facilityMapping = facilities.reduce((facilityMapping: any, facility: any) => {
+      if (facility.externalId) facilityMapping[facility.externalId] = facility.facilityId;
+      return facilityMapping;
+    }, {})
+    const facilityIds = externalFacilityIds.map((externalFacilityId: any) => {
+      return facilityMapping[externalFacilityId];
+    }).filter((facilityId: any) => facilityId)
+    store.dispatch('util/fetchFacilityLocations', facilityIds);
+
     const viewSize = productIds.length;
     const viewIndex = 0;
     const payload = {
@@ -15,7 +27,6 @@ const actions: ActionTree<StockState, RootState> = {
       viewIndex,
       productIds
     }
-    store.dispatch('util/fetchFacilityLocations', facilityIds);
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
     const unidentifiedItems = [] as any;
     const parsed = items.map((item: any) => {

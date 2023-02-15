@@ -137,6 +137,7 @@ export default defineComponent({
           quantity: "",
           facility: "",
         }
+    this.$refs.file.value = null;
     },
     methods: {
       //Todo: Generating unique identifiers as we are currently storing in local storage. Need to remove it as we will be storing data on server.

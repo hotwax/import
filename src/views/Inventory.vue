@@ -107,6 +107,7 @@ export default defineComponent({
       facility: "",
       locationSeqId: "",
     }
+    this.$refs.file.value = null;
   },
   methods: {
     async parse(event) {

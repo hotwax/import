@@ -9,7 +9,7 @@ import logger from '@/logger'
 const actions: ActionTree<UtilState, RootState> = {
 
   async fetchFacilities({ state, commit}){
-    if(state.facilities.length) return;
+    if(state.facilities.length) return state.facilities;
     const payload = {
       "inputFields": {
         "parentTypeId": "VIRTUAL_FACILITY",
@@ -34,6 +34,7 @@ const actions: ActionTree<UtilState, RootState> = {
       logger.error(err)
       commit(types.UTIL_FACILITIES_UPDATED, []);
     }
+    return state.facilities;
   },
   clearFacilities({commit}){
     commit(types.UTIL_FACILITIES_UPDATED, []);
@@ -59,7 +60,7 @@ const actions: ActionTree<UtilState, RootState> = {
     }
     try {
       resp = await UtilService.getFacilityLocations(params);
-      if(resp.status === 200 && !hasError(resp) && resp.data?.count > 0) {
+      if(resp.status === 200 && !hasError(resp)) {
         const facilityLocations = resp.data.docs
         const facilityLocationsByFacilityId = facilityLocations.reduce((locations: any, location: any) => {
           const locationPath = [location.areaId, location.aisleId, location.sectionId, location.levelId, location.positionId].filter((value: any) => value).join("");
@@ -72,10 +73,10 @@ const actions: ActionTree<UtilState, RootState> = {
         }, {});
         commit(types.UTIL_FACILITY_LOCATIONS_BY_FACILITY_ID, facilityLocationsByFacilityId);
       } else {
-        console.error(resp);
+        logger.error(resp.data)
       }
     } catch(err) {
-      console.error(err);
+      logger.error(err);
     }
     return state.facilityLocationsByFacilityId;
   },
