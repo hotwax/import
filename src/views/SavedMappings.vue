@@ -70,7 +70,7 @@ export default defineComponent({
     IonPage,
     MappingConfiguration
   },
-  ionViewDidLeave() {
+  mounted() {
     this.store.dispatch("user/clearCurrentMapping");
   },
   computed: {

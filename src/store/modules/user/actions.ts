@@ -136,7 +136,7 @@ const actions: ActionTree<UserState, RootState> = {
     try {
       const payload = {
         "inputFields": {
-          "mappingPrefTypeEnumId": Object.keys(JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)),
+          "mappingPrefTypeEnumId": Object.values(JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)),
           "mappingPrefTypeEnumId_op": "in"
         },
         "fieldList": ["mappingPrefName", "mappingPrefId", "mappingPrefValue", "mappingPrefTypeEnumId"],
@@ -151,9 +151,15 @@ const actions: ActionTree<UserState, RootState> = {
 
         const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
 
+        // This is needed as it would easy to get app name to categories mappings
+        const mappingTypesFlip = Object.keys(mappingTypes).reduce((mappingTypesFlip: any, mappingType) => {
+          mappingTypesFlip[mappingTypes[mappingType]] = mappingTypes;
+          return mappingTypesFlip;
+        }, {});
+
         // updating the structure for mappings so as to directly store it in state
         const fieldMappings = resp.data.docs.reduce((mappings: any, fieldMapping: any) => {
-          const mappingType = mappingTypes[fieldMapping.mappingPrefTypeEnumId]
+          const mappingType = mappingTypesFlip[fieldMapping.mappingPrefTypeEnumId]
 
           if(mappings[mappingType]) {
             mappings[mappingType][fieldMapping.mappingPrefId] = {
@@ -185,13 +191,13 @@ const actions: ActionTree<UserState, RootState> = {
     try {
 
       const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
-      const mappingType = Object.keys(mappingTypes).find(types => mappingTypes[types] === payload.mappingType);
+      const mappingPrefTypeEnumId = mappingTypes[payload.mappingType];
 
       const params = {
         mappingPrefId: payload.id,
         mappingPrefName: payload.name,
         mappingPrefValue: JSON.stringify(payload.value),
-        mappingPrefTypeEnumId: mappingType
+        mappingPrefTypeEnumId
       }
 
       const resp = await UserService.createFieldMapping(params);
@@ -223,13 +229,13 @@ const actions: ActionTree<UserState, RootState> = {
     try {
 
       const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
-      const mappingType = Object.keys(mappingTypes).find(types => mappingTypes[types] === payload.mappingType);
+      const mappingPrefTypeEnumId = mappingTypes[payload.mappingType];
 
       const params = {
         mappingPrefId: payload.id,
         mappingPrefName: payload.name,
         mappingPrefValue: JSON.stringify(payload.value),
-        mappingPrefTypeEnumId: mappingType
+        mappingPrefTypeEnumId
       }
 
       const resp = await UserService.updateFieldMapping(params);
