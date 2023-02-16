@@ -6,30 +6,12 @@
     </ion-item>
 
     <ion-list>
-      <ion-item>
-        <ion-label>{{ $t("Order ID") }}</ion-label>
-        <ion-input v-model="currentMapping.value.orderId" />
+
+      <ion-item :key="field" v-for="(label, field) in getFields()">
+        <ion-label>{{ $t(label) }}</ion-label>
+        <ion-input v-model="currentMapping.value[field]" />
       </ion-item>
 
-      <ion-item>
-        <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-        <ion-input v-model="currentMapping.value.productSku" />
-      </ion-item>
-
-      <ion-item>
-        <ion-label>{{ $t("Arrival date") }}</ion-label>
-        <ion-input v-model="currentMapping.value.orderDate" />
-      </ion-item>
-
-      <ion-item>
-        <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-        <ion-input v-model="currentMapping.value.quantity" />
-      </ion-item>
-
-      <ion-item>
-        <ion-label>{{ $t("Facility ID") }}</ion-label>
-        <ion-input v-model="currentMapping.value.facility" />
-      </ion-item>
     </ion-list>
 
     <div class="ion-padding-top actions desktop-only">
@@ -90,6 +72,10 @@ export default defineComponent({
     })
   },
   methods: {
+    getFields() {
+      const fieldMappings = process.env["VUE_APP_MAPPING_" + this.currentMapping.mappingType];
+      return fieldMappings ? JSON.parse(fieldMappings) : {};
+    },
     async deleteMapping() {
       const message = this.$t("Are you sure you want to delete this CSV mapping? This action cannot be undone.");
       const alert = await alertController.create({

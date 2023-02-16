@@ -14,41 +14,33 @@
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
           <input @change="parse" ref="file" class="ion-hide" type="file" id="inventoryInputFile"/>
           <label for="inventoryInputFile">{{ $t("Upload") }}</label>
-        </ion-item>      
+        </ion-item>
 
+        <ion-list>
+          <ion-list-header>{{ $t("Saved mappings") }}</ion-list-header>
+          <div>
+            <ion-chip :disabled="!this.content.length" outline="true" @click="addFieldMapping()">
+              <ion-icon :icon="addOutline" />
+              <ion-label>{{ $t("New mapping") }}</ion-label>
+            </ion-chip>
+            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('RSTINV') ?? []" :key="index" @click="mapFields(mapping)" outline="true">
+              {{ mapping.name }}
+            </ion-chip>
+          </div>
+        </ion-list>
+ 
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
 
-          <ion-item>
-            <ion-label>{{ $t("Product SKU") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Quantity") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Facility Location") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.locationSeqId">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+          <ion-item :key="field" v-for="(label, field) in fieldLabel">
+            <ion-label>{{ $t(label) }}</ion-label>
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+              <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
 
-        <ion-button color="medium" @click="mapFields" expand="block">
+        <ion-button color="medium" @click="review" expand="block">
           {{ $t("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
@@ -57,18 +49,20 @@
   </ion-page>
 </template>
 <script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon } from "@ionic/vue";
+import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { useStore } from "vuex";
+import { mapGetters, useStore } from "vuex";
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import { arrowForwardOutline } from 'ionicons/icons';
+import { addOutline, arrowForwardOutline } from 'ionicons/icons';
 import parseFileMixin from '@/mixins/parseFileMixin';
+import CreateMappingModal from "@/components/CreateMappingModal.vue";
 
 export default defineComponent({
   name: "Inventory",
   components: {
+    IonChip,
     IonPage,
     IonHeader,
     IonToolbar,
@@ -94,33 +88,57 @@ export default defineComponent({
         facility: "",
         locationSeqId: "",
       },
-      productsList: [],
+      fileColumns: [],
+      fieldLabel: process.env["VUE_APP_MAPPING_RSTINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTINV"]) : {}
     }
   },
+  computed: {
+    ...mapGetters({
+      fieldMappings: 'user/getFieldMappings'
+    })
+  },
   mixins:[ parseFileMixin ],
-  ionViewDidLeave() {
+  ionViewDidEnter() {
     this.file = {}
     this.content = []
-    this.fieldMapping = {
-      productSku: "",
-      quantity: "",
-      facility: "",
-      locationSeqId: "",
-    }
+    this.fieldMapping = Object.keys(this.fieldLabel).reduce((fieldMapping, field) => {
+      fieldMapping[field] = ""
+      return fieldMapping;
+    }, this.fieldMapping)
     this.$refs.file.value = null;
   },
   methods: {
+    mapFields(mapping) {
+      const fieldMapping = JSON.parse(JSON.stringify(mapping));
+
+      // TODO: Store an object in this.content variable, so everytime when accessing it, we don't need to use 0th index
+      const csvFields = Object.keys(this.content[0]);
+
+      const missingFields = Object.values(fieldMapping.value).filter(field => {
+        if(!csvFields.includes(field)) return field;
+      });
+
+      if(missingFields.length) showToast(translate("Some of the mapping fields are missing in the CSV: ", { missingFields: missingFields.join(", ") }))
+
+      Object.keys(fieldMapping.value).map((key) => {
+        if(!csvFields.includes(fieldMapping.value[key])){
+          fieldMapping.value[key] = "";
+        }
+      })
+      this.fieldMapping = fieldMapping.value;
+    },
     async parse(event) {
       const file = event.target.files[0];
       if(file){
         this.file = file;
         this.content = await this.parseCsv(this.file);
+        this.fileColumns = Object.keys(this.content[0]);
         showToast(translate("File uploaded successfully"));
       } else {
         showToast(translate("No new file upload. Please try again"));
       }
     },
-    mapFields() {
+    review() {
       if (this.content.length <= 0) {
         showToast(translate("Please upload a valid reset inventory csv to continue"));
         return;
@@ -133,7 +151,7 @@ export default defineComponent({
         return;
       } 
 
-      this.productsList = this.content.map(item => {
+      const stockItems = this.content.map(item => {
         return {
           shopifyProductSKU: item[this.fieldMapping.productSku],
           quantity: item[this.fieldMapping.quantity],
@@ -142,16 +160,32 @@ export default defineComponent({
           locationSeqId: item[this.fieldMapping.locationSeqId]
         }
       })
-      this.store.dispatch('stock/processUpdateStockItems', this.productsList);
+      this.store.dispatch('stock/processUpdateStockItems', stockItems);
       this.router.push({
         name:'InventoryDetail'
       })
     },
+    async addFieldMapping() {
+      if(this.content.length <= 0) {
+        showToast(translate("Please upload a valid purchase order csv to continue"));
+        return;
+      }
+      const createMappingModal = await modalController.create({
+        component: CreateMappingModal,
+        componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'RSTINV', fieldLabel: this.fieldLabel }
+      });
+      return createMappingModal.present();
+    },
+    getFieldLabel(field) {
+      const label = this.fieldLabel[field];
+      return label ? this.$t(label) : "";
+    }
   },
   setup() {
     const router = useRouter();
     const store = useStore();
     return {
+      addOutline,
       arrowForwardOutline,
       router,
       store

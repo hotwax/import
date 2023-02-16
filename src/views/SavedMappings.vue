@@ -15,19 +15,19 @@
         <section v-else>
           <ion-list>
             <ion-list-header>{{ $t("Purchase order") }}</ion-list-header>
-            <ion-item v-for="(mapping, index) in fieldMappings('purchaseOrder')" :key="index" @click="viewMappingConfiguration(index, 'purchaseOrder')" detail button>
+            <ion-item v-for="(mapping, index) in fieldMappings('PO')" :key="index" @click="viewMappingConfiguration(index, 'PO')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
           <ion-list>
             <ion-list-header>{{ $t("Inventory") }}</ion-list-header>
-            <ion-item v-for="(mapping, index) in fieldMappings('inventory')" :key="index" @click="viewMappingConfiguration(index, 'inventory')" detail button>
+            <ion-item v-for="(mapping, index) in fieldMappings('RSTINV')" :key="index" @click="viewMappingConfiguration(index, 'RSTINV')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
         </section>
 
-        <aside class="desktop-only" v-if="isDesktop" v-show="currentMappingId">
+        <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping.id != ''">
           <MappingConfiguration />
         </aside>
       </main>
@@ -70,11 +70,15 @@ export default defineComponent({
     IonPage,
     MappingConfiguration
   },
+  ionViewDidLeave() {
+    this.store.dispatch("user/clearCurrentMapping");
+  },
   computed: {
     ...mapGetters({
-      fieldMappings: 'user/getFieldMappings'
+      fieldMappings: 'user/getFieldMappings',
+      currentMapping: 'user/getCurrentMapping'
     }),
-    areFieldMappingsAvailable() {
+    areFieldMappingsAvailable(): any {
       // using below logic to check mappings as we are storing mappings as objects of objects of object
       return Object.values((this as any).fieldMappings()).some((mappings: any) => Object.keys(mappings).length)
     }
@@ -84,6 +88,7 @@ export default defineComponent({
       isDesktop: isPlatform('desktop'),
       isMappingConfigAnimationCompleted: false,
       currentMappingId: ''
+      
     }
   },
   methods: {

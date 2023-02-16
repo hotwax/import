@@ -266,7 +266,12 @@ const actions: ActionTree<UserState, RootState> = {
         delete mappings[payload.mappingType][payload.id]
 
         commit(types.USER_FIELD_MAPPING_UPDATED, mappings)
-        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, { id: '', mappingType:'', name: '', value: {} })
+        commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {
+          id: '',
+          mappingType: '',
+          name: '',
+          value: {}
+        })
         showToast(translate('This CSV mapping has been deleted.'))
       } else {
         logger.error('error', 'Failed to delete CSV mapping.')
@@ -285,6 +290,14 @@ const actions: ActionTree<UserState, RootState> = {
       ...(state.fieldMappings as any)[payload.mappingType][payload.id]
     }
     commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, currentMapping)
+  },
+  async clearCurrentMapping({ commit }) {
+    commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {
+      id: '',
+      mappingType: '',
+      name: '',
+      value: {}
+    })
   }
 }
 

@@ -23,7 +23,7 @@
               <ion-icon :icon="addOutline" />
               <ion-label>{{ $t("New mapping") }}</ion-label>
             </ion-chip>
-            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('purchaseOrder') ?? []" :key="index" @click="mapFields(mapping)" outline="true">
+            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('PO') ?? []" :key="index" @click="mapFields(mapping)" outline="true">
               {{ mapping.name }}
             </ion-chip>
           </div>
@@ -32,38 +32,10 @@
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
 
-          <ion-item>
-            <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderId">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderDate">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+          <ion-item :key="field" v-for="(label, field) in fieldLabel">
+            <ion-label>{{ $t(label) }}</ion-label>
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+              <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
@@ -118,38 +90,27 @@ export default defineComponent({
       return {
         file: {},
         content: [],
-        fieldMapping: {
-          orderId: "",
-          productSku: "",
-          orderDate: "",
-          quantity: "",
-          facility: "",
-        }
+        fieldMapping: {},
+        fileColumns: [],
+        fieldLabel: process.env["VUE_APP_MAPPING_PO"] ? JSON.parse(process.env["VUE_APP_MAPPING_PO"]) : {}
       }
     },
-    ionViewDidLeave() {
+    ionViewDidEnter() {
       this.file = {}
       this.content = []
-      this.fieldMapping = {
-          orderId: "",
-          productSku: "",
-          orderDate: "",
-          quantity: "",
-          facility: "",
-        }
-    this.$refs.file.value = null;
+      this.fieldMapping = Object.keys(this.fieldLabel).reduce((fieldMapping, field) => {
+        fieldMapping[field] = ""
+        return fieldMapping;
+      }, this.fieldMapping)
+      this.$refs.file.value = null;
     },
     methods: {
-      //Todo: Generating unique identifiers as we are currently storing in local storage. Need to remove it as we will be storing data on server.
-      generateUniqueMappingPrefId() {
-        const id = Math.floor(Math.random() * 1000);
-        return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
-      },
       async parse(event) {
         const file = event.target.files[0];
         if(file){
           this.file = file;
           this.content = await this.parseCsv(this.file);
+          this.fileColumns = Object.keys(this.content[0]);
           showToast(translate("File uploaded successfully"));
         } else {
           showToast(translate("No new file upload. Please try again"));
@@ -210,7 +171,7 @@ export default defineComponent({
         }
         const createMappingModal = await modalController.create({
           component: CreateMappingModal,
-          componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'purchaseOrder' }
+          componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'PO', fieldLabel: this.fieldLabel }
         });
         return createMappingModal.present();
       }

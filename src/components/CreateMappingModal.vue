@@ -18,38 +18,10 @@
   <ion-content class="ion-padding">
     <div>
       <ion-list>
-        <ion-item>
-          <ion-label>{{ $t("Order ID") }}</ion-label>
-          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.orderId">
-            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
-            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>{{ $t("Arrival date") }}</ion-label>
-          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.orderDate">
-            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
-            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>{{ $t("Facility ID") }}</ion-label>
-          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
-            <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+        <ion-item :key="field" v-for="(label, field) in getFields()">
+          <ion-label>{{ $t(label) }}</ion-label>
+          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+            <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-list>
@@ -88,7 +60,7 @@ import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 
 export default defineComponent({
-  name: "FieldMappingModal",
+  name: "CreateMappingModal",
   components: { 
     IonButtons,
     IonButton,
@@ -109,18 +81,14 @@ export default defineComponent({
   data() {
     return {
       mappingName: "",
-      fieldMapping: {
-        orderId: "",
-        productSku: "",
-        orderDate: "",
-        quantity: "",
-        facility: "",
-      }
+      fieldMapping: {} as any,
+      fileColumns: [] as any
     }
   },
-  props: ["content", "seletedFieldMapping", "mappingType"],
+  props: ["content", "seletedFieldMapping", "mappingType", "fieldLabel"],
   mounted() {
     this.fieldMapping = { ...this.seletedFieldMapping }
+    this.fileColumns = Object.keys(this.content[0]);
   },
   computed: {
     ...mapGetters({
@@ -128,6 +96,10 @@ export default defineComponent({
     })
   },
   methods: {
+    getFields() {
+      const fieldMappings = process.env["VUE_APP_MAPPING_" + this.mappingType];
+      return fieldMappings ? JSON.parse(fieldMappings) : {};
+    },
     closeModal() {
       modalController.dismiss({ dismissed: true });
     },
@@ -147,9 +119,14 @@ export default defineComponent({
     areAllFieldsSelected() {
       return Object.values(this.fieldMapping).every(field => field !== "");
     },
+    //Todo: Generating unique identifiers as we are currently storing in local storage. Need to remove it as we will be storing data on server.
     generateUniqueMappingPrefId(): any {
       const id = Math.floor(Math.random() * 1000);
       return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
+    },
+    getFieldLabel(field: any) {
+      const label = this.fieldLabel[field];
+      return label ? this.$t(label) : "";
     }
   },
   setup() {
