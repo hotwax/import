@@ -55,7 +55,7 @@
         <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="{[searchedProduct?.orderId]: [searchedProduct]}"  />
       </div>
 
-      <div class="empty-state" v-else-if="queryString">
+      <div class="ion-text-center" v-else-if="queryString">
         <p>{{ $t("No results found")}}</p>
       </div>
 
@@ -375,12 +375,6 @@ export default defineComponent({
     --background: white;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 4px 5px rgba(0, 0, 0, 0.12), 0px 1px 10px rgba(0, 0, 0, 0.2);
     border-radius: 0px 4px 0px 0px;
-  }
-
-  .empty-state {
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
   
   @media (min-width: 991px) {
