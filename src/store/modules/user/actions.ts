@@ -81,7 +81,7 @@ const actions: ActionTree<UserState, RootState> = {
     this.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
     this.dispatch('util/clearFacilities');
     // clearing field mappings and current mapping when the user logout
-    commit(types.USER_FIELD_MAPPING_UPDATED, { purchaseOrder: {}, inventory: {} })
+    commit(types.USER_FIELD_MAPPINGS_UPDATED, {})
     commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', mappingType: '', name: '', value: {}})
   },
 
@@ -172,7 +172,7 @@ const actions: ActionTree<UserState, RootState> = {
           return mappings;
         }, {})
 
-        commit(types.USER_FIELD_MAPPING_UPDATED, fieldMappings)
+        commit(types.USER_FIELD_MAPPINGS_UPDATED, fieldMappings)
       } else {
         logger.error('error', 'No field mapping preference found')
       }
@@ -242,7 +242,7 @@ const actions: ActionTree<UserState, RootState> = {
           value: payload.value
         }
 
-        commit(types.USER_FIELD_MAPPING_UPDATED, mappings)
+        commit(types.USER_FIELD_MAPPINGS_UPDATED, mappings)
         showToast(translate('Changes to the CSV mapping has been saved.'))
       } else {
         logger.error('error', 'Failed to update CSV mapping.')
@@ -265,7 +265,7 @@ const actions: ActionTree<UserState, RootState> = {
         const mappings = JSON.parse(JSON.stringify(state.fieldMappings))
         delete mappings[payload.mappingType][payload.id]
 
-        commit(types.USER_FIELD_MAPPING_UPDATED, mappings)
+        commit(types.USER_FIELD_MAPPINGS_UPDATED, mappings)
         commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {
           id: '',
           mappingType: '',
