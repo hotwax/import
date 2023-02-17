@@ -32,8 +32,8 @@
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
 
-          <ion-item :key="field" v-for="(label, field) in fieldLabel">
-            <ion-label>{{ $t(label) }}</ion-label>
+          <ion-item :key="field" v-for="(fieldValues, field) in fields">
+            <ion-label>{{ $t(fieldValues.label) }}</ion-label>
             <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
               <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
@@ -89,7 +89,7 @@ export default defineComponent({
         locationSeqId: "",
       },
       fileColumns: [],
-      fieldLabel: process.env["VUE_APP_MAPPING_RSTINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTINV"]) : {}
+      fields: process.env["VUE_APP_MAPPING_RSTINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTINV"]) : {}
     }
   },
   computed: {
@@ -101,7 +101,7 @@ export default defineComponent({
   ionViewDidEnter() {
     this.file = {}
     this.content = []
-    this.fieldMapping = Object.keys(this.fieldLabel).reduce((fieldMapping, field) => {
+    this.fieldMapping = Object.keys(this.fields).reduce((fieldMapping, field) => {
       fieldMapping[field] = ""
       return fieldMapping;
     }, this.fieldMapping)
@@ -172,13 +172,9 @@ export default defineComponent({
       }
       const createMappingModal = await modalController.create({
         component: CreateMappingModal,
-        componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'RSTINV', fieldLabel: this.fieldLabel }
+        componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'RSTINV'}
       });
       return createMappingModal.present();
-    },
-    getFieldLabel(field) {
-      const label = this.fieldLabel[field];
-      return label ? this.$t(label) : "";
     }
   },
   setup() {

@@ -18,8 +18,8 @@
   <ion-content class="ion-padding">
     <div>
       <ion-list>
-        <ion-item :key="field" v-for="(label, field) in getFields()">
-          <ion-label>{{ $t(label) }}</ion-label>
+        <ion-item :key="field" v-for="(fieldValues, field) in getFields()">
+          <ion-label>{{ $t(fieldValues.label) }}</ion-label>
           <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
             <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
           </ion-select>
@@ -85,7 +85,7 @@ export default defineComponent({
       fileColumns: [] as any
     }
   },
-  props: ["content", "seletedFieldMapping", "mappingType", "fieldLabel"],
+  props: ["content", "seletedFieldMapping", "mappingType"],
   mounted() {
     this.fieldMapping = { ...this.seletedFieldMapping }
     this.fileColumns = Object.keys(this.content[0]);
@@ -97,8 +97,8 @@ export default defineComponent({
   },
   methods: {
     getFields() {
-      const fieldMappings = process.env["VUE_APP_MAPPING_" + this.mappingType];
-      return fieldMappings ? JSON.parse(fieldMappings) : {};
+      const fields = process.env["VUE_APP_MAPPING_" + this.mappingType];
+      return fields ? JSON.parse(fields) : {};
     },
     closeModal() {
       modalController.dismiss({ dismissed: true });
@@ -123,10 +123,6 @@ export default defineComponent({
     generateUniqueMappingPrefId(): any {
       const id = Math.floor(Math.random() * 1000);
       return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
-    },
-    getFieldLabel(field: any) {
-      const label = this.fieldLabel[field];
-      return label ? this.$t(label) : "";
     }
   },
   setup() {

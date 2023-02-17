@@ -7,8 +7,8 @@
 
     <ion-list>
 
-      <ion-item :key="field" v-for="(label, field) in getFields()">
-        <ion-label>{{ $t(label) }}</ion-label>
+      <ion-item :key="field" v-for="(fieldValues, field) in getFields()">
+        <ion-label>{{ $t(fieldValues.label) }}</ion-label>
         <ion-input v-model="currentMapping.value[field]" />
       </ion-item>
 
@@ -73,8 +73,8 @@ export default defineComponent({
   },
   methods: {
     getFields() {
-      const fieldMappings = process.env["VUE_APP_MAPPING_" + this.currentMapping.mappingType];
-      return fieldMappings ? JSON.parse(fieldMappings) : {};
+      const fields = process.env["VUE_APP_MAPPING_" + this.currentMapping.mappingType];
+      return fields ? JSON.parse(fields) : {};
     },
     async deleteMapping() {
       const message = this.$t("Are you sure you want to delete this CSV mapping? This action cannot be undone.");
