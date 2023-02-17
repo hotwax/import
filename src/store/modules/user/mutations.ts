@@ -24,7 +24,7 @@ const mutations: MutationTree <UserState> = {
         state.pwaState.registration = payload.registration;
         state.pwaState.updateExists = payload.updateExists;
     },
-    [types.USER_FIELD_MAPPING_UPDATED] (state, payload) {
+    [types.USER_FIELD_MAPPINGS_UPDATED] (state, payload) {
         state.fieldMappings = payload;
     },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
@@ -34,7 +34,7 @@ const mutations: MutationTree <UserState> = {
         state.currentMapping = payload
     },
     [types.USER_FIELD_MAPPING_CREATED] (state, payload) {
-        (state.fieldMappings as any)[payload.id] = {
+        (state.fieldMappings as any)[payload.type][payload.id] = {
             name: payload.name,
             value: payload.value
         };

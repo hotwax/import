@@ -38,7 +38,7 @@ export default defineComponent({
     MappingConfiguration
   },
   mounted() {
-    this.store.dispatch('user/updateCurrentMapping', this.$route.params.id)
+    this.store.dispatch('user/updateCurrentMapping', { mappingType: this.$route.params.mappingType, id: this.$route.params.id })
   },
   setup() {
     const store = useStore();
