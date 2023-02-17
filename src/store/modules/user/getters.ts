@@ -26,7 +26,11 @@ const getters: GetterTree <UserState, RootState> = {
         return state.pwaState;
     },
     getFieldMappings: (state) => (type?: string) => {
-        return type ? (state.fieldMappings as any)[type] : state.fieldMappings;
+        if (type) {
+            const fieldMapping = (state.fieldMappings as any)[type];
+            return fieldMapping ? fieldMapping : {} 
+        }
+        return state.fieldMappings;
     },
     getPreferredDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
