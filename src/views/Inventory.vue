@@ -82,12 +82,7 @@ export default defineComponent({
     return {
       file: {},
       content: [],
-      fieldMapping: {
-        productSku: "",
-        quantity: "",
-        facility: "",
-        locationSeqId: "",
-      },
+      fieldMapping: {},
       fileColumns: [],
       fields: process.env["VUE_APP_MAPPING_RSTINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTINV"]) : {}
     }
@@ -104,7 +99,7 @@ export default defineComponent({
     this.fieldMapping = Object.keys(this.fields).reduce((fieldMapping, field) => {
       fieldMapping[field] = ""
       return fieldMapping;
-    }, this.fieldMapping)
+    }, {})
     this.$refs.file.value = null;
   },
   methods: {

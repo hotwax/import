@@ -101,7 +101,7 @@ export default defineComponent({
       this.fieldMapping = Object.keys(this.fields).reduce((fieldMapping, field) => {
         fieldMapping[field] = ""
         return fieldMapping;
-      }, this.fieldMapping)
+      }, {})
       this.$refs.file.value = null;
     },
     methods: {

@@ -116,7 +116,7 @@
             <ion-chip outline class="tablet location">
               <ion-icon :icon="locationOutline" />
               <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event, item)">
-                <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.externalFacilityId ? item.externalFacilityId : item.facilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationPath }}</ion-select-option>
+                <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.facilityId ? item.facilityId : item.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationPath }}</ion-select-option>
               </ion-select>
             </ion-chip>
 
