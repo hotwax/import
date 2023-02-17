@@ -12,10 +12,7 @@ const userModule: Module<UserState, RootState> = {
       current: null,
       currentFacility: {},
       instanceUrl: '',
-      fieldMappings: {
-        purchaseOrder: {},
-        inventory: {}
-      },
+      fieldMappings: {},
       preferredDateTimeFormat: '',
       pwaState: {
         updateExists: false,

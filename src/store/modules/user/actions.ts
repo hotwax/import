@@ -153,27 +153,21 @@ const actions: ActionTree<UserState, RootState> = {
 
         // This is needed as it would easy to get app name to categories mappings
         const mappingTypesFlip = Object.keys(mappingTypes).reduce((mappingTypesFlip: any, mappingType) => {
-          mappingTypesFlip[mappingTypes[mappingType]] = mappingTypes;
+          mappingTypesFlip[mappingTypes[mappingType]] = mappingType;
           return mappingTypesFlip;
         }, {});
 
         // updating the structure for mappings so as to directly store it in state
         const fieldMappings = resp.data.docs.reduce((mappings: any, fieldMapping: any) => {
           const mappingType = mappingTypesFlip[fieldMapping.mappingPrefTypeEnumId]
+          const mapping = mappings[mappingType] ? mappings[mappingType] : {};
 
-          if(mappings[mappingType]) {
-            mappings[mappingType][fieldMapping.mappingPrefId] = {
-              name: fieldMapping.mappingPrefName,
-              value: JSON.parse(fieldMapping.mappingPrefValue)
-            }
-          } else {
-            mappings[mappingType] = {
-              [fieldMapping.mappingPrefId]: {
-                name: fieldMapping.mappingPrefName,
-                value: JSON.parse(fieldMapping.mappingPrefValue)
-              }
-            }
+          mapping[fieldMapping.mappingPrefId] = {
+            name: fieldMapping.mappingPrefName,
+            value: JSON.parse(fieldMapping.mappingPrefValue)
           }
+
+          mappings[mappingType] = mapping;
 
           return mappings;
         }, {})
