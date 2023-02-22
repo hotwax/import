@@ -39,7 +39,9 @@ function getStack(error: any) {
 export default {
   install(app: any, options: any) {
 
-    app.config.errorHandler = (error: any, instance: any, info: any) => {
+    // We could pass error: any, instance: any, info: any
+    // TODO Use other variables to extract more information about the error
+    app.config.errorHandler = (error: any) => {
       // TODO Improve code to add more information related to code failed
       logger.error("Global handler:" + getStack(error));
     }
