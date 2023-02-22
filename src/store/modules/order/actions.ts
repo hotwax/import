@@ -58,7 +58,7 @@ const actions: ActionTree<OrderState, RootState> = {
       if(item.updatedSku) {
         item.shopifyProductSKU = item.updatedSku;
         parsed[item.orderId] ? parsed[item.orderId].push(item) : parsed[item.orderId] = [item];
-        original[item.orderId].push(item)
+        original[item.orderId] ? original[item.orderId].push(item) : original[item.orderId] = [item];
       } else {
         return item;
       }
