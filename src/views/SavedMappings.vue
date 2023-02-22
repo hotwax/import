@@ -9,19 +9,25 @@
 
     <ion-content>
       <main>
-        <section>
-          <div class="empty-state" v-if="Object.keys(fieldMappings).length == 0">
-            <p>{{ $t("No field mapping found. Please create new.")}}</p>
-          </div>
-          <ion-list v-else>
-            <ion-list-header>{{ $t("Mapping") }}</ion-list-header>
-            <ion-item v-for="(mapping, index) in fieldMappings" :key="index" @click="viewMappingConfiguration(index)" detail button>
+        <div class="empty-state" v-if="!areFieldMappingsAvailable">
+          <p>{{ $t("No field mapping found. Please create new.")}}</p>
+        </div>
+        <section v-else>
+          <ion-list>
+            <ion-list-header>{{ $t("Purchase order") }}</ion-list-header>
+            <ion-item v-for="(mapping, index) in fieldMappings('PO')" :key="index" @click="viewMappingConfiguration(index, 'PO')" detail button>
+              <ion-label>{{ mapping.name }}</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-list-header>{{ $t("Inventory") }}</ion-list-header>
+            <ion-item v-for="(mapping, index) in fieldMappings('RSTINV')" :key="index" @click="viewMappingConfiguration(index, 'RSTINV')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
         </section>
 
-        <aside class="desktop-only" v-if="isDesktop" v-show="currentMappingId">
+        <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping.id != ''">
           <MappingConfiguration />
         </aside>
       </main>
@@ -64,25 +70,34 @@ export default defineComponent({
     IonPage,
     MappingConfiguration
   },
+  mounted() {
+    this.store.dispatch("user/clearCurrentMapping");
+  },
   computed: {
     ...mapGetters({
-      fieldMappings: 'user/getFieldMappings'
-    })
+      fieldMappings: 'user/getFieldMappings',
+      currentMapping: 'user/getCurrentMapping'
+    }),
+    areFieldMappingsAvailable(): any {
+      // using below logic to check mappings as we are storing mappings as objects of objects of object
+      return Object.values((this as any).fieldMappings()).some((mappings: any) => Object.keys(mappings).length)
+    }
   },
   data() {
     return {
       isDesktop: isPlatform('desktop'),
       isMappingConfigAnimationCompleted: false,
       currentMappingId: ''
+      
     }
   },
   methods: {
-    async viewMappingConfiguration(id: string) {
+    async viewMappingConfiguration(id: string, mappingType: string) {
       this.currentMappingId = id
-      await this.store.dispatch('user/updateCurrentMapping', id);
+      await this.store.dispatch('user/updateCurrentMapping', { id, mappingType });
 
       if(!this.isDesktop && id) {
-        this.router.push({name: 'MappingDetail', params: { id }});
+        this.router.push({name: 'MappingDetail', params: { mappingType, id }});
         return;
       }
 

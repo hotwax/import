@@ -8,7 +8,8 @@ import RootState from '@/store/RootState'
 const userModule: Module<UserState, RootState> = {
     namespaced: true,
     state: {
-      facilities: []
+      facilities: [],
+      facilityLocationsByFacilityId: {},
     },
     getters,
     actions,

@@ -12,8 +12,8 @@
         <ion-item>
           <ion-label>{{ $t("Purchase order") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
-          <input @change="getFile" ref="file" class="ion-hide" type="file" id="inputFile"/>
-          <label for="inputFile">{{ $t("Upload") }}</label>
+          <input @change="parse" ref="file" class="ion-hide" type="file" id="poInputFile"/>
+          <label for="poInputFile">{{ $t("Upload") }}</label>
         </ion-item>
 
         <ion-list>
@@ -23,7 +23,7 @@
               <ion-icon :icon="addOutline" />
               <ion-label>{{ $t("New mapping") }}</ion-label>
             </ion-chip>
-            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings ?? []" :key="index" @click="mapFields(mapping)" outline="true">
+            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('PO') ?? []" :key="index" @click="mapFields(mapping)" outline="true">
               {{ mapping.name }}
             </ion-chip>
           </div>
@@ -32,38 +32,10 @@
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
 
-          <ion-item>
-            <ion-label>{{ $t("Order ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderId">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Shopify product SKU") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.productSku">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Arrival date") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.orderDate">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Ordered quantity") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.quantity">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{ $t("Facility ID") }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping.facility">
-              <ion-select-option :key="index" v-for="(prop, index) in Object.keys(content[0])">{{ prop }}</ion-select-option>
+          <ion-item :key="field" v-for="(fieldValues, field) in fields">
+            <ion-label>{{ $t(fieldValues.label) }}</ion-label>
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+              <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
@@ -81,8 +53,9 @@
 import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
-import { showToast, parseCsv } from '@/utils';
+import { showToast } from '@/utils';
 import { translate } from "@/i18n";
+import parseFileMixin from '@/mixins/parseFileMixin';
 import { mapGetters, useStore } from "vuex";
 import { addOutline, arrowForwardOutline } from 'ionicons/icons';
 import CreateMappingModal from "@/components/CreateMappingModal.vue";
@@ -112,59 +85,62 @@ export default defineComponent({
         fieldMappings: 'user/getFieldMappings'
       })
     },
+    mixins:[ parseFileMixin ],
     data() {
       return {
         file: {},
         content: [],
-        fieldMapping: {
-          orderId: "",
-          productSku: "",
-          orderDate: "",
-          quantity: "",
-          facility: "",
-        },
-        PurchaseOrderItems: [],
+        fieldMapping: {},
+        fileColumns: [],
+        fields: process.env["VUE_APP_MAPPING_PO"] ? JSON.parse(process.env["VUE_APP_MAPPING_PO"]) : {}
       }
     },
+    ionViewDidEnter() {
+      this.file = {}
+      this.content = []
+      this.fieldMapping = Object.keys(this.fields).reduce((fieldMapping, field) => {
+        fieldMapping[field] = ""
+        return fieldMapping;
+      }, {})
+      this.$refs.file.value = null;
+    },
     methods: {
-      getFile(event) {
+      async parse(event) {
         const file = event.target.files[0];
         if(file){
           this.file = file;
-          this.parseFile();
-          this.store.dispatch('order/updateFileName', this.file.name);
-          Object.keys(this.fieldMapping).map(key => { this.fieldMapping[key] = '' })
+          this.content = await this.parseCsv(this.file);
+          this.fileColumns = Object.keys(this.content[0]);
           showToast(translate("File uploaded successfully"));
         } else {
           showToast(translate("No new file upload. Please try again"));
         }
       },
-      async parseFile(){
-        await parseCsv(this.file).then(res => {
-          this.content = res;
-        })
-      },
       review() {
         if (this.content.length <= 0) {
           showToast(translate("Please upload a valid purchase order csv to continue"));
-        } else if (this.areAllFieldsSelected()) {
-          this.PurchaseOrderItems = this.content.map(item => {
-            return {
-              orderId: item[this.fieldMapping.orderId],
-              shopifyProductSKU: item[this.fieldMapping.productSku],
-              arrivalDate: item[this.fieldMapping.orderDate],
-              quantityOrdered: item[this.fieldMapping.quantity],
-              facilityId: '',
-              externalFacilityId: item[this.fieldMapping.facility]
-            }
-          })
-          this.store.dispatch('order/fetchOrderDetails', this.PurchaseOrderItems);
-          this.router.push({
-            name:'PurchaseOrderReview'
-          })
-        } else {
-          showToast(translate("Select all the fields to continue"));
+          return;
         } 
+
+        if (!this.areAllFieldsSelected()) {
+          showToast(translate("Select all the fields to continue"));
+          return;
+        }
+
+        const purchaseOrderItems = this.content.map(item => {
+          return {
+            orderId: item[this.fieldMapping.orderId],
+            shopifyProductSKU: item[this.fieldMapping.productSku],
+            arrivalDate: item[this.fieldMapping.orderDate],
+            quantityOrdered: item[this.fieldMapping.quantity],
+            facilityId: '',
+            externalFacilityId: item[this.fieldMapping.facility]
+          }
+        })
+        this.store.dispatch('order/fetchOrderDetails', purchaseOrderItems);
+        this.router.push({
+          name:'PurchaseOrderReview'
+        })
       },
       mapFields(mapping) {
         const fieldMapping = JSON.parse(JSON.stringify(mapping));
@@ -195,7 +171,7 @@ export default defineComponent({
         }
         const createMappingModal = await modalController.create({
           component: CreateMappingModal,
-          componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping }
+          componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'PO'}
         });
         return createMappingModal.present();
       }

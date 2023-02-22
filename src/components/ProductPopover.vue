@@ -23,11 +23,12 @@ import {
   arrowUndoOutline
 } from 'ionicons/icons';
 export default defineComponent({
-  props: ['id', 'isVirtual', 'item', 'poId'],
+  props: ['id', 'isVirtual', 'item', 'poId', 'type'],
   name: 'parentProductPopover',
   components: { IonContent, IonIcon, IonLabel, IonItem },
   computed: {
     ...mapGetters({
+      stockItems: 'stock/getStockItems',
       purchaseOrders: 'order/getPurchaseOrders',
     }),
   },
@@ -38,19 +39,39 @@ export default defineComponent({
     onlySelect() {
       this.isVirtual ? this.onlySelectParentProduct() : this.onlySelectSingleProduct();
     },
-    onlySelectParentProduct() {
+    onlySelectParentProductForOrder() {
       Object.values(this.purchaseOrders.parsed).flat().map(item => {
         item.isSelected = item.parentProductId === this.id && item.orderId === this.poId;
       });
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
+    },
+    onlySelectParentProductForStock() {
+      this.stockItems.parsed.map(item => {
+        item.isSelected = item.parentProductId === this.id;
+      })
+      this.store.dispatch('stock/updateStockItems', this.stockItems)
+    },
+    onlySelectParentProduct() {
+      this.type === 'order' ? this.onlySelectParentProductForOrder() : this.onlySelectParentProductForStock();
       popoverController.dismiss({ dismissed: true });
     },
-    onlySelectSingleProduct() {
+    onlySelectSingleProductForOrder() {
       Object.values(this.purchaseOrders.parsed).flat().map(item => {
         item.isSelected = item.pseudoId === this.id && item.orderId === this.poId;
       });
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
+    },
+    onlySelectSingleProductForStock() {
+      this.stockItems.parsed.map(item => {
+        item.isSelected = item.pseudoId === this.id;
+      });
+      this.store.dispatch('stock/updateStockItems', this.stockItems)
+    },
+    onlySelectSingleProduct() {      
+      this.type === 'order' ? this.onlySelectSingleProductForOrder() : this.onlySelectSingleProductForStock();
       popoverController.dismiss({ dismissed: true });
     },
-    revertProduct() {
+    revertProductForOrder() {
       const original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
       this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.pseudoId === this.id) {
@@ -62,13 +83,31 @@ export default defineComponent({
         return element;
       });
       this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
+    },
+    revertProductForStock() {
+      const original = JSON.parse(JSON.stringify(this.stockItems.original));
+      this.stockItems.parsed = this.stockItems.parsed.map(element => {
+        if(element.pseudoId === this.id) {
+          const item = original.find(item => {
+            return item.pseudoId === this.id;
+          })
+          element = item;
+        }
+        return element;
+      });
+      this.store.dispatch('stock/updateStockItems', this.stockItems)
+    },
+    revertProduct() {
+      this.type === 'order' ? this.revertProductForOrder() : this.revertProductForStock();
       popoverController.dismiss({ dismissed: true });
     },
-    revertParentProduct(){
+    revertParentProductForOrder(){
       const original = JSON.parse(JSON.stringify(this.purchaseOrders.original));
       this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.parentProductId === this.id) {
           const item = original[this.poId].find(item => {
+            // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
+              // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
             // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
             return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
           })
@@ -77,6 +116,22 @@ export default defineComponent({
         return element;
       });
       this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders)
+    },
+    revertParentProductForStock(){
+      const original = JSON.parse(JSON.stringify(this.stockItems.original));
+      this.stockItems.parsed = this.stockItems.parsed.map(element => {
+        if(element.parentProductId === this.id) {
+          const item = original.find(item => {
+            return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
+          })
+          element = item;
+        }
+        return element;
+      });
+      this.store.dispatch('stock/updateStockItems', this.stockItems);
+    },
+    revertParentProduct(){
+      this.type === 'order' ? this.revertParentProductForOrder() : this.revertParentProductForStock();
       popoverController.dismiss({ dismissed: true });
     }
   },
@@ -88,5 +143,5 @@ export default defineComponent({
       store
     }
   }
-});
+}) 
 </script>

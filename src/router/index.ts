@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import PurchaseOrder from '@/views/PurchaseOrder.vue'
+import Inventory from '@/views/Inventory.vue'
+import InventoryReview from '@/views/InventoryReview.vue'
 import PurchaseOrderReview from '@/views/PurchaseOrderReview.vue';
 import Login from '@/views/Login.vue'
 import SavedMappings from '@/views/SavedMappings.vue'
@@ -42,6 +44,18 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: authGuard
   },
   {
+    path: '/inventory',
+    name: 'Inventory',
+    component: Inventory,
+    beforeEnter: authGuard
+  },
+  {
+    path: '/inventory-review',
+    name: 'InventoryDetail',
+    component: InventoryReview,
+    beforeEnter: authGuard
+  },
+  {
     path: '/login',
     name: 'Login',
     component: Login,
@@ -60,7 +74,7 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: authGuard
   },
   {
-    path: "/mapping/:id",
+    path: "/mapping/:mappingType/:id",
     name: "MappingDetail",
     component: MappingDetail,
     beforeEnter: authGuard

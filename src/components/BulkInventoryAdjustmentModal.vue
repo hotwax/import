@@ -6,18 +6,19 @@
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ $t("Missing facilities") }}</ion-title>
+      <ion-title>{{ $t("Bulk adjustment") }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
+    <ion-item lines="full">
+      <ion-label>{{ $t("Buffer quantity") }}</ion-label>
+      <ion-input v-model="quantityBuffer" type="number" min="0" :placeholder = "$t('Quantity')" />
+    </ion-item>
 
-    <ion-item v-for="(items, facilityId) in itemsByFacilityId" :key="facilityId" lines="full">
-      <ion-label>
-        {{ facilityId }}
-        <p>{{ items?.length }} {{ $t("line items") }}</p>
-      </ion-label>
-      <ion-select interface="popover" slot="end" :placeholder="$t('Map facility')" @ionChange="updateFacility($event, facilityId)">
+    <ion-item>
+      <ion-label>{{ $t("Facility") }}</ion-label>
+      <ion-select interface="popover" v-model="facilityId">
         <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
       </ion-select>
     </ion-item>
@@ -27,7 +28,6 @@
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
-
   </ion-content>
 </template>
 <script lang="ts">
@@ -40,6 +40,7 @@ import {
   IonHeader,
   IonItem,
   IonIcon,
+  IonInput,
   IonLabel,
   IonSelect,
   IonSelectOption,
@@ -54,7 +55,7 @@ import { mapGetters } from "vuex";
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
 export default defineComponent({
-  name: "MissingFacilitiesModal",
+  name: "BulkInventoryAdjustmentModal",
   components: {
     IonButtons,
     IonButton,
@@ -64,52 +65,46 @@ export default defineComponent({
     IonHeader,
     IonIcon,
     IonItem,
+    IonInput,
     IonLabel,
     IonSelect,
     IonSelectOption,
     IonTitle,
     IonToolbar 
   },
-  props: ["itemsWithMissingFacility", "type"],
   data() {
     return {
-      itemsByFacilityId: {},
-      facilityMapping: {} as any
+      quantityBuffer: 0,
+      facilityId: "",
     }
   },
   computed: {
     ...mapGetters({
-      purchaseOrders: 'order/getPurchaseOrders',
-      stockItems: 'stock/getStockItems',
+      stockItems: 'stock/getStockItems',  
       facilities: 'util/getFacilities',
     })
   },
-  mounted(){
-    this.groupItemsByFacilityId();
-  },
   methods: {
-    async save(){
-      if(this.type === 'order'){
-        this.store.dispatch('order/updateMissingFacilities', this.facilityMapping)
-      } else {
-        this.store.dispatch('stock/updateMissingFacilities', this.facilityMapping)
-      }
-      
-      this.closeModal();
-      showToast(translate("Changes have been successfully applied"));
-    },
-    updateFacility(ev: any, facilityId: any){
-      this.facilityMapping[facilityId] = ev.target.value
-    },
     closeModal() {
       modalController.dismiss({ dismissed: true });
     },
-    groupItemsByFacilityId(){
-      this.itemsByFacilityId = this.itemsWithMissingFacility.reduce((itemsByFacilityId: any, item: any) => {
-        itemsByFacilityId[item.externalFacilityId] ? itemsByFacilityId[item.externalFacilityId].push(item) : itemsByFacilityId[item.externalFacilityId] = [item];
-        return itemsByFacilityId;
-      }, {});
-    }
+    async save() {
+      const facilityLocations = await this.store.dispatch('util/fetchFacilityLocations', [this.facilityId]);
+      const locationSeqId = facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0] ? facilityLocations[this.facilityId][0].locationSeqId : '';
+      this.stockItems.parsed.map((item: any) => {
+        if (item.isSelected) {
+          item.quantity -= this.quantityBuffer;
+          if(this.facilityId) {
+            item.facilityId = this.facilityId;
+            item.externalFacilityId = "";
+            item.locationSeqId = locationSeqId;
+          }
+        }
+      })
+      await this.store.dispatch('stock/updateStockItems', this.stockItems)
+      this.closeModal();
+      showToast(translate("Changes have been successfully applied"));
+    },
   },
   setup() {
     const store = useStore();

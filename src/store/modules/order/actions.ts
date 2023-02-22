@@ -23,7 +23,7 @@ const actions: ActionTree<OrderState, RootState> = {
     items = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
       const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
 
-      if(Object.keys(product).length > 0){
+      if (Object.keys(product).length > 0) {
         item.parentProductId = product?.parent?.id;
         item.pseudoId = product.pseudoId;
         item.parentProductName = product?.parent?.productName;
@@ -35,7 +35,6 @@ const actions: ActionTree<OrderState, RootState> = {
       unidentifiedItems.push(item);
       return ;
     }).filter((item: any) => item);
-
     
     const parsed = items.reduce((itemsByPoId: any, item: any) => {
       itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
@@ -58,7 +57,7 @@ const actions: ActionTree<OrderState, RootState> = {
     const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
       if(item.updatedSku) {
         item.shopifyProductSKU = item.updatedSku;
-        parsed[item.orderId].push(item);
+        parsed[item.orderId] ? parsed[item.orderId].push(item) : parsed[item.orderId] = [item];
         original[item.orderId].push(item)
       } else {
         return item;
@@ -67,6 +66,17 @@ const actions: ActionTree<OrderState, RootState> = {
     original = JSON.parse(JSON.stringify(state.purchaseOrders.original));
 
     commit(types.ORDER_PURCHASEORDERS_UPDATED, { parsed, original, unidentifiedItems});
+  },
+  updateMissingFacilities({state, dispatch}, facilityMapping){
+    Object.keys(facilityMapping).map((facilityId: any) => {
+      Object.values(state.purchaseOrders.parsed).flat().map((item: any) => {
+        if(item.externalFacilityId === facilityId){
+          item.externalFacilityId = "";
+          item.facilityId = facilityMapping[facilityId];
+        }
+      })
+    })
+    this.dispatch('order/updatePurchaseOrders', state.purchaseOrders);
   }
 }
 export default actions;

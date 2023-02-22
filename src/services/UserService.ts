@@ -1,4 +1,4 @@
-import api, {client} from '@/api'
+import { api, client } from '@/adapter'
 import store from '@/store';
 
 const login = async (username: string, password: string): Promise <any> => {
@@ -43,7 +43,7 @@ const setUserTimeZone = async (payload: any): Promise <any>  => {
     data: payload
   });
 }
-
+    
 const createFieldMapping = async (payload: any): Promise <any> => {
   return api({
     url: "/service/createDataManagerMapping",

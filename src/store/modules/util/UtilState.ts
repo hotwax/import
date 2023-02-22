@@ -1,3 +1,4 @@
 export default interface UserState {
-    facilities: []
+    facilities: [],
+    facilityLocationsByFacilityId: any;
 }
