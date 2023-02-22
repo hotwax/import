@@ -53,15 +53,17 @@ const actions: ActionTree<OrderState, RootState> = {
   },
   updateUnidentifiedItem({ commit, state }, payload: any) {
     const parsed = state.purchaseOrders.parsed as any;
+    let original = state.purchaseOrders.original as any;
     const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
       if(item.updatedSku) {
         item.shopifyProductSKU = item.updatedSku;
         parsed[item.orderId] ? parsed[item.orderId].push(item) : parsed[item.orderId] = [item];
+        original[item.orderId] ? original[item.orderId].push(item) : original[item.orderId] = [item];
       } else {
         return item;
       }
     }).filter((item: any) => item);
-    const original = JSON.parse(JSON.stringify(state.purchaseOrders.parsed));
+    original = JSON.parse(JSON.stringify(state.purchaseOrders.original));
 
     commit(types.ORDER_PURCHASEORDERS_UPDATED, { parsed, original, unidentifiedItems});
   },

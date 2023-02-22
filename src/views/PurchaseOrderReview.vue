@@ -333,6 +333,7 @@ export default defineComponent({
           }
         })
       }
+      this.store.dispatch('order/updatePurchaseOrders', this.purchaseOrders);
     },
     revertAll() {
       this.purchaseOrders.parsed = JSON.parse(JSON.stringify(this.purchaseOrders.original));
