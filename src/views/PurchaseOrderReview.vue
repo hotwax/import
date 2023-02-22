@@ -18,7 +18,7 @@
     <ion-content :fullscreen="true">
       <div class="header">
         <div class="search">
-          <ion-searchbar :placeholder="$t('Search products')" v-model="queryString" v-on:keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
+          <ion-searchbar :placeholder="$t('Search products')" @keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
         </div>
 
         <div class="filters">
@@ -51,12 +51,24 @@
           </ion-item>
         </div>
       </div>
-      <div v-if="segmentSelected === 'all'">
-        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="purchaseOrders.parsed"  />
+      <div v-if="searchedProduct?.pseudoId">
+        <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="{[searchedProduct?.orderId]: [searchedProduct]}"  />
       </div>
-      <div v-for="(po, poId) in purchaseOrders.parsed" :key="poId" >
-        <PurchaseOrderDetail v-if="segmentSelected === poId" :itemsByPoId="{[poId]: po}" :purchaseOrders="purchaseOrders" />
+
+      <div class="ion-text-center" v-else-if="queryString">
+        <p>{{ $t("No results found")}}</p>
       </div>
+
+      <div v-else>
+        <div v-if="segmentSelected === 'all'">
+          <PurchaseOrderDetail :purchaseOrders="purchaseOrders" :itemsByPoId ="purchaseOrders.parsed"  />
+        </div>
+        <div v-for="(po, poId) in purchaseOrders.parsed" :key="poId" >
+          <PurchaseOrderDetail v-if="segmentSelected === poId" :itemsByPoId="{[poId]: po}" :purchaseOrders="purchaseOrders" />
+        </div>
+      </div>
+
+      
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button :disabled="isDateInvalid()" @click="save">
@@ -67,7 +79,7 @@
     </ion-content>
 
     <ion-footer>
-      <ion-segment @ionChange="selectAllItems($event.target.value)" v-model="segmentSelected">
+      <ion-segment @ionChange="selectAllItems($event.target.value); searchProduct(queryString);" v-model="segmentSelected">
         <ion-segment-button value="all">
           <ion-label>{{ $t("All") }}</ion-label>
         </ion-segment-button>
@@ -196,19 +208,37 @@ export default defineComponent({
         component: MissingSkuModal,
         componentProps: { 'unidentifiedItems': this.purchaseOrders.unidentifiedItems, type: 'order' }
       });
+      missingSkuModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
+      
       return missingSkuModal.present();
     },
     searchProduct(sku: any) {
       const product = this.getProduct(sku);
-      this.searchedProduct = Object.values(this.purchaseOrders).flat().find((item: any) => {
-        return item.pseudoId === product.pseudoId;
-      })
+      if (!product?.pseudoId) {
+        this.searchedProduct = {};
+        return;
+      }  
+      if(this.segmentSelected === 'all'){
+        this.searchedProduct = Object.values(this.purchaseOrders.parsed).flat().find((item: any) => {
+          return item.pseudoId === product.pseudoId;
+        })
+      } else {
+        this.searchedProduct = this.purchaseOrders.parsed[this.segmentSelected].find((item: any) => {
+          return item.pseudoId === product.pseudoId;
+        })
+      }
     },
     async openDateTimeParseErrorModal() {
       const dateTimeParseErrorModal = await modalController.create({
         component: DateTimeParseErrorModal,
         componentProps: { numberOfItems: Object.values(this.purchaseOrders.parsed).flat().length, numberOfPos: Object.keys(this.purchaseOrders.parsed).length }
       });
+      dateTimeParseErrorModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
+     
       return dateTimeParseErrorModal.present();
     },
     async save(){
@@ -271,6 +301,10 @@ export default defineComponent({
       const bulkAdjustmentModal = await modalController.create({
         component: BulkAdjustmentModal,
       });
+      bulkAdjustmentModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      })
+      
       return bulkAdjustmentModal.present();
     },
     async openMissingFacilitiesModal() {
@@ -279,6 +313,10 @@ export default defineComponent({
         component: MissingFacilitiesModal,
         componentProps: { itemsWithMissingFacility, type: 'order' }
       });
+      missingFacilitiesModal.onDidDismiss().then(() => {
+        this.searchProduct(this.queryString);
+      });
+      
       return missingFacilitiesModal.present();
     },
     selectAllItems(segmentSelected: string) {
