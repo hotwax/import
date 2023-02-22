@@ -13,7 +13,7 @@ import { createAnimation, IonApp, IonRouterOutlet, IonSplitPane, loadingControll
 import { defineComponent } from 'vue';
 import emitter from "@/event-bus"
 import { mapGetters, useStore } from 'vuex';
-import { init, resetConfig } from '@/adapter'
+import { initialise, resetConfig } from '@/adapter'
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
 import { useRouter } from 'vue-router';
@@ -95,10 +95,22 @@ export default defineComponent({
     emitter.on('presentLoader', this.presentLoader);
     emitter.on('dismissLoader', this.dismissLoader);
     emitter.on('playAnimation', this.playAnimation);
-    emitter.on('unauthorized', this.unauthorized);
   },
   created() {
-    init(this.userToken, this.instanceUrl, this.maxAge)
+    initialise({
+      token: this.userToken,
+      instanceUrl: this.instanceUrl,
+      cacheMaxAge: this.maxAge,
+      events: {
+        unauthorised: this.unauthorized,
+        responseErrror: () => {
+          setTimeout(() => this.dismissLoader(), 100);
+        },
+        queueTask: (payload: any) => {
+          emitter.emit("queueTask", payload);
+        }
+      }
+    })
     document.addEventListener('swUpdated', this.updateAvailable, { once: true })
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (this.refreshing) return
@@ -110,7 +122,6 @@ export default defineComponent({
     emitter.off('presentLoader', this.presentLoader);
     emitter.off('dismissLoader', this.dismissLoader);
     emitter.off('playAnimation', this.playAnimation);
-    emitter.off('unauthorized', this.unauthorized);
     resetConfig()
   },
   computed: {
