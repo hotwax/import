@@ -1,3 +1,18 @@
+# Release 2.4.0
+
+## What's Changed
+* Implemented: support for using api and client methods from OMS api package (#85zrm1ktj) by @k2maan in https://github.com/hotwax/import/pull/185
+* Fixed: save function when updating the missing product is not working by @disha1202 in https://github.com/hotwax/import/pull/183
+* Fixed: missing call for unathorised emit in App.vue (#85zrn0xfq) by @k2maan in https://github.com/hotwax/import/pull/186
+* Implemented feature to import CSV to reset Inventory(#31a0f22) by @adityasharma7 in https://github.com/hotwax/import/pull/187 and @disha1202 in https://github.com/hotwax/import/pull/106
+* Implemented: mappings support for inventory page(#85zrm9dhn) by @adityasharma7 in https://github.com/hotwax/import/pull/188 and @ymaheshwari1 in https://github.com/hotwax/import/pull/179
+* Fixed: search not working on PO review page(#85zrmf7ed) by @disha1202 in https://github.com/hotwax/import/pull/182
+* Fixed: navigation to login failed for token expire (oms-api#61) by @adityasharma7 in https://github.com/hotwax/import/pull/191
+* Fixed: select all not working by @disha1202 in https://github.com/hotwax/import/pull/184
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.3.0...v2.4.0
+
 # Release 2.3.0
 
 ## What's Changed
