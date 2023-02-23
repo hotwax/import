@@ -10,7 +10,7 @@
     <ion-content>
       <main>
         <div class="empty-state" v-if="!areFieldMappingsAvailable">
-          <p>{{ $t("No field mapping found. Please create new.")}}</p>
+          <p>{{ $t("There are no saved CSV mappings to show. Create a new mapping from a file upload screen")}}</p>
         </div>
         <section v-else>
           <ion-list>

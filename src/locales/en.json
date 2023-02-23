@@ -83,7 +83,7 @@
   "Missing SKUs": "Missing SKUs",
   "New mapping": "New mapping",
   "New version available, please update the app.": "New version available, please update the app.",
-  "No field mapping found. Please create new.": "No field mapping found. Please create new.",
+  "There are no saved CSV mappings to show. Create a new mapping from a file upload screen": "There are no saved CSV mappings to show. Create a new mapping from a file upload screen",
   "No new file upload. Please try again": "No new file upload. Please try again",
   "No results found": "No results found",
   "No time zone found": "No time zone found",
