@@ -13,13 +13,13 @@
           <p>{{ $t("There are no saved CSV mappings to show. Create a new mapping from a file upload screen")}}</p>
         </div>
         <section v-else>
-          <ion-list>
+          <ion-list v-if="Object.keys(fieldMappings('PO')).length">
             <ion-list-header>{{ $t("Purchase order") }}</ion-list-header>
             <ion-item v-for="(mapping, index) in fieldMappings('PO')" :key="index" @click="viewMappingConfiguration(index, 'PO')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
-          <ion-list>
+          <ion-list v-if="Object.keys(fieldMappings('RSTINV')).length">
             <ion-list-header>{{ $t("Inventory") }}</ion-list-header>
             <ion-item v-for="(mapping, index) in fieldMappings('RSTINV')" :key="index" @click="viewMappingConfiguration(index, 'RSTINV')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
