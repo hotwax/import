@@ -11,16 +11,17 @@
   </ion-header>
 
   <ion-content>
-
-    <ion-item v-for="(items, facilityId) in itemsByFacilityId" :key="facilityId" lines="full">
-      <ion-label>
-        {{ facilityId }}
-        <p>{{ items?.length }} {{ $t("line items") }}</p>
-      </ion-label>
-      <ion-select interface="popover" slot="end" :placeholder="$t('Map facility')" @ionChange="updateFacility($event, facilityId)">
-        <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
-      </ion-select>
-    </ion-item>
+    <ion-list>
+      <ion-item v-for="(items, facilityId) in itemsByFacilityId" :key="facilityId" lines="full">
+        <ion-label>
+          {{ facilityId }}
+          <p>{{ items?.length }} {{ $t("line items") }}</p>
+        </ion-label>
+        <ion-select interface="popover" slot="end" :placeholder="$t('Map facility')" @ionChange="updateFacility($event, facilityId)">
+          <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button @click="save">
@@ -41,6 +42,7 @@ import {
   IonItem,
   IonIcon,
   IonLabel,
+  IonList,
   IonSelect,
   IonSelectOption,
   IonTitle,
@@ -65,6 +67,7 @@ export default defineComponent({
     IonIcon,
     IonItem,
     IonLabel,
+    IonList,
     IonSelect,
     IonSelectOption,
     IonTitle,

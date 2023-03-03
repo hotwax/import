@@ -1,21 +1,25 @@
 <template>
   <ion-content>
-    <ion-item lines="none">
-      <ion-label>{{ this.isVirtual ? item.parentProductName : item.pseudoId }}</ion-label>
-    </ion-item>
-    <ion-item button lines="none" @click="revert">
-      <ion-icon slot="start" :icon="arrowUndoOutline" />
-      <ion-label>{{ $t('Reset') }}</ion-label>
-    </ion-item>
-    <ion-item button lines="none" @click="onlySelect">
-      <ion-icon slot="start" :icon="checkboxOutline" />
-      <ion-label>{{ $t('Only select') }}</ion-label>
-    </ion-item>
+    <ion-list>
+      <ion-item lines="none">
+        <ion-label>{{ this.isVirtual ? item.parentProductName : item.pseudoId }}</ion-label>
+      </ion-item>
+
+      <ion-item button lines="none" @click="revert">
+        <ion-icon slot="start" :icon="arrowUndoOutline" />
+        <ion-label>{{ $t('Reset') }}</ion-label>
+      </ion-item>
+
+      <ion-item button lines="none" @click="onlySelect">
+        <ion-icon slot="start" :icon="checkboxOutline" />
+        <ion-label>{{ $t('Only select') }}</ion-label>
+      </ion-item>
+    </ion-list>
   </ion-content>
 </template>
 
 <script>
-import { IonContent, IonIcon, IonLabel, IonItem, popoverController } from '@ionic/vue';
+import { IonContent, IonIcon, IonLabel, IonList, IonItem, popoverController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import {
@@ -25,7 +29,7 @@ import {
 export default defineComponent({
   props: ['id', 'isVirtual', 'item', 'poId', 'type'],
   name: 'parentProductPopover',
-  components: { IonContent, IonIcon, IonLabel, IonItem },
+  components: { IonContent, IonIcon, IonLabel, IonList, IonItem },
   computed: {
     ...mapGetters({
       stockItems: 'stock/getStockItems',
