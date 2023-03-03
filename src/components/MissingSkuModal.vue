@@ -13,7 +13,7 @@
     <ion-content>
       <div>
         <ion-item id="update-sku" :class="isSkuInvalid ? 'ion-invalid' : ''">
-          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" />
+          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" @keyup.enter="update" />
           <ion-note v-show="hasSkuUpdated && (purchaseOrders.unidentifiedItems.length || stockItems.unidentifiedItems.length)" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
           <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
         </ion-item>
@@ -41,8 +41,12 @@
         </ion-list>
 
         <ion-list v-if="segmentSelected === 'completed'">
-          <ion-item v-for="item in getCompletedItems()" :key="item.shopifyProductSKU">
+          <ion-item v-for="item in getCompletedItems()" :key="item.shopifyProductSKU" lines="full">
+            <ion-thumbnail slot="start">
+              <Image :src="item.imageUrl" />
+            </ion-thumbnail>
             <ion-label>
+              <p>{{ item.parentProductName }}</p>
               {{ item.updatedSku }}
               <p>{{ item.orderId }}</p>
             </ion-label>
@@ -80,6 +84,7 @@ import {
   IonSegmentButton,
   IonHeader,
   IonTitle,
+  IonThumbnail,
   IonToolbar,
   modalController
 } from "@ionic/vue";
@@ -87,6 +92,7 @@ import { closeOutline, saveOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
 import { mapGetters, useStore } from "vuex";
 import { ref } from "vue";
+import Image from '@/components/Image.vue';
 
 export default defineComponent({
   name: "MissingSkuModal",
@@ -109,7 +115,9 @@ export default defineComponent({
   IonSegmentButton,
   IonHeader,
   IonTitle,
-  IonToolbar
+  IonThumbnail,
+  IonToolbar,
+  Image
   },
   data(){
     return {
@@ -165,7 +173,7 @@ export default defineComponent({
         return;
       }
       
-      const unidentifiedItem = this.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku);
+      const unidentifiedItem = this.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku || unidentifiedItem.updatedSku === this.unidentifiedProductSku );
       
       unidentifiedItem.updatedSku = this.updatedSku;
       unidentifiedItem.parentProductId = product.parent.id;
