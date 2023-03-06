@@ -41,12 +41,12 @@
         </ion-list>
 
         <ion-list v-if="segmentSelected === 'completed'">
-          <ion-item v-for="item in getCompletedItems()" :key="item.shopifyProductSKU" lines="full">
+          <ion-item v-for="item in getCompletedItems()" :key="item.shopifyProductSKU">
             <ion-thumbnail slot="start">
               <Image :src="item.imageUrl" />
             </ion-thumbnail>
             <ion-label>
-              <p>{{ item.parentProductName }}</p>
+              <p class="overline">{{ item.parentProductName }}</p>
               {{ item.updatedSku }}
               <p>{{ item.orderId }}</p>
             </ion-label>
