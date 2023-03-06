@@ -11,17 +11,19 @@
   </ion-header>
 
   <ion-content>
-    <ion-item lines="full">
-      <ion-label>{{ $t("Buffer quantity") }}</ion-label>
-      <ion-input v-model="quantityBuffer" type="number" min="0" :placeholder = "$t('Quantity')" />
-    </ion-item>
+    <ion-list>
+      <ion-item lines="full">
+        <ion-label>{{ $t("Buffer quantity") }}</ion-label>
+        <ion-input v-model="quantityBuffer" type="number" min="0" :placeholder = "$t('Quantity')" />
+      </ion-item>
 
-    <ion-item>
-      <ion-label>{{ $t("Facility") }}</ion-label>
-      <ion-select interface="popover" v-model="facilityId">
-        <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
-      </ion-select>
-    </ion-item>
+      <ion-item>
+        <ion-label>{{ $t("Facility") }}</ion-label>
+        <ion-select interface="popover" v-model="facilityId">
+          <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button @click="save">
@@ -42,6 +44,7 @@ import {
   IonIcon,
   IonInput,
   IonLabel,
+  IonList,
   IonSelect,
   IonSelectOption,
   IonTitle,
@@ -67,6 +70,7 @@ export default defineComponent({
     IonItem,
     IonInput,
     IonLabel,
+    IonList,
     IonSelect,
     IonSelectOption,
     IonTitle,
