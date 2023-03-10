@@ -1,3 +1,12 @@
+# Release 2.4.1
+
+## What's Changed
+* Updated: default dateTime format(#85zrnzcpm) by @disha1202 in https://github.com/hotwax/import/pull/194
+* Updated: empty state text message(#85zrnzfn5) by @disha1202 in https://github.com/hotwax/import/pull/195
+* Fixed: Use ion-list in modals(#85zrptxr9) by @disha1202 in https://github.com/hotwax/import/pull/197
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.4.0...v2.4.1
+
 # Release 2.4.0
 
 ## What's Changed
