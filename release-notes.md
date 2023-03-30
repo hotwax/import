@@ -1,3 +1,11 @@
+# Release 2.5.0
+
+## What's Changed
+* Added: extra product info in missing sku modal by @disha1202 in https://github.com/hotwax/import/pull/201
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.4.1...v2.5.0
+
 # Release 2.4.1
 
 ## What's Changed
