@@ -145,32 +145,35 @@ const actions: ActionTree<UserState, RootState> = {
         "entityName": "DataManagerMapping"
       }
 
+      const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
+      let fieldMappings = {} as any;
+      
+      // This is needed as it would easy to get app name to categorize mappings
+      const mappingTypesFlip = Object.keys(mappingTypes).reduce((mappingTypesFlip: any, mappingType) => {
+        // Updating fieldMpaaings here in case the API fails 
+        fieldMappings[mappingType] = {};
+        mappingTypesFlip[mappingTypes[mappingType]] = mappingType;
+        return mappingTypesFlip;
+      }, {});
+
+      // To ease the handling, updating the state here in case the API fails, we still have mapping types.
+      commit(types.USER_FIELD_MAPPINGS_UPDATED, fieldMappings)
+
       const resp = await UserService.getFieldMappings(payload);
-
       if(resp.status == 200 && !hasError(resp) && resp.data.count > 0) {
-
-        const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
-
-        // This is needed as it would easy to get app name to categories mappings
-        const mappingTypesFlip = Object.keys(mappingTypes).reduce((mappingTypesFlip: any, mappingType) => {
-          mappingTypesFlip[mappingTypes[mappingType]] = mappingType;
-          return mappingTypesFlip;
-        }, {});
-
         // updating the structure for mappings so as to directly store it in state
-        const fieldMappings = resp.data.docs.reduce((mappings: any, fieldMapping: any) => {
+        fieldMappings = resp.data.docs.reduce((mappings: any, fieldMapping: any) => {
           const mappingType = mappingTypesFlip[fieldMapping.mappingPrefTypeEnumId]
-          const mapping = mappings[mappingType] ? mappings[mappingType] : {};
+          const mapping = mappings[mappingType];
 
           mapping[fieldMapping.mappingPrefId] = {
             name: fieldMapping.mappingPrefName,
             value: JSON.parse(fieldMapping.mappingPrefValue)
           }
 
-          mappings[mappingType] = mapping;
-
+          fieldMappings[mappingType] = mapping;
           return mappings;
-        }, {})
+        }, fieldMappings)
 
         commit(types.USER_FIELD_MAPPINGS_UPDATED, fieldMappings)
       } else {
