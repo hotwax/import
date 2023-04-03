@@ -40,7 +40,7 @@
           </ion-item>
         </ion-list>
 
-        <ion-button color="medium" @click="review" expand="block">
+        <ion-button :disabled="!this.content.length" color="medium" @click="review" expand="block">
           {{ $t("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
@@ -107,21 +107,21 @@ export default defineComponent({
     methods: {
       async parse(event) {
         const file = event.target.files[0];
-        if(file){
-          this.file = file;
-          this.content = await this.parseCsv(this.file);
-          this.fileColumns = Object.keys(this.content[0]);
-          showToast(translate("File uploaded successfully"));
-        } else {
-          showToast(translate("No new file upload. Please try again"));
+        try {
+          if (file) {
+            this.file = file;
+            this.content = await this.parseCsv(this.file);
+            this.fileColumns = Object.keys(this.content[0]);
+            showToast(translate("File uploaded successfully"));
+          } else {
+            showToast(translate("No new file upload. Please try again"));
+          }
+        } catch {
+          this.file = this.content = {}
+          showToast(translate("Please upload a valid purchase order csv to continue"));
         }
       },
       review() {
-        if (this.content.length <= 0) {
-          showToast(translate("Please upload a valid purchase order csv to continue"));
-          return;
-        } 
-
         if (!this.areAllFieldsSelected()) {
           showToast(translate("Select all the fields to continue"));
           return;
@@ -165,10 +165,6 @@ export default defineComponent({
         return Object.values(this.fieldMapping).every(field => field !== "");
       },
       async addFieldMapping() {
-        if(this.content.length <= 0) {
-          showToast(translate("Please upload a valid purchase order csv to continue"));
-          return;
-        }
         const createMappingModal = await modalController.create({
           component: CreateMappingModal,
           componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'PO'}
