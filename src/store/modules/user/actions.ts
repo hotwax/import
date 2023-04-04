@@ -133,6 +133,7 @@ const actions: ActionTree<UserState, RootState> = {
   },
 
   async getFieldMappings({ commit }) {
+    let fieldMappings = {} as any;
     try {
       const payload = {
         "inputFields": {
@@ -146,7 +147,6 @@ const actions: ActionTree<UserState, RootState> = {
       }
 
       const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
-      let fieldMappings = {} as any;
       
       // This is needed as it would easy to get app name to categorize mappings
       const mappingTypesFlip = Object.keys(mappingTypes).reduce((mappingTypesFlip: any, mappingType) => {
@@ -155,9 +155,6 @@ const actions: ActionTree<UserState, RootState> = {
         mappingTypesFlip[mappingTypes[mappingType]] = mappingType;
         return mappingTypesFlip;
       }, {});
-
-      // To ease the handling, updating the state here in case the API fails, we still have mapping types.
-      commit(types.USER_FIELD_MAPPINGS_UPDATED, fieldMappings)
 
       const resp = await UserService.getFieldMappings(payload);
       if(resp.status == 200 && !hasError(resp) && resp.data.count > 0) {
@@ -175,13 +172,13 @@ const actions: ActionTree<UserState, RootState> = {
           return mappings;
         }, fieldMappings)
 
-        commit(types.USER_FIELD_MAPPINGS_UPDATED, fieldMappings)
       } else {
         logger.error('error', 'No field mapping preference found')
       }
     } catch(err) {
       logger.error('error', err)
     }
+    commit(types.USER_FIELD_MAPPINGS_UPDATED, fieldMappings)
   },
 
   async createFieldMapping({ commit }, payload) {
