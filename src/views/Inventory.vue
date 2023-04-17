@@ -134,7 +134,7 @@ export default defineComponent({
           showToast(translate("No new file upload. Please try again"));
         }
       } catch {
-        this.file = this.content = {}
+        this.content = []
         showToast(translate("Please upload a valid reset inventory csv to continue"));
       }
     },
