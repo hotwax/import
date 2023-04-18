@@ -40,7 +40,7 @@
           </ion-item>
         </ion-list>
 
-        <ion-button color="medium" @click="review" expand="block">
+        <ion-button :disabled="!this.content.length" color="medium" @click="review" expand="block">
           {{ $t("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
@@ -124,21 +124,21 @@ export default defineComponent({
     },
     async parse(event) {
       const file = event.target.files[0];
-      if(file){
-        this.file = file;
-        this.content = await this.parseCsv(this.file);
-        this.fileColumns = Object.keys(this.content[0]);
-        showToast(translate("File uploaded successfully"));
-      } else {
-        showToast(translate("No new file upload. Please try again"));
+      try {
+        if (file) {
+          this.file = file;
+          this.content = await this.parseCsv(this.file);
+          this.fileColumns = Object.keys(this.content[0]);
+          showToast(translate("File uploaded successfully"));
+        } else {
+          showToast(translate("No new file upload. Please try again"));
+        }
+      } catch {
+        this.content = []
+        showToast(translate("Please upload a valid reset inventory csv to continue"));
       }
     },
     review() {
-      if (this.content.length <= 0) {
-        showToast(translate("Please upload a valid reset inventory csv to continue"));
-        return;
-      }
-      
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       
       if (!areAllFieldsSelected) {
@@ -161,10 +161,6 @@ export default defineComponent({
       })
     },
     async addFieldMapping() {
-      if(this.content.length <= 0) {
-        showToast(translate("Please upload a valid purchase order csv to continue"));
-        return;
-      }
       const createMappingModal = await modalController.create({
         component: CreateMappingModal,
         componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'RSTINV'}
