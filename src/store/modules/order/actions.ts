@@ -56,6 +56,7 @@ const actions: ActionTree<OrderState, RootState> = {
     let original = state.purchaseOrders.original as any;
     const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
       if(item.updatedSku) {
+        item.initialSKU = item.shopifyProductSKU;
         item.shopifyProductSKU = item.updatedSku;
         parsed[item.orderId] ? parsed[item.orderId].push(item) : parsed[item.orderId] = [item];
         original[item.orderId] ? original[item.orderId].push(item) : original[item.orderId] = [item];

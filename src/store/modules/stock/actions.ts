@@ -58,6 +58,7 @@ const actions: ActionTree<StockState, RootState> = {
     const parsed = state.items.parsed as any;
     const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
       if(item.updatedSku) {
+        item.initialSKU = item.shopifyProductSKU;
         item.shopifyProductSKU = item.updatedSku;
         parsed.push(item);
         state.items.original.push(item);

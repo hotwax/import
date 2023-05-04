@@ -49,8 +49,9 @@
           <ion-thumbnail>
             <Image :src="searchedProduct.imageUrl" />
           </ion-thumbnail>
-          <ion-label>
-            {{ searchedProduct.pseudoId }}
+          <ion-label class="ion-text-wrap">
+            <h3>{{ searchedProduct.pseudoId }}</h3>
+            <p v-if="searchedProduct.initialSKU">{{ searchedProduct.initialSKU }}</p>
           </ion-label>
         </ion-item>
 
@@ -102,7 +103,8 @@
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
-                {{ item.pseudoId }}
+                <h3>{{ item.pseudoId }}</h3>
+                <p v-if="item.initialSKU">{{ item.initialSKU }}</p>
               </ion-label>
             </ion-item>
 
