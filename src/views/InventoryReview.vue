@@ -51,7 +51,7 @@
           </ion-thumbnail>
           <ion-label class="ion-text-wrap">
             <h3>{{ searchedProduct.pseudoId }}</h3>
-            <p>{{ searchedProduct.initialSKU }}</p>
+            <p v-if="searchedProduct.initialSKU">{{ searchedProduct.initialSKU }}</p>
           </ion-label>
         </ion-item>
 
@@ -104,7 +104,7 @@
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
                 <h3>{{ item.pseudoId }}</h3>
-                <p>{{ item.initialSKU }}</p>
+                <p v-if="item.initialSKU">{{ item.initialSKU }}</p>
               </ion-label>
             </ion-item>
 
