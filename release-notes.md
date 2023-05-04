@@ -1,3 +1,10 @@
+# Release 2.7.0
+
+## What's Changed
+* Improved: Show old missing SKU value (#200) by @adityasharma7 in https://github.com/hotwax/import/pull/209
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.6.0...v2.7.0
+
 # Release 2.6.0
 ## What's Changed
 * Fixed: Mapping not saved in case there are no previous mappings (#85zrv32ug) by @k2maan in https://github.com/hotwax/import/pull/207
