@@ -15,8 +15,7 @@
                 router-direction="root"
                 :router-link="p.url"
                 class="hydrated"
-                :class="{ selected: selectedIndex === i && this.$route.path === p.url }"
-              >
+                :class="{ selected: selectedIndex === i }">
                 <ion-icon slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
@@ -147,4 +146,7 @@ ion-menu.ios ion-item.selected ion-icon {
   color: var(--ion-color-secondary);
 }
 
+ion-item.selected {
+  --color: var(--ion-color-secondary);
+}
 </style>
