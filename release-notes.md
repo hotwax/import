@@ -1,3 +1,14 @@
+# Release 2.8.0
+
+## What's Changed
+* Updated favicon by @Nidbhagwat in https://github.com/hotwax/import/pull/212
+* Fixed: menu not showing currently active page after logout (#211) by @k2maan in https://github.com/hotwax/import/pull/213
+
+## New Contributors
+* @Nidbhagwat made their first contribution in https://github.com/hotwax/import/pull/212
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.7.0...v2.8.0
+
 # Release 2.7.0
 
 ## What's Changed
