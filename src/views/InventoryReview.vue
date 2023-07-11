@@ -47,7 +47,7 @@
       <div v-if="searchedProduct?.pseudoId" class="list-item">
         <ion-item lines="none">
           <ion-thumbnail>
-            <Image :src="searchedProduct.imageUrl" />
+            <ShopifyImg :src="searchedProduct.imageUrl" />
           </ion-thumbnail>
           <ion-label class="ion-text-wrap">
             <h3>{{ searchedProduct.pseudoId }}</h3>
@@ -100,7 +100,7 @@
           <div class="list-item">
             <ion-item lines="none">
               <ion-thumbnail slot="start">
-                <Image :src="item.imageUrl" />
+                <ShopifyImg :src="item.imageUrl" />
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
                 <h3>{{ item.pseudoId }}</h3>
@@ -142,7 +142,7 @@
 </template>   
 <script lang="ts">
 import { UploadService } from "@/services/UploadService";
-import Image from '@/components/Image.vue';
+import { ShopifyImg } from "dxp-components";
 import ProductPopover from '@/components/ProductPopover.vue'
 import BulkInventoryAdjustmentModal from '@/components/BulkInventoryAdjustmentModal.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
@@ -158,7 +158,7 @@ import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVert
 export default defineComponent({
   name: 'InventoryDetail',
   components: {
-    Image,
+    ShopifyImg,
     IonPage,
     IonHeader,
     IonToolbar,
