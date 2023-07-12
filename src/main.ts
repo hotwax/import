@@ -30,7 +30,7 @@ import store from './store'
 import { DateTime } from 'luxon';
 
 import logger from './logger';
-import { dxpComponents } from 'dxp-components';
+import { dxpComponents } from '@hotwax/dxp-components';
 
 const app = createApp(App)
   .use(IonicVue, {

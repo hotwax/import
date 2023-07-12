@@ -43,7 +43,7 @@
         <ion-list v-if="segmentSelected === 'completed'">
           <ion-item v-for="item in getCompletedItems()" :key="item.shopifyProductSKU">
             <ion-thumbnail slot="start">
-              <ShopifyImg :src="item.imageUrl" />
+              <ShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
             <ion-label>
               <p class="overline">{{ item.parentProductName }}</p>
@@ -92,7 +92,7 @@ import { closeOutline, saveOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
 import { mapGetters, useStore } from "vuex";
 import { ref } from "vue";
-import { ShopifyImg } from "dxp-components";
+import { ShopifyImg } from "@hotwax/dxp-components";
 
 export default defineComponent({
   name: "MissingSkuModal",
