@@ -10,13 +10,14 @@
 <script lang="ts">
 import Menu from '@/components/Menu.vue';
 import { createAnimation, IonApp, IonRouterOutlet, IonSplitPane, loadingController } from '@ionic/vue';
-import { defineComponent } from 'vue';
+import { defineComponent, provide, ref } from 'vue';
 import emitter from "@/event-bus"
 import { mapGetters, useStore } from 'vuex';
 import { initialise, resetConfig } from '@/adapter'
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
 import { useRouter } from 'vue-router';
+import { useProductIdentificationStore } from '@hotwax/dxp-components';
 
 export default defineComponent({
   name: 'App',
@@ -95,6 +96,12 @@ export default defineComponent({
     emitter.on('presentLoader', this.presentLoader);
     emitter.on('dismissLoader', this.dismissLoader);
     emitter.on('playAnimation', this.playAnimation);
+
+    // Get product identification from api using dxp-component and set the state if eComStore is defined
+    if (this.currentEComStore.productStoreId) {
+      await useProductIdentificationStore().getIdentificationPref(this.currentEComStore.productStoreId)
+        .catch((error) => console.log(error));
+    }
   },
   created() {
     initialise({
@@ -127,12 +134,47 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       userToken: 'user/getUserToken',
-      instanceUrl: 'user/getInstanceUrl'
+      instanceUrl: 'user/getInstanceUrl',
+      currentEComStore: 'user/getCurrentEComStore'
     })
   },
   setup(){
     const store = useStore();
     const router = useRouter();
+
+    /* Start Product Identifier */
+
+    const productIdentificationStore = useProductIdentificationStore();
+
+    // Reactive state for productIdentificationPref
+    let productIdentificationPref = ref(
+      productIdentificationStore.$state.productIdentificationPref
+    );
+
+    // Providing productIdentificationPref to child components
+    provide('productIdentificationPref', productIdentificationPref);
+
+    // Subscribing to productIdentificationStore state change and changing value productIdentificationPref 
+    // to store state based on condition
+    productIdentificationStore.$subscribe((mutation: any, state) => {
+
+      // If primaryId is '' then api call not changed the state, so not changing the productIdentificationPref
+      if (state.productIdentificationPref.primaryId != "") {
+
+        // If old state value is same as the new state value then not changing the preference
+        if (mutation.events.oldValue.primaryId != state.productIdentificationPref.primaryId || mutation.events.oldValue.secondaryId != state.productIdentificationPref.secondaryId) {
+          productIdentificationPref.value = state.productIdentificationPref;
+
+          // If primary and secondary preference is '' then it was initial state value before api call show don't show toast
+          if (mutation.events.oldValue.primaryId != "" && mutation.events.oldValue.secondaryId != "") {
+            showToast("Product identifier preference updated");
+          }
+        }
+      }
+    });
+
+    /* End Product Identifier */
+    
     return {
       router,
       store

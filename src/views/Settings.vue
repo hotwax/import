@@ -109,6 +109,33 @@
             <ion-icon slot="end" :icon="saveOutline" />
           </ion-button>
         </ion-card>
+
+        <!-- Product Identifier -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              {{ $t('Product Identifier') }}
+            </ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+            {{ $t('Choosing a product identifier allows you to view products with your preferred identifiers.') }}
+          </ion-card-content>
+
+          <ion-item>
+            <ion-label>{{ $t("Primary Product Identifier") }}</ion-label>
+            <ion-select interface="popover" :placeholder="$t('primary identifier')" :value="productIdentificationPref.primaryId" @ionChange="setProductIdentificationPref($event.detail.value, 'primaryId')">
+              <ion-select-option v-for="identification in productIdentificationOptions" :key="identification" :value="identification" >{{ identification }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label>{{ $t("Secondary Product Identifier") }}</ion-label>
+            <ion-select interface="popover" :placeholder="$t('secondary identifier')" :value="productIdentificationPref.secondaryId" @ionChange="setProductIdentificationPref($event.detail.value, 'secondaryId')">
+              <ion-select-option v-for="identification in productIdentificationOptions" :key="identification" :value="identification" >{{ identification }}</ion-select-option>
+              <ion-select-option value="">{{ $t("None") }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-card>
       </section>  
     </ion-content>
   </ion-page>
@@ -116,13 +143,14 @@
 
 <script lang="ts">
 import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
-import { defineComponent } from 'vue';
+import { defineComponent, inject } from 'vue';
 import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline, saveOutline, timeOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import TimeZoneModal from '@/views/TimezoneModal.vue';
 import { DateTime } from 'luxon';
 import Image from '@/components/Image.vue';
+import { useProductIdentificationStore } from '@hotwax/dxp-components';
 
 export default defineComponent({
   name: 'Settings',
@@ -206,6 +234,25 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
 
+    /* Start Product Identifier */
+
+    const productIdentificationStore = useProductIdentificationStore();
+    const productIdentificationOptions = productIdentificationStore.getProductIdentificationOptions;
+
+    // Injecting identifier preference from app.view
+    const productIdentificationPref: any  = inject("productIdentificationPref");
+
+    // Function to set the value of productIdentificationPref using dxp-component
+    const setProductIdentificationPref = (value: string, id: string) =>  {   
+      const eComStore = store.getters['user/getCurrentEComStore'];
+      if(eComStore.productStoreId){
+        productIdentificationStore.setProductIdentificationPref(id, value, eComStore.productStoreId)
+          .catch(error => console.log(error)); 
+      } 
+    }
+
+    /* End Product Identifier */
+
     return {
       codeWorkingOutline,
       ellipsisVertical,
@@ -214,7 +261,10 @@ export default defineComponent({
       saveOutline,
       store,
       router,
-      timeOutline
+      timeOutline,
+      productIdentificationOptions,
+      productIdentificationPref,
+      setProductIdentificationPref
     }
   }
 });
