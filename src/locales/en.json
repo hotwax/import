@@ -1,6 +1,7 @@
 {
   "All": "All",
   "App": "App",
+  "Active session": "Active session",
   "Apply": "Apply",
   "Any edits made on this page will be lost.": "Any edits made on this page made will be lost.",
   "Are you sure you want to change the time zone to?": "Are you sure you want to change the time zone to?",
@@ -8,6 +9,7 @@
   "Are you sure you want to delete this CSV mapping? This action cannot be undone.": "Are you sure you want to delete this CSV mapping? This action cannot be undone.",
   "Are you sure you want to update this CSV mapping? This action cannot be undone.": "Are you sure you want to update this CSV mapping? This action cannot be undone.",
   "Arrival date": "Arrival date",
+  "Authenticating": "Authenticating",
   "Backorder": "Backorder",
   "Blank": "Blank",
   "Buffer days": "Buffer days",
@@ -68,6 +70,7 @@
   "line items": "line items",
   "Loading": "Loading",
   "Login": "Login",
+  "Logging in": "Logging in",
   "Logout": "Logout",
   "Mapping": "Mapping",
   "Mapping details": "Mapping details",
