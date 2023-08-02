@@ -39,6 +39,7 @@ import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "@/store";
 import { mapGetters } from 'vuex';
+import Logo from '@/components/Logo.vue';
 
 export default defineComponent({
   name: "Login",
