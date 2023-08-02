@@ -50,7 +50,7 @@
             <Image :src="searchedProduct.imageUrl" />
           </ion-thumbnail>
           <ion-label class="ion-text-wrap">
-            <h3>{{ searchedProduct.pseudoId }}</h3>
+            <h3>{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(searchedProduct.pseudoId)) }}</h3>
             <p v-if="searchedProduct.initialSKU">{{ searchedProduct.initialSKU }}</p>
           </ion-label>
         </ion-item>
@@ -103,7 +103,7 @@
                 <Image :src="item.imageUrl" />
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
-                <h3>{{ item.pseudoId }}</h3>
+                <h3>{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) }}</h3>
                 <p v-if="item.initialSKU">{{ item.initialSKU }}</p>
               </ion-label>
             </ion-item>
@@ -147,10 +147,10 @@ import ProductPopover from '@/components/ProductPopover.vue'
 import BulkInventoryAdjustmentModal from '@/components/BulkInventoryAdjustmentModal.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
-import { defineComponent } from 'vue';
+import { defineComponent, inject } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
-import { showToast } from '@/utils';
+import { showToast, getProductIdentificationValue } from '@/utils';
 import { translate } from "@/i18n";
 import { IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonSearchbar, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonCheckbox, IonSelect, IonSelectOption, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote } from '@ionic/vue'
 import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, shirtOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline } from 'ionicons/icons'
@@ -410,6 +410,9 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+
+    // Injecting identifier preference from app.view
+    const productIdentificationPref: any  = inject("productIdentificationPref");
     
     return {
       businessOutline,
@@ -423,6 +426,8 @@ export default defineComponent({
       cloudUploadOutline,
       router,
       store,
+      productIdentificationPref,
+      getProductIdentificationValue
     }
   }
 });

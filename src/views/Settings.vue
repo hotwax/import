@@ -111,6 +111,7 @@
         </ion-card>
 
         <!-- Product Identifier -->
+
         <ion-card>
           <ion-card-header>
             <ion-card-title>
@@ -142,7 +143,7 @@
 </template>
 
 <script lang="ts">
-import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar, modalController } from '@ionic/vue';
+import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar, modalController, IonSelect, IonSelectOption } from '@ionic/vue';
 import { defineComponent, inject } from 'vue';
 import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline, saveOutline, timeOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
@@ -151,6 +152,8 @@ import TimeZoneModal from '@/views/TimezoneModal.vue';
 import { DateTime } from 'luxon';
 import Image from '@/components/Image.vue';
 import { useProductIdentificationStore } from '@hotwax/dxp-components';
+import { showToast } from '@/utils';
+import logger from '@/logger';
 
 export default defineComponent({
   name: 'Settings',
@@ -173,7 +176,9 @@ export default defineComponent({
     IonPage,
     IonTitle, 
     IonToolbar,
-    Image
+    Image,
+    IonSelect,
+    IonSelectOption
   },
   data() {
     return {
@@ -243,11 +248,16 @@ export default defineComponent({
     const productIdentificationPref: any  = inject("productIdentificationPref");
 
     // Function to set the value of productIdentificationPref using dxp-component
-    const setProductIdentificationPref = (value: string, id: string) =>  {   
+    const setProductIdentificationPref = (value: string, id: string) =>  {
       const eComStore = store.getters['user/getCurrentEComStore'];
-      if(eComStore.productStoreId){
+      
+      // If productPreference value is same as ion change value then not calling the set function as there is no change 
+      if(eComStore.productStoreId && (productIdentificationPref.value[id] !== value)){
         productIdentificationStore.setProductIdentificationPref(id, value, eComStore.productStoreId)
-          .catch(error => console.log(error)); 
+          .then(() => {
+            showToast("Product identifier preference updated");
+          })
+          .catch(error => logger.error(error)); 
       } 
     }
 

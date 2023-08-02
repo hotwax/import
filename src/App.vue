@@ -18,6 +18,7 @@ import { showToast } from "@/utils";
 import { translate } from "@/i18n";
 import { useRouter } from 'vue-router';
 import { useProductIdentificationStore } from '@hotwax/dxp-components';
+import logger from './logger';
 
 export default defineComponent({
   name: 'App',
@@ -98,9 +99,9 @@ export default defineComponent({
     emitter.on('playAnimation', this.playAnimation);
 
     // Get product identification from api using dxp-component and set the state if eComStore is defined
-    if (this.currentEComStore.productStoreId) {
+    if(this.currentEComStore.productStoreId){
       await useProductIdentificationStore().getIdentificationPref(this.currentEComStore.productStoreId)
-        .catch((error) => console.log(error));
+      .catch((error) => logger.error(error));
     }
   },
   created() {
@@ -155,22 +156,8 @@ export default defineComponent({
     provide('productIdentificationPref', productIdentificationPref);
 
     // Subscribing to productIdentificationStore state change and changing value productIdentificationPref 
-    // to store state based on condition
     productIdentificationStore.$subscribe((mutation: any, state) => {
-
-      // If primaryId is '' then api call not changed the state, so not changing the productIdentificationPref
-      if (state.productIdentificationPref.primaryId != "") {
-
-        // If old state value is same as the new state value then not changing the preference
-        if (mutation.events.oldValue.primaryId != state.productIdentificationPref.primaryId || mutation.events.oldValue.secondaryId != state.productIdentificationPref.secondaryId) {
-          productIdentificationPref.value = state.productIdentificationPref;
-
-          // If primary and secondary preference is '' then it was initial state value before api call show don't show toast
-          if (mutation.events.oldValue.primaryId != "" && mutation.events.oldValue.secondaryId != "") {
-            showToast("Product identifier preference updated");
-          }
-        }
-      }
+        productIdentificationPref.value = state.productIdentificationPref;
     });
 
     /* End Product Identifier */

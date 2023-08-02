@@ -7,6 +7,7 @@ import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
 import { updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 import logger from "@/logger";
+import { useProductIdentificationStore } from '@hotwax/dxp-components'
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -33,7 +34,7 @@ const actions: ActionTree<UserState, RootState> = {
             if (checkPermissionResponse.status === 200 && !hasError(checkPermissionResponse) && checkPermissionResponse.data && checkPermissionResponse.data.hasPermission) {
               commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
               updateToken(resp.data.token)
-              dispatch('getProfile')
+              await dispatch('getProfile', resp.data.token)
               dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
               if (resp.data._EVENT_MESSAGE_ && resp.data._EVENT_MESSAGE_.startsWith("Alert:")) {
               // TODO Internationalise text
@@ -49,7 +50,7 @@ const actions: ActionTree<UserState, RootState> = {
           } else {
             commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
             updateToken(resp.data.token)
-            dispatch('getProfile')
+            await dispatch('getProfile', resp.data.token)
             dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
             return resp.data;
           }
@@ -88,8 +89,35 @@ const actions: ActionTree<UserState, RootState> = {
   /**
    * Get User profile
    */
-  async getProfile ( { commit, dispatch }) {
-    const resp = await UserService.getProfile()
+  async getProfile ( { commit, dispatch }, token) {
+    const resp = await UserService.getProfile();
+
+    /* START: get and set current ecom store in state */
+
+    const facilities = resp.data.facilities;
+
+    // removing duplicate records as a single user can be associated with a facility by multiple roles.
+    facilities.reduce((uniqueFacilities: any, facility: any, index: number) => {
+      if(uniqueFacilities.includes(facility.facilityId)) facilities.splice(index, 1);
+      else uniqueFacilities.push(facility.facilityId);
+      return uniqueFacilities
+    }, []);
+
+    // TODO Use a separate API for getting facilities, this should handle user like admin accessing the app
+    const currentFacility = facilities.length > 0 ? facilities[0] : {};
+    const currentEComStore = await UserService.getCurrentEComStore(token, currentFacility?.facilityId);
+
+    commit(types.USER_CURRENT_FACILITY_UPDATED, currentFacility);
+    commit(types.USER_CURRENT_ECOM_STORE_UPDATED, currentEComStore); 
+
+    /* END: get and set current ecom store in state */
+
+    // Get product identification from api using dxp-component and set the state if eComStore is defined
+    if (currentEComStore.productStoreId) {
+      await useProductIdentificationStore().getIdentificationPref(currentEComStore.productStoreId)
+      .catch((error) => logger.error(error));
+    }
+
     if (resp.status === 200) {
       dispatch('getFieldMappings')
       commit(types.USER_INFO_UPDATED, resp.data);

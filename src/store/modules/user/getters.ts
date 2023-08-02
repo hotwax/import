@@ -22,6 +22,11 @@ const getters: GetterTree <UserState, RootState> = {
         const baseUrl = process.env.VUE_APP_BASE_URL;
         return baseUrl ? baseUrl : state.instanceUrl;
     },
+    getBaseUrl (state) {
+        let baseURL = process.env.VUE_APP_BASE_URL;
+        if (!baseURL) baseURL = state.instanceUrl;
+        return baseURL.startsWith('http') ? baseURL : `https://${baseURL}.hotwax.io/api/`;
+    },
     getPwaState (state) {
         return state.pwaState;
     },
@@ -37,6 +42,9 @@ const getters: GetterTree <UserState, RootState> = {
     },    
     getCurrentMapping(state) {
         return JSON.parse(JSON.stringify(state.currentMapping))
+    },
+    getCurrentEComStore(state) {
+        return state.currentEComStore;
     }
 }
 export default getters;

@@ -46,7 +46,7 @@
               <Image :src="item.imageUrl" />
             </ion-thumbnail>
             <ion-label>
-              <p class="overline">{{ item.parentProductName }}</p>
+              <p class="overline">{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) }}</p>
               {{ item.updatedSku }}
               <p>{{ item.orderId }}</p>
             </ion-label>
@@ -91,8 +91,9 @@ import {
 import { closeOutline, saveOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
 import { mapGetters, useStore } from "vuex";
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import Image from '@/components/Image.vue';
+import { getProductIdentificationValue } from '@/utils';
 
 export default defineComponent({
   name: "MissingSkuModal",
@@ -132,6 +133,7 @@ export default defineComponent({
     ...mapGetters({
       purchaseOrders: 'order/getPurchaseOrders',
       stockItems: 'stock/getStockItems',
+      getProduct: 'product/getProduct'
     })
   },
   mounted() {
@@ -194,11 +196,17 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const segmentSelected = ref('pending');
+
+    // Injecting identifier preference from app.view
+    const productIdentificationPref: any  = inject("productIdentificationPref");
+
     return {
       closeOutline,
       saveOutline,
       segmentSelected,
-      store
+      store,
+      productIdentificationPref,
+      getProductIdentificationValue
     }
   }
 })

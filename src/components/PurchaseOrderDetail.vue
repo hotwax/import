@@ -29,7 +29,7 @@
               <Image :src="item.imageUrl" />
             </ion-thumbnail>
             <ion-label class="ion-text-wrap">
-              <h3>{{ item.pseudoId }}</h3>
+              <h3>{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) }}</h3>
               <p v-if="item.initialSKU">{{ item.initialSKU }}</p>
             </ion-label>
           </ion-item>
@@ -71,6 +71,8 @@ import { defineComponent } from "@vue/runtime-core";
 import { mapGetters, useStore } from "vuex";
 import ProductPopover from '@/components/ProductPopover.vue'
 import { DateTime } from 'luxon'
+import { inject } from 'vue';
+import { getProductIdentificationValue } from "@/utils";
 
 export default defineComponent({
   name: "PurchaseOrderDetails",
@@ -159,10 +161,16 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+
+    // Injecting identifier preference from app.view
+    const productIdentificationPref: any  = inject("productIdentificationPref");
+
     return {
       sendOutline,
       store,
-      ellipsisVerticalOutline
+      ellipsisVerticalOutline,
+      productIdentificationPref,
+      getProductIdentificationValue
     }
   }
 })
