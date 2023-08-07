@@ -7,61 +7,48 @@ import { hasError, showToast } from '@/utils'
 import { translate } from '@/i18n'
 import { updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 import logger from "@/logger";
+import { useAuthStore } from '@hotwax/dxp-components';
 
 const actions: ActionTree<UserState, RootState> = {
 
   /**
  * Login user and return token
  */
-  async login ({ commit, dispatch }, { username, password }) {
+  async login ({ commit, dispatch }, payload) {
     try {
-      const resp = await UserService.login(username, password)
-      if (resp.status === 200 && resp.data) {
-        if (resp.data.token) {
-          const permissionId = process.env.VUE_APP_PERMISSION_ID;
-          if (permissionId) {
-            const checkPermissionResponse = await UserService.checkPermission({
-              data: {
-                permissionId
-              },
-              headers: {
-                Authorization:  'Bearer ' + resp.data.token,
-                'Content-Type': 'application/json'
-              }
-            });
-
-            if (checkPermissionResponse.status === 200 && !hasError(checkPermissionResponse) && checkPermissionResponse.data && checkPermissionResponse.data.hasPermission) {
-              commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
-              updateToken(resp.data.token)
-              dispatch('getProfile')
-              dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
-              if (resp.data._EVENT_MESSAGE_ && resp.data._EVENT_MESSAGE_.startsWith("Alert:")) {
-              // TODO Internationalise text
-                showToast(translate(resp.data._EVENT_MESSAGE_));
-              }
-              return resp.data;
-            } else {
-              const permissionError = 'You do not have permission to access the app.';
-              showToast(translate(permissionError));
-              logger.error("error", permissionError);
-              return Promise.reject(new Error(permissionError));
+      const { token, oms } = payload;
+      dispatch("setUserInstanceUrl", oms);
+      
+      if (token) {
+        const permissionId = process.env.VUE_APP_PERMISSION_ID;
+        if (permissionId) {
+          const checkPermissionResponse = await UserService.checkPermission({
+            data: {
+              permissionId
+            },
+            headers: {
+              Authorization:  'Bearer ' + token,
+              'Content-Type': 'application/json'
             }
-          } else {
-            commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.token })
-            updateToken(resp.data.token)
-            dispatch('getProfile')
+          });
+
+          if (checkPermissionResponse.status === 200 && !hasError(checkPermissionResponse) && checkPermissionResponse.data && checkPermissionResponse.data.hasPermission) {
+            commit(types.USER_TOKEN_CHANGED, { newToken: token })
+            updateToken(token)
+            await dispatch('getProfile')
             dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
-            return resp.data;
+          } else {
+            const permissionError = 'You do not have permission to access the app.';
+            showToast(translate(permissionError));
+            logger.error("error", permissionError);
+            return Promise.reject(new Error(permissionError));
           }
-        } else if (hasError(resp)) {
-          showToast(translate('Sorry, your username or password is incorrect. Please try again.'));
-          logger.error("error", resp.data._ERROR_MESSAGE_);
-          return Promise.reject(new Error(resp.data._ERROR_MESSAGE_));
+        } else {
+          commit(types.USER_TOKEN_CHANGED, { newToken: token })
+          updateToken(token)
+          await dispatch('getProfile')
+          dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
         }
-      } else {
-        showToast(translate('Something went wrong'));
-        logger.error("error", resp.data._ERROR_MESSAGE_);
-        return Promise.reject(new Error(resp.data._ERROR_MESSAGE_));
       }
     } catch (err: any) {
       showToast(translate('Something went wrong'));
@@ -75,6 +62,8 @@ const actions: ActionTree<UserState, RootState> = {
    * Logout user
    */
   async logout ({ commit }) {
+    const authStore = useAuthStore()
+
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
     resetConfig();
@@ -83,6 +72,9 @@ const actions: ActionTree<UserState, RootState> = {
     // clearing field mappings and current mapping when the user logout
     commit(types.USER_FIELD_MAPPINGS_UPDATED, {})
     commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', mappingType: '', name: '', value: {}})
+    
+    // reset plugin state on logout
+    authStore.$reset()
   },
 
   /**
