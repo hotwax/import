@@ -11,7 +11,6 @@
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
               <ion-item
                 button
-                @click="selectedIndex = i"
                 router-direction="root"
                 :router-link="p.url"
                 class="hydrated"
@@ -51,11 +50,12 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent } from "vue";
 import { mapGetters } from "vuex";
 
 import { albumsOutline, bookmarkOutline, settings, calendar } from "ionicons/icons";
 import { useStore } from "@/store";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "Menu",
@@ -73,13 +73,6 @@ export default defineComponent({
     IonTitle,
     IonToolbar    
   },
-  created() {
-    // When open any specific page it should show that page selected
-    // TODO Find a better way
-    this.selectedIndex = this.appPages.findIndex((page) => {
-      return page.url === this.$router.currentRoute.value.path;
-    })
-  },
   computed: {
     ...mapGetters({
       isUserAuthenticated: 'user/isUserAuthenticated',
@@ -87,34 +80,28 @@ export default defineComponent({
       userProfile: 'user/getUserProfile'
     })
   },
-  watch:{
-    $route (to) {
-      // When logout and login it should point to Oth index
-      // TODO Find a better way
-      if (to.path === '/login') {
-        this.selectedIndex = 0;
-      }
-    },
-  }, 
   setup() {
     const store = useStore();
-    const selectedIndex = ref(0);
+    const router = useRouter();
     const appPages = [
       {
         title: "Inventory",
         url: "/inventory",
+        childRoutes: ["/inventory-review"],
         iosIcon: albumsOutline,
         mdIcon: albumsOutline
       },
       {
         title: "Purchase order",
         url: "/purchase-order",
+        childRoutes: ["/purchase-order-review"],
         iosIcon: calendar,
         mdIcon: calendar
       },
       {
         title: "Saved Mappings",
         url: "/saved-mappings",
+        childRoutes: ["/mapping/"],
         iosIcon: bookmarkOutline,
         mdIcon: bookmarkOutline
       },
@@ -123,8 +110,14 @@ export default defineComponent({
         url: "/settings",
         iosIcon: settings,
         mdIcon: settings,
-      },
+      }
     ];
+
+    const selectedIndex = computed(() => {
+      const path = router.currentRoute.value.path
+      return appPages.findIndex((screen) => screen.url === path || screen.childRoutes?.includes(path) || screen.childRoutes?.some((route) => path.includes(route)))
+    })
+
     return {
       selectedIndex,
       appPages,
@@ -133,7 +126,7 @@ export default defineComponent({
       settings,
       store
     };
-  },
+  }
 });
 </script>
 <style scoped>
