@@ -44,6 +44,7 @@ const app = createApp(App)
   .use(i18n)
   .use(store)
   .use(dxpComponents, {
+    defaultImgUrl: require("@/assets/images/defaultImage.png"),
     login,
     logout,
     loader,
