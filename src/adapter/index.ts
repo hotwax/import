@@ -1,8 +1,10 @@
 import {
   api,
   client,
+  getConfig,
   fetchProducts,
   initialise,
+  logout,
   isError,
   Product,
   resetConfig,
@@ -13,8 +15,10 @@ import {
 export {
   api,
   client,
+  getConfig,
   fetchProducts,
   initialise,
+  logout,
   isError,
   Product,
   resetConfig,
