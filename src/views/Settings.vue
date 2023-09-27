@@ -160,9 +160,6 @@ export default defineComponent({
     this.appVersion = this.appInfo.branch ? (this.appInfo.branch + "-" + this.appInfo.revision) : this.appInfo.tag;
   },
   methods: {
-    goToOms(){
-      window.open(this.instanceUrl.startsWith('http') ? this.instanceUrl.replace('api/', "") : `https://${this.instanceUrl}.hotwax.io/`, '_blank', 'noopener, noreferrer');
-    },
     updateDateTimeFormat(){
       this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
       this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);
