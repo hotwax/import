@@ -1,6 +1,7 @@
 import {
   api,
   client,
+  getConfig,
   fetchProducts,
   initialise,
   isError,
@@ -13,6 +14,7 @@ import {
 export {
   api,
   client,
+  getConfig,
   fetchProducts,
   initialise,
   isError,
