@@ -476,4 +476,8 @@ ion-chip > ion-select {
     grid-area: filters;
   }
 }
+
+ion-chip{
+  pointer-events: none;
+}
 </style>

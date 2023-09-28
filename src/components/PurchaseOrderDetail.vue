@@ -185,4 +185,8 @@ export default defineComponent({
   h1 {
     margin-left: 15px;
   }
+
+  ion-chip{
+    pointer-events: none;
+  }
 </style>
