@@ -108,14 +108,14 @@
               </ion-label>
             </ion-item>
 
-            <ion-chip outline>
+            <ion-chip outline class="no-pointer">
               <ion-label>{{ item.quantity }} {{ $t("Items") }}</ion-label>
             </ion-chip>
 
-            <ion-chip outline class="tablet">
+            <ion-chip outline class="tablet no-pointer">
               <ion-label>{{ getFacilityName(item.facilityId, item.externalFacilityId) }}</ion-label>
             </ion-chip>
-            <ion-chip outline class="tablet location">
+            <ion-chip outline class="tablet location no-pointer">
               <ion-icon :icon="locationOutline" />
               <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event, item)">
                 <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.facilityId ? item.facilityId : item.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationPath }}</ion-select-option>
@@ -477,7 +477,7 @@ ion-chip > ion-select {
   }
 }
 
-ion-chip{
+.no-pointer {
   pointer-events: none;
 }
 </style>

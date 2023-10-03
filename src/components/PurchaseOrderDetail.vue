@@ -33,13 +33,13 @@
               <p v-if="item.initialSKU">{{ item.initialSKU }}</p>
             </ion-label>
           </ion-item>
-          <ion-chip outline class="tablet">
+          <ion-chip outline class="tablet no-pointer">
             <ion-label>{{ item.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
           </ion-chip>
-          <ion-chip outline>
+          <ion-chip outline class="no-pointer">
             <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
           </ion-chip>
-          <ion-chip outline class="tablet">
+          <ion-chip outline class="tablet no-pointer">
             <ion-icon :icon="sendOutline" />
             <ion-label>{{ getArrivalDate(item.arrivalDate) }}</ion-label>
           </ion-chip>
@@ -186,7 +186,7 @@ export default defineComponent({
     margin-left: 15px;
   }
 
-  ion-chip{
+  .no-pointer {
     pointer-events: none;
   }
 </style>
