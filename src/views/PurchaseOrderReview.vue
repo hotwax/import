@@ -79,7 +79,7 @@
     </ion-content>
 
     <ion-footer>
-      <ion-segment @ionChange="selectAllItems($event.target.value); searchProduct(queryString);" v-model="segmentSelected">
+      <ion-segment scrollable="true" @ionChange="selectAllItems($event.target.value); searchProduct(queryString);" v-model="segmentSelected">
         <ion-segment-button value="all">
           <ion-label>{{ $t("All") }}</ion-label>
         </ion-segment-button>
