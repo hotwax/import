@@ -149,7 +149,6 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       userProfile: 'user/getUserProfile',
-      instanceUrl: 'user/getInstanceUrl',
       currentDateTimeFormat: 'user/getPreferredDateTimeFormat',
       pwaState: 'user/getPwaState'
     })
