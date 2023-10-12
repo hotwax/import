@@ -37,25 +37,7 @@
       </div>
 
       <section>
-        <ion-card>
-          <ion-card-header>
-            <ion-card-subtitle>
-              {{ $t("OMS instance") }}
-            </ion-card-subtitle>
-            <ion-card-title>
-              {{ instanceUrl }}
-            </ion-card-title>
-          </ion-card-header>
-          
-          <ion-card-content>
-            {{ $t('This is the name of the OMS you are connected to right now. Make sure that you are connected to the right instance before proceeding.') }}
-          </ion-card-content> 
-           
-          <ion-button @click="goToOms" fill="clear">
-            {{ $t('Go to OMS') }}
-            <ion-icon slot="end" :icon="openOutline" />
-          </ion-button>
-        </ion-card>
+        <OmsInstanceNavigator />
       </section>
 
       <hr />
@@ -167,7 +149,6 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       userProfile: 'user/getUserProfile',
-      instanceUrl: 'user/getInstanceUrl',
       currentDateTimeFormat: 'user/getPreferredDateTimeFormat',
       pwaState: 'user/getPwaState'
     })
@@ -178,9 +159,6 @@ export default defineComponent({
     this.appVersion = this.appInfo.branch ? (this.appInfo.branch + "-" + this.appInfo.revision) : this.appInfo.tag;
   },
   methods: {
-    goToOms(){
-      window.open(this.instanceUrl.startsWith('http') ? this.instanceUrl.replace('api/', "") : `https://${this.instanceUrl}.hotwax.io/`, '_blank', 'noopener, noreferrer');
-    },
     updateDateTimeFormat(){
       this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
       this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);

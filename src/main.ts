@@ -32,7 +32,7 @@ import { DateTime } from 'luxon';
 import logger from './logger';
 import { dxpComponents } from '@hotwax/dxp-components'
 import { login, logout, loader } from './user-utils';
-import { getConfig, initialise } from '@/adapter'
+import { getConfig, initialise } from '@hotwax/oms-api';
 
 const app = createApp(App)
   .use(IonicVue, {
