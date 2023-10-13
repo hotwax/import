@@ -42,17 +42,9 @@
 
       <hr />
 
-      <div class="section-header">
-        <h1>
-          {{ $t('App') }}
-          <p class="overline" >{{ "Version: " + appVersion }}</p>
-        </h1>
-        <div class="ion-text-end">
-          <p class="overline">{{ "Built: " + getDateTime(appInfo.builtTime) }}</p>
-          <ion-button v-if="pwaState.updateExists" @click="refreshApp()" fill="outline" color="dark" size="small">{{ $t("Update") }}</ion-button>
-        </div>
-      </div>
       
+      
+     <AppVersionInfo />
       <section>
         <ion-card>
           <ion-card-header>
@@ -110,7 +102,6 @@ import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline,
 import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import TimeZoneModal from '@/views/TimezoneModal.vue';
-import { DateTime } from 'luxon';
 import Image from '@/components/Image.vue';
 
 export default defineComponent({
@@ -142,8 +133,6 @@ export default defineComponent({
       sampleDateTime: '',
       dateTimeFormat: '',
       defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy',
-      appInfo: (process.env.VUE_APP_VERSION_INFO ? JSON.parse(process.env.VUE_APP_VERSION_INFO) : {}) as any,
-      appVersion: ""
     };
   },
   computed: {
