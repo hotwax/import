@@ -24,7 +24,7 @@
     </ion-list>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="save">
+      <ion-fab-button :disabled="!changesMade" @click="save">
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
@@ -77,6 +77,7 @@ export default defineComponent({
   data() {
     return {
       itemsByFacilityId: {},
+      changesMade: false;
       facilityMapping: {} as any
     }
   },
@@ -97,9 +98,12 @@ export default defineComponent({
       } else {
         this.store.dispatch('stock/updateMissingFacilities', this.facilityMapping)
       }
-      
+      this.changesMade = false;
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
+    },
+    detectChanges(){
+    this.changesMade = true;
     },
     updateFacility(ev: any, facilityId: any){
       this.facilityMapping[facilityId] = ev.target.value
@@ -113,6 +117,9 @@ export default defineComponent({
         return itemsByFacilityId;
       }, {});
     }
+  },
+    mounted() {
+    this.detectChanges();
   },
   setup() {
     const store = useStore();
