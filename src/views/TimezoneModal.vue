@@ -2,7 +2,7 @@
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-button @click="closeModal"> 
+        <ion-button @click="closeModal">
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
@@ -16,13 +16,18 @@
   <ion-content class="ion-padding">
     <!-- Empty state -->
     <div class="empty-state" v-if="filteredTimeZones.length === 0">
-      <p>{{ $t("No time zone found")}}</p>
-    </div>
+      <div style="display: flex; margin-top: 50%; justify-content: center;">
+
+        <ion-spinner  name="circular"></ion-spinner>
+        <ion-label >Fetching time zones</ion-label>
+      </div>
+      </div>
 
     <!-- Timezones -->
     <div v-else>
       <ion-list>
         <ion-radio-group value="rd" v-model="timeZoneId">
+          <ion-item> </ion-item>
           <ion-item :key="timeZone.id" v-for="timeZone in filteredTimeZones">
             <ion-label>{{ timeZone.label }} ({{ timeZone.id }})</ion-label>
             <ion-radio :value="timeZone.id" slot="start" />
@@ -30,7 +35,7 @@
         </ion-radio-group>
       </ion-list>
     </div>
-    
+
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button :disabled="!timeZoneId" @click="saveAlert">
         <ion-icon :icon="save" />
@@ -82,15 +87,15 @@ export default defineComponent({
     IonRadio,
     IonSearchbar,
     IonTitle,
-    IonToolbar 
+    IonToolbar,
   },
   data() {
     return {
-      queryString: '',
+      queryString: "",
       filteredTimeZones: [],
       timeZones: [],
-      timeZoneId: ''
-    }
+      timeZoneId: "",
+    };
   },
   methods: {
     closeModal() {
@@ -109,8 +114,8 @@ export default defineComponent({
             text: this.$t("Confirm"),
             handler: () => {
               this.setUserTimeZone();
-            }
-          }
+            },
+          },
         ],
       });
       return alert.present();
@@ -119,15 +124,15 @@ export default defineComponent({
       // Searching special characters fails the API, hence, they must be omitted
       if(/[`!@#$%^&*()_+\-=\\|,.<>?~]/.test($event.key)) $event.preventDefault();
     },
-    findTimeZone() { 
+    findTimeZone() {
       const queryString = this.queryString.toLowerCase();
       this.filteredTimeZones = this.timeZones.filter((timeZone: any) => {
         return timeZone.id.toLowerCase().match(queryString) || timeZone.label.toLowerCase().match(queryString);
       });
     },
     async getAvailableTimeZones() {
-      const resp = await UserService.getAvailableTimeZones()
-      if(resp.status === 200 && !hasError(resp)) {
+      const resp = await UserService.getAvailableTimeZones();
+      if (resp.status === 200 && !hasError(resp)) {
         // We are filtering valid the timeZones coming with response here
         this.timeZones = resp.data.filter((timeZone: any) => {
           return DateTime.local().setZone(timeZone.id).isValid;
@@ -136,17 +141,17 @@ export default defineComponent({
       }
     },
     async selectSearchBarText(event: any) {
-      const element = await event.target.getInputElement()
+      const element = await event.target.getInputElement();
       element.select();
     },
     async setUserTimeZone() {
       await this.store.dispatch("user/setUserTimeZone", {
-        "timeZoneId": this.timeZoneId
-      })
-      this.closeModal()
-    }
+        timeZoneId: this.timeZoneId,
+      });
+      this.closeModal();
+    },
   },
-  beforeMount () {
+  beforeMount() {
     this.getAvailableTimeZones();
   },
   setup() {
@@ -154,8 +159,8 @@ export default defineComponent({
     return {
       close,
       save,
-      store
+      store,
     };
-  }
+  },
 });
 </script>
