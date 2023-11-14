@@ -24,7 +24,7 @@
     </ion-list>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="save">
+      <ion-fab-button :disabled="!Object.keys(itemsByFacilityId).length" @click="save">
         <ion-icon :icon="saveOutline" />
       </ion-fab-button>
     </ion-fab>
@@ -97,7 +97,6 @@ export default defineComponent({
       } else {
         this.store.dispatch('stock/updateMissingFacilities', this.facilityMapping)
       }
-      
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
     },
