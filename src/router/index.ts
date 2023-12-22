@@ -8,7 +8,7 @@ import SavedMappings from '@/views/SavedMappings.vue'
 import Settings from "@/views/Settings.vue"
 import store from '@/store'
 import MappingDetail from '@/views/MappingDetail.vue'
-import { Login, useAuthStore } from '@hotwax/dxp-components';
+import { DxpLogin, useAuthStore } from '@hotwax/dxp-components';
 import { loader } from '@/user-utils';
 
 const authGuard = async (to: any, from: any, next: any) => {
@@ -63,7 +63,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: DxpLogin,
     beforeEnter: loginGuard
   },
   {
