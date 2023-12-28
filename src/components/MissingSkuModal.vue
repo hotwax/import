@@ -32,11 +32,12 @@
       <ion-radio-group @ionChange="updatedSku = $event.detail.value; hasSkuUpdated = false; isSkuInvalid = false;" v-model="unidentifiedProductSku">
         <ion-list v-if="segmentSelected === 'pending'">
           <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
-            <ion-label>
-              {{ item.shopifyProductSKU }}
-              <p>{{ item.orderId }}</p>
-            </ion-label>
-            <ion-radio slot="end" :value="item.shopifyProductSKU" />
+            <ion-radio :value="item.shopifyProductSKU">
+              <ion-label>
+                {{ item.shopifyProductSKU }}
+                <p>{{ item.orderId }}</p>
+              </ion-label>
+            </ion-radio>
           </ion-item>
         </ion-list>
 
@@ -45,12 +46,13 @@
             <ion-thumbnail slot="start">
               <ShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
-            <ion-label>
-              <p class="overline">{{ item.parentProductName }}</p>
-              {{ item.updatedSku }}
-              <p>{{ item.orderId }}</p>
-            </ion-label>
-            <ion-radio slot="end" :value="item.updatedSku" />
+            <ion-radio :value="item.updatedSku">
+              <ion-label>
+                <p class="overline">{{ item.parentProductName }}</p>
+                {{ item.updatedSku }}
+                <p>{{ item.orderId }}</p>
+              </ion-label>
+            </ion-radio>
           </ion-item>
         </ion-list>
       </ion-radio-group>
