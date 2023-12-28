@@ -13,8 +13,7 @@
   <ion-content>
     <ion-list>
       <ion-item lines="full">
-        <ion-label>{{ $t("Buffer quantity") }}</ion-label>
-        <ion-input v-model="quantityBuffer" type="number" min="0" :placeholder = "$t('Quantity')" />
+        <ion-input :label="$t('Buffer quantity')" v-model="quantityBuffer" type="number" min="0" :placeholder="$t('Quantity')" />
       </ion-item>
 
       <ion-item>

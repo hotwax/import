@@ -13,13 +13,11 @@
   <ion-content>
     <ion-list>
       <ion-item lines="full">
-        <ion-label>{{ $t("Buffer days") }}</ion-label>
-        <ion-input v-model="bufferDays" type="number" :placeholder = "$t('Lead time')" min="1" /> 
+        <ion-input :label="$t('Buffer days')" v-model="bufferDays" type="number" :placeholder="$t('Lead time')" min="1" />
       </ion-item>
 
       <ion-item lines="full">
-        <ion-label>{{ $t("Order buffer") }}</ion-label>
-        <ion-input v-model="orderBuffer" type="number" :placeholder = "$t('Safety stock')" min="1" />
+        <ion-input :label="$t('Order buffer')" v-model="orderBuffer" type="number" :placeholder="$t('Safety stock')" min="1" />
       </ion-item>
 
       <ion-item>

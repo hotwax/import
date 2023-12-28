@@ -11,8 +11,7 @@
   </ion-header>
 
   <ion-item>
-    <ion-label>{{ $t("Mapping name") }}</ion-label>
-    <ion-input :placeholder="$t('Field mapping name')" v-model="mappingName" />
+    <ion-input :label="$t('Mapping name')" :placeholder="$t('Field mapping name')" v-model="mappingName" />
   </ion-item>
 
   <ion-content class="ion-padding">

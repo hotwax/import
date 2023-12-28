@@ -20,7 +20,7 @@
     </ion-item>
     
     <ion-item>
-      <ion-input clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" />
+      <ion-input :clear-input='true' v-model="dateTimeFormat" :value="dateTimeFormat" />
     </ion-item>
     
     <ion-item>

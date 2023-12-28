@@ -20,8 +20,7 @@
       <ion-label slot="end">{{ currentDate }}</ion-label>
     </ion-item>
     <ion-item lines="full">
-      <ion-label>{{ $t("Custom date format") }}</ion-label>
-      <ion-input clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value;" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
+      <ion-input :label="$t('Custom date format')" :clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value;" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
     </ion-item>
 
     <ion-item lines="none">
