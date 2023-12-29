@@ -6,9 +6,7 @@
     
     <div v-for="id in getGroupPurchaseOrders(poItems)" :key="id" >
       <div class="list-item list-header">
-        <ion-item color="light" lines="none">
-          <ion-label>{{ getParentInformation(id, poItems).parentProductName }}</ion-label>
-        </ion-item>
+        <ion-label class="ion-padding-start">{{ getParentInformation(id, poItems).parentProductName }}</ion-label>
 
         <div class="tablet" />
 

@@ -80,9 +80,7 @@
 
       <div v-else v-for="id in getParentProductIds(stockItems.parsed)" :key="id">
         <div class="list-item list-header">
-          <ion-item color="light" lines="none">
-            <ion-label>{{ getParentInformation(id, stockItems.parsed).parentProductName }}</ion-label>
-          </ion-item>
+          <ion-label class="ion-padding-start">{{ getParentInformation(id, stockItems.parsed).parentProductName }}</ion-label>
 
           <div class="tablet" />
 
