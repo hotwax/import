@@ -64,8 +64,8 @@
         </ion-chip>
 
         <ion-chip outline class="tablet location">
-          <ion-icon :icon="locationOutline" />
           <ion-select interface="popover" :value="searchedProduct.locationSeqId" @ionChange="setFacilityLocation($event, searchedProduct)">
+            <ion-icon slot="start" :icon="locationOutline" />
             <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(searchedProduct.externalFacilityId ? searchedProduct.externalFacilityId : searchedProduct.facilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationSeqId }}</ion-select-option>
           </ion-select>
         </ion-chip>
@@ -116,8 +116,8 @@
               <ion-label>{{ getFacilityName(item.facilityId, item.externalFacilityId) }}</ion-label>
             </ion-chip>
             <ion-chip outline class="tablet location">
-              <ion-icon :icon="locationOutline" />
               <ion-select interface="popover" :value="item.locationSeqId" @ionChange="setFacilityLocation($event, item)">
+                <ion-icon slot="start" :icon="locationOutline" />
                 <ion-select-option v-for="facilityLocation in getFacilityLocationsByFacilityId(item.facilityId ? item.facilityId : item.externalFacilityId)" :key="facilityLocation.locationSeqId" :value="facilityLocation.locationSeqId" >{{ facilityLocation.locationPath }}</ion-select-option>
               </ion-select>
             </ion-chip>
@@ -454,6 +454,7 @@ export default defineComponent({
 
 ion-chip > ion-select {
   padding: 0px;
+  min-height: 0px;
 }
 
 .location {

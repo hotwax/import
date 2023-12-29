@@ -18,8 +18,7 @@
     <div>
       <ion-list>
         <ion-item :key="field" v-for="(fieldValues, field) in getFields()">
-          <ion-label>{{ $t(fieldValues.label) }}</ion-label>
-          <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+          <ion-select :label="$t(fieldValues.label)" interface="popover" :placeholder="$t('Select')" v-model="fieldMapping[field]">
             <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -45,7 +44,6 @@ import {
   IonInput,
   IonTitle,
   IonToolbar,
-  IonLabel,
   IonItem,
   IonList,
   IonSelect,
@@ -73,7 +71,6 @@ export default defineComponent({
     IonSelectOption,
     IonTitle,
     IonToolbar,
-    IonLabel,
     IonItem,
     IonList
   },

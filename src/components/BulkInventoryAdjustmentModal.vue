@@ -17,8 +17,7 @@
       </ion-item>
 
       <ion-item>
-        <ion-label>{{ $t("Facility") }}</ion-label>
-        <ion-select interface="popover" v-model="facilityId">
+        <ion-select :label="$t('Facility')" interface="popover" v-model="facilityId">
           <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
         </ion-select>
       </ion-item>
@@ -42,7 +41,6 @@ import {
   IonItem,
   IonIcon,
   IonInput,
-  IonLabel,
   IonList,
   IonSelect,
   IonSelectOption,
@@ -68,7 +66,6 @@ export default defineComponent({
     IonIcon,
     IonItem,
     IonInput,
-    IonLabel,
     IonList,
     IonSelect,
     IonSelectOption,
