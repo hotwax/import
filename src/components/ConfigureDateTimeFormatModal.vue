@@ -1,3 +1,4 @@
+<!-- TODO: components inside this modal needs to be updated as per ionic 7 migration guide -->
 <template>
   <ion-header>
     <ion-toolbar>
