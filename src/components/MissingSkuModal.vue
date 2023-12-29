@@ -12,10 +12,8 @@
     </ion-header>
     <ion-content>
       <div>
-        <ion-item id="update-sku" :class="isSkuInvalid ? 'ion-invalid' : ''">
-          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" @keyup.enter="update" />
-          <ion-note v-show="hasSkuUpdated && (purchaseOrders.unidentifiedItems.length || stockItems.unidentifiedItems.length)" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
-          <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
+        <ion-item id="update-sku" lines="none">
+          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" @keyup.enter="update" :class="isSkuInvalid ? 'ion-touched ion-invalid' : ''" :error-text="$t('This SKU is not available, please try again')"/>
         </ion-item>
         <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ $t("Update") }}</ion-button>
       </div>
@@ -78,7 +76,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonNote,
   IonPage,
   IonRadio,
   IonRadioGroup,
@@ -109,7 +106,6 @@ export default defineComponent({
   IonItem,
   IonLabel,
   IonList,
-  IonNote,
   IonPage,
   IonRadio,
   IonRadioGroup,
