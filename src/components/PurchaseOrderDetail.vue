@@ -14,7 +14,7 @@
 
         <div />
         
-        <ion-checkbox :checked="isParentProductChecked(id, poItems)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, poItems)" />
+        <ion-checkbox aria-label="select-virtual" :checked="isParentProductChecked(id, poItems)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, poItems)" />
         
         <ion-button fill="clear" color="medium" @click="openProductPopover($event, id, true, getParentInformation(id, poItems), getParentInformation(id, poItems).orderId)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -42,7 +42,7 @@
             <ion-label>{{ getArrivalDate(item.arrivalDate) }}</ion-label>
           </ion-chip>
           <!-- Used :key as the changed value was not reflected -->
-          <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
+          <ion-checkbox aria-label="select-variant" :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
           
           <ion-button fill="clear" color="medium" @click="openProductPopover($event, item.pseudoId, false, item, item.orderId)">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
