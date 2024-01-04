@@ -15,8 +15,9 @@
 
   <ion-content class="ion-padding">
     <!-- Empty state -->
-    <div class="empty-state" v-if="filteredTimeZones.length === 0">
-      <p>{{ $t("No time zone found")}}</p>
+    <div class="spinner" v-if="filteredTimeZones.length === 0">
+      <ion-spinner name="crescent" ></ion-spinner>
+      <label>Fetching time zones</label>
     </div>
 
     <!-- Timezones -->
@@ -48,6 +49,7 @@ import {
   IonFabButton,
   IonHeader,
   IonItem,
+  IonSpinner,
   IonIcon,
   IonLabel,
   IonList,
@@ -76,6 +78,7 @@ export default defineComponent({
     IonHeader,
     IonIcon,
     IonItem,
+    IonSpinner,
     IonLabel,
     IonList,
     IonRadioGroup,
@@ -159,3 +162,14 @@ export default defineComponent({
   }
 });
 </script>
+<style scoped>
+.spinner{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.spinner ion-spinner{
+  margin-right: 10px;
+}
+</style>
