@@ -47,6 +47,7 @@
   "Failed to save CSV mapping.": "Failed to save CSV mapping.",
   "Failed to delete CSV mapping.": "Failed to delete CSV mapping.",
   "Failed to update CSV mapping.": "Failed to update CSV mapping.",
+  "Fetching time zones": "Fetching time zones",
   "Field mapping name": "Field mapping name",
   "This CSV mapping has been saved.": "This CSV mapping has been saved.",
   "This CSV mapping has been deleted.": "This CSV mapping has been deleted.",
