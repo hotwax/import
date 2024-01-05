@@ -265,14 +265,3 @@ http://ionicframework.com/docs/theming/ */
     display: none;
   }
 }
-.empty-state {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-}
-.empty-state ion-spinner{
-  margin-right: 10px;
-}

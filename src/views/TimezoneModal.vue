@@ -13,12 +13,18 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="ion-padding">
-    <!-- Empty state -->
+  <!-- Empty state -->
+  <ion-content class="ion-text-center">
     <div class="empty-state" v-if="filteredTimeZones.length === 0">
-      <ion-spinner name="crescent" ></ion-spinner>
-      <p>{{ $t("Fetching time zones") }}</p>
-    </div>
+        <ion-row class="ion-align-items-center ion-justify-content-center" style="height: 50vh;">
+         <ion-col size="auto">
+            <ion-spinner name="crescent" ></ion-spinner>
+         </ion-col>
+         <ion-col size="auto">
+            <p>{{ $t("Fetching time zones")}}</p>
+         </ion-col>
+      </ion-row>  
+    </div>   
 
     <!-- Timezones -->
     <div v-else>
