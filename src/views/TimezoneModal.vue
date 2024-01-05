@@ -18,7 +18,7 @@
     <!-- Empty state -->
     <div class="empty-state" v-if="filteredTimeZones.length === 0">
       <ion-item lines="none">
-        <ion-spinner name="crescent" ></ion-spinner>
+        <ion-spinner name="crescent" class="ion-margin-end"></ion-spinner>
         <p>{{ $t("Fetching time zones")}}</p>
       </ion-item>      
     </div>   
