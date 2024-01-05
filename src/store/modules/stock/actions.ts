@@ -3,10 +3,14 @@ import store from '@/store'
 import RootState from '@/store/RootState'
 import StockState from './StockState'
 import * as types from './mutation-types'
+import emitter from "@/event-bus";
 
 const actions: ActionTree<StockState, RootState> = {
-  async processUpdateStockItems ({ commit }, items) {
-    const productIds = items.map((item: any) => item.shopifyProductSKU)
+  async processUpdateStockItems ({ commit, rootGetters }, items) {
+    emitter.emit('fileProcessing');
+    //Fetching only top 
+    const productIds = items.slice(0, process.env['VUE_APP_VIEW_SIZE']).map((item: any) => item.identification);
+
 
     // We are getting external facilityId from CSV, extract facilityId and pass for getting locations
     const externalFacilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))]
@@ -19,20 +23,25 @@ const actions: ActionTree<StockState, RootState> = {
       return facilityMapping[externalFacilityId];
     }).filter((facilityId: any) => facilityId)
     store.dispatch('util/fetchFacilityLocations', facilityIds);
+    
 
     const viewSize = productIds.length;
     const viewIndex = 0;
     const payload = {
       viewSize,
       viewIndex,
-      productIds
+      productIds,
+      identificationTypeId: items[0]?.identificationTypeId //fetching identificationTypeId from first item, as all the items will have one identification type
     }
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
-    const unidentifiedItems = [] as any;
-    const parsed = items.map((item: any) => {
-      const product = cachedProducts[item.shopifyProductSKU];
+    const parsed = [] as any;
+    const initial = items.map((item: any) => {
+      const product = cachedProducts[item.identification];
+      const facilityLocation = rootGetters['util/getFacilityLocationsByFacilityId'](item.externalFacilityId)?.[0];
+      item.locationSeqId = facilityLocation?.locationSeqId;
+      parsed.push(item);
       
-      if(product){
+      if (product) {
         item.parentProductId = product?.parent?.id;
         item.pseudoId = product.pseudoId;
         item.parentProductName = product?.parent?.productName;
@@ -40,36 +49,19 @@ const actions: ActionTree<StockState, RootState> = {
         item.isSelected = true;
         return item;
       }
-      unidentifiedItems.push(item);
       return;
     }).filter((item: any) => item);
 
-    const original = JSON.parse(JSON.stringify(parsed));
+    const original = JSON.parse(JSON.stringify(items));
 
-    commit(types.STOCK_ITEMS_UPDATED, { parsed, original, unidentifiedItems });
+    commit(types.STOCK_ITEMS_UPDATED, { parsed, original, initial });
+    emitter.emit('fileProcessed');
   },
   updateStockItems({ commit }, stockItems){
     commit(types.STOCK_ITEMS_UPDATED, stockItems);
   },
   clearStockItems({ commit }){
-    commit(types.STOCK_ITEMS_UPDATED, { parsed: [], original: [], unidentifiedItems: []});
-  },
-  updateUnidentifiedItem({ commit, state }, payload: any) {
-    const parsed = state.items.parsed as any;
-    const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
-      if(item.updatedSku) {
-        item.initialSKU = item.shopifyProductSKU;
-        item.shopifyProductSKU = item.updatedSku;
-        parsed.push(item);
-        state.items.original.push(item);
-      } else {
-        return item;
-      }
-    }).filter((item: any) => item);
-
-    const original = JSON.parse(JSON.stringify(state.items.original));
-
-    commit(types.STOCK_ITEMS_UPDATED, { parsed, original, unidentifiedItems});
+    commit(types.STOCK_ITEMS_UPDATED, { parsed: [], original: []});
   },
   async updateMissingFacilities({ state }, facilityMapping){
     const facilityLocations = await this.dispatch('util/fetchFacilityLocations', Object.values(facilityMapping));

@@ -16,13 +16,6 @@
         <ion-label>{{ $t("Buffer quantity") }}</ion-label>
         <ion-input v-model="quantityBuffer" type="number" min="0" :placeholder = "$t('Quantity')" />
       </ion-item>
-
-      <ion-item>
-        <ion-label>{{ $t("Facility") }}</ion-label>
-        <ion-select interface="popover" v-model="facilityId">
-          <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
-        </ion-select>
-      </ion-item>
     </ion-list>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -45,8 +38,6 @@ import {
   IonInput,
   IonLabel,
   IonList,
-  IonSelect,
-  IonSelectOption,
   IonTitle,
   IonToolbar,
   modalController,
@@ -71,8 +62,6 @@ export default defineComponent({
     IonInput,
     IonLabel,
     IonList,
-    IonSelect,
-    IonSelectOption,
     IonTitle,
     IonToolbar 
   },
@@ -85,7 +74,6 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       stockItems: 'stock/getStockItems',  
-      facilities: 'util/getFacilities',
     })
   },
   methods: {
@@ -93,16 +81,18 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     async save() {
-      const facilityLocations = await this.store.dispatch('util/fetchFacilityLocations', [this.facilityId]);
-      const locationSeqId = facilityLocations[this.facilityId] && facilityLocations[this.facilityId][0] ? facilityLocations[this.facilityId][0].locationSeqId : '';
       this.stockItems.parsed.map((item: any) => {
-        if (item.isSelected) {
-          item.quantity -= this.quantityBuffer;
-          if(this.facilityId) {
-            item.facilityId = this.facilityId;
-            item.externalFacilityId = "";
-            item.locationSeqId = locationSeqId;
-          }
+        item.quantity -= this.quantityBuffer;
+        if(this.facilityId) {
+          item.facilityId = this.facilityId;
+          item.externalFacilityId = "";
+        }
+      })
+      this.stockItems.initial.map((item: any) => {
+        item.quantity -= this.quantityBuffer;
+        if (this.facilityId) {
+          item.facilityId = this.facilityId;
+          item.externalFacilityId = "";
         }
       })
       await this.store.dispatch('stock/updateStockItems', this.stockItems)

@@ -46,7 +46,7 @@
           <ion-item @click="openMissingSkuModal()" button>
             <ion-icon slot="start" :icon="shirtOutline" />
             <ion-label>{{ $t("Missing products") }}</ion-label>
-            <ion-note slot="end">{{ purchaseOrders.unidentifiedItems.length }} {{ $t("items") }}</ion-note>
+            <ion-note slot="end">{{ purchaseOrders.unidentifiedItems?.length }} {{ $t("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
         </div>
@@ -254,8 +254,8 @@ export default defineComponent({
           "arrivalDate": DateTime.fromFormat(item.arrivalDate, this.dateTimeFormat).toFormat('MM/dd/yyyy'),
           "quantity": item.quantityOrdered,
           "isNewProduct": item.isNewProduct,
-          "idValue": item.shopifyProductSKU,
-          "idType": "SKU"
+          "idValue": item.identification,
+          "idType": item.identificationTypeId
         };
       })
       const fileName = this.fileName.replace(".csv", ".json");

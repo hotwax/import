@@ -11,5 +11,8 @@ const mutations: MutationTree <UtilState> = {
             state.facilityLocationsByFacilityId[facilityId] = facilityLocations[facilityId];
         })
     },
+    [types.UTIL_GOOD_IDENTIFICATION_TYPES_UPDATED](state, payload) {
+        state.goodIdentificationTypes = payload
+    }
 }
 export default mutations;

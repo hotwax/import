@@ -10,6 +10,7 @@ const userModule: Module<UserState, RootState> = {
     state: {
       facilities: [],
       facilityLocationsByFacilityId: {},
+      goodIdentificationTypes: [],
     },
     getters,
     actions,

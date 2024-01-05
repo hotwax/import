@@ -31,12 +31,21 @@
  
         <ion-list>
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
-
           <ion-item :key="field" v-for="(fieldValues, field) in fields">
-            <ion-label>{{ $t(fieldValues.label) }}</ion-label>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
-              <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
-            </ion-select>
+            <template v-if="field === 'productIdentification'">
+              <ion-select interface="popover" :placeholder = "$t('Select')" slot="start" v-model="identificationTypeId">
+                <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" :value="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
+              </ion-select>
+              <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" slot="end" v-model="fieldMapping['productIdentification']">
+                <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
+              </ion-select>
+            </template>
+            <template v-else>
+              <ion-label>{{ $t(fieldValues.label) }}</ion-label>
+              <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+                <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
+              </ion-select>
+            </template>
           </ion-item>
         </ion-list>
 
@@ -84,12 +93,14 @@ export default defineComponent({
       content: [],
       fieldMapping: {},
       fileColumns: [],
-      fields: process.env["VUE_APP_MAPPING_RSTINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTINV"]) : {}
+      fields: process.env["VUE_APP_MAPPING_RSTINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTINV"]) : {},
+      identificationTypeId: "SHOPIFY_PROD_SKU",
     }
   },
   computed: {
     ...mapGetters({
-      fieldMappings: 'user/getFieldMappings'
+      fieldMappings: 'user/getFieldMappings',
+      goodIdentificationTypes: 'util/getGoodIdentificationTypes'
     })
   },
   mixins:[ parseFileMixin ],
@@ -101,6 +112,8 @@ export default defineComponent({
       return fieldMapping;
     }, {})
     this.$refs.file.value = null;
+
+    this.store.dispatch('util/fetchGoodIdentificationTypes');
   },
   methods: {
     mapFields(mapping) {
@@ -148,7 +161,8 @@ export default defineComponent({
 
       const stockItems = this.content.map(item => {
         return {
-          shopifyProductSKU: item[this.fieldMapping.productSku],
+          identification: item[this.fieldMapping.productIdentification],
+          identificationTypeId: this.identificationTypeId,
           quantity: item[this.fieldMapping.quantity],
           facilityId: '',
           externalFacilityId: item[this.fieldMapping.facility],

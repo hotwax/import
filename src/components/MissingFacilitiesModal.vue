@@ -55,6 +55,8 @@ import { useStore } from "@/store";
 import { mapGetters } from "vuex";
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
+import emitter from "@/event-bus";
+
 export default defineComponent({
   name: "MissingFacilitiesModal",
   components: {
@@ -95,7 +97,9 @@ export default defineComponent({
       if(this.type === 'order'){
         this.store.dispatch('order/updateMissingFacilities', this.facilityMapping)
       } else {
-        this.store.dispatch('stock/updateMissingFacilities', this.facilityMapping)
+        emitter.emit('presentLoader');
+        await this.store.dispatch('stock/updateMissingFacilities', this.facilityMapping)
+        emitter.emit('dismissLoader');
       }
       this.closeModal();
       showToast(translate("Changes have been successfully applied"));
