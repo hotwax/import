@@ -12,6 +12,7 @@ const orderModule: Module<StockState, RootState> = {
       parsed: [],
       original: [],
       unidentifiedItems: [],
+      initial: []
     },
     fileName: ""
   },

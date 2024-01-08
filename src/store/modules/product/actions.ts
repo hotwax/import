@@ -8,7 +8,7 @@ import logger from "@/logger";
 
 const actions: ActionTree<ProductState, RootState> = {
 
-  async fetchProducts ( { commit, state }, { productIds }) {
+  async fetchProducts ( { commit, state }, { productIds, identificationTypeId }) {
 
     // TODO Add try-catch block
 
@@ -23,9 +23,10 @@ const actions: ActionTree<ProductState, RootState> = {
 
     // If there are no product ids to search skip the API call
     if (productIdFilter.length == 0) return state.cached;
-
+    
+    const modifiedProductIdFilters = productIdFilter.map((productId: string) => identificationTypeId + '/' + productId);
     const resp = await fetchProducts({
-      filters: { 'internalName': { 'value': productIdFilter }},
+      filters: { 'goodIdentifications': { 'value': modifiedProductIdFilters }},
       viewSize: productIdFilter.length,
       viewIndex: 0
     })

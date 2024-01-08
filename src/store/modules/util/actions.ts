@@ -51,8 +51,8 @@ const actions: ActionTree<UtilState, RootState> = {
         facilityId: unavailablefacilityIds,
         "facilityId_op": 'in'
       },
-      // Assuming we will not have more than 15 facility locations.
-      "viewSize": unavailablefacilityIds.length * 15,
+      // setting highest viewSize that performFind can fetch.
+      "viewSize": 250,
       "fieldList": ["locationSeqId", "areaId", "aisleId", "sectionId", "levelId", "positionId", "facilityId"],
       "entityName": "FacilityLocation",
       "distinct": "Y",
@@ -80,6 +80,31 @@ const actions: ActionTree<UtilState, RootState> = {
     }
     return state.facilityLocationsByFacilityId;
   },
+
+  async fetchGoodIdentificationTypes({ state, commit }) {
+    if (state.goodIdentificationTypes.length) return state.goodIdentificationTypes;
+    
+    const payload = {
+      "inputFields": {
+        "parentTypeId": "HC_GOOD_ID_TYPE",
+      },
+      "fieldList": ["goodIdentificationTypeId", "description"],
+      "viewSize": 50,
+      "entityName": "GoodIdentificationType",
+      "noConditionFind": "Y"
+    }
+    try {
+      const resp = await UtilService.fetchGoodIdentificationTypes(payload);
+      if (!hasError(resp) && resp.data.count > 0) {
+        commit(types.UTIL_GOOD_IDENTIFICATION_TYPES_UPDATED, resp.data.docs);
+      } else {
+        throw resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+    return state.facilities;
+  }
 }
 
 

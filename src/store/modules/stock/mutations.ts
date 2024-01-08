@@ -7,6 +7,7 @@ const mutations: MutationTree <StockState> = {
     state.items.parsed = payload.parsed;
     state.items.original = payload.original;
     state.items.unidentifiedItems = payload.unidentifiedItems;
+    state.items.initial = payload.initial;
   }
 }
 export default mutations;

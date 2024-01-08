@@ -130,7 +130,8 @@ export default defineComponent({
         const purchaseOrderItems = this.content.map(item => {
           return {
             orderId: item[this.fieldMapping.orderId],
-            shopifyProductSKU: item[this.fieldMapping.productSku],
+            identification: item[this.fieldMapping.productSku],
+            identificationTypeId: "SHOPIFY_PROD_SKU",
             arrivalDate: item[this.fieldMapping.orderDate],
             quantityOrdered: item[this.fieldMapping.quantity],
             facilityId: '',
