@@ -20,13 +20,6 @@
           </ion-card-content>
         </ion-card>
         <div class="filters">
-          <ion-item @click="openBulkInventoryAdjustmentModal()" button> 
-            <ion-icon slot="start" :icon="calculatorOutline" />
-            <ion-label>{{ $t("Bulk adjustment") }}</ion-label>
-            <ion-note slot="end">{{ getSelectedItems() }} {{ $t("items selected") }}</ion-note>
-            <ion-icon slot="end" :icon="chevronForwardOutline" />
-          </ion-item>
-
           <ion-item @click="openMissingFacilitiesModal()" button>
             <ion-icon slot="start" :icon="businessOutline" />
             <ion-label>{{ $t("Missing facilities") }}</ion-label>
@@ -319,12 +312,6 @@ export default defineComponent({
     },
     getParentInformation(id: any, items: any) {
       return items.find((item: any) => item.parentProductId == id)
-    },
-    async openBulkInventoryAdjustmentModal() {
-      const bulkInventoryAdjustmentModal = await modalController.create({
-        component: BulkInventoryAdjustmentModal,
-      });
-      return bulkInventoryAdjustmentModal.present();
     },
   },
   setup() {
