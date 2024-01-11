@@ -3,6 +3,9 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/inventory" />
+        <ion-title v-if="!stockItems.initial || stockItems.initial.length === 0">{{stockItems.parsed.length}} {{ $t('items') }}</ion-title>
+        <ion-title v-else>{{ stockItems.initial.length }} {{ $t('of') }} {{ stockItems.parsed.length }} {{ $t('items') }}</ion-title>
+     
         <ion-buttons slot="end">
           <ion-button @click="revertAll">
             <ion-icon slot="icon-only" :icon="arrowUndoOutline" />
@@ -102,7 +105,7 @@ import { useRouter } from 'vue-router';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
 import emitter from "@/event-bus";
-import { IonCard, IonCardContent, IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote } from '@ionic/vue'
+import { IonCard, IonCardContent, IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote, IonSpinner, IonTitle } from '@ionic/vue'
 import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, shirtOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline, warningOutline } from 'ionicons/icons'
 
 export default defineComponent({
@@ -125,7 +128,9 @@ export default defineComponent({
     IonButtons,
     IonFab,
     IonFabButton,
-    IonNote
+    IonNote,
+    IonSpinner,
+    IonTitle
   },
   computed: {
     ...mapGetters({
@@ -150,11 +155,11 @@ export default defineComponent({
   ionViewDidEnter(){
     this.store.dispatch('util/fetchFacilities');
   },
-  async mounted() {
+  ionViewWillEnter() {
     emitter.on('fileProcessing', this.fileProcessing);
     emitter.on('fileProcessed', this.fileProcessed);
   },
-  unmounted() {
+  ionViewWillLeave() {
     emitter.off('fileProcessing', this.fileProcessing);
     emitter.off('fileProcessed', this.fileProcessed);
   },
@@ -188,10 +193,10 @@ export default defineComponent({
   },
   
   methods: {
-    async fileProcessing() {
+    fileProcessing() {
       this.isProcessingFile = true;
     },
-    async fileProcessed() {
+    fileProcessed() {
       this.isProcessingFile = false;
     },
     getFacilityName(facilityId: any, externalFacilityId: any) {
