@@ -104,7 +104,10 @@ const actions: ActionTree<UtilState, RootState> = {
       logger.error(err)
     }
     return state.facilities;
-  }
+  },
+  async updateFileProcessingStatus({ commit }, status){
+    commit(types.UTIL_FILE_PROCESSING_STATUS_UPDATED, { status });
+  },
 }
 
 

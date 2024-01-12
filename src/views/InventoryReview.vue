@@ -104,7 +104,6 @@ import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { showToast } from '@/utils';
 import { translate } from "@/i18n";
-import emitter from "@/event-bus";
 import { IonCard, IonCardContent, IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote, IonSpinner, IonTitle } from '@ionic/vue'
 import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, shirtOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline, warningOutline } from 'ionicons/icons'
 
@@ -135,6 +134,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       stockItems: 'stock/getStockItems',
+      isProcessingFile: 'util/getFileProcessingStatus',
       getProduct: 'product/getProduct',
       instanceUrl: 'user/getInstanceUrl',
       facilities: 'util/getFacilities',
@@ -148,20 +148,11 @@ export default defineComponent({
       isParentProductUpdated: false,
       isCsvUploadedSuccessfully: false,
       facilityLocations: {},
-      isProcessingFile: true,
       viewSize: process.env['VUE_APP_VIEW_SIZE']
     }
   },
   ionViewDidEnter(){
     this.store.dispatch('util/fetchFacilities');
-  },
-  ionViewWillEnter() {
-    emitter.on('fileProcessing', this.fileProcessing);
-    emitter.on('fileProcessed', this.fileProcessed);
-  },
-  ionViewWillLeave() {
-    emitter.off('fileProcessing', this.fileProcessing);
-    emitter.off('fileProcessed', this.fileProcessed);
   },
   async beforeRouteLeave(to) {
     if(to.path === '/login') return;

@@ -11,6 +11,7 @@ const userModule: Module<UserState, RootState> = {
       facilities: [],
       facilityLocationsByFacilityId: {},
       goodIdentificationTypes: [],
+      isProcessingFile: false
     },
     getters,
     actions,
