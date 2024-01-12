@@ -12,7 +12,6 @@
       <ion-searchbar @ionFocus="selectSearchBarText($event)" :placeholder="$t('Search time zones')"  v-model="queryString" @keyup.enter="queryString = $event.target.value; findTimeZone()" @keydown="preventSpecialCharacters($event)" />
     </ion-toolbar>
   </ion-header>
-
   
   <ion-content class="ion-padding">
     <!-- Empty state -->
@@ -136,7 +135,7 @@ export default defineComponent({
       });
     },
     async getAvailableTimeZones() {
-      // this.isLoading = true
+      this.isLoading = true
       const resp = await UserService.getAvailableTimeZones()
       if(resp.status === 200 && !hasError(resp)) {
         // We are filtering valid the timeZones coming with response here
