@@ -13,6 +13,9 @@ const mutations: MutationTree <UtilState> = {
     },
     [types.UTIL_GOOD_IDENTIFICATION_TYPES_UPDATED](state, payload) {
         state.goodIdentificationTypes = payload
-    }
+    },
+    [types.UTIL_FILE_PROCESSING_STATUS_UPDATED] (state, payload) {
+        state.isProcessingFile = payload.status;
+      }
 }
 export default mutations;

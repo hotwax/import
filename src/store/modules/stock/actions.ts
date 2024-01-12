@@ -3,11 +3,11 @@ import store from '@/store'
 import RootState from '@/store/RootState'
 import StockState from './StockState'
 import * as types from './mutation-types'
-import emitter from "@/event-bus";
 
 const actions: ActionTree<StockState, RootState> = {
   async processUpdateStockItems ({ commit, rootGetters }, items) {
-    emitter.emit('fileProcessing');
+    this.dispatch('util/updateFileProcessingStatus', true);
+
     //Fetching only top 
     const productIds = items.slice(0, process.env['VUE_APP_VIEW_SIZE']).map((item: any) => item.identification);
 
@@ -55,7 +55,7 @@ const actions: ActionTree<StockState, RootState> = {
     const original = JSON.parse(JSON.stringify(items));
 
     commit(types.STOCK_ITEMS_UPDATED, { parsed, original, initial });
-    emitter.emit('fileProcessed');
+    this.dispatch('util/updateFileProcessingStatus', false);
   },
   updateStockItems({ commit }, stockItems){
     commit(types.STOCK_ITEMS_UPDATED, stockItems);

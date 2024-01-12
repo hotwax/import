@@ -11,6 +11,9 @@ const getters: GetterTree <UtilState, RootState> = {
     },
     getGoodIdentificationTypes(state) {
         return state.goodIdentificationTypes;
+    },
+    getFileProcessingStatus(state) {
+        return state.isProcessingFile;
     }
 }
 export default getters;
