@@ -184,12 +184,6 @@ export default defineComponent({
   },
   
   methods: {
-    fileProcessing() {
-      this.isProcessingFile = true;
-    },
-    fileProcessed() {
-      this.isProcessingFile = false;
-    },
     getFacilityName(facilityId: any, externalFacilityId: any) {
       if (facilityId) {
         const facility = this.facilities.find((facility: any) => facilityId === facility.facilityId );
