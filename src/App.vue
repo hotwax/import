@@ -132,7 +132,8 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       userToken: 'user/getUserToken',
-      instanceUrl: 'user/getInstanceUrl'
+      instanceUrl: 'user/getInstanceUrl',
+      permissions: 'user/getUserPermissions'
     })
   },
   setup(){

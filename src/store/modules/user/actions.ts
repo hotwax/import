@@ -54,11 +54,11 @@ const actions: ActionTree<UserState, RootState> = {
       }
 
       updateToken(token)
+      setPermissions(appPermissions);
 
       // TODO user single mutation
       commit(types.USER_PERMISSIONS_UPDATED, appPermissions);
       commit(types.USER_TOKEN_CHANGED, { newToken: token })
-
 
       await dispatch('getProfile')
       dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
@@ -135,6 +135,7 @@ const actions: ActionTree<UserState, RootState> = {
 
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
+    resetPermissions();
     resetConfig();
     this.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
     this.dispatch('util/clearFacilities');

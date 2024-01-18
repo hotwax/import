@@ -20,7 +20,6 @@ declare module 'vue-router' {
   }
 }
 
-
 const authGuard = async (to: any, from: any, next: any) => {
   const authStore = useAuthStore()
   if (!authStore.isAuthenticated || !store.getters['user/isAuthenticated']) {
@@ -105,9 +104,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
-  
   if (to.meta.permissionId && !hasPermission(to.meta.permissionId)) {
-    console.log('h')
     let redirectToPath = from.path;
     // If the user has navigated from Login page or if it is page load, redirect user to settings page without showing any toast
     if (redirectToPath == "/login" || redirectToPath == "/") redirectToPath = "/settings";
