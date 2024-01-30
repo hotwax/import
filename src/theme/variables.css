@@ -256,16 +256,6 @@ http://ionicframework.com/docs/theming/ */
   margin: var(--spacer-sm);
 }
 
-@media (min-width: 991px) {
-  .desktop-only {
-    display: unset;
-  }
-
-  .mobile-only {
-    display: none;
-  }
-}
-
 .empty-state {
   max-width: 100%;
   display: flex;
@@ -279,4 +269,14 @@ http://ionicframework.com/docs/theming/ */
 }
 .empty-state>p {
   text-align: center;
+}
+
+@media (min-width: 991px) {
+  .desktop-only {
+    display: unset;
+  }
+
+  .mobile-only {
+    display: none;
+  }
 }
