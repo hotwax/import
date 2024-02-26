@@ -24,7 +24,7 @@
         <div class="list-item">
           <ion-item lines="none">
             <ion-thumbnail slot="start">
-              <ShopifyImg :src="item.imageUrl" size="small" />
+              <DxpShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
             <ion-label class="ion-text-wrap">
               <h3>{{ item.pseudoId }}</h3>
@@ -53,7 +53,7 @@
   </div>     
 </template>
 <script lang="ts"> 
-import { ShopifyImg } from "@hotwax/dxp-components";
+import { DxpShopifyImg } from "@hotwax/dxp-components";
 import {
   IonCheckbox,
   IonThumbnail,
@@ -80,7 +80,7 @@ export default defineComponent({
     IonIcon,
     IonItem,
     IonLabel,
-    ShopifyImg
+    DxpShopifyImg
   },
   props: {
     purchaseOrders: {
