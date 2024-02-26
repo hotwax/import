@@ -33,10 +33,10 @@
           <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item :key="field" v-for="(fieldValues, field) in fields">
             <template v-if="field === 'productIdentification'">
-              <ion-select interface="popover" :placeholder = "$t('Select')" slot="start" v-model="identificationTypeId">
+              <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "$t('Select')" slot="start" v-model="identificationTypeId">
                 <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" :value="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
               </ion-select>
-              <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" slot="end" v-model="fieldMapping['productIdentification']">
+              <ion-select aria-label="identification-type-value" interface="popover" v-if="content.length" :placeholder = "$t('Select')" slot="end" v-model="fieldMapping['productIdentification']">
                 <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
               </ion-select>
             </template>
