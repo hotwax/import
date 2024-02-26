@@ -18,9 +18,19 @@
     <div>
       <ion-list>
         <ion-item :key="field" v-for="(fieldValues, field) in getFields()">
-          <ion-select :label="$t(fieldValues.label)" interface="popover" :placeholder="$t('Select')" v-model="fieldMapping[field]">
-            <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
-          </ion-select>
+          <template v-if="field === 'productIdentification'">
+            <ion-select interface="popover" :placeholder = "$t('Select')" slot="start" v-model="identificationTypeId">
+              <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
+            </ion-select>
+            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" slot="end" v-model="fieldMapping['productIdentification']">
+              <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
+            </ion-select>
+          </template>
+          <template v-else>
+            <ion-select :label="$t(fieldValues.label)" interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+              <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
+            </ion-select>
+          </template>
         </ion-item>
       </ion-list>
     </div>
@@ -78,17 +88,20 @@ export default defineComponent({
     return {
       mappingName: "",
       fieldMapping: {} as any,
-      fileColumns: [] as any
+      fileColumns: [] as any,
+      identificationTypeId: 'SHOPIFY_PROD_SKU'
     }
   },
   props: ["content", "seletedFieldMapping", "mappingType"],
   mounted() {
     this.fieldMapping = { ...this.seletedFieldMapping }
     this.fileColumns = Object.keys(this.content[0]);
+    this.store.dispatch('util/fetchGoodIdentificationTypes');
   },
   computed: {
     ...mapGetters({
-      fieldMappings: 'user/getFieldMappings'
+      fieldMappings: 'user/getFieldMappings',
+      goodIdentificationTypes: 'util/getGoodIdentificationTypes'
     })
   },
   methods: {
