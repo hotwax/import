@@ -9,5 +9,11 @@ const getters: GetterTree <UtilState, RootState> = {
     getFacilityLocationsByFacilityId: (state) => (facilityId: string) => {
         return state.facilityLocationsByFacilityId[facilityId]
     },
+    getGoodIdentificationTypes(state) {
+        return state.goodIdentificationTypes;
+    },
+    getFileProcessingStatus(state) {
+        return state.isProcessingFile;
+    }
 }
 export default getters;
