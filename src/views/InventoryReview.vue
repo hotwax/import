@@ -58,7 +58,7 @@
           <div class="list-item">
             <ion-item lines="none">
               <ion-thumbnail slot="start">
-                <ShopifyImg :src="item.imageUrl" size="small" />
+                <DxpShopifyImg :src="item.imageUrl" size="small" />
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
                 <h3>{{ item.pseudoId }}</h3>
@@ -95,7 +95,7 @@
 </template>   
 <script lang="ts">
 import { UploadService } from "@/services/UploadService";
-import { ShopifyImg } from "@hotwax/dxp-components"; 
+import { DxpShopifyImg } from "@hotwax/dxp-components"; 
 import ProductPopover from '@/components/ProductPopover.vue'
 import BulkInventoryAdjustmentModal from '@/components/BulkInventoryAdjustmentModal.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
@@ -110,7 +110,7 @@ import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVert
 export default defineComponent({
   name: 'InventoryDetail',
   components: {
-    ShopifyImg,
+    DxpShopifyImg,
     IonCard,
     IonCardContent,
     IonPage,
