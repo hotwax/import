@@ -97,7 +97,6 @@
 import { UploadService } from "@/services/UploadService";
 import { DxpShopifyImg } from "@hotwax/dxp-components"; 
 import ProductPopover from '@/components/ProductPopover.vue'
-import BulkInventoryAdjustmentModal from '@/components/BulkInventoryAdjustmentModal.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
