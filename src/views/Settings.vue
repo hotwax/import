@@ -42,16 +42,7 @@
 
       <hr />
 
-      <div class="section-header">
-        <h1>
-          {{ $t('App') }}
-          <p class="overline" >{{ "Version: " + appVersion }}</p>
-        </h1>
-        <div class="ion-text-end">
-          <p class="overline">{{ "Built: " + getDateTime(appInfo.builtTime) }}</p>
-          <ion-button v-if="pwaState.updateExists" @click="refreshApp()" fill="outline" color="dark" size="small">{{ $t("Update") }}</ion-button>
-        </div>
-      </div>
+      <DxpAppVersionInfo />
       
       <section>
         <ion-card>
@@ -142,8 +133,6 @@ export default defineComponent({
       sampleDateTime: '',
       dateTimeFormat: '',
       defaultDateTimeFormat: process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy',
-      appInfo: (process.env.VUE_APP_VERSION_INFO ? JSON.parse(process.env.VUE_APP_VERSION_INFO) : {}) as any,
-      appVersion: ""
     };
   },
   computed: {
@@ -156,7 +145,6 @@ export default defineComponent({
   mounted(){
     this.dateTimeFormat = this.currentDateTimeFormat
     this.parseSampleDateTime();
-    this.appVersion = this.appInfo.branch ? (this.appInfo.branch + "-" + this.appInfo.revision) : this.appInfo.tag;
   },
   methods: {
     updateDateTimeFormat(){
@@ -184,14 +172,6 @@ export default defineComponent({
     },
     goToLaunchpad() {
       window.location.href = `${process.env.VUE_APP_LOGIN_URL}`
-    },
-    getDateTime(time: any) {
-      return DateTime.fromMillis(time).toLocaleString(DateTime.DATETIME_MED);
-    },
-    refreshApp() {
-      this.store.dispatch('user/updatePwaState', { registration: this.pwaState.registration, updateExists: false });
-      if (!this.pwaState.registration || !this.pwaState.registration.waiting) return
-      this.pwaState.registration.waiting.postMessage({ type: 'SKIP_WAITING' })
     }
   },
   setup(){
