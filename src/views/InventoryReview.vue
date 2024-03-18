@@ -341,6 +341,12 @@ export default defineComponent({
   --columns-desktop: 6;
 }
 
+/* Added width property as after updating to ionic7 min-width is getting applied on ion-label inside ion-item
+which results in distorted label text and thus reduced ion-item width */
+.list-item > ion-item {
+  width: 100%;
+}
+
 .list-item :first-child ion-label {
   word-break: break-all;
 }
