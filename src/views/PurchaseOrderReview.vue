@@ -283,7 +283,7 @@ export default defineComponent({
                   text: translate('View'),
                   role: 'view',
                   handler: () => {
-                    const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/api\/?/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=IMP_PO`
+                    const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=IMP_PO`
                     window.open(omsURL, '_blank');
                   }
                 }])

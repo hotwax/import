@@ -258,7 +258,7 @@ export default defineComponent({
                     text: translate('View'),
                     role: 'view',
                     handler: () => {
-                      const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/api\/?/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=RESET_INVENTORY`
+                      const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=RESET_INVENTORY`
                       window.open(omsURL, '_blank');
                     }
                   }])
