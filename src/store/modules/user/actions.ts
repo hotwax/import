@@ -9,6 +9,12 @@ import { logout, updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 import logger from "@/logger";
 import { useAuthStore } from '@hotwax/dxp-components';
 import emitter from '@/event-bus'
+import {
+  getServerPermissionsFromRules,
+  prepareAppPermissions,
+  resetPermissions,
+  setPermissions
+} from '@/authorization'
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -19,37 +25,44 @@ const actions: ActionTree<UserState, RootState> = {
     try {
       const { token, oms } = payload;
       dispatch("setUserInstanceUrl", oms);
-      
-      if (token) {
-        const permissionId = process.env.VUE_APP_PERMISSION_ID;
-        if (permissionId) {
-          const checkPermissionResponse = await UserService.checkPermission({
-            data: {
-              permissionId
-            },
-            headers: {
-              Authorization:  'Bearer ' + token,
-              'Content-Type': 'application/json'
-            }
-          });
 
-          if (checkPermissionResponse.status === 200 && !hasError(checkPermissionResponse) && checkPermissionResponse.data && checkPermissionResponse.data.hasPermission) {
-            commit(types.USER_TOKEN_CHANGED, { newToken: token })
-            updateToken(token)
-            await dispatch('getProfile')
-            dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
-          } else {
+      if(token) {
+        const permissionId = process.env.VUE_APP_PERMISSION_ID;
+  
+        // Prepare permissions list
+        const serverPermissionsFromRules = getServerPermissionsFromRules();
+        if (permissionId) serverPermissionsFromRules.push(permissionId);
+  
+        const serverPermissions = await UserService.getUserPermissions({
+          permissionIds: [...new Set(serverPermissionsFromRules)]
+        }, token);
+        
+        const appPermissions = prepareAppPermissions(serverPermissions);
+  
+        // Checking if the user has permission to access the app
+        // If there is no configuration, the permission check is not enabled
+        if (permissionId) {
+          // As the token is not yet set in the state passing token headers explicitly
+          // TODO Abstract this out, how token is handled should be part of the method not the callee
+          const hasPermission = appPermissions.some((appPermission: any) => appPermission.action === permissionId);
+          // If there are any errors or permission check fails do not allow user to login
+          if (!hasPermission) {
             const permissionError = 'You do not have permission to access the app.';
             showToast(translate(permissionError));
             logger.error("error", permissionError);
             return Promise.reject(new Error(permissionError));
           }
-        } else {
-          commit(types.USER_TOKEN_CHANGED, { newToken: token })
-          updateToken(token)
-          await dispatch('getProfile')
-          dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
         }
+  
+        updateToken(token)
+        setPermissions(appPermissions);
+  
+        // TODO user single mutation
+        commit(types.USER_PERMISSIONS_UPDATED, appPermissions);
+        commit(types.USER_TOKEN_CHANGED, { newToken: token })
+  
+        await dispatch('getProfile')
+        dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
       }
     } catch (err: any) {
       showToast(translate('Something went wrong'));
@@ -92,6 +105,7 @@ const actions: ActionTree<UserState, RootState> = {
 
     // TODO add any other tasks if need
     commit(types.USER_END_SESSION)
+    resetPermissions();
     resetConfig();
     this.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
     this.dispatch('util/clearFacilities');

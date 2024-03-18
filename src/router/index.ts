@@ -8,8 +8,17 @@ import SavedMappings from '@/views/SavedMappings.vue'
 import Settings from "@/views/Settings.vue"
 import store from '@/store'
 import MappingDetail from '@/views/MappingDetail.vue'
-import { DxpLogin, useAuthStore } from '@hotwax/dxp-components';
+import { DxpLogin, translate, useAuthStore } from '@hotwax/dxp-components';
 import { loader } from '@/user-utils';
+import { showToast } from '@/utils';
+import { hasPermission } from '@/authorization';
+
+// Defining types for the meta values
+declare module 'vue-router' {
+  interface RouteMeta {
+    permissionId?: string;
+  }
+}
 
 const authGuard = async (to: any, from: any, next: any) => {
   const authStore = useAuthStore()
@@ -52,7 +61,10 @@ const routes: Array<RouteRecordRaw> = [
     path: '/inventory',
     name: 'Inventory',
     component: Inventory,
-    beforeEnter: authGuard
+    beforeEnter: authGuard,
+    meta: {
+      permissionId: "APP_INVENTORY_VIEW"
+    }
   },
   {
     path: '/inventory-review',
@@ -90,5 +102,20 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+router.beforeEach((to, from) => {
+  if (to.meta.permissionId && !hasPermission(to.meta.permissionId)) {
+    let redirectToPath = from.path;
+    // If the user has navigated from Login page or if it is page load, redirect user to settings page without showing any toast
+    if (redirectToPath == "/login" || redirectToPath == "/") redirectToPath = "/settings";
+    else {
+      showToast(translate('You do not have permission to access this page'));
+    }
+    return {
+      path: redirectToPath,
+    }
+  }
+})
+
 
 export default router
