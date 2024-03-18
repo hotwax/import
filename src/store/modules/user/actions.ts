@@ -67,7 +67,7 @@ const actions: ActionTree<UserState, RootState> = {
     } catch (err: any) {
       showToast(translate('Something went wrong'));
       logger.error("error", err);
-      return Promise.reject(new Error(err))
+      return Promise.reject(err instanceof Object ? err : new Error(err));
     }
     // return resp
   },
