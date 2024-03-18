@@ -13,26 +13,22 @@
   <ion-content>
     <ion-list>
       <ion-item lines="full">
-        <ion-label>{{ $t("Buffer days") }}</ion-label>
-        <ion-input v-model="bufferDays" type="number" :placeholder = "$t('Lead time')" min="1" /> 
+        <ion-input :label="$t('Buffer days')" v-model="bufferDays" type="number" :placeholder="$t('Lead time')" min="1" />
       </ion-item>
 
       <ion-item lines="full">
-        <ion-label>{{ $t("Order buffer") }}</ion-label>
-        <ion-input v-model="orderBuffer" type="number" :placeholder = "$t('Safety stock')" min="1" />
+        <ion-input :label="$t('Order buffer')" v-model="orderBuffer" type="number" :placeholder="$t('Safety stock')" min="1" />
       </ion-item>
 
       <ion-item>
-        <ion-label>{{ $t("Catalog") }}</ion-label>
-        <ion-select interface="popover" v-model="isNewProduct">
+        <ion-select :label="$t('Catalog')" interface="popover" v-model="isNewProduct">
           <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
           <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
         </ion-select>
       </ion-item>
 
       <ion-item>
-        <ion-label>{{ $t("Facility") }}</ion-label>
-        <ion-select interface="popover" v-model="facilityId">
+        <ion-select :label="$t('Facility')" interface="popover" v-model="facilityId">
           <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
         </ion-select>
       </ion-item>
@@ -56,7 +52,6 @@ import {
   IonItem,
   IonIcon,
   IonInput,
-  IonLabel,
   IonList,
   IonSelect,
   IonSelectOption,
@@ -83,7 +78,6 @@ export default defineComponent({
     IonIcon,
     IonItem,
     IonInput,
-    IonLabel,
     IonList,
     IonSelect,
     IonSelectOption,

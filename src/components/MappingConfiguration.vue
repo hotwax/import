@@ -1,17 +1,13 @@
 <template>
   <section>
     <ion-item>
-      <ion-label>{{ $t("Mapping name") }}</ion-label>
-      <ion-input v-model="currentMapping.name" />
+      <ion-input :label="$t('Mapping name')" v-model="currentMapping.name" />
     </ion-item>
 
     <ion-list>
-
       <ion-item :key="field" v-for="(fieldValues, field) in getFields()">
-        <ion-label>{{ $t(fieldValues.label) }}</ion-label>
-        <ion-input v-model="currentMapping.value[field]" />
+        <ion-input :label="$t(fieldValues.label)" v-model="currentMapping.value[field]" />
       </ion-item>
-
     </ion-list>
 
     <div class="ion-padding-top actions desktop-only">
@@ -46,7 +42,6 @@ import {
   IonButton,
   IonIcon,
   IonInput,
-  IonLabel,
   IonItem,
   IonList
 } from "@ionic/vue";
@@ -62,7 +57,6 @@ export default defineComponent({
     IonButton,
     IonIcon,
     IonInput,
-    IonLabel,
     IonItem,
     IonList
   },
