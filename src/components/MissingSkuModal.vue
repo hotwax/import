@@ -12,10 +12,8 @@
     </ion-header>
     <ion-content>
       <div>
-        <ion-item id="update-sku" :class="isSkuInvalid ? 'ion-invalid' : ''">
-          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" @keyup.enter="update" />
-          <ion-note v-show="hasSkuUpdated && (purchaseOrders.unidentifiedItems.length || stockItems.unidentifiedItems.length)" slot="helper" color="success">{{ $t("The SKU is successfully changed") }}</ion-note>
-          <ion-note slot="error">{{ $t("This SKU is not available, please try again") }}</ion-note>
+        <ion-item id="update-sku" lines="none">
+          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" @keyup.enter="update" :class="isSkuInvalid ? 'ion-touched ion-invalid' : ''" :error-text="$t('This SKU is not available, please try again')"/>
         </ion-item>
         <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ $t("Update") }}</ion-button>
       </div>
@@ -32,11 +30,12 @@
       <ion-radio-group @ionChange="updatedSku = $event.detail.value; hasSkuUpdated = false; isSkuInvalid = false;" v-model="unidentifiedProductSku">
         <ion-list v-if="segmentSelected === 'pending'">
           <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
-            <ion-label>
-              {{ item.shopifyProductSKU }}
-              <p>{{ item.orderId }}</p>
-            </ion-label>
-            <ion-radio slot="end" :value="item.shopifyProductSKU" />
+            <ion-radio :value="item.shopifyProductSKU">
+              <ion-label>
+                {{ item.shopifyProductSKU }}
+                <p>{{ item.orderId }}</p>
+              </ion-label>
+            </ion-radio>
           </ion-item>
         </ion-list>
 
@@ -45,12 +44,13 @@
             <ion-thumbnail slot="start">
               <DxpShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
-            <ion-label>
-              <p class="overline">{{ item.parentProductName }}</p>
-              {{ item.updatedSku }}
-              <p>{{ item.orderId }}</p>
-            </ion-label>
-            <ion-radio slot="end" :value="item.updatedSku" />
+            <ion-radio :value="item.updatedSku">
+              <ion-label>
+                <p class="overline">{{ item.parentProductName }}</p>
+                {{ item.updatedSku }}
+                <p>{{ item.orderId }}</p>
+              </ion-label>
+            </ion-radio>
           </ion-item>
         </ion-list>
       </ion-radio-group>
@@ -76,7 +76,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonNote,
   IonPage,
   IonRadio,
   IonRadioGroup,
@@ -107,7 +106,6 @@ export default defineComponent({
   IonItem,
   IonLabel,
   IonList,
-  IonNote,
   IonPage,
   IonRadio,
   IonRadioGroup,

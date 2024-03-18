@@ -11,8 +11,7 @@
   </ion-header>
 
   <ion-item>
-    <ion-label>{{ $t("Mapping name") }}</ion-label>
-    <ion-input :placeholder="$t('Field mapping name')" v-model="mappingName" />
+    <ion-input :label="$t('Mapping name')" :placeholder="$t('Field mapping name')" v-model="mappingName" />
   </ion-item>
 
   <ion-content class="ion-padding">
@@ -20,16 +19,15 @@
       <ion-list>
         <ion-item :key="field" v-for="(fieldValues, field) in getFields()">
           <template v-if="field === 'productIdentification'">
-            <ion-select interface="popover" :placeholder = "$t('Select')" slot="start" v-model="identificationTypeId">
+            <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "$t('Select')" v-model="identificationTypeId">
               <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
             </ion-select>
-            <ion-select interface="popover" v-if="content.length" :placeholder = "$t('Select')" slot="end" v-model="fieldMapping['productIdentification']">
+            <ion-select aria-label="identification-type-value" interface="popover" v-if="content.length" :placeholder = "$t('Select')" slot="end" v-model="fieldMapping['productIdentification']">
               <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
           </template>
           <template v-else>
-            <ion-label>{{ $t(fieldValues.label) }}</ion-label>
-            <ion-select interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+            <ion-select :label="$t(fieldValues.label)" interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
               <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
           </template>
@@ -56,7 +54,6 @@ import {
   IonInput,
   IonTitle,
   IonToolbar,
-  IonLabel,
   IonItem,
   IonList,
   IonSelect,
@@ -84,7 +81,6 @@ export default defineComponent({
     IonSelectOption,
     IonTitle,
     IonToolbar,
-    IonLabel,
     IonItem,
     IonList
   },

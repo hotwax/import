@@ -13,11 +13,11 @@
   <ion-content>
     <ion-list>
       <ion-item v-for="(items, facilityId) in itemsByFacilityId" :key="facilityId" lines="full">
-        <ion-label>
-          {{ facilityId }}
-          <p>{{ items?.length }} {{ $t("line items") }}</p>
-        </ion-label>
-        <ion-select interface="popover" slot="end" :placeholder="$t('Map facility')" @ionChange="updateFacility($event, facilityId)">
+        <ion-select interface="popover" :placeholder="$t('Map facility')" @ionChange="updateFacility($event, facilityId)">
+          <ion-label slot="label">
+            {{ facilityId }}
+            <p>{{ items?.length }} {{ $t("line items") }}</p>
+          </ion-label>
           <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
         </ion-select>
       </ion-item>

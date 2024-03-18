@@ -6,9 +6,7 @@
     
     <div v-for="id in getGroupPurchaseOrders(poItems)" :key="id" >
       <div class="list-item list-header">
-        <ion-item color="light" lines="none">
-          <ion-label>{{ getParentInformation(id, poItems).parentProductName }}</ion-label>
-        </ion-item>
+        <ion-label class="ion-padding-start">{{ getParentInformation(id, poItems).parentProductName }}</ion-label>
 
         <div class="tablet" />
 
@@ -16,7 +14,7 @@
 
         <div />
         
-        <ion-checkbox :checked="isParentProductChecked(id, poItems)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, poItems)" />
+        <ion-checkbox aria-label="select-virtual" :checked="isParentProductChecked(id, poItems)" @click="isParentProductUpdated = true" @ionChange="selectParentProduct(id, $event, poItems)" />
         
         <ion-button fill="clear" color="medium" @click="openProductPopover($event, id, true, getParentInformation(id, poItems), getParentInformation(id, poItems).orderId)">
           <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -44,7 +42,7 @@
             <ion-label>{{ getArrivalDate(item.arrivalDate) }}</ion-label>
           </ion-chip>
           <!-- Used :key as the changed value was not reflected -->
-          <ion-checkbox :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
+          <ion-checkbox aria-label="select-variant" :key="item.isSelected" :checked="item.isSelected" @ionChange="selectProduct(item, $event)"/>
           
           <ion-button fill="clear" color="medium" @click="openProductPopover($event, item.pseudoId, false, item, item.orderId)">
             <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
@@ -174,6 +172,12 @@ export default defineComponent({
     border-bottom: #92949C 1px solid;
   }
   
+  /* Added width property as after updating to ionic7 min-width is getting applied on ion-label inside ion-item
+  which results in distorted label text and thus reduced ion-item width */
+  .list-item > ion-item {
+    width: 100%;
+  }
+
   .list-item :first-child ion-label {
     word-break: break-all;
   }

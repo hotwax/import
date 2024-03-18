@@ -95,7 +95,7 @@
 </template>   
 <script lang="ts">
 import { UploadService } from "@/services/UploadService";
-import { DxpShopifyImg } from "@hotwax/dxp-components"; 
+import { DxpShopifyImg } from "@hotwax/dxp-components";
 import ProductPopover from '@/components/ProductPopover.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
 import { defineComponent } from 'vue';
@@ -258,7 +258,8 @@ export default defineComponent({
                     text: translate('View'),
                     role: 'view',
                     handler: () => {
-                      window.open(`https://${this.instanceUrl}.hotwax.io/commerce/control/ImportData?configId=RESET_INVENTORY`, '_blank');
+                      const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=RESET_INVENTORY`
+                      window.open(omsURL, '_blank');
                     }
                   }])
                   this.router.push("/inventory");
@@ -339,6 +340,12 @@ export default defineComponent({
 .list-item {
   --columns-tablet: 4;
   --columns-desktop: 6;
+}
+
+/* Added width property as after updating to ionic7 min-width is getting applied on ion-label inside ion-item
+which results in distorted label text and thus reduced ion-item width */
+.list-item > ion-item {
+  width: 100%;
 }
 
 .list-item :first-child ion-label {

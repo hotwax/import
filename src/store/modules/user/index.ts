@@ -23,7 +23,8 @@ const userModule: Module<UserState, RootState> = {
         mappingType: '',
         name: '',
         value: {}
-      }
+      },
+      permissions: [],
     },
     getters,
     actions,
