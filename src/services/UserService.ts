@@ -14,7 +14,7 @@ const login = async (username: string, password: string): Promise <any> => {
 
 const checkPermission = async (payload: any): Promise <any>  => {
   let baseURL = store.getters['user/getInstanceUrl'];
-  baseURL = baseURL && baseURL.startsWith('http') ? baseURL : `https://${baseURL}.hotwax.io/api/`;
+  baseURL = baseURL && baseURL.startsWith('http') ? (baseURL.includes('/api') ? baseURL : `${baseURL}/api/`) : `https://${baseURL}.hotwax.io/api/`;
   return client({
     url: "checkPermission",
     method: "post",

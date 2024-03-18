@@ -265,11 +265,11 @@ http://ionicframework.com/docs/theming/ */
   padding: 10px;
 }
 
-.empty-state > img {
+.empty-state>img {
   object-fit: contain;
 }
 
-.empty-state > p {
+.empty-state>p {
   text-align: center;
 }
 

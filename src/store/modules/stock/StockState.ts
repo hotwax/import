@@ -3,6 +3,7 @@ export default interface StockState {
     parsed: any,
     original: any,
     unidentifiedItems: any,
+    initial: any,
   }, 
   fileName: string
 }
