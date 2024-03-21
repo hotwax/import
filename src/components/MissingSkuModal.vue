@@ -7,23 +7,23 @@
             <ion-icon :icon="closeOutline" slot="icon-only" />
           </ion-button>
         </ion-buttons>
-        <ion-title>{{ $t("Missing SKUs") }}</ion-title>
+        <ion-title>{{ translate("Missing SKUs") }}</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <div>
         <ion-item id="update-sku" lines="none">
-          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="$t('Select SKU')" @ionFocus="selectInputText($event)" @keyup.enter="update" :class="isSkuInvalid ? 'ion-touched ion-invalid' : ''" :error-text="$t('This SKU is not available, please try again')"/>
+          <ion-input v-model="updatedSku" :clear-input="true" :placeholder="translate('Select SKU')" @ionFocus="selectInputText($event)" @keyup.enter="update" :class="isSkuInvalid ? 'ion-touched ion-invalid' : ''" :error-text="translate('This SKU is not available, please try again')"/>
         </ion-item>
-        <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ $t("Update") }}</ion-button>
+        <ion-button @click="update" :disabled="!(unidentifiedProductSku && updatedSku)">{{ translate("Update") }}</ion-button>
       </div>
       
       <ion-segment v-model="segmentSelected">
         <ion-segment-button value="pending">
-          <ion-label>{{ $t("Pending") }}</ion-label>
+          <ion-label>{{ translate("Pending") }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="completed">
-          <ion-label>{{ $t("Completed") }}</ion-label>
+          <ion-label>{{ translate("Completed") }}</ion-label>
         </ion-segment-button>
       </ion-segment>
       <!-- If two different POs contain same missing SKU then in MissingSkuModal, both the products will be selected. -->
@@ -92,6 +92,7 @@ import { defineComponent } from "@vue/runtime-core";
 import { mapGetters, useStore } from "vuex";
 import { ref } from "vue";
 import { DxpShopifyImg } from "@hotwax/dxp-components";
+import { translate } from "@hotwax/dxp-components";
 
 export default defineComponent({
   name: "MissingSkuModal",
@@ -196,7 +197,8 @@ export default defineComponent({
       closeOutline,
       saveOutline,
       segmentSelected,
-      store
+      store,
+      translate
     }
   }
 })

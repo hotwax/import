@@ -6,16 +6,16 @@
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ $t("Date time parse error") }}</ion-title>
+      <ion-title>{{ translate("Date time parse error") }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
     <ion-item lines="none">
       <ion-label>
-        <p class="overline">{{ $t("File upload") }}</p>
-        <h1>{{ $t("Date format") }}</h1> 
-        <p class="ion-text-wrap">{{ $t("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}</p>
+        <p class="overline">{{ translate("File upload") }}</p>
+        <h1>{{ translate("Date format") }}</h1> 
+        <p class="ion-text-wrap">{{ translate("Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.") }}</p>
       </ion-label>
     </ion-item>
     
@@ -25,15 +25,15 @@
     
     <ion-item>
       <ion-label>{{ sampleDateTime }}</ion-label>
-      <ion-badge color="warning">{{ $t("Sample") }}</ion-badge>
+      <ion-badge color="warning">{{ translate("Sample") }}</ion-badge>
     </ion-item>
 
     <ion-button class="ion-margin-top ion-margin-start" fill="outline" @click="parseSampleDateTime">
-      {{ $t("Check sample") }}
+      {{ translate("Check sample") }}
     </ion-button>
     
     <ion-item lines="none">
-      <ion-label color="medium">{{ $t("This will update items across POs", {numberOfItems, numberOfPos}) }}</ion-label>
+      <ion-label color="medium">{{ translate("This will update items across POs", {numberOfItems, numberOfPos}) }}</ion-label>
     </ion-item>
     
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -66,7 +66,7 @@ import { useStore } from "@/store";
 import { mapGetters } from "vuex";
 import { DateTime } from "luxon";
 import { showToast } from "@/utils";
-import { translate } from "@/i18n";
+import { translate } from "@hotwax/dxp-components";
 export default defineComponent({
   name: "DateTimeParseErrorModal",
   components: {
@@ -118,7 +118,8 @@ export default defineComponent({
     return {
       close,
       saveOutline,
-      store
+      store,
+      translate
     };
   },
 });

@@ -6,12 +6,12 @@
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ $t("CSV Mapping") }}</ion-title>
+      <ion-title>{{ translate("CSV Mapping") }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-item>
-    <ion-input :label="$t('Mapping name')" :placeholder="$t('Field mapping name')" v-model="mappingName" />
+    <ion-input :label="translate('Mapping name')" :placeholder="translate('Field mapping name')" v-model="mappingName" />
   </ion-item>
 
   <ion-content class="ion-padding">
@@ -19,15 +19,15 @@
       <ion-list>
         <ion-item :key="field" v-for="(fieldValues, field) in getFields()">
           <template v-if="field === 'productIdentification'">
-            <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "$t('Select')" v-model="identificationTypeId">
+            <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "translate('Select')" v-model="identificationTypeId">
               <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
             </ion-select>
-            <ion-select aria-label="identification-type-value" interface="popover" v-if="content.length" :placeholder = "$t('Select')" slot="end" v-model="fieldMapping['productIdentification']">
+            <ion-select aria-label="identification-type-value" interface="popover" v-if="content.length" :placeholder = "translate('Select')" slot="end" v-model="fieldMapping['productIdentification']">
               <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
           </template>
           <template v-else>
-            <ion-select :label="$t(fieldValues.label)" interface="popover" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+            <ion-select :label="translate(fieldValues.label)" interface="popover" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
               <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
           </template>
@@ -64,7 +64,7 @@ import { defineComponent } from "vue";
 import { close, save, saveOutline } from "ionicons/icons";
 import { useStore, mapGetters } from "vuex";
 import { showToast } from '@/utils';
-import { translate } from "@/i18n";
+import { translate } from "@hotwax/dxp-components";
 
 export default defineComponent({
   name: "CreateMappingModal",
@@ -140,7 +140,8 @@ export default defineComponent({
       close,
       save,
       saveOutline,
-      store
+      store,
+      translate
     };
   }
 });

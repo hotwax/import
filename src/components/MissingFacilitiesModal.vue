@@ -6,17 +6,17 @@
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ $t("Missing facilities") }}</ion-title>
+      <ion-title>{{ translate("Missing facilities") }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
     <ion-list>
       <ion-item v-for="(items, facilityId) in itemsByFacilityId" :key="facilityId" lines="full">
-        <ion-select interface="popover" :placeholder="$t('Map facility')" @ionChange="updateFacility($event, facilityId)">
+        <ion-select interface="popover" :placeholder="translate('Map facility')" @ionChange="updateFacility($event, facilityId)">
           <ion-label slot="label">
             {{ facilityId }}
-            <p>{{ items?.length }} {{ $t("line items") }}</p>
+            <p>{{ items?.length }} {{ translate("line items") }}</p>
           </ion-label>
           <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
         </ion-select>
@@ -54,7 +54,7 @@ import { close, saveOutline } from "ionicons/icons";
 import { useStore } from "@/store";
 import { mapGetters } from "vuex";
 import { showToast } from "@/utils";
-import { translate } from "@/i18n";
+import { translate } from "@hotwax/dxp-components";
 import emitter from "@/event-bus";
 
 export default defineComponent({
@@ -122,7 +122,8 @@ export default defineComponent({
     return {
       close,
       saveOutline,
-      store
+      store,
+      translate
     };
   },
 });

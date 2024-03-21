@@ -2,7 +2,7 @@
   <ion-menu content-id="main-content" type="overlay" :disabled="!isUserAuthenticated">
     <ion-header>
       <ion-toolbar>
-        <ion-title>{{ $t("Import")}}</ion-title>
+        <ion-title>{{ translate("Import")}}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -55,6 +55,7 @@ import { mapGetters } from "vuex";
 import { albumsOutline, bookmarkOutline, settings, calendar } from "ionicons/icons";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
+import { translate } from '@hotwax/dxp-components'
 
 export default defineComponent({
   name: "Menu",
@@ -123,7 +124,8 @@ export default defineComponent({
       albumsOutline,
       calendar,
       settings,
-      store
+      store,
+      translate
     };
   }
 });

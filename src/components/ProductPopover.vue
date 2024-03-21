@@ -7,12 +7,12 @@
 
       <ion-item button lines="none" @click="revert">
         <ion-icon slot="start" :icon="arrowUndoOutline" />
-        <ion-label>{{ $t('Reset') }}</ion-label>
+        <ion-label>{{ translate('Reset') }}</ion-label>
       </ion-item>
 
       <ion-item button lines="none" @click="onlySelect">
         <ion-icon slot="start" :icon="checkboxOutline" />
-        <ion-label>{{ $t('Only select') }}</ion-label>
+        <ion-label>{{ translate('Only select') }}</ion-label>
       </ion-item>
     </ion-list>
   </ion-content>
@@ -26,6 +26,7 @@ import {
   checkboxOutline,
   arrowUndoOutline
 } from 'ionicons/icons';
+import { translate } from '@hotwax/dxp-components';
 export default defineComponent({
   props: ['id', 'isVirtual', 'item', 'poId', 'type'],
   name: 'parentProductPopover',
@@ -144,7 +145,8 @@ export default defineComponent({
     return {
       checkboxOutline,
       arrowUndoOutline,
-      store
+      store,
+      translate
     }
   }
 }) 
