@@ -32,10 +32,10 @@
             </ion-label>
           </ion-item>
           <ion-chip outline class="tablet">
-            <ion-label>{{ item.isNewProduct === "Y"? $t("Preorder") : $t("Backorder") }}</ion-label>
+            <ion-label>{{ item.isNewProduct === "Y"? translate("Preorder") : translate("Backorder") }}</ion-label>
           </ion-chip>
           <ion-chip outline>
-            <ion-label>{{ item.quantityOrdered }} {{ $t("Ordered") }}</ion-label>
+            <ion-label>{{ item.quantityOrdered }} {{ translate("Ordered") }}</ion-label>
           </ion-chip>
           <ion-chip outline class="tablet">
             <ion-icon :icon="sendOutline" />
@@ -68,7 +68,8 @@ import { sendOutline, ellipsisVerticalOutline } from 'ionicons/icons';
 import { defineComponent } from "@vue/runtime-core";
 import { mapGetters, useStore } from "vuex";
 import ProductPopover from '@/components/ProductPopover.vue'
-import { DateTime } from 'luxon'
+import { DateTime } from 'luxon';
+import { translate } from "@hotwax/dxp-components";
 
 export default defineComponent({
   name: "PurchaseOrderDetails",
@@ -160,7 +161,8 @@ export default defineComponent({
     return {
       sendOutline,
       store,
-      ellipsisVerticalOutline
+      ellipsisVerticalOutline,
+      translate
     }
   }
 })

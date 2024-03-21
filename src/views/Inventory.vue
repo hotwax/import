@@ -3,25 +3,25 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ $t("Inventory") }}</ion-title>
+        <ion-title>{{ translate("Inventory") }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>{{ $t("Inventory") }}</ion-label>
+          <ion-label>{{ translate("Inventory") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
           <input @change="parse" ref="file" class="ion-hide" type="file" id="inventoryInputFile"/>
-          <label for="inventoryInputFile">{{ $t("Upload") }}</label>
+          <label for="inventoryInputFile">{{ translate("Upload") }}</label>
         </ion-item>
 
         <ion-list>
-          <ion-list-header>{{ $t("Saved mappings") }}</ion-list-header>
+          <ion-list-header>{{ translate("Saved mappings") }}</ion-list-header>
           <div>
             <ion-chip :disabled="!this.content.length" outline="true" @click="addFieldMapping()">
               <ion-icon :icon="addOutline" />
-              <ion-label>{{ $t("New mapping") }}</ion-label>
+              <ion-label>{{ translate("New mapping") }}</ion-label>
             </ion-chip>
             <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('RSTINV') ?? []" :key="index" @click="mapFields(mapping)" outline="true">
               {{ mapping.name }}
@@ -30,18 +30,18 @@
         </ion-list>
  
         <ion-list>
-          <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
+          <ion-list-header>{{ translate("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item :key="field" v-for="(fieldValues, field) in fields">
             <template v-if="field === 'productIdentification'">
-              <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "$t('Select')" v-model="identificationTypeId">
+              <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "translate('Select')" v-model="identificationTypeId">
                 <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" :value="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
               </ion-select>
-              <ion-select aria-label="identification-type-value" interface="popover" v-if="content.length" :placeholder = "$t('Select')" slot="end" v-model="fieldMapping['productIdentification']">
+              <ion-select aria-label="identification-type-value" interface="popover" v-if="content.length" :placeholder = "translate('Select')" slot="end" v-model="fieldMapping['productIdentification']">
                 <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
               </ion-select>
             </template>
             <template v-else>
-              <ion-select :label="$t(fieldValues.label)" interface="popover" v-if="content.length" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+              <ion-select :label="translate(fieldValues.label)" interface="popover" v-if="content.length" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
                 <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
               </ion-select>
             </template>
@@ -49,7 +49,7 @@
         </ion-list>
 
         <ion-button :disabled="!this.content.length" color="medium" @click="review" expand="block">
-          {{ $t("Review") }}
+          {{ translate("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
       </main>
@@ -63,7 +63,7 @@ import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { mapGetters, useStore } from "vuex";
 import { showToast } from '@/utils';
-import { translate } from "@/i18n";
+import { translate } from "@hotwax/dxp-components";
 import { addOutline, arrowForwardOutline } from 'ionicons/icons';
 import parseFileMixin from '@/mixins/parseFileMixin';
 import CreateMappingModal from "@/components/CreateMappingModal.vue";
@@ -189,7 +189,8 @@ export default defineComponent({
       addOutline,
       arrowForwardOutline,
       router,
-      store
+      store,
+      translate
     }
   } 
 })

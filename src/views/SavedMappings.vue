@@ -3,24 +3,24 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ $t("Saved mappings") }}</ion-title>
+        <ion-title>{{ translate("Saved mappings") }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <main>
         <div class="empty-state" v-if="!areFieldMappingsAvailable">
-          <p>{{ $t("There are no saved CSV mappings to show. Create a new mapping from a file upload screen")}}</p>
+          <p>{{ translate("There are no saved CSV mappings to show. Create a new mapping from a file upload screen")}}</p>
         </div>
         <section v-else>
           <ion-list v-if="Object.keys(fieldMappings('PO')).length">
-            <ion-list-header>{{ $t("Purchase order") }}</ion-list-header>
+            <ion-list-header>{{ translate("Purchase order") }}</ion-list-header>
             <ion-item v-for="(mapping, index) in fieldMappings('PO')" :key="index" @click="viewMappingConfiguration(index, 'PO')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
           <ion-list v-if="Object.keys(fieldMappings('RSTINV')).length">
-            <ion-list-header>{{ $t("Inventory") }}</ion-list-header>
+            <ion-list-header>{{ translate("Inventory") }}</ion-list-header>
             <ion-item v-for="(mapping, index) in fieldMappings('RSTINV')" :key="index" @click="viewMappingConfiguration(index, 'RSTINV')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
@@ -53,6 +53,7 @@ import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router'
 import { mapGetters, useStore } from 'vuex'
 import emitter from '@/event-bus';
+import { translate } from '@hotwax/dxp-components';
 import MappingConfiguration from '@/components/MappingConfiguration.vue'
 
 export default defineComponent({
@@ -113,6 +114,7 @@ export default defineComponent({
     return {
       router,
       store,
+      translate
     };
   }
 })

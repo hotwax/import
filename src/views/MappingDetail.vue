@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button default-href="/saved-mappings" slot="start" />
-        <ion-title>{{ $t("Mapping details") }}</ion-title>
+        <ion-title>{{ translate("Mapping details") }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -24,6 +24,7 @@ import {
 } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { useStore } from "vuex";
+import { translate } from '@hotwax/dxp-components';
 import MappingConfiguration from '@/components/MappingConfiguration.vue'
 
 export default defineComponent({
@@ -44,7 +45,8 @@ export default defineComponent({
     const store = useStore();
 
     return {
-      store
+      store,
+      translate
     }
   }
 });

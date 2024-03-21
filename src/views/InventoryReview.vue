@@ -3,8 +3,8 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/inventory" />
-        <ion-title v-if="!stockItems.initial || stockItems.initial.length === 0">{{stockItems.parsed.length}} {{ $t('items') }}</ion-title>
-        <ion-title v-else>{{ stockItems.initial.length }} {{ $t('of') }} {{ stockItems.parsed.length }} {{ $t('items') }}</ion-title>
+        <ion-title v-if="!stockItems.initial || stockItems.initial.length === 0">{{stockItems.parsed.length}} {{ translate('items') }}</ion-title>
+        <ion-title v-else>{{ stockItems.initial.length }} {{ translate('of') }} {{ stockItems.parsed.length }} {{ translate('items') }}</ion-title>
      
         <ion-buttons slot="end">
           <ion-button @click="revertAll">
@@ -19,14 +19,14 @@
         <ion-card color="light">
           <ion-card-content>
             <ion-icon slot="start" color="danger" :icon="warningOutline"></ion-icon>
-            {{ $t("Please ensure that the uploaded file contains accurate product information. If a product does not exist, the corresponding records will not be processed.") }}
+            {{ translate("Please ensure that the uploaded file contains accurate product information. If a product does not exist, the corresponding records will not be processed.") }}
           </ion-card-content>
         </ion-card>
         <div class="filters">
           <ion-item @click="openMissingFacilitiesModal()" button>
             <ion-icon slot="start" :icon="businessOutline" />
-            <ion-label>{{ $t("Missing facilities") }}</ion-label>
-            <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ $t("items") }}</ion-note>
+            <ion-label>{{ translate("Missing facilities") }}</ion-label>
+            <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ translate("items") }}</ion-note>
             <ion-icon slot="end" mode="ios" :icon="chevronForwardOutline" />
           </ion-item>
         </div>
@@ -34,11 +34,11 @@
 
       <div class="empty-state" v-if="isProcessingFile">
         <ion-spinner name="crescent" />
-        <p>{{ $t("Reviewing uploaded file") }}</p>
+        <p>{{ translate("Reviewing uploaded file") }}</p>
       </div>
       <!-- Empty state -->
       <div class="empty-state" v-else-if="!stockItems.initial || stockItems.initial.length === 0">
-        <p>{{ $t("Seems like uploaded file has missing products, checked with initial records.", { initialCount: viewSize }) }}</p>
+        <p>{{ translate("Seems like uploaded file has missing products, checked with initial records.", { initialCount: viewSize }) }}</p>
       </div>
 
       <template v-else>
@@ -67,7 +67,7 @@
             </ion-item>
 
             <ion-chip outline>
-              <ion-label>{{ item.quantity }} {{ $t("Items") }}</ion-label>
+              <ion-label>{{ item.quantity }} {{ translate("Items") }}</ion-label>
             </ion-chip>
 
             <ion-chip outline class="tablet">
@@ -81,7 +81,7 @@
         </div>
       </div>
       <ion-item>
-        <ion-label> {{ $t('more items', { remainingItemCount: stockItems.parsed.length - stockItems.initial.length }) }}</ion-label>
+        <ion-label> {{ translate('more items', { remainingItemCount: stockItems.parsed.length - stockItems.initial.length }) }}</ion-label>
       </ion-item>
       </template>
 
@@ -95,14 +95,13 @@
 </template>   
 <script lang="ts">
 import { UploadService } from "@/services/UploadService";
-import { DxpShopifyImg } from "@hotwax/dxp-components";
+import { DxpShopifyImg, translate } from "@hotwax/dxp-components";
 import ProductPopover from '@/components/ProductPopover.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { showToast } from '@/utils';
-import { translate } from "@/i18n";
 import { IonCard, IonCardContent, IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote, IonSpinner, IonTitle } from '@ionic/vue'
 import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, shirtOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline, warningOutline } from 'ionicons/icons'
 
@@ -157,17 +156,17 @@ export default defineComponent({
     if(to.path === '/login') return;
     let canLeave = false;
     const alert = await alertController.create({
-      header: this.$t("Leave page"),
-      message: this.$t("Any edits made on this page will be lost."),
+      header: translate("Leave page"),
+      message: translate("Any edits made on this page will be lost."),
       buttons: [
         {
-          text: this.$t("STAY"),
+          text: translate("STAY"),
           handler: () => {
             canLeave = false;
           },
         },
         {
-          text: this.$t("LEAVE"),
+          text: translate("LEAVE"),
           handler: () => {
             canLeave = true;
           },
@@ -238,15 +237,15 @@ export default defineComponent({
         "configId": "RESET_INVENTORY"
       }
       const alert = await alertController.create({
-        header: this.$t("Reset inventory"),
-        message: this.$t("Make sure all the data you have entered is correct."),
+        header: translate("Reset inventory"),
+        message: translate("Make sure all the data you have entered is correct."),
         buttons: [
             {
-              text: this.$t("Cancel"),
+              text: translate("Cancel"),
               role: 'cancel',
             },
             {
-              text: this.$t("Upload"),
+              text: translate("Upload"),
               handler: () => {
                 UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
                   uploadData,
@@ -321,6 +320,7 @@ export default defineComponent({
       warningOutline,
       router,
       store,
+      translate
     }
   }
 });
