@@ -80,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline, saveOutline, timeOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
@@ -103,7 +103,8 @@ export default defineComponent({
     IonHeader, 
     IonIcon,
     IonItem, 
-    IonInput, 
+    IonInput,
+    IonLabel, 
     IonMenuButton,
     IonPage,
     IonTitle, 
