@@ -233,7 +233,7 @@ export default defineComponent({
           "idType": item.identificationTypeId,
           "locationSeqId": item.locationSeqId,
           "availableQty": item.quantity,
-          "comments": `Inventory was modified via the Import App by ${this.userProfile.partyName} using the ${fileName} file`
+          "comments": `Inventory was modified via the Import App by ${this.userProfile.partyName} using the ${fileName} file.`
         };
       })
       const params = {
