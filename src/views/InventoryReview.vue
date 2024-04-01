@@ -137,7 +137,8 @@ export default defineComponent({
       instanceUrl: 'user/getInstanceUrl',
       facilities: 'util/getFacilities',
       fileName: 'order/getFileName',
-      getFacilityLocationsByFacilityId: 'util/getFacilityLocationsByFacilityId'
+      getFacilityLocationsByFacilityId: 'util/getFacilityLocationsByFacilityId',
+      userProfile: 'user/getUserProfile'
     })
   },
   data() {
@@ -222,6 +223,7 @@ export default defineComponent({
       this.store.dispatch('stock/updateStockItems', this.stockItems);
     },
     async save(){
+      const fileName = this.fileName.replace(".csv", ".json");
       const uploadData = this.stockItems.parsed.map((item: any) => {
         return {
           "facilityId": item.facilityId,
@@ -229,10 +231,10 @@ export default defineComponent({
           "idValue": item.identification,
           "idType": item.identificationTypeId,
           "locationSeqId": item.locationSeqId,
-          "availableQty": item.quantity
+          "availableQty": item.quantity,
+          "comments": `Inventory was modified via the Import App by ${this.userProfile.partyName} using the ${fileName} file.`
         };
       })
-      const fileName = this.fileName.replace(".csv", ".json");
       const params = {
         "configId": "RESET_INVENTORY"
       }
