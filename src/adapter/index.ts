@@ -10,7 +10,9 @@ import {
   Product,
   resetConfig,
   updateToken,
-  updateInstanceUrl
+  updateInstanceUrl,
+  setUserTimeZone,
+  getAvailableTimeZones
 } from '@hotwax/oms-api'
 
 export {
@@ -25,5 +27,7 @@ export {
   Product,
   resetConfig,
   updateToken,
-  updateInstanceUrl
+  updateInstanceUrl,
+  setUserTimeZone,
+  getAvailableTimeZones
 }
