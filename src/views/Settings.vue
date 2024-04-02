@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ $t("Settings") }}</ion-title>
+        <ion-title>{{ translate("Settings") }}</ion-title>
       </ion-toolbar>
     </ion-header>
     
@@ -22,18 +22,18 @@
               <ion-card-title>{{ userProfile?.partyName }}</ion-card-title>
             </ion-card-header>
           </ion-item>
-          <ion-button color="danger" @click="logout()">{{ $t("Logout") }}</ion-button>
+          <ion-button color="danger" @click="logout()">{{ translate("Logout") }}</ion-button>
           <ion-button fill="outline" @click="goToLaunchpad()">
-            {{ $t("Go to Launchpad") }}
+            {{ translate("Go to Launchpad") }}
             <ion-icon slot="end" :icon="openOutline" />
           </ion-button>
           <!-- Commenting this code as we currently do not have reset password functionality -->
-          <!-- <ion-button fill="outline" color="medium">{{ $t("Reset password") }}</ion-button> -->
+          <!-- <ion-button fill="outline" color="medium">{{ translate("Reset password") }}</ion-button> -->
         </ion-card>
       </div>
       
       <div class="section-header">
-        <h1>{{ $t('OMS') }}</h1>
+        <h1>{{ translate('OMS') }}</h1>
       </div>
 
       <section>
@@ -49,16 +49,16 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
-              {{ $t("File upload")}}
+              {{ translate("File upload")}}
             </ion-card-subtitle>
             <ion-card-title>
-              {{ $t("Date Format") }}
+              {{ translate("Date Format") }}
             </ion-card-title>
           </ion-card-header>
           
           <ion-card-content>
-            {{ $t('Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.') }}
-            <p>{{ $t('Luxon date time formats can be found') }} <a target="_blank" rel="noopener noreferrer" href="https://moment.github.io/luxon/#/formatting?id=table-of-tokens">{{ $t("here") }}</a></p>
+            {{ translate('Enter a custom date time format that you want to use when uploading documents to HotWax Commerce.') }}
+            <p>{{ translate('Luxon date time formats can be found') }} <a target="_blank" rel="noopener noreferrer" href="https://moment.github.io/luxon/#/formatting?id=table-of-tokens">{{ translate("here") }}</a></p>
           </ion-card-content> 
           <ion-item>
             <ion-input :clear-input='true' @keyup.enter="dateTimeFormat = $event.target.value; parseSampleDateTime()" v-model="dateTimeFormat" :value="dateTimeFormat" :placeholder="defaultDateTimeFormat" />
@@ -66,11 +66,11 @@
           <ion-item>
             <ion-label>{{ sampleDateTime }}</ion-label>
             <ion-badge color="warning">
-              <ion-label>{{ $t("Sample") }}</ion-label>
+              <ion-label>{{ translate("Sample") }}</ion-label>
             </ion-badge>
           </ion-item>
           <ion-button fill="clear" @click="updateDateTimeFormat()">
-            {{ $t("Save") }}
+            {{ translate("Save") }}
             <ion-icon slot="end" :icon="saveOutline" />
           </ion-button>
         </ion-card>
@@ -87,6 +87,7 @@ import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import Image from '@/components/Image.vue';
+import { translate } from '@hotwax/dxp-components';
 
 export default defineComponent({
   name: 'Settings',
@@ -167,7 +168,8 @@ export default defineComponent({
       saveOutline,
       store,
       router,
-      timeOutline
+      timeOutline,
+      translate
     }
   }
 });

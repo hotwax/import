@@ -15,7 +15,7 @@ import emitter from "@/event-bus"
 import { mapGetters, useStore } from 'vuex';
 import { initialise, resetConfig } from '@/adapter'
 import { showToast } from "@/utils";
-import { translate } from "@/i18n";
+import { translate } from "@hotwax/dxp-components";
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
@@ -41,7 +41,7 @@ export default defineComponent({
       if (!this.loader) {
         this.loader = await loadingController
           .create({
-            message: options.message ? this.$t(options.message) : this.$t("Click the backdrop to dismiss."),
+            message: options.message ? translate(options.message) : translate("Click the backdrop to dismiss."),
             translucent: true,
             backdropDismiss: options.backdropDismiss
           });
@@ -93,7 +93,7 @@ export default defineComponent({
   async mounted() {
     this.loader = await loadingController
       .create({
-        message: this.$t("Click the backdrop to dismiss."),
+        message: translate("Click the backdrop to dismiss."),
         translucent: true,
         backdropDismiss: true
       });

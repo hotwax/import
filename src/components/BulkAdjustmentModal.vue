@@ -6,29 +6,29 @@
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ $t("Bulk adjustment") }}</ion-title>
+      <ion-title>{{ translate("Bulk adjustment") }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
     <ion-list>
       <ion-item lines="full">
-        <ion-input :label="$t('Buffer days')" v-model="bufferDays" type="number" :placeholder="$t('Lead time')" min="1" />
+        <ion-input :label="translate('Buffer days')" v-model="bufferDays" type="number" :placeholder="translate('Lead time')" min="1" />
       </ion-item>
 
       <ion-item lines="full">
-        <ion-input :label="$t('Order buffer')" v-model="orderBuffer" type="number" :placeholder="$t('Safety stock')" min="1" />
+        <ion-input :label="translate('Order buffer')" v-model="orderBuffer" type="number" :placeholder="translate('Safety stock')" min="1" />
       </ion-item>
 
       <ion-item>
-        <ion-select :label="$t('Catalog')" interface="popover" v-model="isNewProduct">
-          <ion-select-option value="N">{{ $t("Backorder") }}</ion-select-option>
-          <ion-select-option value="Y">{{ $t("Preorder") }}</ion-select-option>
+        <ion-select :label="translate('Catalog')" interface="popover" v-model="isNewProduct">
+          <ion-select-option value="N">{{ translate("Backorder") }}</ion-select-option>
+          <ion-select-option value="Y">{{ translate("Preorder") }}</ion-select-option>
         </ion-select>
       </ion-item>
 
       <ion-item>
-        <ion-select :label="$t('Facility')" interface="popover" v-model="facilityId">
+        <ion-select :label="translate('Facility')" interface="popover" v-model="facilityId">
           <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">{{ facility.facilityName }}</ion-select-option>
         </ion-select>
       </ion-item>
@@ -65,7 +65,7 @@ import { useStore } from "@/store";
 import { mapGetters } from "vuex";
 import { DateTime } from "luxon";
 import { showToast } from "@/utils";
-import { translate } from "@/i18n";
+import { translate } from "@hotwax/dxp-components";
 export default defineComponent({
   name: "BulkAdjustmentModal",
   components: {
@@ -130,7 +130,8 @@ export default defineComponent({
     return {
       close,
       saveOutline,
-      store
+      store,
+      translate
     };
   },
 });

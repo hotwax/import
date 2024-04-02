@@ -4,12 +4,10 @@ import RootState from '@/store/RootState'
 import UserState from './UserState'
 import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
-import { translate } from '@/i18n'
 import { logout, updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 import logger from "@/logger";
-import { useAuthStore } from '@hotwax/dxp-components';
+import { useAuthStore, translate } from '@hotwax/dxp-components';
 import emitter from '@/event-bus'
-import { Settings } from 'luxon';
 import {
   getServerPermissionsFromRules,
   prepareAppPermissions,

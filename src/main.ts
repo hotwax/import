@@ -24,7 +24,6 @@ import '@ionic/vue/css/display.css';
 import './theme/variables.css';
 import '@hotwax/apps-theme';
 
-import i18n from './i18n'
 import store from './store'
 import { DateTime } from 'luxon';
 import permissionPlugin from '@/authorization';
@@ -45,7 +44,6 @@ const app = createApp(App)
     level: process.env.VUE_APP_DEFAULT_LOG_LEVEL
   })
   .use(router)
-  .use(i18n)
   .use(store)
   .use(permissionPlugin, {
     rules: permissionRules,

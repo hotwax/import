@@ -3,25 +3,25 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ $t("Purchase orders") }}</ion-title>
+        <ion-title>{{ translate("Purchase orders") }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>{{ $t("Purchase order") }}</ion-label>
+          <ion-label>{{ translate("Purchase order") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }}</ion-label>
           <input @change="parse" ref="file" class="ion-hide" type="file" id="poInputFile"/>
-          <label for="poInputFile">{{ $t("Upload") }}</label>
+          <label for="poInputFile">{{ translate("Upload") }}</label>
         </ion-item>
 
         <ion-list>
-          <ion-list-header>{{ $t("Saved mappings") }}</ion-list-header>
+          <ion-list-header>{{ translate("Saved mappings") }}</ion-list-header>
           <div>
             <ion-chip :disabled="!this.content.length" outline="true" @click="addFieldMapping()">
               <ion-icon :icon="addOutline" />
-              <ion-label>{{ $t("New mapping") }}</ion-label>
+              <ion-label>{{ translate("New mapping") }}</ion-label>
             </ion-chip>
             <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('PO') ?? []" :key="index" @click="mapFields(mapping)" outline="true">
               {{ mapping.name }}
@@ -30,17 +30,17 @@
         </ion-list>   
 
         <ion-list>
-          <ion-list-header>{{ $t("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
+          <ion-list-header>{{ translate("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
 
           <ion-item :key="field" v-for="(fieldValues, field) in fields">
-            <ion-select :label="$t(fieldValues.label)" interface="popover" :disabled="!content.length" :placeholder = "$t('Select')" v-model="fieldMapping[field]">
+            <ion-select :label="translate(fieldValues.label)" interface="popover" :disabled="!content.length" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
               <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
 
         <ion-button :disabled="!this.content.length" color="medium" @click="review" expand="block">
-          {{ $t("Review") }}
+          {{ translate("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
 
@@ -53,7 +53,7 @@ import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem,
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { showToast } from '@/utils';
-import { translate } from "@/i18n";
+import { translate } from "@hotwax/dxp-components";
 import parseFileMixin from '@/mixins/parseFileMixin';
 import { mapGetters, useStore } from "vuex";
 import { addOutline, arrowForwardOutline } from 'ionicons/icons';
@@ -179,7 +179,8 @@ export default defineComponent({
       addOutline,
       arrowForwardOutline,
       router,
-      store
+      store,
+      translate
     }
   } 
 })

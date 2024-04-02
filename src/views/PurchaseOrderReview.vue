@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/purchase-order" />
-        <ion-title>{{ $t("Review PO details") }}</ion-title>
+        <ion-title>{{ translate("Review PO details") }}</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="selectAllItems(segmentSelected)">
             <ion-icon slot="icon-only" :icon="checkboxOutline" />
@@ -18,35 +18,35 @@
     <ion-content :fullscreen="true">
       <div class="header">
         <div class="search">
-          <ion-searchbar :placeholder="$t('Search products')" @keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
+          <ion-searchbar :placeholder="translate('Search products')" @keyup.enter="queryString = $event.target.value; searchProduct(queryString)" />
         </div>
 
         <div class="filters">
           <ion-item @click="openBulkAdjustmentModal()" button> 
             <ion-icon slot="start" :icon="calculatorOutline" />
-            <ion-label>{{ $t("Bulk adjustment") }}</ion-label>
-            <ion-note slot="end">{{ getSelectedItems() }} {{ $t("items selected") }}</ion-note>
+            <ion-label>{{ translate("Bulk adjustment") }}</ion-label>
+            <ion-note slot="end">{{ getSelectedItems() }} {{ translate("items selected") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
           <ion-item @click="openDateTimeParseErrorModal()" button>
             <ion-icon slot="start" :icon="timeOutline" />
-            <ion-label>{{ $t("Date time parse error") }}</ion-label>
-            <ion-note slot="end">{{ getItemsWithInvalidDateFormat() }} {{ $t("items") }}</ion-note>
+            <ion-label>{{ translate("Date time parse error") }}</ion-label>
+            <ion-note slot="end">{{ getItemsWithInvalidDateFormat() }} {{ translate("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
 
           <ion-item @click="openMissingFacilitiesModal()" button>
             <ion-icon slot="start" :icon="businessOutline" />
-            <ion-label>{{ $t("Missing facilities") }}</ion-label>
-            <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ $t("items") }}</ion-note>
+            <ion-label>{{ translate("Missing facilities") }}</ion-label>
+            <ion-note slot="end">{{ getItemsWithMissingFacility().length }} {{ translate("items") }}</ion-note>
             <ion-icon slot="end" mode="ios" :icon="chevronForwardOutline" />
           </ion-item>
 
           <ion-item @click="openMissingSkuModal()" button>
             <ion-icon slot="start" :icon="shirtOutline" />
-            <ion-label>{{ $t("Missing products") }}</ion-label>
-            <ion-note slot="end">{{ purchaseOrders.unidentifiedItems?.length }} {{ $t("items") }}</ion-note>
+            <ion-label>{{ translate("Missing products") }}</ion-label>
+            <ion-note slot="end">{{ purchaseOrders.unidentifiedItems?.length }} {{ translate("items") }}</ion-note>
             <ion-icon slot="end" :icon="chevronForwardOutline" />
           </ion-item>
         </div>
@@ -56,7 +56,7 @@
       </div>
 
       <div class="ion-text-center" v-else-if="queryString">
-        <p>{{ $t("No results found")}}</p>
+        <p>{{ translate("No results found")}}</p>
       </div>
 
       <div v-else>
@@ -81,7 +81,7 @@
     <ion-footer>
       <ion-segment scrollable="true" @ionChange="selectAllItems($event.target.value); searchProduct(queryString);" v-model="segmentSelected">
         <ion-segment-button value="all">
-          <ion-label>{{ $t("All") }}</ion-label>
+          <ion-label>{{ translate("All") }}</ion-label>
         </ion-segment-button>
         <ion-segment-button v-for="(po, poId) in purchaseOrders.parsed" :key="poId" :value="poId">
           <ion-label>{{ poId }}</ion-label>
@@ -104,7 +104,7 @@ import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue';
 import MissingSkuModal from "@/components/MissingSkuModal.vue"
 import { UploadService } from "@/services/UploadService";
 import { showToast } from '@/utils';
-import { translate } from "@/i18n";
+import { translate } from "@hotwax/dxp-components";
 
 export default defineComponent({
   name: 'PurchaseOrderReview',
@@ -156,17 +156,17 @@ export default defineComponent({
     if(to.path === "/login" ) return;
     let canLeave = false;
     const alert = await alertController.create({
-      header: this.$t("Leave page"),
-      message: this.$t("Any edits made on this page will be lost."),
+      header: translate("Leave page"),
+      message: translate("Any edits made on this page will be lost."),
       buttons: [
         {
-          text: this.$t("STAY"),
+          text: translate("STAY"),
           handler: () => {
             canLeave = false;
           },
         },
         {
-          text: this.$t("LEAVE"),
+          text: translate("LEAVE"),
           handler: () => {
             canLeave = true;
           },
@@ -263,15 +263,15 @@ export default defineComponent({
         "configId": "IMP_PO"
       }
       const alert = await alertController.create({
-        header: this.$t("Upload purchase order"),
-        message: this.$t("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
+        header: translate("Upload purchase order"),
+        message: translate("Make sure all the data you have entered is correct and only pre-order or backorder items are selected."),
         buttons: [
           {
-            text: this.$t("cancel"),
+            text: translate("cancel"),
             role: 'cancel',
           },
           {
-            text: this.$t("Upload"),
+            text: translate("Upload"),
             handler: () => {
               UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
                 uploadData,
@@ -360,6 +360,7 @@ export default defineComponent({
       segmentSelected,
       router,
       store,
+      translate
     }
   }
 });
