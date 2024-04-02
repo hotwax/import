@@ -118,7 +118,7 @@ const jsonToCsv = (file: any, options: JsonToCsvOption = {}) => {
     ...options.encode
   };
   const blob = new Blob([csv], {
-    type: "application/csvcharset=" + encoding 
+    type: "application/csv;charset=" + encoding
   });
   if (options.download) {
     saveAs(blob, options.name ? options.name : "default.csv");

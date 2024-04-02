@@ -105,6 +105,7 @@ import MissingSkuModal from "@/components/MissingSkuModal.vue"
 import { UploadService } from "@/services/UploadService";
 import { showToast } from '@/utils';
 import { translate } from "@hotwax/dxp-components";
+import { hasError } from '@/adapter';
 
 export default defineComponent({
   name: 'PurchaseOrderReview',
@@ -277,7 +278,11 @@ export default defineComponent({
                 uploadData,
                 fileName,
                 params
-              })).then(() => {
+              })).then((resp: any) => {
+                if(hasError(resp)) {
+                  throw resp.data
+                }
+
                 this.isPOUploadedSuccessfully = true;
                 showToast(translate("The PO has been uploaded successfully"), [{
                   text: translate('View'),
