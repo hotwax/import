@@ -8,7 +8,6 @@ import { logout, updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 import logger from "@/logger";
 import { useAuthStore, translate } from '@hotwax/dxp-components';
 import emitter from '@/event-bus'
-import { Settings } from 'luxon';
 import {
   getServerPermissionsFromRules,
   prepareAppPermissions,
