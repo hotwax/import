@@ -9,6 +9,11 @@ const getters: GetterTree <UserState, RootState> = {
     isUserAuthenticated(state) {
         return state.token && state.current
     },
+    getBaseUrl(state) {
+        let baseURL = process.env.VUE_APP_BASE_URL;
+        if (!baseURL) baseURL = state.instanceUrl;
+        return baseURL.startsWith('http') ? baseURL.includes('/api') ? baseURL : `${baseURL}/api/` : `https://${baseURL}.hotwax.io/api/`;
+    },
     getUserToken (state) {
         return state.token
     },
@@ -22,11 +27,24 @@ const getters: GetterTree <UserState, RootState> = {
         const baseUrl = process.env.VUE_APP_BASE_URL;
         return baseUrl ? baseUrl : state.instanceUrl;
     },
-    getFieldMappings(state) {
+    getPwaState (state) {
+        return state.pwaState;
+    },
+    getFieldMappings: (state) => (type?: string) => {
+        if (type) {
+            const fieldMapping = (state.fieldMappings as any)[type];
+            return fieldMapping ? fieldMapping : {} 
+        }
         return state.fieldMappings;
     },
-    getDateTimeFormat (state) {
+    getPreferredDateTimeFormat (state) {
         return state.preferredDateTimeFormat;  
-    }
+    },    
+    getCurrentMapping(state) {
+        return JSON.parse(JSON.stringify(state.currentMapping))
+    },
+    getUserPermissions(state) {
+        return state.permissions;
+    },
 }
 export default getters;

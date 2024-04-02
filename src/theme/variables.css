@@ -243,3 +243,42 @@ http://ionicframework.com/docs/theming/ */
     --ion-card-background: #1e1e1e;
   }
 }
+
+.desktop-only {
+  display: none;
+}
+
+.mobile-only {
+  display: unset;
+}
+
+.actions > ion-button {
+  margin: var(--spacer-sm);
+}
+
+.empty-state {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.empty-state>img {
+  object-fit: contain;
+}
+
+.empty-state>p {
+  text-align: center;
+}
+
+@media (min-width: 991px) {
+  .desktop-only {
+    display: unset;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+}

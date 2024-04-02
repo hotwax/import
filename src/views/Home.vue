@@ -2,20 +2,20 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>{{ $t("Blank") }}</ion-title>
+        <ion-title>{{ translate("Blank") }}</ion-title>
       </ion-toolbar>
     </ion-header>
     
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">{{ $t('Blank') }}</ion-title>
+          <ion-title size="large">{{ translate('Blank') }}</ion-title>
         </ion-toolbar>
       </ion-header>
     
       <div id="container">
-        <strong>{{ $t('Ready to create an app?') }}</strong>
-        <p>{{ $t('Start with Ionic') }} <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">{{ $t('UI Components') }}</a></p>
+        <strong>{{ translate('Ready to create an app?') }}</strong>
+        <p>{{ translate('Start with Ionic') }} <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">{{ translate('UI Components') }}</a></p>
       </div>
     </ion-content>
   </ion-page>
@@ -24,6 +24,7 @@
 <script lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { defineComponent } from 'vue';
+import { translate } from '@hotwax/dxp-components';
 
 export default defineComponent({
   name: 'Home',

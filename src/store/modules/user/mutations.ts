@@ -8,7 +8,7 @@ const mutations: MutationTree <UserState> = {
     },
     [types.USER_END_SESSION] (state) {
       state.token = ''
-      state.current = null
+      state.current = {}
       state.currentFacility = {}
     },
     [types.USER_INFO_UPDATED] (state, payload) {
@@ -20,11 +20,27 @@ const mutations: MutationTree <UserState> = {
     [types.USER_INSTANCE_URL_UPDATED] (state, payload) {
         state.instanceUrl = payload;
     },
+    [types.USER_PWA_STATE_UPDATED] (state, payload) {
+        state.pwaState.registration = payload.registration;
+        state.pwaState.updateExists = payload.updateExists;
+    },
     [types.USER_FIELD_MAPPINGS_UPDATED] (state, payload) {
-        state.fieldMappings[payload.mappingPrefId] = payload;
-    },    
+        state.fieldMappings = payload;
+    },
     [types.USER_DATETIME_FORMAT_UPDATED] (state, payload) {
         state.preferredDateTimeFormat = payload;
-    }
+    },    
+    [types.USER_CURRENT_FIELD_MAPPING_UPDATED] (state, payload) {
+        state.currentMapping = payload
+    },
+    [types.USER_FIELD_MAPPING_CREATED] (state, payload) {
+        (state.fieldMappings as any)[payload.type][payload.id] = {
+            name: payload.name,
+            value: payload.value
+        };
+    },
+    [types.USER_PERMISSIONS_UPDATED](state, payload) {
+        state.permissions = payload
+    },
 }
 export default mutations;

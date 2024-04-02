@@ -1,3 +1,81 @@
+Latest release notes are maintained on Github only. Refer to below link:
+https://github.com/hotwax/import/releases
+
+# Release 2.8.0
+
+## What's Changed
+* Updated favicon by @Nidbhagwat in https://github.com/hotwax/import/pull/212
+* Fixed: menu not showing currently active page after logout (#211) by @k2maan in https://github.com/hotwax/import/pull/213
+
+## New Contributors
+* @Nidbhagwat made their first contribution in https://github.com/hotwax/import/pull/212
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.7.0...v2.8.0
+
+# Release 2.7.0
+
+## What's Changed
+* Improved: Show old missing SKU value (#200) by @adityasharma7 in https://github.com/hotwax/import/pull/209
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.6.0...v2.7.0
+
+# Release 2.6.0
+## What's Changed
+* Fixed: Mapping not saved in case there are no previous mappings (#85zrv32ug) by @k2maan in https://github.com/hotwax/import/pull/207
+* Implemented: toast and button disabling in case of invalid CSV upload (#85zrv53ft) by @k2maan in https://github.com/hotwax/import/pull/208
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.5.0...v2.6.0
+# Release 2.5.0
+
+## What's Changed
+* Added: extra product info in missing sku modal by @disha1202 in https://github.com/hotwax/import/pull/201
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.4.1...v2.5.0
+
+# Release 2.4.1
+
+## What's Changed
+* Updated: default dateTime format(#85zrnzcpm) by @disha1202 in https://github.com/hotwax/import/pull/194
+* Updated: empty state text message(#85zrnzfn5) by @disha1202 in https://github.com/hotwax/import/pull/195
+* Fixed: Use ion-list in modals(#85zrptxr9) by @disha1202 in https://github.com/hotwax/import/pull/197
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.4.0...v2.4.1
+
+# Release 2.4.0
+
+## What's Changed
+* Implemented: support for using api and client methods from OMS api package (#85zrm1ktj) by @k2maan in https://github.com/hotwax/import/pull/185
+* Fixed: save function when updating the missing product is not working by @disha1202 in https://github.com/hotwax/import/pull/183
+* Fixed: missing call for unathorised emit in App.vue (#85zrn0xfq) by @k2maan in https://github.com/hotwax/import/pull/186
+* Implemented feature to import CSV to reset Inventory(#31a0f22) by @adityasharma7 in https://github.com/hotwax/import/pull/187 and @disha1202 in https://github.com/hotwax/import/pull/106
+* Implemented: mappings support for inventory page(#85zrm9dhn) by @adityasharma7 in https://github.com/hotwax/import/pull/188 and @ymaheshwari1 in https://github.com/hotwax/import/pull/179
+* Fixed: search not working on PO review page(#85zrmf7ed) by @disha1202 in https://github.com/hotwax/import/pull/182
+* Fixed: navigation to login failed for token expire (oms-api#61) by @adityasharma7 in https://github.com/hotwax/import/pull/191
+* Fixed: select all not working by @disha1202 in https://github.com/hotwax/import/pull/184
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.3.0...v2.4.0
+
+# Release 2.3.0
+
+## What's Changed
+* Support for multiple PO's(#85zrjbx58) by @disha1202 in https://github.com/hotwax/import/pull/151, https://github.com/hotwax/import/pull/120, https://github.com/hotwax/import/pull/124, https://github.com/hotwax/import/pull/138, https://github.com/hotwax/import/pull/158 and by @adityasharma7 in https://github.com/hotwax/import/pull/157
+* Implemented logger using vue logger plugin(#21uxamh) by @disha1202 in https://github.com/hotwax/import/pull/155
+* Refactored: Updated luxon and Improved code for timezone modal and formatUtcDate method (#85zrkd35y) by @k2maan in https://github.com/hotwax/import/pull/160
+* fix: disable alert on token expire(#85zrkepcp) by @disha1202 in https://github.com/hotwax/import/pull/162
+* Fixed: Re-clicking on Upload file button & cancelling it gives error(#85zrhfp4c) by @shashwatbangar in https://github.com/hotwax/import/pull/139 and by @k2maan in https://github.com/hotwax/import/pull/143
+* Implemented: support to sync the mappings with server, added support to update and delete field mapping, and improved the UI for the mapping functionality(#85zrhcq56) by @ymaheshwari1 in https://github.com/hotwax/import/pull/159
+* Changing the uploaded file resets all the selected values (#85zrgy0wx) by @k2maan in https://github.com/hotwax/import/pull/172
+* Fixed: missing sku not displayed in completed tab after updating items by @disha1202 in https://github.com/hotwax/import/pull/169
+* Fix select deselect on purchase order detail page by @disha1202 in https://github.com/hotwax/import/pull/170
+* Implemented: toast notification when new version of PWA is available and 'update' button on settings page to refresh the app (#85zrhdgkh) by @k2maan in https://github.com/hotwax/import/pull/174
+
+
+**Full Changelog**: https://github.com/hotwax/import/compare/v2.2.0...v2.3.0
+
+
 # Release 2.2.0
 
 ## What's Changed

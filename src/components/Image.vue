@@ -56,7 +56,7 @@ export default defineComponent({
             this.imageUrl = this.src;
           }).catch(() => {
             this.imageUrl = require("@/assets/images/defaultImage.png") ;
-            console.error("Image doesn't exist");
+            this.$log.warn("Image doesn't exist", this.src);
           })
         } else {
           // Image is from resource server, hence append to base resource url, check for existence and assign
@@ -64,9 +64,12 @@ export default defineComponent({
           this.checkIfImageExists(imageUrl).then(() => {
             this.imageUrl = imageUrl;
           }).catch(() => {
-            console.error("Image doesn't exist");
+            this.$log.warn("Image doesn't exist", imageUrl);
           })
         }
+      } else {
+        this.$log.warn("Image URL empty");
+        this.imageUrl = require("@/assets/images/defaultImage.png") ;
       }
     }
   },

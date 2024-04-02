@@ -1,19 +1,33 @@
 import {
+  api,
+  client,
+  getConfig,
+  hasError,
   fetchProducts,
-  init,
+  initialise,
+  logout,
   isError,
   Product,
   resetConfig,
   updateToken,
-  updateInstanceUrl
+  updateInstanceUrl,
+  setUserTimeZone,
+  getAvailableTimeZones
 } from '@hotwax/oms-api'
 
 export {
+  api,
+  client,
+  getConfig,
+  hasError,
   fetchProducts,
-  init,
+  initialise,
+  logout,
   isError,
   Product,
   resetConfig,
   updateToken,
-  updateInstanceUrl
+  updateInstanceUrl,
+  setUserTimeZone,
+  getAvailableTimeZones
 }

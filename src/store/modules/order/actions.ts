@@ -6,23 +6,25 @@ import * as types from './mutation-types'
 
 
 const actions: ActionTree<OrderState, RootState> = {
-  async updatedOrderList ({commit, rootGetters}, items) {
-    const productIds = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
-      return item.shopifyProductSKU
+  async fetchOrderDetails ({commit, rootGetters}, items) {
+    const productIds = items.filter((item: any) => item.identification).map((item: any) => {
+      return item.identification
     })
     const viewSize = productIds.length;
     const viewIndex = 0;
     const payload = {
       viewSize,
       viewIndex,
-      productIds
+      productIds,
+      identificationTypeId: items[0]?.identificationTypeId
     }
     await store.dispatch("product/fetchProducts", payload);
-    const unidentifiedProductItems = [] as any;
-    items = items.filter((item: any) =>  item.shopifyProductSKU).map((item: any) => {
-      const product = rootGetters['product/getProduct'](item.shopifyProductSKU)
+    const unidentifiedItems = [] as any;
 
-      if(Object.keys(product).length > 0){
+    items = items.filter((item: any) => item.identification).map((item: any) => {
+      const product = rootGetters['product/getProduct'](item.identification)
+
+      if (Object.keys(product).length > 0) {
         item.parentProductId = product?.parent?.id;
         item.pseudoId = product.pseudoId;
         item.parentProductName = product?.parent?.productName;
@@ -31,21 +33,52 @@ const actions: ActionTree<OrderState, RootState> = {
         item.isSelected = true;
         return item;
       }
-      unidentifiedProductItems.push(item);
+      unidentifiedItems.push(item);
       return ;
     }).filter((item: any) => item);
-    const original = JSON.parse(JSON.stringify(items))
+    
+    const parsed = items.reduce((itemsByPoId: any, item: any) => {
+      itemsByPoId[item.orderId] ? itemsByPoId[item.orderId].push(item) : itemsByPoId[item.orderId] = [item] 
+      return itemsByPoId;
+    }, {});
 
-    commit(types.ORDER_LIST_UPDATED, { items, original, unidentifiedProductItems });
+    const original = JSON.parse(JSON.stringify(parsed));
+    
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, {parsed, original, unidentifiedItems});
   },
-  updatedOrderListItems({ commit }, orderListItems){
-    commit(types.ORDER_LIST_ITEMS_UPDATED, orderListItems)
+  updatePurchaseOrders({ commit }, purchaseOrders){
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, purchaseOrders)
   },
   updateFileName({ commit }, fileName){
     commit(types.ORDER_FILE_NAME_UPDATED, fileName)
-  },  
-  clearOrderList({ commit }){
-    commit(types.ORDER_LIST_UPDATED, { items: [], original: [], unidentifiedProductItems: []});
+  },
+  updateUnidentifiedItem({ commit, state }, payload: any) {
+    const parsed = state.purchaseOrders.parsed as any;
+    let original = state.purchaseOrders.original as any;
+    const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
+      if(item.updatedSku) {
+        item.initialSKU = item.shopifyProductSKU;
+        item.shopifyProductSKU = item.updatedSku;
+        parsed[item.orderId] ? parsed[item.orderId].push(item) : parsed[item.orderId] = [item];
+        original[item.orderId] ? original[item.orderId].push(item) : original[item.orderId] = [item];
+      } else {
+        return item;
+      }
+    }).filter((item: any) => item);
+    original = JSON.parse(JSON.stringify(state.purchaseOrders.original));
+
+    commit(types.ORDER_PURCHASEORDERS_UPDATED, { parsed, original, unidentifiedItems});
+  },
+  updateMissingFacilities({state, dispatch}, facilityMapping){
+    Object.keys(facilityMapping).map((facilityId: any) => {
+      Object.values(state.purchaseOrders.parsed).flat().map((item: any) => {
+        if(item.externalFacilityId === facilityId){
+          item.externalFacilityId = "";
+          item.facilityId = facilityMapping[facilityId];
+        }
+      })
+    })
+    this.dispatch('order/updatePurchaseOrders', state.purchaseOrders);
   }
 }
 export default actions;

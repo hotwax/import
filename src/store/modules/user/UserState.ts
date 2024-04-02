@@ -3,6 +3,14 @@ export default interface UserState {
     current: object | null;
     currentFacility: object;
     instanceUrl: string;
-    fieldMappings: any;
+    fieldMappings: {};
     preferredDateTimeFormat: string;
+    pwaState: any;
+    currentMapping: {
+        id: string;
+        mappingType: string;
+        name: string;
+        value: object;
+    };
+    permissions: any; 
 }

@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
-import './registerServiceWorker'
 
 import { IonicVue } from '@ionic/vue';
 
@@ -25,32 +24,58 @@ import '@ionic/vue/css/display.css';
 import './theme/variables.css';
 import '@hotwax/apps-theme';
 
-import i18n from './i18n'
 import store from './store'
 import { DateTime } from 'luxon';
+import permissionPlugin from '@/authorization';
+import permissionRules from '@/authorization/Rules';
+import permissionActions from '@/authorization/Actions';
+import logger from './logger';
+import { dxpComponents } from '@hotwax/dxp-components'
+import { login, logout, loader } from './user-utils';
+import { getConfig, initialise } from '@hotwax/oms-api';
+import localeMessages from './locales';
+import { setUserTimeZone, getAvailableTimeZones} from '@/adapter'
 
 const app = createApp(App)
   .use(IonicVue, {
     mode: 'md'
   })
+  .use(logger, {
+    level: process.env.VUE_APP_DEFAULT_LOG_LEVEL
+  })
   .use(router)
-  .use(i18n)
-  .use(store);
+  .use(store)
+  .use(permissionPlugin, {
+    rules: permissionRules,
+    actions: permissionActions
+  })
+  .use(dxpComponents, {
+    defaultImgUrl: require("@/assets/images/defaultImage.png"),
+    login,
+    logout,
+    loader,
+    appLoginUrl: process.env.VUE_APP_LOGIN_URL as string,
+    getConfig,
+    initialise,
+    localeMessages,
+    setUserTimeZone,
+    getAvailableTimeZones
+  });
 
 // Filters are removed in Vue 3 and global filter introduced https://v3.vuejs.org/guide/migration/filters.html#global-filters
 app.config.globalProperties.$filters = {
   formatDate(value: any, inFormat?: string, outFormat?: string) {
     // TODO Make default format configurable and from environment variables
     if(inFormat){
-      return DateTime.fromFormat(value, inFormat).toFormat(outFormat ? outFormat : 'MM-DD-YYYY');
+      return DateTime.fromFormat(value, inFormat).toFormat(outFormat ? outFormat : 'MM-dd-yyyy');
     }
-    return DateTime.fromISO(value).toFormat(outFormat ? outFormat : 'MM-DD-YYYY');
+    return DateTime.fromISO(value).toFormat(outFormat ? outFormat : 'MM-dd-yyyy');
   },
   formatUtcDate(value: any, inFormat?: any, outFormat?: string) {
     // TODO Make default format configurable and from environment variables
     const userProfile = store.getters['user/getUserProfile'];
     // TODO Fix this setDefault should set the default timezone instead of getting it everytiem and setting the tz
-    return DateTime.utc(value, inFormat).setZone(userProfile.userTimeZone).toFormat(outFormat ? outFormat : 'MM-DD-YYYY')
+    return DateTime.fromISO(value, { zone: 'utc' }).setZone(userProfile.userTimeZone).toFormat(outFormat ? outFormat : 'MM-dd-yyyy')  
   }
 }
 
