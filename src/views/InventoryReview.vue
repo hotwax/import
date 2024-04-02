@@ -101,9 +101,10 @@ import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
 import { defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
-import { showToast } from '@/utils';
+import { jsonToCsv, showToast } from '@/utils';
 import { IonCard, IonCardContent, IonPage, IonHeader, IonToolbar, IonBackButton, IonContent, IonItem, IonThumbnail, IonLabel, IonChip, IonIcon, IonButton, IonButtons, popoverController, IonFab, IonFabButton, modalController, alertController, IonNote, IonSpinner, IonTitle } from '@ionic/vue'
 import { businessOutline, calculatorOutline, chevronForwardOutline, ellipsisVerticalOutline, locationOutline, shirtOutline, checkboxOutline, cloudUploadOutline, arrowUndoOutline, warningOutline } from 'ionicons/icons'
+import { hasError } from "@/adapter";
 
 export default defineComponent({
   name: 'InventoryDetail',
@@ -223,7 +224,6 @@ export default defineComponent({
       this.store.dispatch('stock/updateStockItems', this.stockItems);
     },
     async save(){
-      const fileName = this.fileName.replace(".csv", ".json");
       const uploadData = this.stockItems.parsed.map((item: any) => {
         return {
           "facilityId": item.facilityId,
@@ -232,12 +232,12 @@ export default defineComponent({
           "idType": item.identificationTypeId,
           "locationSeqId": item.locationSeqId,
           "availableQty": item.quantity,
-          "comments": `Inventory was modified via the Import App by ${this.userProfile.partyName} using the ${fileName} file.`
+          "comments": `Inventory was modified via the Import App by ${this.userProfile.partyName} using the ${this.fileName} file.`
         };
       })
       const params = {
         "configId": "RESET_INVENTORY"
-      }
+      } as any
       const alert = await alertController.create({
         header: translate("Reset inventory"),
         message: translate("Make sure all the data you have entered is correct."),
@@ -249,11 +249,26 @@ export default defineComponent({
             {
               text: translate("Upload"),
               handler: () => {
-                UploadService.uploadJsonFile(UploadService.prepareUploadJsonPayload({
-                  uploadData,
-                  fileName,
-                  params
-                })).then(() => {
+                const data = jsonToCsv(uploadData)
+                const formData = new FormData();
+                formData.append("uploadedFile", data, this.fileName);
+
+                if(Object.keys(params)) {
+                  for(const key in params) {
+                    formData.append(key, params[key]);
+                  }
+                }
+
+                UploadService.uploadAndImportFile({
+                  data: formData,
+                  headers: {
+                    'Content-Type': 'multipart/form-data;'
+                  }
+                }).then((resp: any) => {
+                  if(hasError(resp)) {
+                    throw resp.data
+                  }
+
                   this.isCsvUploadedSuccessfully = true;
                   showToast(translate("The inventory has been updated successfully"), [{
                     text: translate('View'),
