@@ -19,21 +19,7 @@ const getProfile = async (): Promise <any>  => {
       method: "get",
     });
 }
-const getAvailableTimeZones = async (): Promise <any>  => {
-  return api({
-    url: "getAvailableTimeZones",
-    method: "get",
-    cache: true
-  });
-}
-const setUserTimeZone = async (payload: any): Promise <any>  => {
-  return api({
-    url: "setUserTimeZone",
-    method: "post",
-    data: payload
-  });
-}
-    
+
 const createFieldMapping = async (payload: any): Promise <any> => {
   return api({
     url: "/service/createDataManagerMapping",
@@ -159,10 +145,8 @@ export const UserService = {
     createFieldMapping,
     deleteFieldMapping,
     login,
-    getAvailableTimeZones,
     getFieldMappings,
     getProfile,
     getUserPermissions,
-    setUserTimeZone,
     updateFieldMapping
 }
