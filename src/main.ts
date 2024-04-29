@@ -38,7 +38,8 @@ import { setUserTimeZone, getAvailableTimeZones} from '@/adapter'
 
 const app = createApp(App)
   .use(IonicVue, {
-    mode: 'md'
+    mode: 'md',
+    innerHTMLTemplatesEnabled: true
   })
   .use(logger, {
     level: process.env.VUE_APP_DEFAULT_LOG_LEVEL
