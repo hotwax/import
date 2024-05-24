@@ -92,6 +92,10 @@ export default defineComponent({
         mdIcon: albumsOutline
       },
       {
+        title: "Scheduled restock",
+        url: "/scheduled-restock",
+      },
+      {
         title: "Purchase order",
         url: "/purchase-order",
         childRoutes: ["/purchase-order-review"],
