@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ translate("Scheduled Restock") }}</ion-title>
+        <ion-title>Scheduled Restock</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -11,8 +11,8 @@
       <main>
         <ion-item>
           <ion-label>Restock</ion-label>
-          <ion-label class="ion-text-right ion-padding-end">{{ }}</ion-label>
-          <input class="ion-hide" type="file" id="restockInputFile"/>
+          <ion-label class="ion-text-right ion-padding-end"> </ion-label>
+          <input class="ion-hide" type="file" id="restockInputFile" placeholder="Select CSV"/>
           <label for="restockInputFile" fill="outline">{{ translate("Upload") }}</label>
         </ion-item>
 
@@ -65,12 +65,12 @@
               <ion-select-option>{{  }}</ion-select-option>
             </ion-select>
           </ion-item>
-          <ion-item>
+          <ion-item lines="full">
             <ion-input label="Restock name" placeholder="Created"></ion-input>
           </ion-item>
         </ion-list>
         
-        <ion-button color="medium" expand="block">
+        <ion-button color="medium" expand="block" @click="reviewPage()">
           {{ translate("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
@@ -81,12 +81,12 @@
             <ion-label>
               <p class="overline">job id</p>
                 jobname
-              <p> inbound</p>
+              <p>inbound</p>
             </ion-label>
             <ion-button color="light">10:00AM 17TH MARCH 2024</ion-button> 
-            <ion-button fill="clear" color="medium">
-                <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
-              </ion-button>     
+            <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event)">
+              <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
+            </ion-button>     
           </ion-item>
         </ion-list>
 
@@ -95,43 +95,56 @@
   </ion-page>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from "vue";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 import { translate } from "@hotwax/dxp-components";
-import { addOutline, arrowForwardOutline, ellipsisVerticalOutline } from 'ionicons/icons';
-import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonItem, IonItemDivider, IonLabel, IonButton, IonList, IonListHeader, IonMenuButton, IonSelect, IonSelectOption, IonIcon, } from "@ionic/vue";
+import { addOutline, arrowForwardOutline, ellipsisVerticalOutline } from "ionicons/icons";
+import { IonButton, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, popoverController } from "@ionic/vue";
+import ScheduledRestockPopover from "@/components/ScheduledRestockPopover.vue"
 
 
 export default defineComponent({
   name: "ScheduledRestock",
   components: {
+    IonButton,
     IonChip,
-      IonPage,
-      IonHeader,
-      IonToolbar,
-      IonTitle,
-      IonContent,
-      IonInput,
-      IonItem,
-      IonItemDivider,
-      IonLabel,
-      IonButton,
-      IonMenuButton,
-      IonSelect,
-      IonSelectOption,
-      IonIcon,
-      IonListHeader,
-      IonList
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonInput,
+    IonItem,
+    IonItemDivider,
+    IonLabel,
+    IonList,
+    IonListHeader,
+    IonMenuButton,
+    IonPage,
+    IonSelect,
+    IonSelectOption,
+    IonTitle,
+    IonToolbar
+  },
+
+  methods: {
+    async openScheduledRestockPopover(ev: Event) {
+      const popover = await popoverController.create({
+        component: ScheduledRestockPopover,
+        event: ev,
+        translucent: true,
+        showBackdrop: false,
+      });
+      return popover.present();
+    }
   },
   setup() {
     const router = useRouter();
     return {
-        router,
-        translate,
-        addOutline,
-        arrowForwardOutline,
-        ellipsisVerticalOutline
+      router,
+      translate,
+      addOutline,
+      arrowForwardOutline,
+      ellipsisVerticalOutline
     }
   } 
 })

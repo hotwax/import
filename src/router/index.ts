@@ -7,6 +7,7 @@ import PurchaseOrderReview from '@/views/PurchaseOrderReview.vue';
 import SavedMappings from '@/views/SavedMappings.vue'
 import Settings from "@/views/Settings.vue"
 import ScheduledRestock from "@/views/ScheduledRestock.vue";
+import ScheduledRestockReview from "@/views/ScheduledRestockReview.vue"
 import store from '@/store'
 import MappingDetail from '@/views/MappingDetail.vue'
 import { DxpLogin, translate, useAuthStore } from '@hotwax/dxp-components';
@@ -68,16 +69,22 @@ const routes: Array<RouteRecordRaw> = [
     }
   },
   {
+    path: '/inventory-review',
+    name: 'InventoryDetail',
+    component: InventoryReview,
+    beforeEnter: authGuard
+  },
+  {
     path: '/scheduled-restock',
     name: 'ScheduledRestock',
     component: ScheduledRestock,
     // beforeEnter: authGuard
   },
   {
-    path: '/inventory-review',
-    name: 'InventoryDetail',
-    component: InventoryReview,
-    beforeEnter: authGuard
+    path: '/scheduled-restock-review',
+    name: 'ScheduledRestockDetail',
+    component: ScheduledRestockReview,
+    // beforeEnter: authGuard
   },
   {
     path: '/login',
