@@ -282,3 +282,9 @@ http://ionicframework.com/docs/theming/ */
     display: none;
   }
 }
+
+.date-time-modal {
+  --width: 320px;
+  --height: 385px;
+  --border-radius: 8px;
+}

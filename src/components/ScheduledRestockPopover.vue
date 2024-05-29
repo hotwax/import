@@ -10,9 +10,6 @@
       <ion-item button>
         Cancel
       </ion-item>
-      <ion-item button lines="none">
-        View Details
-      </ion-item>
     </ion-list>
   </ion-content>
 </template>

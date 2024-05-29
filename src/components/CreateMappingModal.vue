@@ -107,6 +107,17 @@ export default defineComponent({
   methods: {
     getFields() {
       const fields = process.env["VUE_APP_MAPPING_" + this.mappingType];
+      if (this.mappingType == 'RSTSTK') {
+        const parsedFields = fields ? JSON.parse(fields) : {};
+        const requiredFields: any = {};
+        for (const [key, value] of Object.entries(parsedFields)) {
+          if ((value as any).required == true) {
+            requiredFields[key] = value;
+          }
+        }
+        return requiredFields;
+      }
+
       return fields ? JSON.parse(fields) : {};
     },
     closeModal() {

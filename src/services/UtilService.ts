@@ -25,8 +25,17 @@ const fetchGoodIdentificationTypes = async (payload: any): Promise<any> => {
   })
 }
 
+const fetchShopifyShop = async (payload: any): Promise<any> => {
+  return api({
+    url: "/performFind",
+    method: "POST",
+    data: payload
+  })
+}
+
 export const UtilService = {
     fetchGoodIdentificationTypes,
+    fetchShopifyShop,
     getFacilities,
-    getFacilityLocations
+    getFacilityLocations,
 }

@@ -5,5 +5,13 @@ export default interface StockState {
     unidentifiedItems: any,
     initial: any,
   }, 
-  fileName: string
+  fileName: string,
+  restockItems: [],
+  schedule: {
+    scheduledTime: string,
+    shopId: string,
+    restockName: string 
+  }
+  shopifyShops: any,
+  jobs: any
 }
