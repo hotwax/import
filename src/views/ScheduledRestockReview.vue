@@ -84,7 +84,7 @@
   
 <script>
 import { defineComponent } from "vue";
-import { IonBackButton, IonButton, IonButtons, IonCheckbox, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonPage, IonSearchbar, IonSelect, IonSelectOption, IonThumbnail, IonTitle, IonToolbar, alertController} from "@ionic/vue";
+import { IonBackButton, IonButton, IonButtons, IonCheckbox, IonChip, IonContent,IonFab,IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonPage, IonSearchbar, IonSelect, IonSelectOption, IonThumbnail, IonTitle, IonToolbar, alertController} from "@ionic/vue";
 import { translate } from "@hotwax/dxp-components";
 import { DxpShopifyImg } from "@hotwax/dxp-components";
 import { arrowUndoOutline, checkboxOutline, timerOutline, businessOutline, cloudUploadOutline, globeOutline} from "ionicons/icons"
@@ -93,6 +93,7 @@ import { DateTime } from 'luxon';
 import { jsonToCsv, showToast } from '@/utils';
 import { UploadService } from "@/services/UploadService";
 import { hasError } from "@/adapter";
+import logger from "@/logger";
 
 export default defineComponent({
   name: 'ScheduledRestockDetail',
@@ -104,6 +105,8 @@ export default defineComponent({
     IonCheckbox,
     IonChip,
     IonContent,
+    IonFab,
+    IonFabButton,
     IonHeader,
     IonIcon,
     IonInput,
@@ -174,6 +177,7 @@ export default defineComponent({
   methods: {
     getFilteredRestockItems() {
       const filteredItems = {};
+      
       this.restockItems.map((item) => {
         if(filteredItems[item.externalFacilityId]) filteredItems[item.externalFacilityId].push(item)
         else filteredItems[item.externalFacilityId] = [item];
@@ -198,8 +202,6 @@ export default defineComponent({
           }
 
           result[item.externalFacilityId].push({
-            itemSeqId: '',
-            sku: item.product,
             productId: item.productId,
             quantity: parseInt(item.quantity, 10)
           });
@@ -207,13 +209,18 @@ export default defineComponent({
 
         return result;
       }, {});
-      const uploadData = Object.entries(groupedItems).map(([externalFacilityId, items]) => ({
-        destinationFacilityId: externalFacilityId,
-        items: items
-      }));
-      const params = {
-        "configId": "RESET_INVENTORY"
-      } 
+
+      const destinationFacilityId = Object.keys(groupedItems)[0];
+      const items = groupedItems[destinationFacilityId];
+
+      const uploadData = {
+        payload: {
+          destinationFacilityId: destinationFacilityId,
+          items: items
+        }
+      };
+      console.log(uploadData);
+
       const alert = await alertController.create({
         header: translate("Reset inventory"),
         message: translate("Make sure all the data you have entered is correct."),
@@ -224,41 +231,23 @@ export default defineComponent({
             },
             {
               text: translate("Upload"),
-              handler: () => {
-                const data = jsonToCsv(uploadData)
-                const formData = new FormData();
-                formData.append("uploadedFile", data, this.fileName);
-                  
-                if(Object.keys(params)) {
-                  for(const key in params) {
-                    formData.append(key, params[key]);
+              handler: async () => {
+                try{
+                  const resp = await UploadService.createIncomingShipment(uploadData)
+                  if(!hasError(resp) && resp.data.shipmentId) {
+                    this.store.dispatch("stock/scheduleService", { params: {
+                      shipmentId: resp.data.shipmentId,
+                      shopId: this.schedule.shopId
+                    },
+                    restockName: this.restockName
+                   })
+                  } else {
+                    throw resp.data;
                   }
+                } catch(err) {
+                  showToast(translate("Failed to create shipment"))
+                  console.error(err)
                 }
-
-                UploadService.uploadAndImportFile({
-                  data: formData,
-                  headers: {
-                    'Content-Type': 'multipart/form-data;'
-                  }
-                }).then((resp) => {
-                  if(hasError(resp)) {
-                    throw resp.data
-                  }
-                  this.scheduleService();
-                  this.isCsvUploadedSuccessfully = true;
-                  showToast(translate("The inventory has been updated successfully"), [{
-                    text: translate('View'),
-                    role: 'view',
-                    handler: () => {
-                      const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=RESET_INVENTORY`
-                      window.open(omsURL, '_blank');
-                    }
-                  }])
-                  this.router.push("/scheduled-restock");
-                  this.store.dispatch('stock/clearRetockItems');
-                }).catch(() => {
-                  showToast(translate("Something went wrong, please try again"));
-                })
               }
             },
           ],
@@ -299,10 +288,7 @@ export default defineComponent({
         showToast("No product found")
       }
       this.parsedItems = filteredItems;
-    },
-    async scheduleService( params ) {
-      this.shore.dispatch('stock/scheduleService', { params })
-    },
+    }
   },
   setup() {
     const store = useStore();

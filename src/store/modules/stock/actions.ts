@@ -8,6 +8,8 @@ import { hasError } from "@/adapter";
 import { StockService } from "@/services/StockService";
 import { translate } from "@hotwax/dxp-components";
 import logger from "@/logger";
+import { DateTime } from 'luxon'
+import router from '@/router'
 
 const actions: ActionTree<StockState, RootState> = {
   async processUpdateStockItems ({ commit, rootGetters }, items) {
@@ -113,14 +115,19 @@ const actions: ActionTree<StockState, RootState> = {
     commit(types.STOCK_SHOPIFY_SHOPS_UPDATED, payload)
   },
   
-  async scheduleService({ commit }, params) {
+  async scheduleService({ dispatch, state }, { params, restockName }) {
     let resp;
 
-      const job = params.job
+      const job = await dispatch("fetchDraftJob")
+
+      if(!job.jobId) {
+        showToast(translate("Configuration missing"))
+        return;
+      }
 
       const payload = {
-        'JOB_NAME': job.jobName,
-        'SERVICE_NAME': job.serviceName,
+        'JOB_NAME': restockName || state.schedule.restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
+        'SERVICE_NAME': "shipPackedOrders", // TODO: make dynamic
         'SERVICE_COUNT': '0',
         'SERVICE_TEMP_EXPR': job.jobStatus,
         'SERVICE_RUN_AS_SYSTEM':'Y',
@@ -136,38 +143,25 @@ const actions: ActionTree<StockState, RootState> = {
         },
         'statusId': "SERVICE_PENDING",
         'systemJobEnumId': job.systemJobEnumId,
-        ...params.jobCustomParameters
-      } 
-
-      
-      const jobRunTimeDataKeys = job?.runtimeData ? Object.keys(job?.runtimeData) : [];
-      if (jobRunTimeDataKeys.includes('shopifyConfigId') || jobRunTimeDataKeys.includes('shopId')) {
-        const shopifyConfig = this.state.user.currentShopifyConfig
-        if (Object.keys(shopifyConfig).length == 0) {
-          showToast(translate('Shopify configuration not found. Scheduling failed.'))
-          return;
-        }
-
-        jobRunTimeDataKeys.includes('shopifyConfigId') && (payload['shopifyConfigId'] = shopifyConfig?.shopifyConfigId);
-        jobRunTimeDataKeys.includes('shopId') && (payload['shopId'] = shopifyConfig?.shopId);
-        payload['jobFields']['shopId'] = shopifyConfig?.shopId;
+        ...params
       }
 
       job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
-      job?.runTime && (payload['SERVICE_TIME'] = job.runTime.toString())
+      payload['SERVICE_TIME'] = state.schedule.scheduledTime.toString()
       job?.sinceId && (payload['sinceId'] = job.sinceId)
 
       try {
         resp = await StockService.scheduleJob({ ...payload });
         if (resp.status == 200 && !hasError(resp)) {
           showToast(translate('Service has been scheduled'));
-          await store.dispatch('fetchJobs', {
-            inputFields: {
-              'systemJobEnumId': payload.systemJobEnumId,
-              'systemJobEnumId_op': 'equals',
-            },
-            orderBy: "runTime ASC"
-          })
+          // await dispatch('fetchJobs', {
+          //   inputFields: {
+          //     'systemJobEnumId': payload.systemJobEnumId,
+          //     'systemJobEnumId_op': 'equals',
+          //   },
+          //   orderBy: "runTime ASC"
+          // })
+          router.push('/scheduled-restock')
         } else {
           showToast(translate('Something went wrong'))
         }
@@ -177,6 +171,46 @@ const actions: ActionTree<StockState, RootState> = {
       }
       return {};
   },
+ 
+  async fetchDraftJob() {
+    let resp, job: any = {};
+
+    const payload = {
+      "inputFields": {
+        "statusId": "SERVICE_DRAFT",
+        "statusId_op": "equals",
+        "systemJobEnumId": "JOB_RST_STK",
+        "systemJobEnumId_op": "equals"
+      },
+      "fieldList": [ "systemJobEnumId", "runTime", "tempExprId", "parentJobId", "serviceName", "jobId", "jobName", "currentRetryCount", "statusId", "runtimeDataId", "productStoreId", "priority"],
+      "noConditionFind": "Y",
+      "viewSize": 1,
+      "orderBy": "runTime ASC"
+    }
+
+    try {
+      resp = await StockService.fetchJobInformation(payload)
+
+      if(!hasError(resp) && resp.data.docs.length) {
+        job = resp.data.docs[0]
+
+        job = {
+          ...job,
+          status: job.statusId,
+          enumId: job.systemJobEnumId,
+          frequency: job.tempExprId,
+          id: job.jobId
+        }
+      } else {
+        throw resp.data
+      }
+    } catch(err) {
+      logger.error('Failed to fetcg draft job')
+      job = {}
+    }
+
+    return job;
+  },
 
   async fetchJobs ({ commit }) {
     let resp;
@@ -185,7 +219,7 @@ const actions: ActionTree<StockState, RootState> = {
       const params = {
         "inputFields": {
           "statusId": "SERVICE_PENDING",
-          'systemJobEnumId': "JOB_BKR_ORD",
+          'systemJobEnumId': "JOB_RST_STK",
           'systemJobEnumId_op': 'equals',
           'orderBy': 'runTime ASC',
           'tempExprId_op': 'not-empty'

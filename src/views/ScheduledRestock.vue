@@ -70,7 +70,7 @@
             </ion-select>
           </ion-item>
           <ion-item lines="full">
-            <ion-input label="Restock name" placeholder="Created" v-model="restockName"></ion-input>
+            <ion-input label="Restock name" placeholder='Created' v-model="restockName"></ion-input>
           </ion-item>
         </ion-list>
         
@@ -270,6 +270,8 @@ export default defineComponent({
           externalFacilityId: item[this.fieldMapping.facility]
         }
       })
+
+      console.log('this.schedule', this.schedule)
       this.store.dispatch('stock/processUpdateRestockItems', restockItems);
       this.store.dispatch('stock/scheduledStock', {
         shopId: this.shopId, 
