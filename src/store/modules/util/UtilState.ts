@@ -3,4 +3,5 @@ export default interface UserState {
     facilityLocationsByFacilityId: any;
     goodIdentificationTypes: [],
     isProcessingFile: false,
+    productStores: []
 }

@@ -9,9 +9,9 @@
           <ion-button :disabled="!areAnyItemsUnchecked()" @click="selectAllItems">
             <ion-icon slot="icon-only" :icon="checkboxOutline"/>
           </ion-button>
-          <ion-button >
+          <!-- <ion-button >
             <ion-icon slot="icon-only" :icon="arrowUndoOutline" />
-          </ion-button>
+          </ion-button> -->
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -26,7 +26,19 @@
             <ion-item>
               <ion-icon slot="start" :icon="timerOutline"/>
               <ion-label> Schedule </ion-label>  
-              <ion-button slot="end" color="light">{{ schedule.scheduledTime ? getTime(schedule.scheduledTime) : getTime(DateTime.now().toMillis())}}</ion-button>      
+              <ion-button slot="end" color="light" @click="updateTime()">{{ schedule.scheduledTime ? getTime(schedule.scheduledTime) : getTime(DateTime.now().toMillis())}}</ion-button> 
+              <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
+              <ion-content force-overscroll="false">
+                <ion-datetime    
+                  id="schedule-datetime"        
+                  show-default-buttons 
+                  hour-cycle="h23"
+                  presentation="date-time"
+                  :value="schedule.scheduledTime ? getTime(schedule.scheduledTime) : DateTime.now()"
+                  @ionChange="updateCustomTime($event)"
+                />
+              </ion-content>
+            </ion-modal>     
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="businessOutline"/>
@@ -35,13 +47,28 @@
               </ion-select>
             </ion-item>
             <ion-item>
+              <ion-select :label="translate('Product store')" interface="popover" :value="selectedProductStoreId" @ionChange="updateProductStore($event)">
+                <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
+                  {{ productStore.storeName || productStore.productStoreId}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-icon slot="start" :icon="globeOutline"/>
+              <ion-select :disabled="!selectedProductStoreId" label="Shopify store" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
+                <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId">
+                  {{ shop.name ? shop.name : shop.shopId }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <!-- <ion-item>
               <ion-icon slot="start" :icon="globeOutline"/>
               <ion-select label="Shopify Store" interface="popover" :placeholder = "translate('Select')">
               <ion-select-option :value="schedule.shopId" v-for="shop in shopifyShops" :key="shop.shopId">
                 {{ shop.name ? shop.name : shop.shopId }}
               </ion-select-option>
               </ion-select>
-            </ion-item>
+            </ion-item> -->
             <ion-item lines="none">
               <ion-input label="Restock name" placeholder="name" v-model="restockName"></ion-input>
             </ion-item>
@@ -74,7 +101,7 @@
         </div>
       </div>
       <ion-fab ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="save">
+        <ion-fab-button @click="save" :disabled="!selectedProductStoreId">
           <ion-icon :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -94,6 +121,8 @@ import { jsonToCsv, showToast } from '@/utils';
 import { UploadService } from "@/services/UploadService";
 import { hasError } from "@/adapter";
 import logger from "@/logger";
+import { UtilService } from '@/services/UtilService'
+
 
 export default defineComponent({
   name: 'ScheduledRestockDetail',
@@ -128,7 +157,7 @@ export default defineComponent({
       userProfile: 'user/getUserProfile',
       fileName: 'order/getFileName',
       schedule: 'stock/getScheduledInformation',
-      shopifyShops: 'stock/getShopifyShops'
+      productStores: 'util/getProductStores'
     })
   },
   data() {
@@ -136,7 +165,12 @@ export default defineComponent({
       isCsvUploadedSuccessfully: false,
       originalItems: {},
       parsedItems: {},
-      restockName: ''
+      restockName: '',
+      isDateTimeModalOpen: false,
+      selectedProductStoreId: '',
+      selectedShopifyShopId: '',
+      scheduledTime: '',
+      shopifyShops: []
     }
   },
 
@@ -144,6 +178,10 @@ export default defineComponent({
     await this.store.dispatch('util/fetchFacilities');
     this.getFilteredRestockItems();
     this.restockName = this.schedule.restockName
+    this.selectedProductStoreId = this.schedule.productStoreId;
+    this.selectedShopifyShopId =  this.schedule.shopId,
+    this.scheduledTime = this.schedule.scheduledTime;
+    this.fetchShopifyShops(this.selectedProductStoreId);
   },
   // async beforeRouteLeave(to) { 
   //   if(to.path === "/login" ) return;
@@ -190,10 +228,32 @@ export default defineComponent({
       const facility = this.facilities.find(fac => fac.externalId === externalFacilityId);
       return facility ? facility.facilityName : externalFacilityId;
     },
+    updateTime() {
+      this.isDateTimeModalOpen = true
+    },
     getTime(time) {
       return DateTime.fromMillis(time, { setZone: true}).toFormat("hh:mm a dd MMM yyyy")
     },
+    updateCustomTime(event) {
+      const currentTime = DateTime.now().toMillis();
+      const setTime = DateTime.fromISO(event.detail.value).toMillis();
+      if (setTime < currentTime) {
+        showToast('Please provide a future date and time');
+        return;
+      }
+      this.schedule.scheduledTime = setTime;
+    },
     async save(){
+
+      if(!this.selectedProductStoreId) {
+        showToast(translate("Please select product store."));
+        return;
+      }
+
+      if(!this.selectedProductStoreId) {
+        showToast(translate("Please select shopify shop"));
+        return;
+      }
       const groupedItems = Object.keys(this.parsedItems).reduce((result, key) => {
         const items = this.parsedItems[key];
         items.forEach(item => {
@@ -219,7 +279,6 @@ export default defineComponent({
           items: items
         }
       };
-      console.log(uploadData);
 
       const alert = await alertController.create({
         header: translate("Reset inventory"),
@@ -237,10 +296,12 @@ export default defineComponent({
                   if(!hasError(resp) && resp.data.shipmentId) {
                     this.store.dispatch("stock/scheduleService", { params: {
                       shipmentId: resp.data.shipmentId,
-                      shopId: this.schedule.shopId
+                      shopId: this.selectedShopifyShopId
                     },
-                    restockName: this.restockName
-                   })
+                    restockName: this.restockName,
+                    scheduledTime: this.scheduledTime,
+                    productStoreId: this.selectedProductStoreId
+                   }) 
                   } else {
                     throw resp.data;
                   }
@@ -288,7 +349,33 @@ export default defineComponent({
         showToast("No product found")
       }
       this.parsedItems = filteredItems;
-    }
+    },
+    updateProductStore(event) {
+      this.selectedShopifyShopId = ''
+      this.selectedProductStoreId = event.detail.value;
+      this.fetchShopifyShops(this.selectedProductStoreId);
+    },
+    async fetchShopifyShops(productStoreId) {
+      let shopifyShops = []
+      try {
+        const resp = await UtilService.fetchShopifyShop({
+          entityName: "ShopifyShop",
+          inputFields: {
+            productStoreId
+          },
+          viewSize: 100
+        })
+
+        if (!hasError(resp)) {
+          shopifyShops = resp.data.docs
+        } else {
+          throw resp.data
+        }
+      } catch (error) {
+        logger.error('Failed to fetch shopify shops.', error)
+      }
+      this.shopifyShops = shopifyShops
+    },
   },
   setup() {
     const store = useStore();

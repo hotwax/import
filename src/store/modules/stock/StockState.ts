@@ -10,7 +10,8 @@ export default interface StockState {
   schedule: {
     scheduledTime: string,
     shopId: string,
-    restockName: string 
+    restockName: string ,
+    productStoreId: string
   }
   shopifyShops: any,
   jobs: any

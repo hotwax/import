@@ -221,8 +221,7 @@ const actions: ActionTree<StockState, RootState> = {
           "statusId": "SERVICE_PENDING",
           'systemJobEnumId': "JOB_RST_STK",
           'systemJobEnumId_op': 'equals',
-          'orderBy': 'runTime ASC',
-          'tempExprId_op': 'not-empty'
+          'orderBy': 'runTime ASC'
         },
         "noConditionFind": "Y",
         "viewSize": 50

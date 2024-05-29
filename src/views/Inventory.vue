@@ -202,7 +202,7 @@ main {
   margin: var(--spacer-sm) auto 0; 
 }
 
-ion-button{
+.review{
   margin: var(--spacer-base) var(--spacer-sm);
 }
 

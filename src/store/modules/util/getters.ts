@@ -14,6 +14,10 @@ const getters: GetterTree <UtilState, RootState> = {
     },
     getFileProcessingStatus(state) {
         return state.isProcessingFile;
+    },
+    getProductStores(state) {
+        return state.productStores;
     }
+
 }
 export default getters;

@@ -16,6 +16,7 @@ const mutations: MutationTree <StockState> = {
     state.schedule.scheduledTime = payload.scheduledTime;
     state.schedule.shopId = payload.shopId;
     state.schedule.restockName = payload.restockName;
+    state.schedule.productStoreId = payload.productStoreId
   },
   [types.STOCK_SHOPIFY_SHOPS_UPDATED] (state, payload) {
     state.shopifyShops = payload

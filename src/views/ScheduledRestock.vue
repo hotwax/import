@@ -63,7 +63,14 @@
             </ion-modal>
           </ion-item>
           <ion-item>
-            <ion-select label="Shopify store" interface="popover" :placeholder = "translate('Select')" v-model="shopId">
+            <ion-select :label="translate('Product store')" interface="popover" :value="selectedProductStoreId" @ionChange="updateProductStore($event)">
+              <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
+                {{ productStore.storeName || productStore.productStoreId}}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-select :disabled="!selectedProductStoreId" label="Shopify store" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
               <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId">
                 {{ shop.name ? shop.name : shop.shopId }}
               </ion-select-option>
@@ -74,7 +81,7 @@
           </ion-item>
         </ion-list>
         
-        <ion-button color="medium" expand="block" @click="review()">
+        <ion-button color="medium" expand="block" class="review" @click="review()">
           {{ translate("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
@@ -144,18 +151,19 @@ export default defineComponent({
       fileColumns: [],
       fieldMapping: {},
       fields: process.env["VUE_APP_MAPPING_RSTSTK"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTSTK"]) : {},
-      showDateTimePicker: false,
       schedule: '',
       isDateTimeModalOpen: false,
-      shopId: '',
       shopifyShops: [],
       restockName: '',
+      selectedProductStoreId: '',
+      selectedShopifyShopId: ''
     }
   },
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings',
-      jobs: 'stock/getScheduledJobs'
+      jobs: 'stock/getScheduledJobs',
+      productStores: 'util/getProductStores'
     })
   },
   mixins:[ parseFileMixin ],
@@ -168,32 +176,30 @@ export default defineComponent({
     }, {})
     this.$refs.file.value = null;
     await this.store.dispatch('stock/fetchJobs')
+    await this.store.dispatch('util/fetchProductStores')
   },
-  async mounted() {
-    await this.fetchShopifyShops()
-    this.shopId = this.shopifyShops[0]?.shopId
-  },
+
   methods: {
-    async fetchShopifyShops() {
-      
+    async fetchShopifyShops(productStoreId) {
+      let shopifyShops = []
       try {
         const resp = await UtilService.fetchShopifyShop({
           entityName: "ShopifyShop",
-          fieldList: ['shopId', 'name'],
-          noConditionFind: 'Y',
+          inputFields: {
+            productStoreId
+          },
           viewSize: 100
         })
 
-
         if (!hasError(resp)) {
-          this.shopifyShops = resp.data.docs
-          this.store.dispatch('stock/shopifyShop', this.shopifyShops)
+          shopifyShops = resp.data.docs
         } else {
           throw resp.data
         }
       } catch (error) {
         logger.error('Failed to fetch shopify shops.', error)
       }
+      this.shopifyShops = shopifyShops
     },
     updateTime() {
       this.isDateTimeModalOpen = true
@@ -260,7 +266,17 @@ export default defineComponent({
       //   showToast(translate("Select all the fields to continue"));
       //   return;
       // } 
-      
+
+      if(!this.selectedProductStoreId) {
+        showToast(translate("Please select product store."));
+        return;
+      }
+
+      if(!this.selectedProductStoreId) {
+        showToast(translate("Please select shopify shop"));
+        return;
+      }
+
       const restockItems = this.content.map(item => {
         return {
           quantity: item[this.fieldMapping.restockQuantity],
@@ -274,7 +290,8 @@ export default defineComponent({
       console.log('this.schedule', this.schedule)
       this.store.dispatch('stock/processUpdateRestockItems', restockItems);
       this.store.dispatch('stock/scheduledStock', {
-        shopId: this.shopId, 
+        productStoreId: this.selectedProductStoreId,
+        shopId: this.selectedShopifyShopId,
         restockName: this.restockName,
         scheduledTime: this.schedule ? this.schedule : DateTime.now().toMillis()
       }) 
@@ -288,6 +305,11 @@ export default defineComponent({
         componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'RSTSTK'}
       });
       return createMappingModal.present();
+    },
+    updateProductStore(event) {
+      this.selectedShopifyShopId = ''
+      this.selectedProductStoreId = event.detail.value;
+      this.fetchShopifyShops(this.selectedProductStoreId);
     }
 
   },
@@ -313,7 +335,7 @@ main {
   margin: var(--spacer-sm) auto 0; 
 }
 
-ion-button{
+.review{
   margin: var(--spacer-base) var(--spacer-sm);
 }
 
