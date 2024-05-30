@@ -287,7 +287,7 @@ export default defineComponent({
 
       const uploadData = {
         payload: {
-          destinationFacilityId: destinationFacilityId,
+          externalDestinationFacilityId: destinationFacilityId,
           items: items
         }
       };
@@ -435,6 +435,11 @@ export default defineComponent({
   word-break: break-all;
 }
 
+.list-item > *:last-child {
+  display: unset;
+  justify-self: unset;
+}
+
 .header {
   display: grid;
   grid: "search filters"
@@ -447,6 +452,10 @@ export default defineComponent({
 
 .filters {
   grid-area: filters;
+}
+
+ion-content {
+  --padding-bottom: 80px;
 }
 
 @media (max-width: 991px) {
