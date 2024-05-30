@@ -26,24 +26,24 @@
             <ion-item>
               <ion-icon slot="start" :icon="timerOutline"/>
               <ion-label> Schedule </ion-label>  
-              <ion-button slot="end" color="light" @click="updateTime()">{{ schedule.scheduledTime ? getTime(schedule.scheduledTime) : getTime(DateTime.now().toMillis())}}</ion-button> 
+              <ion-button class="date-time-button" slot="end" @click="updateTime()">{{ schedule.scheduledTime ? getTime(schedule.scheduledTime) : getTime(DateTime.now().toMillis())}}</ion-button> 
               <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
-              <ion-content force-overscroll="false">
-                <ion-datetime    
-                  id="schedule-datetime"        
-                  show-default-buttons 
-                  hour-cycle="h23"
-                  presentation="date-time"
-                  :value="schedule.scheduledTime ? getDateTime(schedule.scheduledTime) : getDateTime(DateTime.now().toMillis())"
-                  @ionChange="updateCustomTime($event)"
-                />
-              </ion-content>
-            </ion-modal>     
+                <ion-content force-overscroll="false">
+                  <ion-datetime    
+                    id="schedule-datetime"        
+                    show-default-buttons 
+                    hour-cycle="h23"
+                    presentation="date-time"
+                    :value="schedule.scheduledTime ? getDateTime(schedule.scheduledTime) : getDateTime(DateTime.now().toMillis())"
+                    @ionChange="updateCustomTime($event)"
+                  />
+                </ion-content>
+              </ion-modal>     
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="businessOutline"/>
-              <ion-select label="Facilities" interface="popover" :placeholder = "translate('Select')">
-              <ion-select-option v-for="(facilityItems, facilityId) in parsedItems" :key="facilityId">{{ getFacilityName(facilityId) }}</ion-select-option>
+              <ion-select label="Facilities" interface="popover" :placeholder = "translate('Select')" :value="Object.keys(parsedItems)[0]">
+              <ion-select-option v-for="(facilityItems, facilityId) in parsedItems" :key="facilityId" :value="facilityId">{{ getFacilityName(facilityId) }}</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item>
@@ -57,7 +57,7 @@
             <ion-item>
               <ion-icon slot="start" :icon="globeOutline"/>
               <ion-select :disabled="!selectedProductStoreId" label="Shopify store" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
-                <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId">
+                <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId" :value="shop.shopId">
                   {{ shop.name ? shop.name : shop.shopId }}
                 </ion-select-option>
               </ion-select>
@@ -82,7 +82,8 @@
               <DxpShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
             <ion-label>
-              <p>{{ item.parentProductName }}</p>
+              <h2>{{ item.parentProductName }}</h2>
+              <p>{{ item.identification }}</p>
             </ion-label>
           </ion-item>
   

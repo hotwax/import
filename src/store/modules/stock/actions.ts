@@ -85,9 +85,15 @@ const actions: ActionTree<StockState, RootState> = {
     }, {});
     const facilityIds = externalFacilityIds.map((externalFacilityId: any) => facilityMapping[externalFacilityId]).filter((facilityId: any) => facilityId);
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
+    // creating products object based on identification selected
+    const products: any = Object.values(cachedProducts).reduce((updatedProducts: any, product: any) => {
+      const identification = product.identifications.find((identification: any) => payload.identificationTypeId.toLowerCase() === identification.productIdTypeEnumId.toLowerCase())
+      updatedProducts[identification.idValue] = product
+      return updatedProducts;
+    }, {})
 
     const initial = items.map((item: any) => {
-      const product = cachedProducts[item.identification];
+      const product = products[item.identification];
       
       if (product) {
         item.parentProductId = product?.parent?.id;
@@ -116,13 +122,13 @@ const actions: ActionTree<StockState, RootState> = {
 
       const job = await dispatch("fetchDraftJob")
 
-      if(!job.jobId) {
+      if(!job.jobId || !job.serviceName || job.serviceName == '_NA_') {
         showToast(translate("Configuration missing"))
         return;
       }
 
       const payload = {
-        'JOB_NAME': restockName || state.schedule.restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
+        'JOB_NAME': restockName || state.schedule.restockName || `Created ${DateTime.fromMillis(+state.schedule.scheduledTime).toLocaleString(DateTime.DATETIME_MED)}`,
         'SERVICE_NAME': job.serviceName,
         'SERVICE_COUNT': '0',
         'SERVICE_TEMP_EXPR': job.jobStatus,
@@ -167,7 +173,7 @@ const actions: ActionTree<StockState, RootState> = {
       "inputFields": {
         "statusId": "SERVICE_DRAFT",
         "statusId_op": "equals",
-        "systemJobEnumId": "JOB_RST_STK",
+        "systemJobEnumId": "JOB_SCHEDULED_RSTK",
         "systemJobEnumId_op": "equals"
       },
       "fieldList": [ "systemJobEnumId", "runTime", "tempExprId", "parentJobId", "serviceName", "jobId", "jobName", "currentRetryCount", "statusId", "runtimeDataId", "productStoreId", "priority"],
@@ -207,7 +213,7 @@ const actions: ActionTree<StockState, RootState> = {
       const params = {
         "inputFields": {
           "statusId": "SERVICE_PENDING",
-          'systemJobEnumId': "JOB_RST_STK",
+          'systemJobEnumId': "JOB_SCHEDULED_RSTK",
           'systemJobEnumId_op': 'equals',
           'orderBy': 'runTime ASC'
         },
