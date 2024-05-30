@@ -26,7 +26,7 @@
             <ion-item>
               <ion-icon slot="start" :icon="timerOutline"/>
               <ion-label> Schedule </ion-label>  
-              <ion-button class="date-time-button" slot="end" @click="updateTime()">{{ schedule.scheduledTime ? getTime(schedule.scheduledTime) : getTime(DateTime.now().toMillis())}}</ion-button> 
+              <ion-button class="date-time-button" slot="end" @click="updateTime()">{{ schedule.scheduledTime ? getTime(schedule.scheduledTime) : 'Select time' }}</ion-button> 
               <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
                 <ion-content force-overscroll="false">
                   <ion-datetime    
@@ -253,6 +253,11 @@ export default defineComponent({
         showToast(translate("Please select shopify shop"));
         return;
       }
+
+      if(!this.scheduledTime) {
+        showToast(translate("Please select a schedule time"));
+        return;
+      }
       const groupedItems = Object.keys(this.parsedItems).reduce((result, key) => {
         const items = this.parsedItems[key].filter(item => item.isSelected);
         items.forEach(item => {
@@ -270,6 +275,10 @@ export default defineComponent({
       }, {});
 
       const destinationFacilityId = Object.keys(groupedItems)[0];
+      if(!destinationFacilityId) {
+        showToast(translate("Facility not found"));
+        return;
+      }
       const items = groupedItems[destinationFacilityId];
 
       const uploadData = {

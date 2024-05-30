@@ -55,7 +55,7 @@
           </ion-item-divider>
           <ion-item>
             <ion-label> Schedule </ion-label>   
-            <ion-button slot="end" class="date-time-button" @click="updateTime()">{{ schedule ? getTime(schedule) : getTime(DateTime.now().toMillis()) }}</ion-button>
+            <ion-button slot="end" class="date-time-button" @click="updateTime()">{{ schedule ? getTime(schedule) : 'Select time' }}</ion-button>
             <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
               <ion-content force-overscroll="false">
                 <ion-datetime    
@@ -101,7 +101,7 @@
                 {{ job.jobName }}
               <p>inbound</p>
             </ion-label>
-            <ion-button class="date-time-button" @click="changeRunTime(job)">{{ getTime(job.runTime) }}</ion-button>
+            <ion-button class="date-time-button" @click="changeRunTime(job)">{{ getTime(job.runTime) ? getTime(job.runTime) : 'Select time' }}</ion-button>
             <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event, job)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button> 
