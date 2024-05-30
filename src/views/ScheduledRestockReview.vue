@@ -26,7 +26,7 @@
             <ion-item>
               <ion-icon slot="start" :icon="timerOutline"/>
               <ion-label> Schedule </ion-label>  
-              <ion-button class="date-time-button" slot="end" @click="updateTime()">{{ schedule.scheduledTime ? getTime(schedule.scheduledTime) : 'Select time' }}</ion-button> 
+              <ion-button class="date-time-button" slot="end" @click="updateTime()">{{ scheduledTime ? getTime(scheduledTime) : 'Select time' }}</ion-button> 
               <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
                 <ion-content force-overscroll="false">
                   <ion-datetime    
@@ -34,7 +34,7 @@
                     show-default-buttons 
                     hour-cycle="h23"
                     presentation="date-time"
-                    :value="schedule.scheduledTime ? getDateTime(schedule.scheduledTime) : getDateTime(DateTime.now().toMillis())"
+                    :value="scheduledTime ? getDateTime(scheduledTime) : getDateTime(DateTime.now().toMillis())"
                     @ionChange="updateCustomTime($event)"
                   />
                 </ion-content>
@@ -62,7 +62,7 @@
               </ion-select>
             </ion-item>
             <ion-item lines="none">
-              <ion-input label="Restock name" placeholder="name" v-model="restockName"></ion-input>
+              <ion-input label="Restock name" :placeholder="getPlaceholder()" v-model="restockName"></ion-input>
             </ion-item>
           </ion-list>
         </div>
@@ -212,6 +212,10 @@ export default defineComponent({
   //   }
   // },
   methods: {
+
+    getPlaceholder() {
+      return `Created ${this.getTime(this.scheduledTime ? this.scheduledTime : DateTime.now().toMillis())}`
+    },
     getFilteredRestockItems() {
       const filteredItems = {};
 
@@ -240,9 +244,14 @@ export default defineComponent({
         showToast('Please provide a future date and time');
         return;
       }
-      this.schedule.scheduledTime = setTime;
+      this.scheduledTime = setTime;
     },
     async save() {
+      if(!this.scheduledTime) {
+        showToast(translate("Please select a schedule time"));
+        return;
+      }
+
       if(!this.selectedProductStoreId) {
         showToast(translate("Please select product store"));
         return;
@@ -253,10 +262,6 @@ export default defineComponent({
         return;
       }
 
-      if(!this.scheduledTime) {
-        showToast(translate("Please select a schedule time"));
-        return;
-      }
       const groupedItems = Object.keys(this.parsedItems).reduce((result, key) => {
         const items = this.parsedItems[key].filter(item => item.isSelected);
         items.forEach(item => {

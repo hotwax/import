@@ -63,7 +63,7 @@
                   show-default-buttons 
                   hour-cycle="h23"
                   presentation="date-time"
-                  :value="schedule ? getTime(schedule) : DateTime.now()"
+                  :value="schedule ? getDateTime(schedule) : getDateTime(DateTime.now().toMillis())"
                   @ionChange="updateCustomTime($event)"
                 />
               </ion-content>
@@ -84,7 +84,7 @@
             </ion-select>
           </ion-item>
           <ion-item lines="full">
-            <ion-input label="Restock name" placeholder='Created' v-model="restockName"></ion-input>
+            <ion-input label="Restock name" :placeholder='getPlaceholder()' v-model="restockName"></ion-input>
           </ion-item>
         </ion-list>
         
@@ -209,6 +209,9 @@ export default defineComponent({
   },
 
   methods: {
+    getPlaceholder() {
+      return `Created ${this.getTime(this.schedule ? this.schedule : DateTime.now().toMillis())}`
+    },
     async fetchShopifyShops(productStoreId) {
       let shopifyShops = []
       try {
@@ -359,7 +362,7 @@ export default defineComponent({
         productStoreId: this.selectedProductStoreId,
         shopId: this.selectedShopifyShopId,
         restockName: this.restockName,
-        scheduledTime: this.schedule ? this.schedule : DateTime.now().toMillis()
+        scheduledTime: this.schedule
       }) 
       this.router.push({
         name:'ScheduledRestockDetail'
