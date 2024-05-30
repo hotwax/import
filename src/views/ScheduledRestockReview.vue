@@ -55,7 +55,6 @@
               </ion-select>
             </ion-item>
             <ion-item>
-              <ion-icon slot="start" :icon="globeOutline"/>
               <ion-select :disabled="!selectedProductStoreId" label="Shopify store" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
                 <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId" :value="shop.shopId">
                   {{ shop.name ? shop.name : shop.shopId }}
@@ -353,7 +352,7 @@ export default defineComponent({
           return item.parentProductId.includes(query) ||
                  item.productId.includes(query) ||
                  item.parentProductName.toLowerCase().includes(query.toLowerCase()) ||
-                 item.product.toLowerCase().includes(query.toLowerCase());
+                 item.identification.toLowerCase().includes(query.toLowerCase());
         });
       }
       const noItemsFound = !Object.values(filteredItems).some(items => items.length > 0);
