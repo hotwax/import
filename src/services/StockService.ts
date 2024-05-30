@@ -16,7 +16,25 @@ const fetchJobInformation = async (payload: any): Promise <any>  => {
   });
 }
 
+const updateJob = async (payload: any): Promise <any>  => {
+  return api({
+    url: "service/updateJobSandbox",
+    method: "post",
+    data: payload
+  });
+}
+
+const cancelJob = async (payload: any): Promise <any> => {
+  return api({
+    url: "service/cancelScheduledJob",
+    method: "post",
+    data: payload
+  });
+}
+
 export const StockService = {
+  cancelJob,
   scheduleJob,
-  fetchJobInformation
+  fetchJobInformation,
+  updateJob
 }

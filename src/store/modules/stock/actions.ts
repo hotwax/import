@@ -9,7 +9,6 @@ import { StockService } from "@/services/StockService";
 import { translate } from "@hotwax/dxp-components";
 import logger from "@/logger";
 import { DateTime } from 'luxon'
-import router from '@/router'
 
 const actions: ActionTree<StockState, RootState> = {
   async processUpdateStockItems ({ commit, rootGetters }, items) {
@@ -86,7 +85,7 @@ const actions: ActionTree<StockState, RootState> = {
     }, {});
     const facilityIds = externalFacilityIds.map((externalFacilityId: any) => facilityMapping[externalFacilityId]).filter((facilityId: any) => facilityId);
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
-    
+
     const initial = items.map((item: any) => {
       const product = cachedProducts[item.product];
       
@@ -127,7 +126,7 @@ const actions: ActionTree<StockState, RootState> = {
 
       const payload = {
         'JOB_NAME': restockName || state.schedule.restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
-        'SERVICE_NAME': "shipPackedOrders", // TODO: make dynamic
+        'SERVICE_NAME': job.serviceName,
         'SERVICE_COUNT': '0',
         'SERVICE_TEMP_EXPR': job.jobStatus,
         'SERVICE_RUN_AS_SYSTEM':'Y',
@@ -137,7 +136,7 @@ const actions: ActionTree<StockState, RootState> = {
           'maxRecurrenceCount': '-1',
           'parentJobId': job.parentJobId,
           'runAsUser': 'system', //default system, but empty in run now.  TODO Need to remove this as we are using SERVICE_RUN_AS_SYSTEM, currently kept it for backward compatibility
-          'recurrenceTimeZone': this.state.user.current.userTimeZone,
+          'recurrenceTimeZone': this.state.user.current.usershipPackedOrdersTimeZone,
           'createdByUserLogin': this.state.user.current.userLoginId,
           'lastModifiedByUserLogin': this.state.user.current.userLoginId,
         },
@@ -154,14 +153,6 @@ const actions: ActionTree<StockState, RootState> = {
         resp = await StockService.scheduleJob({ ...payload });
         if (resp.status == 200 && !hasError(resp)) {
           showToast(translate('Service has been scheduled'));
-          // await dispatch('fetchJobs', {
-          //   inputFields: {
-          //     'systemJobEnumId': payload.systemJobEnumId,
-          //     'systemJobEnumId_op': 'equals',
-          //   },
-          //   orderBy: "runTime ASC"
-          // })
-          router.push('/scheduled-restock')
         } else {
           showToast(translate('Something went wrong'))
         }

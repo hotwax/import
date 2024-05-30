@@ -19,11 +19,11 @@
         <ion-list>
           <ion-list-header>{{ translate("Saved mappings") }}</ion-list-header>
           <div>
-            <ion-chip outline @click="addFieldMapping()"> 
+            <ion-chip :disabled="!this.content.length" outline @click="addFieldMapping()"> 
               <ion-icon :icon="addOutline" />
               <ion-label>{{ translate("New mapping") }}</ion-label>
             </ion-chip>
-            <ion-chip outline="true" v-for="(mapping, index) in fieldMappings('RSTSTK') ?? []" :key="index" @click="mapFields(mapping)"> 
+            <ion-chip :disabled="!this.content.length" outline="true" v-for="(mapping, index) in fieldMappings('RSTSTK') ?? []" :key="index" @click="mapFields(mapping)"> 
               {{ mapping.name }}
             </ion-chip>
           </div>
@@ -81,12 +81,12 @@
           </ion-item>
         </ion-list>
         
-        <ion-button color="medium" expand="block" class="review" @click="review()">
+        <ion-button :disabled="!this.content.length" color="medium" expand="block" class="review" @click="review()">
           {{ translate("Review") }}
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
 
-        <ion-list>
+        <ion-list v-if="jobs.length">
           <ion-list-header>Scheduled Restock</ion-list-header>
           <ion-item v-for="job in jobs" :key="job.jobId">
             <ion-label>
@@ -94,11 +94,23 @@
                 {{ job.jobName }}
               <p>inbound</p>
             </ion-label>
-            <ion-button color="light">{{ getTime(job.runTime) }}</ion-button> 
-            <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event)">
+            <ion-button color="light" @click="changeRunTime(job)">{{ getTime(job.runTime) }}</ion-button>
+            <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event, job)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
-            </ion-button>     
+            </ion-button> 
           </ion-item>
+          <ion-modal class="date-time-modal" :is-open="isUpdateDateTimeModalOpen" @didDismiss="() => isUpdateDateTimeModalOpen = false">
+            <ion-content force-overscroll="false">
+              <ion-datetime    
+                id="schedule-datetime"        
+                show-default-buttons 
+                hour-cycle="h23"
+                presentation="date-time"
+                :value="currentJob.runTime ? getDateTime(currentJob.runTime) : getDateTime(DateTime.now().toMillis())"
+                @ionChange="changeJobRunTime($event)"
+              />
+            </ion-content>
+          </ion-modal>
         </ion-list>
 
       </main>
@@ -120,6 +132,7 @@ import CreateMappingModal from "@/components/CreateMappingModal.vue";
 import { DateTime } from 'luxon';
 import { UtilService } from '@/services/UtilService'
 import logger from "@/logger";
+import { StockService } from "@/services/StockService";
 
 export default defineComponent({
   name: "ScheduledRestock",
@@ -156,18 +169,24 @@ export default defineComponent({
       shopifyShops: [],
       restockName: '',
       selectedProductStoreId: '',
-      selectedShopifyShopId: ''
+      selectedShopifyShopId: '',
+      isUpdateDateTimeModalOpen: false,
+      shopId: '',
+      currentJob: {}
     }
   },
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings',
       jobs: 'stock/getScheduledJobs',
-      productStores: 'util/getProductStores'
+      productStores: 'util/getProductStores',
+      userProfile: 'user/getUserProfile'
     })
   },
   mixins:[ parseFileMixin ],
   async ionViewDidEnter() {
+    this.selectedProductStoreId = ""
+    this.selectedShopifyShopId = ""
     this.file = {}
     this.content = []
     this.fieldMapping = Object.keys(this.fields)?.reduce((fieldMapping, field) => {
@@ -204,6 +223,10 @@ export default defineComponent({
     updateTime() {
       this.isDateTimeModalOpen = true
     },
+    changeRunTime(job) {
+      this.currentJob = job
+      this.isUpdateDateTimeModalOpen = true
+    },
     getTime(time) {
       return DateTime.fromMillis(time, { setZone: true}).toFormat("hh:mm a dd MMM yyyy")
     },
@@ -215,6 +238,49 @@ export default defineComponent({
         return;
       }
       this.schedule = setTime;
+    },
+    changeJobRunTime(event) {
+      const currentTime = DateTime.now().toMillis();
+      const setTime = DateTime.fromISO(event.detail.value).toMillis();
+      if (setTime < currentTime) {
+        showToast('Please provide a future date and time');
+        return;
+      }
+      this.updateJob(setTime)
+    },
+    async updateJob(updatedTime) {
+      let resp;
+      const job = {
+        ...this.currentJob,
+        runTime: updatedTime
+      }
+
+      const payload = {
+        'jobId': job.jobId,
+        'systemJobEnumId': job.systemJobEnumId,
+        'recurrenceTimeZone': this.userProfile.userTimeZone,
+        'tempExprId': job.jobStatus,
+        'statusId': "SERVICE_PENDING",
+        'runTimeEpoch': '',  // when updating a job clearning the epoch time, as job honors epoch time as runTime and the new job created also uses epoch time as runTime
+        'lastModifiedByUserLogin': this.userProfile.userLoginId
+      }
+
+      job?.runTime && (payload['runTime'] = job.runTime)
+      job?.sinceId && (payload['sinceId'] = job.sinceId)
+      job?.jobName && (payload['jobName'] = job.jobName)
+
+      try {
+        resp = await StockService.updateJob(payload)
+        if (!hasError(resp) && resp.data.successMessage) {
+          await this.store.dispatch('stock/fetchJobs')
+          showToast(translate('Service updated successfully'))
+        } else {
+          throw resp.data
+        }
+      } catch (err) {
+        showToast(translate('Failed to update job'))
+        logger.error(err)
+      }
     },
     mapFields(mapping) {
       const fieldMapping = JSON.parse(JSON.stringify(mapping));
@@ -251,29 +317,20 @@ export default defineComponent({
         showToast(translate("Please upload a valid reset inventory csv to continue"));
       }
     },
-    async openScheduledRestockPopover(ev) {
+    async openScheduledRestockPopover(ev, job) {
       const popover = await popoverController.create({
         component: ScheduledRestockPopover,
         event: ev,
         translucent: true,
         showBackdrop: false,
+        componentProps: { job }
       });
       return popover.present();
     },
-    review() {
-      // const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
-      // if (!areAllFieldsSelected) {
-      //   showToast(translate("Select all the fields to continue"));
-      //   return;
-      // } 
-
-      if(!this.selectedProductStoreId) {
-        showToast(translate("Please select product store."));
-        return;
-      }
-
-      if(!this.selectedProductStoreId) {
-        showToast(translate("Please select shopify shop"));
+    async review() {
+      const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
+      if (!areAllFieldsSelected) {
+        showToast(translate("Select all the fields to continue"));
         return;
       }
 
@@ -287,9 +344,8 @@ export default defineComponent({
         }
       })
 
-      console.log('this.schedule', this.schedule)
-      this.store.dispatch('stock/processUpdateRestockItems', restockItems);
-      this.store.dispatch('stock/scheduledStock', {
+      await this.store.dispatch('stock/processUpdateRestockItems', restockItems);
+      await this.store.dispatch('stock/scheduledStock', {
         productStoreId: this.selectedProductStoreId,
         shopId: this.selectedShopifyShopId,
         restockName: this.restockName,
@@ -310,8 +366,10 @@ export default defineComponent({
       this.selectedShopifyShopId = ''
       this.selectedProductStoreId = event.detail.value;
       this.fetchShopifyShops(this.selectedProductStoreId);
-    }
-
+    },
+    getDateTime(time) {
+      return DateTime.fromMillis(time).toISO()
+    },
   },
   setup() {
     const router = useRouter();

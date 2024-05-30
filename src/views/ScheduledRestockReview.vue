@@ -34,7 +34,7 @@
                   show-default-buttons 
                   hour-cycle="h23"
                   presentation="date-time"
-                  :value="schedule.scheduledTime ? getTime(schedule.scheduledTime) : DateTime.now()"
+                  :value="schedule.scheduledTime ? getDateTime(schedule.scheduledTime) : getDateTime(DateTime.now().toMillis())"
                   @ionChange="updateCustomTime($event)"
                 />
               </ion-content>
@@ -47,6 +47,7 @@
               </ion-select>
             </ion-item>
             <ion-item>
+              <ion-icon slot="start" :icon="globeOutline"/>
               <ion-select :label="translate('Product store')" interface="popover" :value="selectedProductStoreId" @ionChange="updateProductStore($event)">
                 <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
                   {{ productStore.storeName || productStore.productStoreId}}
@@ -61,14 +62,6 @@
                 </ion-select-option>
               </ion-select>
             </ion-item>
-            <!-- <ion-item>
-              <ion-icon slot="start" :icon="globeOutline"/>
-              <ion-select label="Shopify Store" interface="popover" :placeholder = "translate('Select')">
-              <ion-select-option :value="schedule.shopId" v-for="shop in shopifyShops" :key="shop.shopId">
-                {{ shop.name ? shop.name : shop.shopId }}
-              </ion-select-option>
-              </ion-select>
-            </ion-item> -->
             <ion-item lines="none">
               <ion-input label="Restock name" placeholder="name" v-model="restockName"></ion-input>
             </ion-item>
@@ -100,8 +93,8 @@
           <ion-checkbox :checked="item.isSelected" @ion-change="selectListItem(item)"/>
         </div>
       </div>
-      <ion-fab ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="save" :disabled="!selectedProductStoreId">
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button @click="save" :disabled="!Object.keys(parsedItems).length">
           <ion-icon :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -111,17 +104,18 @@
   
 <script>
 import { defineComponent } from "vue";
-import { IonBackButton, IonButton, IonButtons, IonCheckbox, IonChip, IonContent,IonFab,IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonPage, IonSearchbar, IonSelect, IonSelectOption, IonThumbnail, IonTitle, IonToolbar, alertController} from "@ionic/vue";
-import { translate } from "@hotwax/dxp-components";
-import { DxpShopifyImg } from "@hotwax/dxp-components";
+import { IonBackButton, IonButton, IonButtons, IonCheckbox, IonChip, IonContent, IonDatetime, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, IonSearchbar, IonSelect, IonSelectOption, IonThumbnail, IonTitle, IonToolbar, alertController} from "@ionic/vue";
+import { DxpShopifyImg, translate } from "@hotwax/dxp-components";
 import { arrowUndoOutline, checkboxOutline, timerOutline, businessOutline, cloudUploadOutline, globeOutline} from "ionicons/icons"
 import { mapGetters, useStore } from "vuex";
 import { DateTime } from 'luxon';
-import { jsonToCsv, showToast } from '@/utils';
+import { showToast } from '@/utils';
 import { UploadService } from "@/services/UploadService";
 import { hasError } from "@/adapter";
 import logger from "@/logger";
 import { UtilService } from '@/services/UtilService'
+import emitter from "@/event-bus";
+import { useRouter } from "vue-router";
 
 
 export default defineComponent({
@@ -134,6 +128,7 @@ export default defineComponent({
     IonCheckbox,
     IonChip,
     IonContent,
+    IonDatetime,
     IonFab,
     IonFabButton,
     IonHeader,
@@ -142,6 +137,7 @@ export default defineComponent({
     IonItem,
     IonLabel,
     IonList,
+    IonModal,
     IonPage,
     IonSearchbar,
     IonSelect,
@@ -179,9 +175,12 @@ export default defineComponent({
     this.getFilteredRestockItems();
     this.restockName = this.schedule.restockName
     this.selectedProductStoreId = this.schedule.productStoreId;
-    this.selectedShopifyShopId =  this.schedule.shopId,
+    this.selectedShopifyShopId = this.schedule.shopId
     this.scheduledTime = this.schedule.scheduledTime;
-    this.fetchShopifyShops(this.selectedProductStoreId);
+
+    if(this.selectedProductStoreId) {
+      this.fetchShopifyShops(this.selectedProductStoreId);
+    }
   },
   // async beforeRouteLeave(to) { 
   //   if(to.path === "/login" ) return;
@@ -215,7 +214,7 @@ export default defineComponent({
   methods: {
     getFilteredRestockItems() {
       const filteredItems = {};
-      
+
       this.restockItems.map((item) => {
         if(filteredItems[item.externalFacilityId]) filteredItems[item.externalFacilityId].push(item)
         else filteredItems[item.externalFacilityId] = [item];
@@ -243,14 +242,13 @@ export default defineComponent({
       }
       this.schedule.scheduledTime = setTime;
     },
-    async save(){
-
+    async save() {
       if(!this.selectedProductStoreId) {
-        showToast(translate("Please select product store."));
+        showToast(translate("Please select product store"));
         return;
       }
 
-      if(!this.selectedProductStoreId) {
+      if(!this.selectedShopifyShopId) {
         showToast(translate("Please select shopify shop"));
         return;
       }
@@ -291,24 +289,28 @@ export default defineComponent({
             {
               text: translate("Upload"),
               handler: async () => {
-                try{
+                emitter.emit("presentLoader")
+                try {
                   const resp = await UploadService.createIncomingShipment(uploadData)
                   if(!hasError(resp) && resp.data.shipmentId) {
-                    this.store.dispatch("stock/scheduleService", { params: {
-                      shipmentId: resp.data.shipmentId,
-                      shopId: this.selectedShopifyShopId
-                    },
-                    restockName: this.restockName,
-                    scheduledTime: this.scheduledTime,
-                    productStoreId: this.selectedProductStoreId
-                   }) 
+                    await this.store.dispatch("stock/scheduleService", { 
+                      params: {
+                        shipmentId: resp.data.shipmentId,
+                        shopId: this.selectedShopifyShopId,
+                        productStoreId: this.selectedProductStoreId
+                      },
+                      restockName: this.restockName,
+                      scheduledTime: this.scheduledTime,
+                    })
                   } else {
                     throw resp.data;
                   }
                 } catch(err) {
-                  showToast(translate("Failed to create shipment"))
-                  console.error(err)
+                  showToast(translate("Failed to schedule job"))
+                  logger.error('Failed to create shipment', err)
                 }
+                emitter.emit("dismissLoader")
+                this.router.push('/scheduled-restock')
               }
             },
           ],
@@ -376,9 +378,13 @@ export default defineComponent({
       }
       this.shopifyShops = shopifyShops
     },
+    getDateTime(time) {
+      return DateTime.fromMillis(time).toISO()
+    },
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
 
     return {
       translate,
@@ -389,7 +395,8 @@ export default defineComponent({
       store,
       cloudUploadOutline,
       DateTime,
-      globeOutline
+      globeOutline,
+      router
     }
   }
 })
