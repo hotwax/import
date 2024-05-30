@@ -253,7 +253,7 @@ export default defineComponent({
         return;
       }
       const groupedItems = Object.keys(this.parsedItems).reduce((result, key) => {
-        const items = this.parsedItems[key];
+        const items = this.parsedItems[key].filter(item => item.isSelected);
         items.forEach(item => {
           if (!result[item.externalFacilityId]) {
             result[item.externalFacilityId] = [];

@@ -70,7 +70,7 @@ const actions: ActionTree<StockState, RootState> = {
   },
   async processUpdateRestockItems({ commit }, items) {
   
-    const productIds = items.filter((item: any) => item.product).map((item: any) => item.product);
+    const productIds = items.map((item: any) => item.identification);
   
     const payload = {
       productIds,
@@ -87,7 +87,7 @@ const actions: ActionTree<StockState, RootState> = {
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
 
     const initial = items.map((item: any) => {
-      const product = cachedProducts[item.product];
+      const product = cachedProducts[item.identification];
       
       if (product) {
         item.parentProductId = product?.parent?.id;
@@ -102,9 +102,6 @@ const actions: ActionTree<StockState, RootState> = {
     }).filter((item: any) => item);
   
     commit(types.STOCK_SCHEDULE_ITEMS_UPDATED, initial );
-  },
-  clearRetockItems({ commit }) {
-    commit(types.STOCK_SCHEDULE_ITEMS_UPDATED, []);
   },
   async scheduledStock({ commit }, payload) {
     commit(types.STOCK_SCHEDULED_INFORMATION, payload)

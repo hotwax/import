@@ -34,14 +34,21 @@
           <ion-item-divider>
             <ion-label> Required </ion-label>
           </ion-item-divider>
-          <template :key="field" v-for="(fieldValues, field) in fields">
-
-            <ion-item v-if="fieldValues.required">
-              <ion-select :label="fieldValues.label" interface="popover" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
+          <ion-item :key="field" v-for="(fieldValues, field) in fields">
+            <template v-if="field === 'productIdentification'">
+              <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "translate('Select')" v-model="identificationTypeId">
+                <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" :value="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
+              </ion-select>
+              <ion-select aria-label="identification-type-value" interface="popover" :disabled="!content.length" :placeholder = "translate('Select')" slot="end" v-model="fieldMapping['productIdentification']">
                 <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
               </ion-select>
-            </ion-item>
-          </template>
+            </template>
+            <template v-else>
+              <ion-select :label="translate(fieldValues.label)" interface="popover" :disabled="!content.length" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
+                <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
+              </ion-select>
+            </template>
+          </ion-item>
 
           <ion-item-divider>
             <ion-label> Optional, or select during review </ion-label>
@@ -164,6 +171,7 @@ export default defineComponent({
       fileColumns: [],
       fieldMapping: {},
       fields: process.env["VUE_APP_MAPPING_RSTSTK"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTSTK"]) : {},
+      identificationTypeId: "SHOPIFY_PROD_SKU",
       schedule: '',
       isDateTimeModalOpen: false,
       shopifyShops: [],
@@ -172,12 +180,13 @@ export default defineComponent({
       selectedShopifyShopId: '',
       isUpdateDateTimeModalOpen: false,
       shopId: '',
-      currentJob: {}
+      currentJob: {},
     }
   },
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings',
+      goodIdentificationTypes: 'util/getGoodIdentificationTypes',
       jobs: 'stock/getScheduledJobs',
       productStores: 'util/getProductStores',
       userProfile: 'user/getUserProfile'
@@ -196,6 +205,7 @@ export default defineComponent({
     this.$refs.file.value = null;
     await this.store.dispatch('stock/fetchJobs')
     await this.store.dispatch('util/fetchProductStores')
+    await this.store.dispatch('util/fetchGoodIdentificationTypes');
   },
 
   methods: {
@@ -338,8 +348,8 @@ export default defineComponent({
         return {
           quantity: item[this.fieldMapping.restockQuantity],
           facilityId: '',
-          product: item[this.fieldMapping.product],
-          identificationTypeId: "SHOPIFY_PROD_SKU",
+          identification: item[this.fieldMapping.productIdentification],
+          identificationTypeId: this.identificationTypeId,
           externalFacilityId: item[this.fieldMapping.facility]
         }
       })
@@ -393,7 +403,7 @@ main {
   margin: var(--spacer-sm) auto 0; 
 }
 
-.review{
+.review {
   margin: var(--spacer-base) var(--spacer-sm);
 }
 
