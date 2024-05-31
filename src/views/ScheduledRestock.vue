@@ -99,7 +99,7 @@
             <ion-label>
               <p class="overline">{{ job.jobId }}</p>
                 {{ job.jobName }}
-              <p>inbound</p>
+              <p>{{ job.runTimeData.shipmentId }}</p>
             </ion-label>
             <ion-button class="date-time-button" @click="changeRunTime(job)">{{ getTime(job.runTime) ? getTime(job.runTime) : 'Select time' }}</ion-button>
             <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event, job)">
@@ -194,6 +194,8 @@ export default defineComponent({
   },
   mixins:[ parseFileMixin ],
   async ionViewDidEnter() {
+    this.schedule = ""
+    this.restockName = ""
     this.selectedProductStoreId = ""
     this.selectedShopifyShopId = ""
     this.file = {}

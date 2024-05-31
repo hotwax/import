@@ -117,7 +117,7 @@ const actions: ActionTree<StockState, RootState> = {
     commit(types.STOCK_SHOPIFY_SHOPS_UPDATED, payload)
   },
   
-  async scheduleService({ dispatch, state }, { params, restockName }) {
+  async scheduleService({ dispatch, state }, { params, restockName, scheduledTime}) {
     let resp;
 
       const job = await dispatch("fetchDraftJob")
@@ -149,7 +149,7 @@ const actions: ActionTree<StockState, RootState> = {
       }
 
       job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
-      payload['SERVICE_TIME'] = state.schedule.scheduledTime.toString()
+      payload['SERVICE_TIME'] = scheduledTime || state.schedule.scheduledTime.toString()
       job?.sinceId && (payload['sinceId'] = job.sinceId)
 
       try {
