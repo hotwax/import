@@ -149,7 +149,7 @@ const actions: ActionTree<StockState, RootState> = {
       }
 
       job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
-      payload['SERVICE_TIME'] = scheduledTime || state.schedule.scheduledTime.toString()
+      payload['SERVICE_TIME'] = scheduledTime.toString() || state.schedule.scheduledTime.toString()
       job?.sinceId && (payload['sinceId'] = job.sinceId)
 
       try {
