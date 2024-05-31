@@ -4,8 +4,19 @@
       <ion-list-header>
         {{ job.jobName || job.jobId }}
       </ion-list-header>
-      <ion-item button>
-        Reschedule
+      <ion-item button @click="changeRunTime(job)"> Reschedule
+        <ion-modal class="date-time-modal" :is-open="isUpdateDateTimeModalOpen" @didDismiss="() => isUpdateDateTimeModalOpen = false">
+          <ion-content force-overscroll="false">
+            <ion-datetime    
+              id="schedule-datetime"        
+              show-default-buttons 
+              hour-cycle="h23"
+              presentation="date-time"
+              :value="job.runTime ? getDateTime(job.runTime) : getDateTime(DateTime.now().toMillis())"
+              @ionChange="changeJobRunTime($event)"
+            />
+          </ion-content>
+        </ion-modal>
       </ion-item>
       <ion-item button @click="cancelJob()" lines="none">
         Cancel
@@ -14,27 +25,44 @@
   </ion-content>
 </template>
     
-<script lang="ts">
+<script>
 import logger from "@/logger";
 import { StockService } from "@/services/StockService";
 import { hasError, showToast } from "@/utils";
 import { translate } from "@hotwax/dxp-components";
 import {
   IonContent,
+  IonDatetime,
   IonItem,
   IonList,
-  IonListHeader
+  IonListHeader,
+  IonModal
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { useStore } from "vuex";
+import { useStore, mapGetters } from "vuex";
+import { DateTime } from 'luxon';
+import { popoverController } from "@ionic/core";
   
 export default defineComponent({
   name: "ScheduledRestockPopover",
+  data() {
+    return {
+      currentJob: {},
+      isUpdateDateTimeModalOpen: false,
+    }
+  },
+  computed: {
+    ...mapGetters({
+      userProfile: 'user/getUserProfile'
+    })
+  },
   components: {
     IonContent,
+    IonDatetime,
     IonItem,
     IonList,
-    IonListHeader
+    IonListHeader,
+    IonModal
   },
   props: ["job"],
   methods: {
@@ -54,10 +82,61 @@ export default defineComponent({
         showToast(translate('Failed to cancel job'))
         logger.error(err)
       }
+      popoverController.dismiss();
       return resp;
     },
-  },
+    changeRunTime(job) {
+      this.currentJob = job
+      this.isUpdateDateTimeModalOpen = true
+    },
+    getDateTime(time) {
+      return DateTime.fromMillis(time).toISO()
+    },
+    changeJobRunTime(event) {
+      const currentTime = DateTime.now().toMillis();
+      const setTime = DateTime.fromISO(event.detail.value).toMillis();
+      if (setTime < currentTime) {
+        showToast('Please provide a future date and time');
+        return;
+      }
+      this.updateJob(setTime)
+    },
+    async updateJob(updatedTime) {
+      let resp;
+      const job = {
+        ...this.currentJob,
+        runTime: updatedTime
+      }
 
+      const payload = {
+        'jobId': job.jobId,
+        'systemJobEnumId': job.systemJobEnumId,
+        'recurrenceTimeZone': this.userProfile.userTimeZone,
+        'tempExprId': job.jobStatus,
+        'statusId': "SERVICE_PENDING",
+        'runTimeEpoch': '',  // when updating a job clearning the epoch time, as job honors epoch time as runTime and the new job created also uses epoch time as runTime
+        'lastModifiedByUserLogin': this.userProfile.userLoginId
+      }
+
+      job?.runTime && (payload['runTime'] = job.runTime)
+      job?.sinceId && (payload['sinceId'] = job.sinceId)
+      job?.jobName && (payload['jobName'] = job.jobName)
+
+      try {
+        resp = await StockService.updateJob(payload)
+        if (!hasError(resp) && resp.data.successMessage) {
+          await this.store.dispatch('stock/fetchJobs')
+          showToast(translate('Service updated successfully'))
+        } else {
+          throw resp.data
+        }
+      } catch (err) {
+        showToast(translate('Failed to update job'))
+        logger.error(err)
+      }
+      popoverController.dismiss();
+    },
+  },
   setup() {
     const store = useStore();
     return {
@@ -65,4 +144,4 @@ export default defineComponent({
     }
   },
 });
-  </script>
+</script>

@@ -99,7 +99,7 @@
             <ion-label>
               <p class="overline">{{ job.jobId }}</p>
                 {{ job.jobName }}
-              <p>{{ job?.runTimeData?.shipmentId }}</p>
+              <p>{{ job?.runtimeData?.shipmentId }}</p>
             </ion-label>
             <ion-button class="date-time-button" @click="changeRunTime(job)">{{ getTime(job.runTime) ? getTime(job.runTime) : 'Select time' }}</ion-button>
             <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event, job)">
@@ -119,7 +119,6 @@
             </ion-content>
           </ion-modal>
         </ion-list>
-
       </main>
     </ion-content>
   </ion-page>
