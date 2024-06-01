@@ -78,13 +78,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/scheduled-restock',
     name: 'ScheduledRestock',
     component: ScheduledRestock,
-    // beforeEnter: authGuard
+    beforeEnter: authGuard
   },
   {
     path: '/scheduled-restock-review',
     name: 'ScheduledRestockDetail',
     component: ScheduledRestockReview,
-    // beforeEnter: authGuard
+    beforeEnter: authGuard
   },
   {
     path: '/login',

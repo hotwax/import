@@ -8,10 +8,10 @@ export default interface StockState {
   fileName: string,
   restockItems: [],
   schedule: {
-    scheduledTime: string,
-    shopId: string,
-    restockName: string ,
-    productStoreId: string
+    scheduledTime: any,
+    shopId: any,
+    restockName: any ,
+    productStoreId: any
   }
   shopifyShops: any,
   jobs: any

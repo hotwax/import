@@ -3,8 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/scheduled-restock" />
-        <ion-title>Restock details</ion-title>
-
+        <ion-title>{{ translate("Restock details")}}</ion-title>
         <ion-buttons slot="end">
           <ion-button :disabled="!areAnyItemsUnchecked()" @click="selectAllItems">
             <ion-icon slot="icon-only" :icon="checkboxOutline"/>
@@ -25,8 +24,8 @@
           <ion-list>
             <ion-item>
               <ion-icon slot="start" :icon="timerOutline"/>
-              <ion-label> Schedule </ion-label>  
-              <ion-button class="date-time-button" slot="end" @click="updateTime()">{{ scheduledTime ? getTime(scheduledTime) : 'Select time' }}</ion-button> 
+              <ion-label>{{ translate("Schedule") }}</ion-label>  
+              <ion-button class="date-time-button" slot="end" @click="updateTime()">{{ schedule.scheduledTime ? getTime(schedule.scheduledTime) : translate("Select time") }}</ion-button> 
               <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
                 <ion-content force-overscroll="false">
                   <ion-datetime    
@@ -34,7 +33,7 @@
                     show-default-buttons 
                     hour-cycle="h23"
                     presentation="date-time"
-                    :value="scheduledTime ? getDateTime(scheduledTime) : getDateTime(DateTime.now().toMillis())"
+                    :value="schedule.scheduledTime ? getDateTime(schedule.scheduledTime) : getDateTime(DateTime.now().toMillis())"
                     @ionChange="updateCustomTime($event)"
                   />
                 </ion-content>
@@ -42,27 +41,27 @@
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="businessOutline"/>
-              <ion-select label="Facilities" interface="popover" :placeholder = "translate('Select')" :value="Object.keys(parsedItems)[0]">
+              <ion-select :label="translate('Facilities')" interface="popover" :placeholder = "translate('Select')" :value="Object.keys(parsedItems)[0]">
               <ion-select-option v-for="(facilityItems, facilityId) in parsedItems" :key="facilityId" :value="facilityId">{{ getFacilityName(facilityId) }}</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="globeOutline"/>
-              <ion-select :label="translate('Product store')" interface="popover" :value="selectedProductStoreId" @ionChange="updateProductStore($event)">
+              <ion-select :label="translate('Product store')" interface="popover" :value="schedule.productStoreId" @ionChange="updateProductStore($event)">
                 <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
-                  {{ productStore.storeName || productStore.productStoreId}}
+                  {{ productStore.storeName || productStore.productStoreId }}
                 </ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item>
-              <ion-select :disabled="!selectedProductStoreId" label="Shopify store" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
+              <ion-select :disabled="!schedule.productStoreId" :label="translate('Shopify store')" interface="popover" :placeholder = "translate('Select')" v-model="schedule.shopId">
                 <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId" :value="shop.shopId">
                   {{ shop.name ? shop.name : shop.shopId }}
                 </ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item lines="none">
-              <ion-input label="Restock name" :placeholder="getPlaceholder()" v-model="restockName"></ion-input>
+              <ion-input :label="translate('Restock name')" :placeholder="getPlaceholder()" v-model="schedule.restockName"></ion-input>
             </ion-item>
           </ion-list>
         </div>
@@ -161,11 +160,7 @@ export default defineComponent({
       isCsvUploadedSuccessfully: false,
       originalItems: {},
       parsedItems: {},
-      restockName: '',
       isDateTimeModalOpen: false,
-      selectedProductStoreId: '',
-      selectedShopifyShopId: '',
-      scheduledTime: '',
       shopifyShops: []
     }
   },
@@ -173,13 +168,8 @@ export default defineComponent({
   async ionViewDidEnter() {
     await this.store.dispatch('util/fetchFacilities');
     this.getFilteredRestockItems();
-    this.restockName = this.schedule.restockName
-    this.selectedProductStoreId = this.schedule.productStoreId;
-    this.selectedShopifyShopId = this.schedule.shopId
-    this.scheduledTime = this.schedule.scheduledTime;
-
-    if(this.selectedProductStoreId) {
-      this.fetchShopifyShops(this.selectedProductStoreId);
+    if(this.schedule.productStoreId) {
+      this.fetchShopifyShops(this.schedule.productStoreId);
     }
   },
   // async beforeRouteLeave(to) { 
@@ -212,9 +202,8 @@ export default defineComponent({
   //   }
   // },
   methods: {
-
     getPlaceholder() {
-      return `Created ${this.getTime(this.scheduledTime ? this.scheduledTime : DateTime.now().toMillis())}`
+      return `Created ${this.getTime(this.schedule.scheduledTime ? this.schedule.scheduledTime : DateTime.now().toMillis())}`
     },
     getFilteredRestockItems() {
       const filteredItems = {};
@@ -226,7 +215,6 @@ export default defineComponent({
       this.originalItems = filteredItems;
       this.parsedItems = JSON.parse(JSON.stringify(this.originalItems))
     },
-
     getFacilityName(externalFacilityId) {
       const facility = this.facilities.find(fac => fac.externalId === externalFacilityId);
       return facility ? facility.facilityName : externalFacilityId;
@@ -241,24 +229,24 @@ export default defineComponent({
       const currentTime = DateTime.now().toMillis();
       const setTime = DateTime.fromISO(event.detail.value).toMillis();
       if (setTime < currentTime) {
-        showToast('Please provide a future date and time');
+        showToast(translate("Please provide a future date and time"));
         return;
       }
-      this.scheduledTime = setTime;
+      this.schedule.scheduledTime = setTime;
     },
     async save() {
-      if(!this.scheduledTime) {
+      if(!this.schedule.scheduledTime) {
         showToast(translate("Please select a schedule time"));
         return;
       }
 
-      if(!this.selectedProductStoreId) {
-        showToast(translate("Please select product store"));
+      if(!this.schedule.productStoreId) {
+        showToast(translate("Please select a product store"));
         return;
       }
 
-      if(!this.selectedShopifyShopId) {
-        showToast(translate("Please select shopify shop"));
+      if(!this.schedule.shopId) {
+        showToast(translate("Please select a shopify shop"));
         return;
       }
 
@@ -310,11 +298,11 @@ export default defineComponent({
                     await this.store.dispatch("stock/scheduleService", { 
                       params: {
                         shipmentId: resp.data.shipmentId,
-                        shopId: this.selectedShopifyShopId,
-                        productStoreId: this.selectedProductStoreId
+                        shopId: this.schedule.shopId,
+                        productStoreId: this.schedule.productStoreId
                       },
-                      restockName: this.restockName,
-                      scheduledTime: this.scheduledTime,
+                      restockName: this.schedule.restockName,
+                      scheduledTime: this.schedule.scheduledTime,
                     })
                   } else {
                     throw resp.data;
@@ -336,15 +324,14 @@ export default defineComponent({
     },
     selectAllItems() {
       for (const facilityId in this.parsedItems) {
-      this.parsedItems[facilityId].forEach(item => {
-        item.isSelected = true;
-      });
-    }
+        this.parsedItems[facilityId].forEach(item => {
+          item.isSelected = true;
+        });
+      }
     },
-    
     areAnyItemsUnchecked() {
       return Object.values(this.parsedItems).some(facilityItems => 
-      facilityItems.some(item => !item.isSelected));
+        facilityItems.some(item => !item.isSelected));
     },
     searchProducts(query) {
       if (!query) {
@@ -355,21 +342,21 @@ export default defineComponent({
       for (const facilityId in this.originalItems) {
         filteredItems[facilityId] = this.originalItems[facilityId].filter(item => {
           return item.parentProductId.includes(query) ||
-                 item.productId.includes(query) ||
-                 item.parentProductName.toLowerCase().includes(query.toLowerCase()) ||
-                 item.identification.toLowerCase().includes(query.toLowerCase());
+            item.productId.includes(query) ||
+            item.parentProductName.toLowerCase().includes(query.toLowerCase()) ||
+            item.identification.toLowerCase().includes(query.toLowerCase());
         });
       }
       const noItemsFound = !Object.values(filteredItems).some(items => items.length > 0);
       if(noItemsFound) {
-        showToast("No product found")
+        showToast(translate("No product found"))
       }
       this.parsedItems = filteredItems;
     },
     updateProductStore(event) {
-      this.selectedShopifyShopId = ''
-      this.selectedProductStoreId = event.detail.value;
-      this.fetchShopifyShops(this.selectedProductStoreId);
+      this.schedule.shopId = ''
+      this.schedule.productStoreId = event.detail.value;
+      this.fetchShopifyShops(this.schedule.productStoreId);
     },
     async fetchShopifyShops(productStoreId) {
       let shopifyShops = []
@@ -417,7 +404,6 @@ export default defineComponent({
 </script>
   
 <style scoped>
-
 .list-header {
   background-color: var(--ion-color-light);
 }

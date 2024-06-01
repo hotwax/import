@@ -4,7 +4,7 @@
       <ion-list-header>
         {{ job.jobName || job.jobId }}
       </ion-list-header>
-      <ion-item button @click="changeRunTime(job)"> Reschedule
+      <ion-item button @click="changeRunTime(job)"> {{ translate("Reschedule") }}
         <ion-modal class="date-time-modal" :is-open="isUpdateDateTimeModalOpen" @didDismiss="() => isUpdateDateTimeModalOpen = false">
           <ion-content force-overscroll="false">
             <ion-datetime    
@@ -19,7 +19,7 @@
         </ion-modal>
       </ion-item>
       <ion-item button @click="cancelJob()" lines="none">
-        Cancel
+        {{ translate("Cancel") }}
       </ion-item>
     </ion-list>
   </ion-content>
@@ -96,7 +96,7 @@ export default defineComponent({
       const currentTime = DateTime.now().toMillis();
       const setTime = DateTime.fromISO(event.detail.value).toMillis();
       if (setTime < currentTime) {
-        showToast('Please provide a future date and time');
+        showToast(translate("Please provide a future date and time"));
         return;
       }
       this.updateJob(setTime)

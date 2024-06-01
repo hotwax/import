@@ -3,14 +3,14 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>Scheduled Restock</ion-title>
+        <ion-title>{{ translate("Scheduled Restock") }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <main>
         <ion-item>
-          <ion-label>Restock</ion-label>
+          <ion-label>{{ translate("Restock") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }} </ion-label>
           <input @change="parse" ref="file" class="ion-hide" type="file" id="restockInputFile" placeholder=/>
           <label for="restockInputFile" fill="outline">{{ translate("Upload") }}</label>
@@ -32,7 +32,7 @@
         <ion-list>
           <ion-list-header>{{ translate("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
           <ion-item-divider>
-            <ion-label> Required </ion-label>
+            <ion-label>{{ translate("Required") }} </ion-label>
           </ion-item-divider>
           <ion-item :key="field" v-for="(fieldValues, field) in fields">
             <template v-if="field === 'productIdentification'">
@@ -51,11 +51,11 @@
           </ion-item>
 
           <ion-item-divider>
-            <ion-label> Optional, or select during review </ion-label>
+            <ion-label>{{ translate("Optional, or select during review") }}</ion-label>
           </ion-item-divider>
           <ion-item>
-            <ion-label> Schedule </ion-label>   
-            <ion-button slot="end" class="date-time-button" @click="updateTime()">{{ schedule ? getTime(schedule) : 'Select time' }}</ion-button>
+            <ion-label>{{ translate("Schedule") }}</ion-label>   
+            <ion-button slot="end" class="date-time-button" @click="updateTime()">{{ schedule ? getTime(schedule) : translate("Select time") }}</ion-button>
             <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
               <ion-content force-overscroll="false">
                 <ion-datetime    
@@ -77,14 +77,14 @@
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-select :disabled="!selectedProductStoreId" label="Shopify store" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
+            <ion-select :disabled="!selectedProductStoreId" :label="translate('Shopify store')" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
               <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId" :value="shop.shopId">
                 {{ shop.name ? shop.name : shop.shopId }}
               </ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item lines="full">
-            <ion-input label="Restock name" :placeholder='getPlaceholder()' v-model="restockName"></ion-input>
+            <ion-input :label="translate('Restock name')" :placeholder='getPlaceholder()' v-model="restockName"></ion-input>
           </ion-item>
         </ion-list>
         
@@ -93,15 +93,15 @@
           <ion-icon slot="end" :icon="arrowForwardOutline" />
         </ion-button>
 
-        <ion-list v-if="jobs.length">
-          <ion-list-header>Scheduled Restock</ion-list-header>
+        <ion-list v-if="jobs.length" class="job-section">
+          <ion-list-header>{{ translate("Scheduled Restock") }}</ion-list-header>
           <ion-item v-for="job in jobs" :key="job.jobId">
             <ion-label>
               <p class="overline">{{ job.jobId }}</p>
                 {{ job.jobName }}
               <p>{{ job?.runtimeData?.shipmentId }}</p>
             </ion-label>
-            <ion-button class="date-time-button" @click="changeRunTime(job)">{{ getTime(job.runTime) ? getTime(job.runTime) : 'Select time' }}</ion-button>
+            <ion-button class="date-time-button" @click="changeRunTime(job)">{{ getTime(job.runTime) ? getTime(job.runTime) : translate("Select time") }}</ion-button>
             <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event, job)">
               <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
             </ion-button> 
@@ -193,10 +193,6 @@ export default defineComponent({
   },
   mixins:[ parseFileMixin ],
   async ionViewDidEnter() {
-    this.schedule = ""
-    this.restockName = ""
-    this.selectedProductStoreId = ""
-    this.selectedShopifyShopId = ""
     this.file = {}
     this.content = []
     this.fieldMapping = Object.keys(this.fields)?.reduce((fieldMapping, field) => {
@@ -204,6 +200,10 @@ export default defineComponent({
       return fieldMapping;
     }, {})
     this.$refs.file.value = null;
+    this.schedule = ""
+    this.restockName = ""
+    this.selectedProductStoreId = ""
+    this.selectedShopifyShopId = ""
     await this.store.dispatch('stock/fetchJobs')
     await this.store.dispatch('util/fetchProductStores')
     await this.store.dispatch('util/fetchGoodIdentificationTypes');
@@ -230,7 +230,7 @@ export default defineComponent({
           throw resp.data
         }
       } catch (error) {
-        logger.error('Failed to fetch shopify shops.', error)
+        logger.error('Failed to fetch shopify shops', error)
       }
       this.shopifyShops = shopifyShops
     },
@@ -248,7 +248,7 @@ export default defineComponent({
       const currentTime = DateTime.now().toMillis();
       const setTime = DateTime.fromISO(event.detail.value).toMillis();
       if (setTime < currentTime) {
-        showToast('Please provide a future date and time');
+        showToast(translate("Please provide a future date and time"));
         return;
       }
       this.schedule = setTime;
@@ -257,7 +257,7 @@ export default defineComponent({
       const currentTime = DateTime.now().toMillis();
       const setTime = DateTime.fromISO(event.detail.value).toMillis();
       if (setTime < currentTime) {
-        showToast('Please provide a future date and time');
+        showToast(translate("Please provide a future date and time"));
         return;
       }
       this.updateJob(setTime)
@@ -413,5 +413,9 @@ main {
 
 label {
   cursor: pointer;
+}
+
+.job-section {
+  margin-bottom: 16px;
 }
 </style>

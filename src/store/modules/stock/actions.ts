@@ -17,7 +17,6 @@ const actions: ActionTree<StockState, RootState> = {
     //Fetching only top 
     const productIds = items.slice(0, process.env['VUE_APP_VIEW_SIZE']).map((item: any) => item.identification);
 
-
     // We are getting external facilityId from CSV, extract facilityId and pass for getting locations
     const externalFacilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))]
     const facilities = await store.dispatch('util/fetchFacilities');
@@ -30,7 +29,6 @@ const actions: ActionTree<StockState, RootState> = {
     }).filter((facilityId: any) => facilityId)
     store.dispatch('util/fetchFacilityLocations', facilityIds);
     
-
     const viewSize = productIds.length;
     const viewIndex = 0;
     const payload = {
@@ -85,6 +83,7 @@ const actions: ActionTree<StockState, RootState> = {
     }, {});
     const facilityIds = externalFacilityIds.map((externalFacilityId: any) => facilityMapping[externalFacilityId]).filter((facilityId: any) => facilityId);
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
+
     // creating products object based on identification selected
     const products: any = Object.values(cachedProducts).reduce((updatedProducts: any, product: any) => {
       const identification = product.identifications.find((identification: any) => payload.identificationTypeId.toLowerCase() === identification.productIdTypeEnumId.toLowerCase())
@@ -112,12 +111,14 @@ const actions: ActionTree<StockState, RootState> = {
   async scheduledStock({ commit }, payload) {
     commit(types.STOCK_SCHEDULED_INFORMATION, payload)
   },
-
+  async clearScheduledStock({ commit }) {
+    commit(types.STOCK_SCHEDULED_INFORMATION, {})
+  },
   async shopifyShop({ commit }, payload) {
     commit(types.STOCK_SHOPIFY_SHOPS_UPDATED, payload)
   },
   
-  async scheduleService({ dispatch, state }, { params, restockName, scheduledTime}) {
+  async scheduleService({ dispatch, state }, { params, restockName }) {
     let resp;
 
       const job = await dispatch("fetchDraftJob")
@@ -149,7 +150,7 @@ const actions: ActionTree<StockState, RootState> = {
       }
 
       job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
-      payload['SERVICE_TIME'] = scheduledTime.toString() || state.schedule.scheduledTime.toString()
+      payload['SERVICE_TIME'] = state.schedule.scheduledTime.toString()
       job?.sinceId && (payload['sinceId'] = job.sinceId)
 
       try {
@@ -199,7 +200,7 @@ const actions: ActionTree<StockState, RootState> = {
         throw resp.data
       }
     } catch(err) {
-      logger.error('Failed to fetcg draft job')
+      logger.error('Failed to fetch draft job')
       job = {}
     }
 
