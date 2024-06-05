@@ -20,7 +20,8 @@ const orderModule: Module<StockState, RootState> = {
       scheduledTime: "",
       shopId: "",
       restockName: "",
-      productStoreId: ""
+      productStoreId: "",
+      facilityId: ""
     },
     shopifyShops: [],
     jobs: {}

@@ -70,9 +70,16 @@
             </ion-modal>
           </ion-item>
           <ion-item>
+            <ion-select :label="translate('Facility')" interface="popover" :placeholder = "translate('Select')" v-model="selectedFacility">
+              <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.externalId">
+                {{ facility.facilityName || facility.facilityId }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
             <ion-select :label="translate('Product store')" interface="popover" :value="selectedProductStoreId" @ionChange="updateProductStore($event)">
               <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
-                {{ productStore.storeName || productStore.productStoreId}}
+                {{ productStore.storeName || productStore.productStoreId }}
               </ion-select-option>
             </ion-select>
           </ion-item>
@@ -177,6 +184,7 @@ export default defineComponent({
       restockName: '',
       selectedProductStoreId: '',
       selectedShopifyShopId: '',
+      selectedFacility: '',
       isUpdateDateTimeModalOpen: false,
       shopId: '',
       currentJob: {},
@@ -188,7 +196,8 @@ export default defineComponent({
       goodIdentificationTypes: 'util/getGoodIdentificationTypes',
       jobs: 'stock/getScheduledJobs',
       productStores: 'util/getProductStores',
-      userProfile: 'user/getUserProfile'
+      userProfile: 'user/getUserProfile',
+      facilities: 'util/getFacilities',
     })
   },
   mixins:[ parseFileMixin ],
@@ -204,6 +213,8 @@ export default defineComponent({
     this.restockName = ""
     this.selectedProductStoreId = ""
     this.selectedShopifyShopId = ""
+    this.selectedFacility = ""
+    await this.store.dispatch('util/fetchFacilities');
     await this.store.dispatch('stock/fetchJobs')
     await this.store.dispatch('util/fetchProductStores')
     await this.store.dispatch('util/fetchGoodIdentificationTypes');
@@ -233,6 +244,7 @@ export default defineComponent({
         logger.error('Failed to fetch shopify shops', error)
       }
       this.shopifyShops = shopifyShops
+      this.selectedShopifyShopId = this.shopifyShops[0].shopId ? this.shopifyShops[0].shopId : '';
     },
     updateTime() {
       this.isDateTimeModalOpen = true
@@ -323,6 +335,8 @@ export default defineComponent({
           this.content = await this.parseCsv(this.file);
           this.fileColumns = Object.keys(this.content[0]);
           showToast(translate("File uploaded successfully"));
+          this.selectedProductStoreId = this.productStores[0].productStoreId ? this.productStores[5].productStoreId : ''
+          this.updateProductStore(this.selectedProductStoreId)
         } else {
           showToast(translate("No new file upload. Please try again"));
         }
@@ -351,10 +365,8 @@ export default defineComponent({
       const restockItems = this.content.map(item => {
         return {
           quantity: item[this.fieldMapping.restockQuantity],
-          facilityId: '',
           identification: item[this.fieldMapping.productIdentification],
           identificationTypeId: this.identificationTypeId,
-          externalFacilityId: item[this.fieldMapping.facility]
         }
       })
 
@@ -363,7 +375,8 @@ export default defineComponent({
         productStoreId: this.selectedProductStoreId,
         shopId: this.selectedShopifyShopId,
         restockName: this.restockName,
-        scheduledTime: this.schedule
+        scheduledTime: this.schedule,
+        facilityId: this.selectedFacility
       }) 
       this.router.push({
         name:'ScheduledRestockDetail'
@@ -376,10 +389,13 @@ export default defineComponent({
       });
       return createMappingModal.present();
     },
-    updateProductStore(event) {
+    async updateProductStore(event) {
       this.selectedShopifyShopId = ''
-      this.selectedProductStoreId = event.detail.value;
-      this.fetchShopifyShops(this.selectedProductStoreId);
+      let productStoreId = event
+      if (event?.detail?.value) {
+        productStoreId = event.detail.value;
+      }
+      this.fetchShopifyShops(productStoreId);
     },
     getDateTime(time) {
       return DateTime.fromMillis(time).toISO()

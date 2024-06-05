@@ -41,8 +41,10 @@
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="businessOutline"/>
-              <ion-select :label="translate('Facilities')" interface="popover" :placeholder = "translate('Select')" :value="Object.keys(parsedItems)[0]">
-              <ion-select-option v-for="(facilityItems, facilityId) in parsedItems" :key="facilityId" :value="facilityId">{{ getFacilityName(facilityId) }}</ion-select-option>
+              <ion-select :label="translate('Facility')" interface="popover" :placeholder = "translate('Select')" v-model="schedule.facilityId">
+                <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.externalId">
+                  {{ facility.facilityName || facility.facilityId }}
+                </ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item>
@@ -66,15 +68,11 @@
           </ion-list>
         </div>
       </div>
-      
-      <div v-for="(facilityItems, facilityId) in parsedItems" :key="facilityId">
-        <div class="list-item list-header">
-          <ion-item color="light" lines="none">
-            <ion-label>{{ getFacilityName(facilityId) }}</ion-label>
-          </ion-item>
-        </div>
-
-        <div class="list-item" v-for="(item , index) in facilityItems" :key="index">
+      <div v-if="!parsedItems.length">
+        <p>{{ translate("No product found") }}</p>
+      </div>
+      <div v-else>
+        <div class="list-item" v-for="(item , index) in parsedItems" :key="index">
           <ion-item lines="none">
             <ion-thumbnail>
               <DxpShopifyImg :src="item.imageUrl" size="small" />
@@ -84,16 +82,14 @@
               <p>{{ item.identification }}</p>
             </ion-label>
           </ion-item>
-  
           <ion-chip outline class="tablet">
             <ion-label>{{ item.quantity }} incoming</ion-label>
           </ion-chip>
-          
           <ion-checkbox :checked="item.isSelected" @ion-change="selectListItem(item)"/>
         </div>
       </div>
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="save" :disabled="!Object.keys(parsedItems).length">
+        <ion-fab-button @click="save" :disabled="!parsedItems.length">
           <ion-icon :icon="cloudUploadOutline" />
         </ion-fab-button>
       </ion-fab>
@@ -158,8 +154,8 @@ export default defineComponent({
   data() {
     return {
       isCsvUploadedSuccessfully: false,
-      originalItems: {},
-      parsedItems: {},
+      originalItems: [],
+      parsedItems: [],
       isDateTimeModalOpen: false,
       shopifyShops: []
     }
@@ -167,7 +163,7 @@ export default defineComponent({
 
   async ionViewDidEnter() {
     await this.store.dispatch('util/fetchFacilities');
-    this.getFilteredRestockItems();
+    this.getRestockItems();
     if(this.schedule.productStoreId) {
       this.fetchShopifyShops(this.schedule.productStoreId);
     }
@@ -205,19 +201,9 @@ export default defineComponent({
     getPlaceholder() {
       return `Created ${this.getTime(this.schedule.scheduledTime ? this.schedule.scheduledTime : DateTime.now().toMillis())}`
     },
-    getFilteredRestockItems() {
-      const filteredItems = {};
-
-      this.restockItems.map((item) => {
-        if(filteredItems[item.externalFacilityId]) filteredItems[item.externalFacilityId].push(item)
-        else filteredItems[item.externalFacilityId] = [item];
-      })
-      this.originalItems = filteredItems;
+    getRestockItems() {
+      this.originalItems = this.restockItems;
       this.parsedItems = JSON.parse(JSON.stringify(this.originalItems))
-    },
-    getFacilityName(externalFacilityId) {
-      const facility = this.facilities.find(fac => fac.externalId === externalFacilityId);
-      return facility ? facility.facilityName : externalFacilityId;
     },
     updateTime() {
       this.isDateTimeModalOpen = true
@@ -239,7 +225,12 @@ export default defineComponent({
         showToast(translate("Please select a schedule time"));
         return;
       }
-
+      
+      if(!this.schedule.facilityId) {
+        showToast(translate("Please select a facility"));
+        return;
+      }
+      
       if(!this.schedule.productStoreId) {
         showToast(translate("Please select a product store"));
         return;
@@ -250,28 +241,8 @@ export default defineComponent({
         return;
       }
 
-      const groupedItems = Object.keys(this.parsedItems).reduce((result, key) => {
-        const items = this.parsedItems[key].filter(item => item.isSelected);
-        items.forEach(item => {
-          if (!result[item.externalFacilityId]) {
-            result[item.externalFacilityId] = [];
-          }
-
-          result[item.externalFacilityId].push({
-            productId: item.productId,
-            quantity: parseInt(item.quantity, 10)
-          });
-        });
-
-        return result;
-      }, {});
-
-      const destinationFacilityId = Object.keys(groupedItems)[0];
-      if(!destinationFacilityId) {
-        showToast(translate("Facility not found"));
-        return;
-      }
-      const items = groupedItems[destinationFacilityId];
+      const items = this.parsedItems.filter(item => item.isSelected).map(({ productId, quantity }) => ({ productId, quantity }));
+      const destinationFacilityId = this.schedule.facilityId;
 
       const uploadData = {
         payload: {
@@ -284,75 +255,69 @@ export default defineComponent({
         header: translate("Reset inventory"),
         message: translate("Make sure all the data you have entered is correct."),
         buttons: [
-            {
-              text: translate("Cancel"),
-              role: 'cancel',
-            },
-            {
-              text: translate("Upload"),
-              handler: async () => {
-                emitter.emit("presentLoader")
-                try {
-                  const resp = await UploadService.createIncomingShipment(uploadData)
-                  if(!hasError(resp) && resp.data.shipmentId) {
-                    await this.store.dispatch("stock/scheduleService", { 
-                      params: {
-                        shipmentId: resp.data.shipmentId,
-                        shopId: this.schedule.shopId,
-                        productStoreId: this.schedule.productStoreId
-                      },
-                      restockName: this.schedule.restockName,
-                      scheduledTime: this.schedule.scheduledTime,
-                    })
-                  } else {
-                    throw resp.data;
-                  }
-                } catch(err) {
-                  showToast(translate("Failed to schedule job"))
-                  logger.error('Failed to create shipment', err)
+          {
+            text: translate("Cancel"),
+            role: 'cancel',
+          },
+          {
+            text: translate("Upload"),
+            handler: async () => {
+              emitter.emit("presentLoader")
+              try {
+                const resp = await UploadService.createIncomingShipment(uploadData)
+                if(!hasError(resp) && resp.data.shipmentId) {
+                  await this.store.dispatch("stock/scheduleService", { 
+                    params: {
+                      shipmentId: resp.data.shipmentId,
+                      shopId: this.schedule.shopId,
+                      productStoreId: this.schedule.productStoreId
+                    },
+                    restockName: this.schedule.restockName,
+                    scheduledTime: this.schedule.scheduledTime,
+                  })
+                } else {
+                  throw resp.data;
                 }
-                emitter.emit("dismissLoader")
-                this.router.push('/scheduled-restock')
+              } catch(err) {
+                showToast(translate("Failed to schedule job"))
+                logger.error('Failed to create shipment', err)
               }
-            },
-          ],
-        });
+              emitter.emit("dismissLoader")
+              this.router.push('/scheduled-restock')
+            }
+          },
+        ],
+      });
       return alert.present();  
     },
     selectListItem(item) {
       item.isSelected = !item.isSelected;
     },
     selectAllItems() {
-      for (const facilityId in this.parsedItems) {
-        this.parsedItems[facilityId].forEach(item => {
-          item.isSelected = true;
-        });
-      }
+      this.parsedItems = this.parsedItems.map(item => {
+        return { ...item, isSelected: true };
+      });
     },
     areAnyItemsUnchecked() {
-      return Object.values(this.parsedItems).some(facilityItems => 
-        facilityItems.some(item => !item.isSelected));
+      return this.parsedItems.some(item => !item.isSelected);
     },
     searchProducts(query) {
       if (!query) {
         this.parsedItems = JSON.parse(JSON.stringify(this.originalItems));
         return;
       }
-      const filteredItems = {};
-      for (const facilityId in this.originalItems) {
-        filteredItems[facilityId] = this.originalItems[facilityId].filter(item => {
-          return item.parentProductId.includes(query) ||
-            item.productId.includes(query) ||
-            item.parentProductName.toLowerCase().includes(query.toLowerCase()) ||
-            item.identification.toLowerCase().includes(query.toLowerCase());
-        });
-      }
-      const noItemsFound = !Object.values(filteredItems).some(items => items.length > 0);
-      if(noItemsFound) {
-        showToast(translate("No product found"))
+      const filteredItems = this.originalItems.filter(item => {
+        return item.parentProductId.includes(query) ||
+          item.productId.includes(query) ||
+          item.parentProductName.toLowerCase().includes(query.toLowerCase()) ||
+          item.identification.toLowerCase().includes(query.toLowerCase());
+      });
+      if (filteredItems.length == 0) {
+        showToast(translate("No product found"));
       }
       this.parsedItems = filteredItems;
     },
+
     updateProductStore(event) {
       this.schedule.shopId = ''
       this.schedule.productStoreId = event.detail.value;
@@ -378,6 +343,7 @@ export default defineComponent({
         logger.error('Failed to fetch shopify shops.', error)
       }
       this.shopifyShops = shopifyShops
+      this.schedule.shopId = this.shopifyShops[0].shopId ? this.shopifyShops[0].shopId : '';
     },
     getDateTime(time) {
       return DateTime.fromMillis(time).toISO()

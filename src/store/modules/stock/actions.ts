@@ -75,15 +75,7 @@ const actions: ActionTree<StockState, RootState> = {
       identificationTypeId: items[0]?.identificationTypeId
     };
   
-    const externalFacilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))];
-    const facilities = await store.dispatch('util/fetchFacilities');
-    const facilityMapping = facilities.reduce((facilityMapping: any, facility: any) => {
-      if (facility.externalId) facilityMapping[facility.externalId] = facility.facilityId;
-      return facilityMapping;
-    }, {});
-    const facilityIds = externalFacilityIds.map((externalFacilityId: any) => facilityMapping[externalFacilityId]).filter((facilityId: any) => facilityId);
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
-
     // creating products object based on identification selected
     const products: any = Object.values(cachedProducts).reduce((updatedProducts: any, product: any) => {
       const identification = product.identifications.find((identification: any) => payload.identificationTypeId.toLowerCase() === identification.productIdTypeEnumId.toLowerCase())
@@ -106,7 +98,7 @@ const actions: ActionTree<StockState, RootState> = {
       return;
     }).filter((item: any) => item);
   
-    commit(types.STOCK_SCHEDULE_ITEMS_UPDATED, initial );
+    commit(types.STOCK_SCHEDULE_ITEMS_UPDATED, initial);
   },
   async scheduledStock({ commit }, payload) {
     commit(types.STOCK_SCHEDULED_INFORMATION, payload)

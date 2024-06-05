@@ -11,7 +11,8 @@ export default interface StockState {
     scheduledTime: any,
     shopId: any,
     restockName: any ,
-    productStoreId: any
+    productStoreId: any,
+    facilityId: any
   }
   shopifyShops: any,
   jobs: any
