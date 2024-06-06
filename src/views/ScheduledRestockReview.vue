@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+    <ion-header>
       <ion-toolbar>
         <ion-back-button slot="start" default-href="/scheduled-restock" />
         <ion-title>{{ translate("Restock details")}}</ion-title>
@@ -32,7 +32,6 @@
                     id="schedule-datetime"        
                     show-default-buttons 
                     hour-cycle="h23"
-                    presentation="date-time"
                     :value="schedule.scheduledTime ? getDateTime(schedule.scheduledTime) : getDateTime(DateTime.now().toMillis())"
                     @ionChange="updateCustomTime($event)"
                   />
@@ -49,13 +48,13 @@
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="globeOutline"/>
-              <ion-select :label="translate('Product store')" interface="popover" :value="schedule.productStoreId" @ionChange="updateProductStore($event)">
+              <ion-select :label="translate('Product store')" interface="popover" :placeholder = "translate('Select')" :value="schedule.productStoreId" @ionChange="updateProductStore($event)">
                 <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
                   {{ productStore.storeName || productStore.productStoreId }}
                 </ion-select-option>
               </ion-select>
             </ion-item>
-            <ion-item>
+            <ion-item> 
               <ion-select :disabled="!schedule.productStoreId" :label="translate('Shopify store')" interface="popover" :placeholder = "translate('Select')" v-model="schedule.shopId">
                 <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId" :value="shop.shopId">
                   {{ shop.name ? shop.name : shop.shopId }}
@@ -69,7 +68,7 @@
         </div>
       </div>
       <div v-if="!parsedItems.length">
-        <p>{{ translate("No product found") }}</p>
+        <p>{{ translate("No products found") }}</p>
       </div>
       <div v-else>
         <div class="list-item" v-for="(item , index) in parsedItems" :key="index">
@@ -114,7 +113,7 @@ import { useRouter } from "vue-router";
 
 
 export default defineComponent({
-  name: 'ScheduledRestockDetail',
+  name: 'ScheduledRestockReview',
   components: {
     DxpShopifyImg,
     IonBackButton,
@@ -162,41 +161,40 @@ export default defineComponent({
   },
 
   async ionViewDidEnter() {
-    await this.store.dispatch('util/fetchFacilities');
     this.getRestockItems();
     if(this.schedule.productStoreId) {
       this.fetchShopifyShops(this.schedule.productStoreId);
     }
   },
-  // async beforeRouteLeave(to) { 
-  //   if(to.path === "/login" ) return;
-  //   let canLeave = false;
-  //   const alert = await alertController.create({
-  //     header: translate("Leave page"),
-  //     message: translate("Any edits made on this page will be lost."),
-  //     buttons: [
-  //       {
-  //         text: translate("STAY"),
-  //         handler: () => {
-  //           canLeave = false;
-  //         },
-  //       },
-  //       {
-  //         text: translate("LEAVE"),
-  //         handler: () => {
-  //           canLeave = true;
-  //         },
-  //       },
-  //     ],
-  //   });
-  //   if(!this.isCsvUploadedSuccessfully){
-  //     alert.present();
-  //     await alert.onDidDismiss();
-  //     return canLeave;
-  //   } else {
-  //     this.isCsvUploadedSuccessfully = false;
-  //   }
-  // },
+  async beforeRouteLeave(to) { 
+    if(to.path === "/login" ) return;
+    let canLeave = false;
+    const alert = await alertController.create({
+      header: translate("Leave page"),
+      message: translate("Any edits made on this page will be lost."),
+      buttons: [
+        {
+          text: translate("STAY"),
+          handler: () => {
+            canLeave = false;
+          },
+        },
+        {
+          text: translate("LEAVE"),
+          handler: () => {
+            canLeave = true;
+          },
+        },
+      ],
+    });
+    if(!this.isCsvUploadedSuccessfully){
+      alert.present();
+      await alert.onDidDismiss();
+      return canLeave;
+    } else {
+      this.isCsvUploadedSuccessfully = false;
+    }
+  },
   methods: {
     getPlaceholder() {
       return `Created ${this.getTime(this.schedule.scheduledTime ? this.schedule.scheduledTime : DateTime.now().toMillis())}`
@@ -266,6 +264,7 @@ export default defineComponent({
               try {
                 const resp = await UploadService.createIncomingShipment(uploadData)
                 if(!hasError(resp) && resp.data.shipmentId) {
+                  this.isCsvUploadedSuccessfully = true;
                   await this.store.dispatch("stock/scheduleService", { 
                     params: {
                       shipmentId: resp.data.shipmentId,
@@ -328,6 +327,7 @@ export default defineComponent({
       try {
         const resp = await UtilService.fetchShopifyShop({
           entityName: "ShopifyShop",
+          fieldList: ['name', 'shopId'],
           inputFields: {
             productStoreId
           },
@@ -343,7 +343,7 @@ export default defineComponent({
         logger.error('Failed to fetch shopify shops.', error)
       }
       this.shopifyShops = shopifyShops
-      this.schedule.shopId = this.shopifyShops[0].shopId ? this.shopifyShops[0].shopId : '';
+      this.schedule.shopId = this.shopifyShops.length && this.shopifyShops[0]?.shopId ? this.shopifyShops[0].shopId : '';
     },
     getDateTime(time) {
       return DateTime.fromMillis(time).toISO()

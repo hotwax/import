@@ -11,7 +11,6 @@
               id="schedule-datetime"        
               show-default-buttons 
               hour-cycle="h23"
-              presentation="date-time"
               :value="job.runTime ? getDateTime(job.runTime) : getDateTime(DateTime.now().toMillis())"
               @ionChange="changeJobRunTime($event)"
             />
@@ -140,7 +139,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      store
+      store,
+      translate
     }
   },
 });

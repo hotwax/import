@@ -82,7 +82,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/scheduled-restock-review',
-    name: 'ScheduledRestockDetail',
+    name: 'ScheduledRestockReview',
     component: ScheduledRestockReview,
     beforeEnter: authGuard
   },

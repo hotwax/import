@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+    <ion-header>
       <ion-toolbar>
         <ion-menu-button slot="start" />
         <ion-title>{{ translate("Scheduled Restock") }}</ion-title>
@@ -12,7 +12,7 @@
         <ion-item>
           <ion-label>{{ translate("Restock") }}</ion-label>
           <ion-label class="ion-text-right ion-padding-end">{{ file.name }} </ion-label>
-          <input @change="parse" ref="file" class="ion-hide" type="file" id="restockInputFile" placeholder=/>
+          <input @change="parse" ref="file" class="ion-hide" type="file" id="restockInputFile"/>
           <label for="restockInputFile" fill="outline">{{ translate("Upload") }}</label>
         </ion-item>
 
@@ -62,7 +62,6 @@
                   id="schedule-datetime"        
                   show-default-buttons 
                   hour-cycle="h23"
-                  presentation="date-time"
                   :value="schedule ? getDateTime(schedule) : getDateTime(DateTime.now().toMillis())"
                   @ionChange="updateCustomTime($event)"
                 />
@@ -77,7 +76,7 @@
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-select :label="translate('Product store')" interface="popover" :value="selectedProductStoreId" @ionChange="updateProductStore($event)">
+            <ion-select :label="translate('Product store')" interface="popover" :placeholder = "translate('Select')" :value="selectedProductStoreId" @ionChange="updateProductStore($event.detail.value)">
               <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
                 {{ productStore.storeName || productStore.productStoreId }}
               </ion-select-option>
@@ -119,7 +118,6 @@
                 id="schedule-datetime"        
                 show-default-buttons 
                 hour-cycle="h23"
-                presentation="date-time"
                 :value="currentJob.runTime ? getDateTime(currentJob.runTime) : getDateTime(DateTime.now().toMillis())"
                 @ionChange="changeJobRunTime($event)"
               />
@@ -145,6 +143,7 @@ import CreateMappingModal from "@/components/CreateMappingModal.vue";
 import { DateTime } from 'luxon';
 import { UtilService } from '@/services/UtilService'
 import logger from "@/logger";
+import emitter from "@/event-bus";
 import { StockService } from "@/services/StockService";
 
 export default defineComponent({
@@ -214,10 +213,7 @@ export default defineComponent({
     this.selectedProductStoreId = ""
     this.selectedShopifyShopId = ""
     this.selectedFacility = ""
-    await this.store.dispatch('util/fetchFacilities');
-    await this.store.dispatch('stock/fetchJobs')
-    await this.store.dispatch('util/fetchProductStores')
-    await this.store.dispatch('util/fetchGoodIdentificationTypes');
+    await Promise.allSettled([this.store.dispatch('util/fetchFacilities'), this.store.dispatch('stock/fetchJobs'), this.store.dispatch('util/fetchProductStores'), this.store.dispatch('util/fetchGoodIdentificationTypes')])
   },
 
   methods: {
@@ -229,6 +225,7 @@ export default defineComponent({
       try {
         const resp = await UtilService.fetchShopifyShop({
           entityName: "ShopifyShop",
+          fieldList: ['name', 'shopId'],
           inputFields: {
             productStoreId
           },
@@ -244,7 +241,7 @@ export default defineComponent({
         logger.error('Failed to fetch shopify shops', error)
       }
       this.shopifyShops = shopifyShops
-      this.selectedShopifyShopId = this.shopifyShops[0].shopId ? this.shopifyShops[0].shopId : '';
+      this.selectedShopifyShopId = this.shopifyShops.length && this.shopifyShops[0]?.shopId ? this.shopifyShops[0].shopId : '';
     },
     updateTime() {
       this.isDateTimeModalOpen = true
@@ -335,7 +332,7 @@ export default defineComponent({
           this.content = await this.parseCsv(this.file);
           this.fileColumns = Object.keys(this.content[0]);
           showToast(translate("File uploaded successfully"));
-          this.selectedProductStoreId = this.productStores[0].productStoreId ? this.productStores[5].productStoreId : ''
+          this.selectedProductStoreId = this.productStores.length ? this.productStores[0].productStoreId : ''
           this.updateProductStore(this.selectedProductStoreId)
         } else {
           showToast(translate("No new file upload. Please try again"));
@@ -356,6 +353,7 @@ export default defineComponent({
       return popover.present();
     },
     async review() {
+      emitter.emit("presentLoader")
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       if (!areAllFieldsSelected) {
         showToast(translate("Select all the fields to continue"));
@@ -377,9 +375,10 @@ export default defineComponent({
         restockName: this.restockName,
         scheduledTime: this.schedule,
         facilityId: this.selectedFacility
-      }) 
+      })
+      emitter.emit("dismissLoader")
       this.router.push({
-        name:'ScheduledRestockDetail'
+        name:'ScheduledRestockReview'
       })
     },
     async addFieldMapping() {
@@ -389,12 +388,8 @@ export default defineComponent({
       });
       return createMappingModal.present();
     },
-    async updateProductStore(event) {
+    async updateProductStore(productStoreId) {
       this.selectedShopifyShopId = ''
-      let productStoreId = event
-      if (event?.detail?.value) {
-        productStoreId = event.detail.value;
-      }
       this.fetchShopifyShops(productStoreId);
     },
     getDateTime(time) {

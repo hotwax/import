@@ -105,12 +105,13 @@ const actions: ActionTree<UtilState, RootState> = {
     }
     return state.facilities;
   },
-  async fetchProductStores({ state, commit }) {
+  async fetchProductStores({ commit }) {
     let productStores = [];
     
     const payload = {
       "viewSize": 50,
       "entityName": "ProductStore",
+      "fieldList": ["storeName", "productStoreId"],
       "noConditionFind": "Y"
     }
     try {
@@ -126,6 +127,11 @@ const actions: ActionTree<UtilState, RootState> = {
 
     commit(types.UTIL_PRODUCT_STORES_UPDATED, productStores);
   },
+  
+  async clearProductStores({ commit }) {
+    commit(types.UTIL_PRODUCT_STORES_UPDATED, []);
+  },
+
   async updateFileProcessingStatus({ commit }, status){
     commit(types.UTIL_FILE_PROCESSING_STATUS_UPDATED, { status });
   },

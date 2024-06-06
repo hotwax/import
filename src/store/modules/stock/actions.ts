@@ -121,7 +121,7 @@ const actions: ActionTree<StockState, RootState> = {
       }
 
       const payload = {
-        'JOB_NAME': restockName || state.schedule.restockName || `Created ${DateTime.fromMillis(+state.schedule.scheduledTime).toLocaleString(DateTime.DATETIME_MED)}`,
+        'JOB_NAME': restockName || state.schedule.restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
         'SERVICE_NAME': job.serviceName,
         'SERVICE_COUNT': '0',
         'SERVICE_TEMP_EXPR': job.jobStatus,
@@ -129,7 +129,6 @@ const actions: ActionTree<StockState, RootState> = {
         'jobFields': {
           'systemJobEnumId': job.systemJobEnumId,
           'tempExprId': job.jobStatus, // Need to remove this as we are passing frequency in SERVICE_TEMP_EXPR, currently kept it for backward compatibility
-          'maxRecurrenceCount': '-1',
           'parentJobId': job.parentJobId,
           'runAsUser': 'system', //default system, but empty in run now.  TODO Need to remove this as we are using SERVICE_RUN_AS_SYSTEM, currently kept it for backward compatibility
           'recurrenceTimeZone': this.state.user.current.usershipPackedOrdersTimeZone,
