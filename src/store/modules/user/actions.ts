@@ -108,6 +108,7 @@ const actions: ActionTree<UserState, RootState> = {
     resetConfig();
     this.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
     this.dispatch('util/clearFacilities');
+    this.dispatch('util/clearProductStores');
     this.dispatch('stock/clearScheduledStock')
     // clearing field mappings and current mapping when the user logout
     commit(types.USER_FIELD_MAPPINGS_UPDATED, {})
