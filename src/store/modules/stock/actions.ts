@@ -131,7 +131,7 @@ const actions: ActionTree<StockState, RootState> = {
           'tempExprId': job.jobStatus, // Need to remove this as we are passing frequency in SERVICE_TEMP_EXPR, currently kept it for backward compatibility
           'parentJobId': job.parentJobId,
           'runAsUser': 'system', //default system, but empty in run now.  TODO Need to remove this as we are using SERVICE_RUN_AS_SYSTEM, currently kept it for backward compatibility
-          'recurrenceTimeZone': this.state.user.current.usershipPackedOrdersTimeZone,
+          'recurrenceTimeZone': this.state.user.current.userTimeZone,
           'createdByUserLogin': this.state.user.current.userLoginId,
           'lastModifiedByUserLogin': this.state.user.current.userLoginId,
         },
