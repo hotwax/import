@@ -14,7 +14,17 @@ const orderModule: Module<StockState, RootState> = {
       unidentifiedItems: [],
       initial: []
     },
-    fileName: ""
+    fileName: "",
+    restockItems: [],
+    schedule: {
+      scheduledTime: "",
+      shopId: "",
+      restockName: "",
+      productStoreId: "",
+      facilityId: ""
+    },
+    shopifyShops: [],
+    jobs: {}
   },
   actions,
   getters,

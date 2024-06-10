@@ -17,6 +17,14 @@ const uploadAndImportFile = async (payload: any): Promise <any>  => {
   });
 }
 
+const createIncomingShipment = async (payload: any): Promise <any>  => {
+  return api({
+    url: "/service/createIncomingShipment",
+    method: "post",
+    data: payload
+  });
+}
+
 const prepareUploadJsonPayload = (request: UploadRequest) => {
       const blob = new Blob([JSON.stringify(request.uploadData)], { type: 'application/json'});
       const formData = new FormData();
@@ -38,5 +46,6 @@ const prepareUploadJsonPayload = (request: UploadRequest) => {
 export const UploadService = {
     prepareUploadJsonPayload,
     uploadAndImportFile,
-    uploadJsonFile
+    uploadJsonFile,
+    createIncomingShipment
 }

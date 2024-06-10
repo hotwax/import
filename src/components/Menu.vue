@@ -52,7 +52,7 @@ import {
 } from "@ionic/vue";
 import { computed, defineComponent } from "vue";
 import { mapGetters } from "vuex";
-import { albumsOutline, bookmarkOutline, settings, calendar } from "ionicons/icons";
+import { albumsOutline, bookmarkOutline, settings, calendar, timerOutline } from "ionicons/icons";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import { translate } from '@hotwax/dxp-components'
@@ -92,6 +92,13 @@ export default defineComponent({
         mdIcon: albumsOutline
       },
       {
+        title: "Scheduled restock",
+        url: "/scheduled-restock",
+        childRoutes: ["/scheduled-restock-review"],
+        iosIcon: timerOutline,
+        mdIcon: timerOutline
+      },
+      {
         title: "Purchase order",
         url: "/purchase-order",
         childRoutes: ["/purchase-order-review"],
@@ -125,7 +132,8 @@ export default defineComponent({
       calendar,
       settings,
       store,
-      translate
+      translate,
+      timerOutline
     };
   }
 });

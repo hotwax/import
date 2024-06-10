@@ -25,6 +25,12 @@
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
+          <ion-list v-if="Object.keys(fieldMappings('RSTSTK')).length">
+            <ion-list-header>{{ translate("Scheduled restock") }}</ion-list-header>
+            <ion-item v-for="(mapping, index) in fieldMappings('RSTSTK')" :key="index" @click="viewMappingConfiguration(index, 'RSTSTK')" detail button>
+              <ion-label>{{ mapping.name }}</ion-label>
+            </ion-item>
+          </ion-list>
         </section>
 
         <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping.id != ''">

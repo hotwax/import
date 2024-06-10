@@ -16,6 +16,9 @@ const mutations: MutationTree <UtilState> = {
     },
     [types.UTIL_FILE_PROCESSING_STATUS_UPDATED] (state, payload) {
         state.isProcessingFile = payload.status;
-      }
+    },
+    [types.UTIL_PRODUCT_STORES_UPDATED] (state, payload) {
+        state.productStores = payload;
+    }
 }
 export default mutations;
