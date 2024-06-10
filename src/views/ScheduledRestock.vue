@@ -76,7 +76,7 @@
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-select :label="translate('Product store')" interface="popover" :placeholder = "translate('Select')" :value="selectedProductStoreId" @ionChange="updateProductStore($event.detail.value)">
+            <ion-select :label="translate('Product store')" interface="popover" :placeholder = "translate('Select')" v-model="selectedProductStoreId" @ionChange="updateProductStore($event.detail.value)">
               <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
                 {{ productStore.storeName || productStore.productStoreId }}
               </ion-select-option>
@@ -359,7 +359,8 @@ export default defineComponent({
         showToast(translate("Select all the fields to continue"));
         return;
       }
-
+      emitter.emit("presentLoader")
+      
       const restockItems = this.content.map(item => {
         return {
           quantity: item[this.fieldMapping.restockQuantity],

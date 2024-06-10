@@ -18,7 +18,5 @@ const getters: GetterTree<OrderState, RootState> = {
   getScheduledJobs(state) {
     return state.jobs
   }
-
-
 };
 export default getters;   

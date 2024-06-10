@@ -48,7 +48,7 @@
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="globeOutline"/>
-              <ion-select :label="translate('Product store')" interface="popover" :placeholder = "translate('Select')" :value="schedule.productStoreId" @ionChange="updateProductStore($event)">
+              <ion-select :label="translate('Product store')" interface="popover" :placeholder = "translate('Select')" v-model="schedule.productStoreId" @ionChange="updateProductStore($event)">
                 <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
                   {{ productStore.storeName || productStore.productStoreId }}
                 </ion-select-option>

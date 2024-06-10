@@ -104,7 +104,13 @@ const actions: ActionTree<StockState, RootState> = {
     commit(types.STOCK_SCHEDULED_INFORMATION, payload)
   },
   async clearScheduledStock({ commit }) {
-    commit(types.STOCK_SCHEDULED_INFORMATION, {})
+    commit(types.STOCK_SCHEDULED_INFORMATION, {  
+      scheduledTime: "",  
+      shopId: "",  
+      restockName: "",  
+      productStoreId: "",  
+      facilityId: ""  
+    })  
   },
   async shopifyShop({ commit }, payload) {
     commit(types.STOCK_SHOPIFY_SHOPS_UPDATED, payload)
@@ -219,7 +225,7 @@ const actions: ActionTree<StockState, RootState> = {
         const jobs = resp.data.docs
         commit(types.STOCK_JOBS_UPDATED, jobs);
       } else {
-          commit(types.STOCK_JOBS_UPDATED, []);
+        commit(types.STOCK_JOBS_UPDATED, []);
       } 
     } catch(error) {
       logger.error(error);
