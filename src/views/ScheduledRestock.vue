@@ -353,7 +353,7 @@ export default defineComponent({
       return popover.present();
     },
     async review() {
-      emitter.emit("presentLoader")
+      
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       if (!areAllFieldsSelected) {
         showToast(translate("Select all the fields to continue"));
