@@ -38,10 +38,20 @@ const actions: ActionTree<StockState, RootState> = {
       identificationTypeId: items[0]?.identificationTypeId //fetching identificationTypeId from first item, as all the items will have one identification type
     }
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
+
+    // creating products object based on identification selected, if not doing so, and if we select an identification that is not equal to pseudoId of the product then the products are not displayed
+    const products: any = Object.values(cachedProducts).reduce((updatedProducts: any, product: any) => {
+      const identification = product.identifications.find((identification: any) => payload.identificationTypeId.toLowerCase() === identification.productIdTypeEnumId.toLowerCase())
+      updatedProducts[identification.idValue] = product
+      return updatedProducts;
+    }, {})
+
     const parsed = [] as any;
     const initial = items.map((item: any) => {
-      const product = cachedProducts[item.identification];
-      const facilityLocation = rootGetters['util/getFacilityLocationsByFacilityId'](item.externalFacilityId)?.[0];
+      const product = products[item.identification];
+      // Getting facilityId using externalFacilityId as the locations are saved by using facilityId as key
+      const facilityId = facilityMapping[item.externalFacilityId]
+      const facilityLocation = facilityId ? rootGetters['util/getFacilityLocationsByFacilityId'](facilityId)?.[0] : '';
       item.locationSeqId = facilityLocation?.locationSeqId;
       parsed.push(item);
       
