@@ -67,7 +67,7 @@
           </ion-list>
         </div>
       </div>
-      <div v-if="!parsedItems.length">
+      <div v-if="!parsedItems.length" class="empty-state">
         <p>{{ translate("No products found") }}</p>
       </div>
       <div v-else>
@@ -404,6 +404,7 @@ export default defineComponent({
 
 .filters {
   grid-area: filters;
+  max-width: 650px;
 }
 
 ion-content {
