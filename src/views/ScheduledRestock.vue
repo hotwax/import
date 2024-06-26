@@ -70,7 +70,7 @@
           </ion-item>
           <ion-item>
             <ion-select :label="translate('Facility')" interface="popover" :placeholder = "translate('Select')" v-model="selectedFacility">
-              <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.externalId">
+              <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">
                 {{ facility.facilityName || facility.facilityId }}
               </ion-select-option>
             </ion-select>

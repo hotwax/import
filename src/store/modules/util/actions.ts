@@ -18,7 +18,7 @@ const actions: ActionTree<UtilState, RootState> = {
         "facilityTypeId_op": "notEqual",
       },
       "fieldList": ["facilityId", "facilityName", "parentTypeId", "externalId"],
-      "viewSize": 50,
+      "viewSize": 250,
       "entityName": "FacilityAndType",
       "noConditionFind": "Y"
     }
