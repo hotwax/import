@@ -109,8 +109,8 @@ export default defineComponent({
       const fields = process.env["VUE_APP_MAPPING_" + this.mappingType];
       return fields ? JSON.parse(fields) : {};
     },
-    closeModal() {
-      modalController.dismiss({ dismissed: true });
+    closeModal(mappingId = "") {
+      modalController.dismiss({ dismissed: true, mappingId });
     },
     async saveMapping() {
       if(!this.mappingName) {
@@ -123,7 +123,7 @@ export default defineComponent({
       }
       const id = this.generateUniqueMappingPrefId();
       await this.store.dispatch("user/createFieldMapping", { id, name: this.mappingName, value: this.fieldMapping, mappingType: this.mappingType })
-      this.closeModal();
+      this.closeModal(id);
     },
     areAllFieldsSelected() {
       return Object.values(this.fieldMapping).every(field => field !== "");

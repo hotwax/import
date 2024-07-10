@@ -23,7 +23,7 @@
               <ion-icon :icon="addOutline" />
               <ion-label>{{ translate("New mapping") }}</ion-label>
             </ion-chip>
-            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('PO') ?? []" :key="index" @click="mapFields(mapping)" outline="true">
+            <ion-chip :disabled="!this.content.length" v-for="(mapping, index) in fieldMappings('PO') ?? []" :key="index" @click="mapFields(mapping, index)" :outline="selectedMappingId != index">
               {{ mapping.name }}
             </ion-chip>
           </div>
@@ -91,7 +91,8 @@ export default defineComponent({
         content: [],
         fieldMapping: {},
         fileColumns: [],
-        fields: process.env["VUE_APP_MAPPING_PO"] ? JSON.parse(process.env["VUE_APP_MAPPING_PO"]) : {}
+        fields: process.env["VUE_APP_MAPPING_PO"] ? JSON.parse(process.env["VUE_APP_MAPPING_PO"]) : {},
+        selectedMappingId: ""
       }
     },
     ionViewDidEnter() {
@@ -142,7 +143,7 @@ export default defineComponent({
           name:'PurchaseOrderReview'
         })
       },
-      mapFields(mapping) {
+      mapFields(mapping, mappingId) {
         const fieldMapping = JSON.parse(JSON.stringify(mapping));
 
         // TODO: Store an object in this.content variable, so everytime when accessing it, we don't need to use 0th index
@@ -160,6 +161,7 @@ export default defineComponent({
           }
         })
         this.fieldMapping = fieldMapping.value;
+        this.selectedMappingId = mappingId;
       },
       areAllFieldsSelected() {
         return Object.values(this.fieldMapping).every(field => field !== "");
@@ -169,6 +171,13 @@ export default defineComponent({
           component: CreateMappingModal,
           componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'PO'}
         });
+
+        createMappingModal.onDidDismiss().then((result) => {
+          if(result.data?.mappingId) {
+            this.selectedMappingId = result.data.mappingId
+          }
+        })
+
         return createMappingModal.present();
       }
     },
