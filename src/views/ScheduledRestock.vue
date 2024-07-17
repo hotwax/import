@@ -23,7 +23,7 @@
               <ion-icon :icon="addOutline" />
               <ion-label>{{ translate("New mapping") }}</ion-label>
             </ion-chip>
-            <ion-chip :disabled="!this.content.length" outline="true" v-for="(mapping, index) in fieldMappings('RSTSTK') ?? []" :key="index" @click="mapFields(mapping)"> 
+            <ion-chip :disabled="!this.content.length" :outline="selectedMappingId != index" v-for="(mapping, index) in fieldMappings('RSTSTK') ?? []" :key="index" @click="mapFields(mapping, index)"> 
               {{ mapping.name }}
             </ion-chip>
           </div>
@@ -187,6 +187,7 @@ export default defineComponent({
       isUpdateDateTimeModalOpen: false,
       shopId: '',
       currentJob: {},
+      selectedMappingId: ""
     }
   },
   computed: {
@@ -305,7 +306,7 @@ export default defineComponent({
         logger.error(err)
       }
     },
-    mapFields(mapping) {
+    mapFields(mapping, mappingId) {
       const fieldMapping = JSON.parse(JSON.stringify(mapping));
 
       // TODO: Store an object in this.content variable, so everytime when accessing it, we don't need to use 0th index
@@ -323,6 +324,7 @@ export default defineComponent({
         }
       })
       this.fieldMapping = fieldMapping.value;
+      this.selectedMappingId = mappingId;
     },
     async parse(event) {
       const file = event.target.files[0];
@@ -387,6 +389,13 @@ export default defineComponent({
         component: CreateMappingModal,
         componentProps: { content: this.content, seletedFieldMapping: this.fieldMapping, mappingType: 'RSTSTK'}
       });
+
+      createMappingModal.onDidDismiss().then((result) => {
+        if(result.data?.mappingId) {
+          this.selectedMappingId = result.data.mappingId
+        }
+      })
+
       return createMappingModal.present();
     },
     async updateProductStore(productStoreId) {
