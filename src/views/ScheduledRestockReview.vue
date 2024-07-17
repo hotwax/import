@@ -41,7 +41,7 @@
             <ion-item>
               <ion-icon slot="start" :icon="businessOutline"/>
               <ion-select :label="translate('Facility')" interface="popover" :placeholder = "translate('Select')" v-model="schedule.facilityId">
-                <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.externalId">
+                <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">
                   {{ facility.facilityName || facility.facilityId }}
                 </ion-select-option>
               </ion-select>
@@ -244,7 +244,7 @@ export default defineComponent({
 
       const uploadData = {
         payload: {
-          externalDestinationFacilityId: destinationFacilityId,
+          destinationFacilityId: destinationFacilityId,
           items: items
         }
       };
