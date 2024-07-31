@@ -6,7 +6,7 @@ import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { logout, updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 import logger from "@/logger";
-import { useAuthStore, translate } from '@hotwax/dxp-components';
+import { useAuthStore, translate , useProductIdentificationStore } from '@hotwax/dxp-components';
 import emitter from '@/event-bus'
 import {
   getServerPermissionsFromRules,
@@ -60,8 +60,14 @@ const actions: ActionTree<UserState, RootState> = {
         commit(types.USER_PERMISSIONS_UPDATED, appPermissions);
         commit(types.USER_TOKEN_CHANGED, { newToken: token })
   
-        await dispatch('getProfile')
+        await dispatch('getProfile' , token)
         dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+      }
+      else {
+        commit(types.USER_TOKEN_CHANGED, { newToken: token })
+        updateToken(token)
+        await dispatch('getProfile')
+        await dispatch('getProfile', token)
       }
     } catch (err: any) {
       showToast(translate('Something went wrong'));
@@ -129,20 +135,39 @@ const actions: ActionTree<UserState, RootState> = {
   /**
    * Get User profile
    */
-  async getProfile ( { commit, dispatch }) {
+  async getProfile ( { commit, dispatch }, token) {
     const resp = await UserService.getProfile()
     if (resp.status === 200) {
       dispatch('getFieldMappings')
       commit(types.USER_INFO_UPDATED, resp.data);
+      const currentFacility = resp.data.facilities.length > 0 ? resp.data.facilities[0] : {};
+
+      commit(types.USER_CURRENT_FACILITY_UPDATED, currentFacility);
+
+      // get and set current ecom store in state
+      const currentEComStore = await UserService.getCurrentEComStore(token, currentFacility?.facilityId);
+      commit(types.USER_CURRENT_ECOM_STORE_UPDATED, currentEComStore);
+
+      // Get product identification from api using dxp-component
+      await useProductIdentificationStore().getIdentificationPref(currentEComStore?.productStoreId)
+        .catch((error) => console.error(error));
     }
   },
 
   /**
    * update current facility information
    */
-  async setFacility ({ commit }, payload) {
+  async setFacility ({ commit, state }, payload) {
     commit(types.USER_CURRENT_FACILITY_UPDATED, payload.facility);
+
+    // get and set current ecom store in state
+    const currentEComStore = await UserService.getCurrentEComStore(state.token, payload.facility.facilityId);
+    commit(types.USER_CURRENT_ECOM_STORE_UPDATED, currentEComStore);
+
+    await useProductIdentificationStore().getIdentificationPref(currentEComStore?.productStoreId)
+      .catch((error) => console.error(error));
   },
+
 
   setPreferredDateTimeFormat ({ commit }, payload) {
     commit(types.USER_DATETIME_FORMAT_UPDATED, payload)
