@@ -13,6 +13,66 @@ const login = async (username: string, password: string): Promise <any> => {
   });
 }
 
+const getCurrentEComStore = async (token: any, facilityId: any): Promise<any> => {
+
+  // If the facilityId is not provided, it may be case of user not associated with any facility or the logout
+  if (!facilityId) {
+    return Promise.resolve({});
+  }
+
+  const baseURL = store.getters['user/getBaseUrl'];
+  try {
+    const data = {
+      "inputFields": {
+        "facilityId": facilityId,
+      },
+      "fieldList": ["defaultCurrencyUomId", "productStoreId"],
+      "entityName": "ProductStoreFacilityDetail",
+      "noConditionFind": "Y",
+      "filterByDate": 'Y',
+      "viewSize": 1
+    }
+    const resp = await client({
+      url: "performFind",
+      method: "post",
+      data,
+      baseURL,
+      headers: {
+        Authorization:  'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (hasError(resp)) {
+      throw resp.data;
+    }
+
+    return Promise.resolve(resp.data.docs?.length ? resp.data.docs[0] : {});
+  } catch(error: any) {
+    console.error(error)
+    return Promise.resolve({})
+  }
+}
+
+const getUserProfile = async (token: any): Promise<any> => {
+  const baseURL = store.getters['user/getBaseUrl'];
+  try {
+    const resp = await client({
+      url: "user-profile",
+      method: "get",
+      baseURL,
+      headers: {
+        Authorization:  'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if(hasError(resp)) return Promise.reject("Error getting user profile");
+    return Promise.resolve(resp.data)
+  } catch(error: any) {
+    return Promise.reject(error)
+  }
+}
+
+
 const getProfile = async (): Promise <any>  => {
     return api({
       url: "user-profile", 
@@ -32,6 +92,14 @@ const updateFieldMapping = async (payload: any): Promise <any> => {
   return api({
     url: "/service/updateDataManagerMapping",
     method: "POST",
+    data: payload
+  });
+}
+
+const setUserPreference = async (payload: any): Promise<any> => {
+  return api({
+    url: "service/setUserPreference",
+    method: "post",
     data: payload
   });
 }
@@ -148,5 +216,8 @@ export const UserService = {
     getFieldMappings,
     getProfile,
     getUserPermissions,
-    updateFieldMapping
+    updateFieldMapping,
+    getCurrentEComStore,
+    getUserProfile,
+    setUserPreference
 }

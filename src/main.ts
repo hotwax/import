@@ -34,7 +34,7 @@ import { dxpComponents } from '@hotwax/dxp-components'
 import { login, logout, loader } from './user-utils';
 import { getConfig, initialise } from '@hotwax/oms-api';
 import localeMessages from './locales';
-import { setUserTimeZone, getAvailableTimeZones} from '@/adapter'
+import { setUserTimeZone, getAvailableTimeZones , getProductIdentificationPref , setProductIdentificationPref} from '@/adapter'
 
 const app = createApp(App)
   .use(IonicVue, {
@@ -60,7 +60,9 @@ const app = createApp(App)
     initialise,
     localeMessages,
     setUserTimeZone,
-    getAvailableTimeZones
+    getAvailableTimeZones,
+    getProductIdentificationPref,
+    setProductIdentificationPref
   });
 
 // Filters are removed in Vue 3 and global filter introduced https://v3.vuejs.org/guide/migration/filters.html#global-filters

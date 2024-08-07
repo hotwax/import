@@ -45,6 +45,7 @@
       <DxpAppVersionInfo />
       
       <section>
+        <DxpProductIdentifier />
         <DxpTimeZoneSwitcher @timeZoneUpdated="timeZoneUpdated" />
         <ion-card>
           <ion-card-header>
@@ -87,7 +88,7 @@ import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import Image from '@/components/Image.vue';
-import { translate } from '@hotwax/dxp-components';
+import { DxpProductIdentifier, translate } from '@hotwax/dxp-components';
 
 export default defineComponent({
   name: 'Settings',

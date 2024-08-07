@@ -13,4 +13,5 @@ export default interface UserState {
         value: object;
     };
     permissions: any; 
+    currentEComStore: any;
 }

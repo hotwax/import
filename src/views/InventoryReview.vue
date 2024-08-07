@@ -61,8 +61,8 @@
                 <DxpShopifyImg :src="item.imageUrl" size="small" />
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
-                <h3>{{ item.pseudoId }}</h3>
-                <p v-if="item.initialSKU">{{ item.initialSKU }}</p>
+                <p>{{ getProductIdentificationValue(productIdentificationPref.primaryId, item) ? getProductIdentificationValue(productIdentificationPref.primaryId, item) : item.productName }}</p>
+                <p>{{ getProductIdentificationValue(productIdentificationPref.secondaryId, item) }}</p>
               </ion-label>
             </ion-item>
 
@@ -95,10 +95,10 @@
 </template>   
 <script lang="ts">
 import { UploadService } from "@/services/UploadService";
-import { DxpShopifyImg, translate } from "@hotwax/dxp-components";
+import { DxpShopifyImg, translate , getProductIdentificationValue , useProductIdentificationStore} from "@hotwax/dxp-components";
 import ProductPopover from '@/components/ProductPopover.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
-import { defineComponent } from 'vue';
+import { defineComponent , computed } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { jsonToCsv, showToast } from '@/utils';
@@ -323,6 +323,8 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+    const productIdentificationStore = useProductIdentificationStore();
+    let productIdentificationPref = computed(() => productIdentificationStore.getProductIdentificationPref)
     
     return {
       businessOutline,
@@ -337,7 +339,9 @@ export default defineComponent({
       warningOutline,
       router,
       store,
-      translate
+      translate,
+      getProductIdentificationValue,
+      productIdentificationPref,
     }
   }
 });
