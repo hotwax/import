@@ -27,8 +27,9 @@
               <DxpShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
             <ion-label class="ion-text-wrap">
-              {{ getProduct.state.cached(item.productId)}}
-              <h2>{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.productId)) ? getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.productId)) : getProduct(item.productId).productName }}</h2>
+              {{ productIdentificationPref.primaryId }} {{ getProduct(item.pseudoId) }}
+              <h2>{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) }}</h2>
+              <p>{{ getProductIdentificationValue(productIdentificationPref.secondaryId, getProduct(item.pseudoId)) }}</p> 
             </ion-label>
           </ion-item>
           <ion-chip outline class="tablet">
@@ -161,6 +162,7 @@ export default defineComponent({
     const store = useStore();
     const productIdentificationStore = useProductIdentificationStore();
     let productIdentificationPref = computed(() => productIdentificationStore.getProductIdentificationPref);
+    console.log("productIdentificationPref" , productIdentificationPref.value)
     return {
       sendOutline,
       store,

@@ -102,6 +102,7 @@ export default defineComponent({
     emitter.on('playAnimation', this.playAnimation);
 
     if(this.userToken) {
+      // Get product identification from api using dxp-component
       await useProductIdentificationStore().getIdentificationPref(this.currentEComStore?.productStoreId)
         .catch((error) => console.log(error));
     }

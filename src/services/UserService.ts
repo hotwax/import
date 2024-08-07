@@ -53,6 +53,26 @@ const getCurrentEComStore = async (token: any, facilityId: any): Promise<any> =>
   }
 }
 
+const getUserProfile = async (token: any): Promise<any> => {
+  const baseURL = store.getters['user/getBaseUrl'];
+  try {
+    const resp = await client({
+      url: "user-profile",
+      method: "get",
+      baseURL,
+      headers: {
+        Authorization:  'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if(hasError(resp)) return Promise.reject("Error getting user profile");
+    return Promise.resolve(resp.data)
+  } catch(error: any) {
+    return Promise.reject(error)
+  }
+}
+
+
 const getProfile = async (): Promise <any>  => {
     return api({
       url: "user-profile", 
@@ -72,6 +92,14 @@ const updateFieldMapping = async (payload: any): Promise <any> => {
   return api({
     url: "/service/updateDataManagerMapping",
     method: "POST",
+    data: payload
+  });
+}
+
+const setUserPreference = async (payload: any): Promise<any> => {
+  return api({
+    url: "service/setUserPreference",
+    method: "post",
     data: payload
   });
 }
@@ -189,5 +217,7 @@ export const UserService = {
     getProfile,
     getUserPermissions,
     updateFieldMapping,
-    getCurrentEComStore
+    getCurrentEComStore,
+    getUserProfile,
+    setUserPreference
 }

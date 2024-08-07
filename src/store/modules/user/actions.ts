@@ -24,7 +24,6 @@ const actions: ActionTree<UserState, RootState> = {
     try {
       const { token, oms } = payload;
       dispatch("setUserInstanceUrl", oms);
-
       if(token) {
         const permissionId = process.env.VUE_APP_PERMISSION_ID;
   
@@ -52,7 +51,6 @@ const actions: ActionTree<UserState, RootState> = {
             return Promise.reject(new Error(permissionError));
           }
         }
-  
         updateToken(token)
         setPermissions(appPermissions);
   
@@ -149,23 +147,18 @@ const actions: ActionTree<UserState, RootState> = {
       commit(types.USER_CURRENT_ECOM_STORE_UPDATED, currentEComStore);
 
       // Get product identification from api using dxp-component
-      await useProductIdentificationStore().getIdentificationPref(currentEComStore?.productStoreId)
+      const productIdentificationStore = useProductIdentificationStore();
+      await productIdentificationStore.getIdentificationPref(currentEComStore?.productStoreId)
         .catch((error) => console.error(error));
+      console.log('productIdentificationStore', productIdentificationStore)
     }
   },
 
   /**
    * update current facility information
    */
-  async setFacility ({ commit, state }, payload) {
+  async setFacility ({ commit }, payload) {
     commit(types.USER_CURRENT_FACILITY_UPDATED, payload.facility);
-
-    // get and set current ecom store in state
-    const currentEComStore = await UserService.getCurrentEComStore(state.token, payload.facility.facilityId);
-    commit(types.USER_CURRENT_ECOM_STORE_UPDATED, currentEComStore);
-
-    await useProductIdentificationStore().getIdentificationPref(currentEComStore?.productStoreId)
-      .catch((error) => console.error(error));
   },
 
 
