@@ -73,7 +73,7 @@
       <div v-else>
         <div class="list-item" v-for="(item , index) in parsedItems" :key="index">
           <ion-item lines="none">
-            <ion-thumbnail>
+            <ion-thumbnail slot="start">
               <DxpShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
             <ion-label>
