@@ -2,7 +2,7 @@
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-button @click="closeModal"> 
+        <ion-button @click="closeModal()">
           <ion-icon :icon="close" />
         </ion-button>
       </ion-buttons>
