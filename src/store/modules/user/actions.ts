@@ -228,7 +228,7 @@ const actions: ActionTree<UserState, RootState> = {
       const params = {
         mappingPrefName: payload.name,
         mappingPrefValue: JSON.stringify(payload.value),
-        mappingPrefTypeEnumId: "TT"
+        mappingPrefTypeEnumId
       }
 
       const resp = await UserService.createFieldMapping(params);
