@@ -219,13 +219,13 @@ const actions: ActionTree<UserState, RootState> = {
   },
 
   async createFieldMapping({ commit }, payload) {
+    let mappingPrefId = ''
     try {
 
       const mappingTypes = JSON.parse(process.env.VUE_APP_MAPPING_TYPES as string)
       const mappingPrefTypeEnumId = mappingTypes[payload.mappingType];
 
       const params = {
-        mappingPrefId: payload.id,
         mappingPrefName: payload.name,
         mappingPrefValue: JSON.stringify(payload.value),
         mappingPrefTypeEnumId
@@ -237,8 +237,9 @@ const actions: ActionTree<UserState, RootState> = {
 
         // using id coming from server, as the random generated id sent in payload is not set as mapping id
         // and an auto generated mapping from server is set as id
+        mappingPrefId = resp.data.mappingPrefId
         const fieldMapping = {
-          id: resp.data.mappingPrefId,
+          id: mappingPrefId,
           name: payload.name,
           value: payload.value,
           type: payload.mappingType
@@ -254,6 +255,7 @@ const actions: ActionTree<UserState, RootState> = {
       logger.error('error', err)
       showToast(translate('Failed to save CSV mapping.'))
     }
+    return mappingPrefId;
   },
 
   async updateFieldMapping({ commit, state }, payload) {

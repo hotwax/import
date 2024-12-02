@@ -121,18 +121,12 @@ export default defineComponent({
         showToast(translate("Map all fields"));
         return
       }
-      const id = this.generateUniqueMappingPrefId();
-      await this.store.dispatch("user/createFieldMapping", { id, name: this.mappingName, value: this.fieldMapping, mappingType: this.mappingType })
-      this.closeModal(id);
+      const mappingPrefId = await this.store.dispatch("user/createFieldMapping", { name: this.mappingName, value: this.fieldMapping, mappingType: this.mappingType })
+      this.closeModal(mappingPrefId);
     },
     areAllFieldsSelected() {
       return Object.values(this.fieldMapping).every(field => field !== "");
     },
-    //Todo: Generating unique identifiers as we are currently storing in local storage. Need to remove it as we will be storing data on server.
-    generateUniqueMappingPrefId(): any {
-      const id = Math.floor(Math.random() * 1000);
-      return !this.fieldMappings[id] ? id : this.generateUniqueMappingPrefId();
-    }
   },
   setup() {
     const store = useStore();
