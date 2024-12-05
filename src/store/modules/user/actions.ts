@@ -63,7 +63,7 @@ const actions: ActionTree<UserState, RootState> = {
         await dispatch('getProfile')
         dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
 
-        const ecomStores = await UserService.getEComStores(token)
+        const ecomStores = await UserService.getEComStores()
         useUserStore().$state.eComStores = ecomStores
         await useUserStore().getEComStorePreference("SELECTED_BRAND")
         const preferredStore: any = useUserStore().getCurrentEComStore

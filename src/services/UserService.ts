@@ -142,9 +142,7 @@ const getUserPermissions = async (payload: any, token: any): Promise<any> => {
   }
 }
 
-async function getEComStores(token: any): Promise<any> {
-  const baseURL = store.getters['user/getBaseUrl'];
-
+async function getEComStores(): Promise<any> {
   const params = {
     "viewSize": 200,
     "fieldList": ["productStoreId", "storeName"],
@@ -155,17 +153,12 @@ async function getEComStores(token: any): Promise<any> {
   };
 
   try {
-    const resp = await client({
+    const resp = await api({
       url: "performFind",
       method: "get",
-      baseURL,
-      params,
-      headers: {
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json'
-      }
-    });
-    if(resp.status === 200 && !hasError(resp)) {
+      params
+    }) as any;
+    if(!hasError(resp)) {
       return Promise.resolve(resp.data.docs?.length ? resp.data.docs : []);
     } else {
       throw resp.data
