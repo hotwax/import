@@ -1,6 +1,7 @@
 import { api, client } from '@/adapter'
 import store from '@/store';
 import { hasError } from '@/adapter';
+import logger from '@/logger';
 
 const login = async (username: string, password: string): Promise <any> => {
   return api({
@@ -141,10 +142,45 @@ const getUserPermissions = async (payload: any, token: any): Promise<any> => {
   }
 }
 
+async function getEComStores(token: any): Promise<any> {
+  const baseURL = store.getters['user/getBaseUrl'];
+
+  const params = {
+    "viewSize": 200,
+    "fieldList": ["productStoreId", "storeName"],
+    "entityName": "ProductStoreFacilityDetail",
+    "distinct": "Y",
+    "noConditionFind": "Y",
+    "filterByDate": 'Y',
+  };
+
+  try {
+    const resp = await client({
+      url: "performFind",
+      method: "get",
+      baseURL,
+      params,
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if(resp.status === 200 && !hasError(resp)) {
+      return Promise.resolve(resp.data.docs?.length ? resp.data.docs : []);
+    } else {
+      throw resp.data
+    }
+  } catch(error) {
+    logger.error(error)
+    return Promise.resolve({})
+  }
+}
+
 export const UserService = {
     createFieldMapping,
     deleteFieldMapping,
     login,
+    getEComStores,
     getFieldMappings,
     getProfile,
     getUserPermissions,
