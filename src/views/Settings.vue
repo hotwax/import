@@ -38,7 +38,7 @@
 
       <section>
         <DxpOmsInstanceNavigator />
-        <DxpProductStoreSelector @updateEComStore="handleEComStoreUpdate" />
+        <DxpProductStoreSelector @updateEComStore="updateEComStore" />
       </section>
 
       <hr />
@@ -158,7 +158,7 @@ export default defineComponent({
     goToLaunchpad() {
       window.location.href = `${process.env.VUE_APP_LOGIN_URL}`
     },
-    async handleEComStoreUpdate(selectedProductStore: any) {
+    async updateEComStore(selectedProductStore: any) {
       await useProductIdentificationStore().getIdentificationPref(selectedProductStore.productStoreId)
         .catch((error) => logger.error(error));
     },
