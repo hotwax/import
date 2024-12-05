@@ -15,8 +15,9 @@ import emitter from "@/event-bus"
 import { mapGetters, useStore } from 'vuex';
 import { initialise, resetConfig } from '@/adapter'
 import { showToast } from "@/utils";
-import { translate } from "@hotwax/dxp-components";
+import { translate, useProductIdentificationStore, useUserStore } from "@hotwax/dxp-components";
 import { useRouter } from 'vue-router';
+import logger from '@/logger';
 
 export default defineComponent({
   name: 'App',
@@ -100,6 +101,12 @@ export default defineComponent({
     emitter.on('presentLoader', this.presentLoader);
     emitter.on('dismissLoader', this.dismissLoader);
     emitter.on('playAnimation', this.playAnimation);
+    
+    if(this.userToken) {
+      const currentEComStore : any = useUserStore().getCurrentEComStore;
+      await useProductIdentificationStore().getIdentificationPref(currentEComStore.productStoreId)
+        .catch((error) => logger.error(error));
+    }
   },
   created() {
     initialise({

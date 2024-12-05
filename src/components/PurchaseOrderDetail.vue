@@ -27,8 +27,8 @@
               <DxpShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
             <ion-label class="ion-text-wrap">
-              <h3>{{ item.pseudoId }}</h3>
-              <p v-if="item.initialSKU">{{ item.initialSKU }}</p>
+              <h3>{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) ? getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) : item.pseudoId }}</h3>
+              <p>{{ getProductIdentificationValue(productIdentificationPref.secondaryId, getProduct(item.pseudoId)) }}</p>
             </ion-label>
           </ion-item>
           <ion-chip outline class="tablet">
@@ -69,7 +69,8 @@ import { defineComponent } from "@vue/runtime-core";
 import { mapGetters, useStore } from "vuex";
 import ProductPopover from '@/components/ProductPopover.vue'
 import { DateTime } from 'luxon';
-import { translate } from "@hotwax/dxp-components";
+import { getProductIdentificationValue, translate, useProductIdentificationStore } from "@hotwax/dxp-components";
+import { computed } from "vue";
 
 export default defineComponent({
   name: "PurchaseOrderDetails",
@@ -158,10 +159,15 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const productIdentificationStore = useProductIdentificationStore();
+    let productIdentificationPref = computed(() => productIdentificationStore.getProductIdentificationPref);
+
     return {
+      getProductIdentificationValue,
       sendOutline,
       store,
       ellipsisVerticalOutline,
+      productIdentificationPref,
       translate
     }
   }

@@ -2,7 +2,11 @@ import {
   api,
   client,
   getConfig,
+  getEComStoresByFacility,
+  getProductIdentificationPref,
+  getUserPreference,
   hasError,
+  fetchGoodIdentificationTypes,
   fetchProducts,
   initialise,
   logout,
@@ -12,14 +16,20 @@ import {
   updateToken,
   updateInstanceUrl,
   setUserTimeZone,
-  getAvailableTimeZones
+  getAvailableTimeZones,
+  setProductIdentificationPref,
+  setUserPreference
 } from '@hotwax/oms-api'
 
 export {
   api,
   client,
   getConfig,
+  getEComStoresByFacility,
+  getProductIdentificationPref,
+  getUserPreference,
   hasError,
+  fetchGoodIdentificationTypes,
   fetchProducts,
   initialise,
   logout,
@@ -29,5 +39,7 @@ export {
   updateToken,
   updateInstanceUrl,
   setUserTimeZone,
-  getAvailableTimeZones
+  getAvailableTimeZones,
+  setProductIdentificationPref,
+  setUserPreference
 }
