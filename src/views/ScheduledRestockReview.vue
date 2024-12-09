@@ -77,8 +77,8 @@
               <DxpShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
             <ion-label>
-              <h2>{{ item.parentProductName }}</h2>
-              <p>{{ item.identification }}</p>
+              <h2>{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) ? getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) : item.parentProductName }}</h2>
+              <p>{{ getProductIdentificationValue(productIdentificationPref.secondaryId, getProduct(item.pseudoId)) }}</p>
             </ion-label>
           </ion-item>
           <ion-chip outline class="tablet">
@@ -97,9 +97,9 @@
 </template>
   
 <script>
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { IonBackButton, IonButton, IonButtons, IonCheckbox, IonChip, IonContent, IonDatetime, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, IonSearchbar, IonSelect, IonSelectOption, IonThumbnail, IonTitle, IonToolbar, alertController} from "@ionic/vue";
-import { DxpShopifyImg, translate } from "@hotwax/dxp-components";
+import { DxpShopifyImg, getProductIdentificationValue, translate, useProductIdentificationStore } from "@hotwax/dxp-components";
 import { arrowUndoOutline, checkboxOutline, timerOutline, businessOutline, cloudUploadOutline, globeOutline} from "ionicons/icons"
 import { mapGetters, useStore } from "vuex";
 import { DateTime } from 'luxon';
@@ -147,7 +147,9 @@ export default defineComponent({
       userProfile: 'user/getUserProfile',
       fileName: 'order/getFileName',
       schedule: 'stock/getScheduledInformation',
-      productStores: 'util/getProductStores'
+      productStores: 'util/getProductStores',
+      getProduct: 'product/getProduct',
+
     })
   },
   data() {
@@ -352,6 +354,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const productIdentificationStore = useProductIdentificationStore();
+    let productIdentificationPref = computed(() => productIdentificationStore.getProductIdentificationPref);
 
     return {
       translate,
@@ -362,7 +366,9 @@ export default defineComponent({
       store,
       cloudUploadOutline,
       DateTime,
+      getProductIdentificationValue,
       globeOutline,
+      productIdentificationPref,
       router
     }
   }

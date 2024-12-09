@@ -6,7 +6,7 @@ import * as types from './mutation-types'
 import { hasError, showToast } from '@/utils'
 import { logout, updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
 import logger from "@/logger";
-import { useAuthStore, translate } from '@hotwax/dxp-components';
+import { useAuthStore, translate, useUserStore, useProductIdentificationStore } from '@hotwax/dxp-components';
 import emitter from '@/event-bus'
 import {
   getServerPermissionsFromRules,
@@ -62,6 +62,14 @@ const actions: ActionTree<UserState, RootState> = {
   
         await dispatch('getProfile')
         dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
+
+        const ecomStores = await UserService.getEComStores()
+        useUserStore().eComStores = ecomStores
+        await useUserStore().getEComStorePreference("SELECTED_BRAND")
+        const preferredStore: any = useUserStore().getCurrentEComStore
+
+        await useProductIdentificationStore().getIdentificationPref(preferredStore.productStoreId)
+          .catch((error) => logger.error(error));
       }
     } catch (err: any) {
       showToast(translate('Something went wrong'));
