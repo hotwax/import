@@ -146,10 +146,9 @@ async function getEComStores(): Promise<any> {
   const params = {
     "viewSize": 200,
     "fieldList": ["productStoreId", "storeName"],
-    "entityName": "ProductStoreFacilityDetail",
+    "entityName": "ProductStore",
     "distinct": "Y",
-    "noConditionFind": "Y",
-    "filterByDate": 'Y',
+    "noConditionFind": "Y"
   };
 
   try {
