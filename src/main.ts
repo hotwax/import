@@ -32,9 +32,8 @@ import permissionActions from '@/authorization/Actions';
 import logger from './logger';
 import { dxpComponents } from '@hotwax/dxp-components'
 import { login, logout, loader } from './user-utils';
-import { getConfig, initialise } from '@hotwax/oms-api';
 import localeMessages from './locales';
-import { setUserTimeZone, getAvailableTimeZones} from '@/adapter'
+import { fetchGoodIdentificationTypes, getAvailableTimeZones, getConfig, getEComStoresByFacility, getProductIdentificationPref, getUserPreference, initialise, setProductIdentificationPref, setUserPreference, setUserTimeZone } from '@/adapter'
 
 const app = createApp(App)
   .use(IonicVue, {
@@ -57,11 +56,17 @@ const app = createApp(App)
     logout,
     loader,
     appLoginUrl: process.env.VUE_APP_LOGIN_URL as string,
+    fetchGoodIdentificationTypes,
     getConfig,
+    getEComStoresByFacility,
+    getProductIdentificationPref,
+    getUserPreference,
     initialise,
     localeMessages,
     setUserTimeZone,
     getAvailableTimeZones,
+    setProductIdentificationPref,
+    setUserPreference,
     hasPermission
   });
 

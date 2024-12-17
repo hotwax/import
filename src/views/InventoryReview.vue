@@ -61,8 +61,8 @@
                 <DxpShopifyImg :src="item.imageUrl" size="small" />
               </ion-thumbnail>
               <ion-label class="ion-text-wrap">
-                <h3>{{ item.pseudoId }}</h3>
-                <p v-if="item.initialSKU">{{ item.initialSKU }}</p>
+                <h3>{{ getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) ? getProductIdentificationValue(productIdentificationPref.primaryId, getProduct(item.pseudoId)) : item.pseudoId }}</h3>
+                <p>{{ getProductIdentificationValue(productIdentificationPref.secondaryId, getProduct(item.pseudoId)) }}</p>
               </ion-label>
             </ion-item>
 
@@ -95,10 +95,10 @@
 </template>   
 <script lang="ts">
 import { UploadService } from "@/services/UploadService";
-import { DxpShopifyImg, translate } from "@hotwax/dxp-components";
+import { DxpShopifyImg, getProductIdentificationValue, translate, useProductIdentificationStore } from "@hotwax/dxp-components";
 import ProductPopover from '@/components/ProductPopover.vue'
 import MissingFacilitiesModal from '@/components/MissingFacilitiesModal.vue'
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { mapGetters, useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { jsonToCsv, showToast } from '@/utils';
@@ -323,6 +323,8 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+    const productIdentificationStore = useProductIdentificationStore();
+    let productIdentificationPref = computed(() => productIdentificationStore.getProductIdentificationPref);
     
     return {
       businessOutline,
@@ -330,14 +332,16 @@ export default defineComponent({
       chevronForwardOutline,
       checkboxOutline,
       ellipsisVerticalOutline,
+      getProductIdentificationValue,
       locationOutline,
       arrowUndoOutline,
       shirtOutline,
       cloudUploadOutline,
       warningOutline,
+      productIdentificationPref,
       router,
       store,
-      translate
+      translate 
     }
   }
 });

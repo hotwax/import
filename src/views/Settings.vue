@@ -38,6 +38,7 @@
 
       <section>
         <DxpOmsInstanceNavigator />
+        <DxpProductStoreSelector @updateEComStore="updateEComStore" />
       </section>
 
       <hr />
@@ -45,6 +46,7 @@
       <DxpAppVersionInfo />
       
       <section>
+        <DxpProductIdentifier />
         <DxpTimeZoneSwitcher @timeZoneUpdated="timeZoneUpdated" />
         <ion-card>
           <ion-card-header>
@@ -87,7 +89,8 @@ import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import Image from '@/components/Image.vue';
-import { translate } from '@hotwax/dxp-components';
+import { translate, useProductIdentificationStore } from '@hotwax/dxp-components';
+import logger from '@/logger';
 
 export default defineComponent({
   name: 'Settings',
@@ -154,7 +157,11 @@ export default defineComponent({
     },
     goToLaunchpad() {
       window.location.href = `${process.env.VUE_APP_LOGIN_URL}`
-    }
+    },
+    async updateEComStore(selectedProductStore: any) {
+      await useProductIdentificationStore().getIdentificationPref(selectedProductStore.productStoreId)
+        .catch((error) => logger.error(error));
+    },
   },
   setup(){
     const store = useStore();
