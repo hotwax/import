@@ -164,7 +164,7 @@ async function getEComStores(): Promise<any> {
     }
   } catch(error) {
     logger.error(error)
-    return Promise.resolve({})
+    return Promise.resolve([])
   }
 }
 
