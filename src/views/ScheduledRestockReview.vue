@@ -72,7 +72,7 @@
           <ion-chip outline class="tablet" @click="editShipmentItemQuantity(item)">
             <ion-label>{{ translate("incoming", { quantity: item.quantityOrdered }) }} </ion-label>
           </ion-chip>
-          <ion-button :disabled="currentJob?.statusId === 'SERVICE_FINISHED'" color="medium" slot="end" fill="clear" class="ion-no-padding" @click="removeShipmentItem(item.itemSeqId)">
+          <ion-button :disabled="currentJob?.statusId === 'SERVICE_FINISHED'" color="medium" slot="end" fill="clear" class="ion-no-padding" @click="removeShipmentItem(item)">
             <ion-icon slot="icon-only" :icon="closeCircleOutline"/>
           </ion-button>          
         </div>
@@ -227,24 +227,40 @@ export default defineComponent({
 
       await addProductModal.present();
     },
-    async removeShipmentItem(itemSeqId) {
-      const payload = {
-        shipmentId: this.currentJob.runtimeData?.shipmentId,
-        shipmentItemSeqId: itemSeqId
-      }
+    async removeShipmentItem(item) {
+      const message = translate("will be removed from the scheduled inventory.", { product: item.productName });
+      const alert = await alertController.create({
+        header: translate("Remove item"),
+        message,
+        buttons: [
+          {
+            text: translate("Keep"),
+          },
+          {
+            text: translate("Remove"),
+            handler: async() => {
+              const payload = {
+                shipmentId: this.currentJob.runtimeData?.shipmentId,
+                shipmentItemSeqId: item.itemSeqId
+              }
 
-      try {
-        const resp = await UtilService.removeShipmentItem(payload)
-        if (!hasError(resp)) {
-          showToast(translate("Product removed successfully"))
-          await this.store.dispatch('util/fetchShipmentItems', { shipmentId: this.currentJob.runtimeData?.shipmentId })
-        } else {
-          throw resp.data;
-        }
-      } catch (err) {
-        showToast(translate('Failed to remove item from shipment'))
-        logger.error(err)
-      }
+              try {
+                const resp = await UtilService.removeShipmentItem(payload)
+                if (!hasError(resp)) {
+                  showToast(translate("Product removed successfully"))
+                  await this.store.dispatch('util/fetchShipmentItems', { shipmentId: this.currentJob.runtimeData?.shipmentId })
+                } else {
+                  throw resp.data;
+                }
+              } catch (err) {
+                showToast(translate('Failed to remove item from shipment'))
+                logger.error(err)
+              }
+            }
+          }
+        ],
+      });
+      return alert.present();
     },
 
     async editShipmentItemQuantity(shipmentItem) {
@@ -315,6 +331,7 @@ export default defineComponent({
                 if (resp.status == 200 && !hasError(resp)) {
                   showToast(translate("Inventory cancelled successfully"));
                   await this.store.dispatch('stock/fetchJobs')
+                  this.router.replace({ name: 'ScheduledIncomingInventory' })
                 } else {
                   throw resp.data;
                 }

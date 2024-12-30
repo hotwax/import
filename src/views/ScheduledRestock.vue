@@ -5,6 +5,11 @@
         <ion-menu-button slot="start" />
         <ion-back-button default-href="/scheduled-incoming-inventory" slot="start" />
         <ion-title>{{ translate("Scheduled product launch") }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button size="medium">
+            <ion-icon slot="icon-only" :icon="informationCircleOutline" />
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -108,7 +113,7 @@
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { translate } from "@hotwax/dxp-components";
-import { addOutline, arrowForwardOutline, cloudUploadOutline, ellipsisVerticalOutline } from "ionicons/icons";
+import { addOutline, arrowForwardOutline, cloudUploadOutline, ellipsisVerticalOutline, informationCircleOutline } from "ionicons/icons";
 import { IonBackButton, IonButton, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import parseFileMixin from '@/mixins/parseFileMixin';
 import { showToast, hasError } from '@/utils';
@@ -398,6 +403,7 @@ export default defineComponent({
       arrowForwardOutline,
       cloudUploadOutline,
       ellipsisVerticalOutline,
+      informationCircleOutline,
       store,
       DateTime
     }
