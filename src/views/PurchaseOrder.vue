@@ -3,6 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
+        <ion-back-button default-href="/unified-inventory" slot="start" />
         <ion-title>{{ translate("Purchase orders") }}</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -49,7 +50,7 @@
   </ion-page>
 </template>
 <script>
-import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
+import { IonBackButton, IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { showToast } from '@/utils';
@@ -62,6 +63,7 @@ import CreateMappingModal from "@/components/CreateMappingModal.vue";
 export default defineComponent({
     name: "purchase orders",
     components: {
+      IonBackButton,
       IonChip,
       IonPage,
       IonHeader,

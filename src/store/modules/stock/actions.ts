@@ -109,6 +109,7 @@ const actions: ActionTree<StockState, RootState> = {
     }).filter((item: any) => item);
   
     commit(types.STOCK_SCHEDULE_ITEMS_UPDATED, initial);
+    return initial;
   },
   async scheduledStock({ commit }, payload) {
     commit(types.STOCK_SCHEDULED_INFORMATION, payload)
@@ -124,6 +125,39 @@ const actions: ActionTree<StockState, RootState> = {
   },
   async shopifyShop({ commit }, payload) {
     commit(types.STOCK_SHOPIFY_SHOPS_UPDATED, payload)
+  },
+  
+  async runServiceNow({ dispatch }, job) {
+    let resp;
+    const payload = {
+      'JOB_NAME': job.jobName,
+      'SERVICE_NAME': job.serviceName,
+      'SERVICE_COUNT': '0',
+      'SERVICE_TEMP_EXPR': job.tempExprId,
+      'jobFields': {
+        'systemJobEnumId': job.systemJobEnumId,
+        'tempExprId': job.tempExprId, // Need to remove this as we are passing frequency in SERVICE_TEMP_EXPR, currently kept it for backward compatibility
+        'parentJobId': job.parentJobId,
+        'recurrenceTimeZone': this.state.user.current.userTimeZone,
+        'createdByUserLogin': this.state.user.current.userLoginId,
+        'lastModifiedByUserLogin': this.state.user.current.userLoginId
+      },
+      'statusId': "SERVICE_PENDING",
+      'systemJobEnumId': job.systemJobEnumId,
+    }
+    
+    try {
+      resp = await StockService.scheduleJob({ ...payload });
+      if (resp.status == 200 && !hasError(resp)) {
+        showToast(translate("Service has been scheduled"))
+      } else {
+        showToast(translate("Something went wrong"))
+      }
+    } catch (err) {
+      showToast(translate("Something went wrong"))
+      logger.error(err)
+    }
+    return resp;
   },
   
   async scheduleService({ dispatch, state }, { params, restockName }) {
@@ -220,7 +254,7 @@ const actions: ActionTree<StockState, RootState> = {
     try{
       const params = {
         "inputFields": {
-          "statusId": "SERVICE_PENDING",
+          'statusId': ["SERVICE_PENDING", "SERVICE_FINISHED"],
           'systemJobEnumId': "JOB_SCHEDULED_RSTK",
           'systemJobEnumId_op': 'equals',
         },

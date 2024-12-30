@@ -3,7 +3,8 @@
     <ion-header>
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ translate("Scheduled Restock") }}</ion-title>
+        <ion-back-button default-href="/scheduled-incoming-inventory" slot="start" />
+        <ion-title>{{ translate("Scheduled product launch") }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -30,7 +31,7 @@
         </ion-list>
 
         <ion-list>
-          <ion-list-header>{{ translate("Select the column index for the following information in the uploaded CSV.") }}</ion-list-header>
+          <ion-list-header>{{ translate("Map all required columns from the uploaded CSV") }}</ion-list-header>
           <ion-item-divider>
             <ion-label>{{ translate("Required") }} </ion-label>
           </ion-item-divider>
@@ -49,13 +50,20 @@
               </ion-select>
             </template>
           </ion-item>
+          <ion-item>
+            <ion-select :label="translate('Facility')" interface="popover" :placeholder = "translate('Select')" v-model="selectedFacility">
+              <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">
+                {{ facility.facilityName || facility.facilityId }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
 
           <ion-item-divider>
             <ion-label>{{ translate("Optional, or select during review") }}</ion-label>
           </ion-item-divider>
           <ion-item>
             <ion-label>{{ translate("Schedule") }}</ion-label>   
-            <ion-button slot="end" class="date-time-button" @click="updateTime()">{{ schedule ? getTime(schedule) : translate("Select time") }}</ion-button>
+            <ion-button slot="end" class="date-time-button" @click="updateTime">{{ schedule ? getTime(schedule) : translate("Select time") }}</ion-button>
             <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
               <ion-content force-overscroll="false">
                 <ion-datetime    
@@ -69,13 +77,6 @@
             </ion-modal>
           </ion-item>
           <ion-item>
-            <ion-select :label="translate('Facility')" interface="popover" :placeholder = "translate('Select')" v-model="selectedFacility">
-              <ion-select-option v-for="facility in facilities" :key="facility.facilityId" :value="facility.facilityId">
-                {{ facility.facilityName || facility.facilityId }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-item>
             <ion-select :label="translate('Product store')" interface="popover" :placeholder = "translate('Select')" v-model="selectedProductStoreId" @ionChange="updateProductStore($event.detail.value)">
               <ion-select-option v-for="productStore in productStores" :key="productStore.productStoreId" :value="productStore.productStoreId">
                 {{ productStore.storeName || productStore.productStoreId }}
@@ -83,7 +84,7 @@
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-select :disabled="!selectedProductStoreId" :label="translate('Shopify store')" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
+            <ion-select :disabled="!shopifyShops.length || !selectedProductStoreId" :label="translate('Shopify store')" interface="popover" :placeholder = "translate('Select')" v-model="selectedShopifyShopId">
               <ion-select-option v-for="shop in shopifyShops" :key="shop.shopId" :value="shop.shopId">
                 {{ shop.name ? shop.name : shop.shopId }}
               </ion-select-option>
@@ -94,36 +95,10 @@
           </ion-item>
         </ion-list>
         
-        <ion-button :disabled="!this.content.length" color="medium" expand="block" class="review" @click="review()">
-          {{ translate("Review") }}
-          <ion-icon slot="end" :icon="arrowForwardOutline" />
+        <ion-button :disabled="!this.content.length" color="medium" expand="block" class="review" @click="upload">
+          {{ translate("Upload") }}
+          <ion-icon slot="end" :icon="cloudUploadOutline" />
         </ion-button>
-
-        <ion-list v-if="jobs.length" class="job-section">
-          <ion-list-header>{{ translate("Scheduled Restock") }}</ion-list-header>
-          <ion-item v-for="job in jobs" :key="job.jobId">
-            <ion-label>
-              <p class="overline">{{ job.jobId }}</p>
-                {{ job.jobName }}
-              <p>{{ job?.runtimeData?.shipmentId }}</p>
-            </ion-label>
-            <ion-button class="date-time-button" @click="changeRunTime(job)">{{ getTime(job.runTime) ? getTime(job.runTime) : translate("Select time") }}</ion-button>
-            <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event, job)">
-              <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
-            </ion-button> 
-          </ion-item>
-          <ion-modal class="date-time-modal" :is-open="isUpdateDateTimeModalOpen" @didDismiss="() => isUpdateDateTimeModalOpen = false">
-            <ion-content force-overscroll="false">
-              <ion-datetime    
-                id="schedule-datetime"        
-                show-default-buttons 
-                hour-cycle="h23"
-                :value="currentJob.runTime ? getDateTime(currentJob.runTime) : getDateTime(DateTime.now().toMillis())"
-                @ionChange="changeJobRunTime($event)"
-              />
-            </ion-content>
-          </ion-modal>
-        </ion-list>
       </main>
     </ion-content>
   </ion-page>
@@ -133,22 +108,22 @@
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { translate } from "@hotwax/dxp-components";
-import { addOutline, arrowForwardOutline, ellipsisVerticalOutline } from "ionicons/icons";
-import { IonButton, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, popoverController } from "@ionic/vue";
-import ScheduledRestockPopover from "@/components/ScheduledRestockPopover.vue"
+import { addOutline, arrowForwardOutline, cloudUploadOutline, ellipsisVerticalOutline } from "ionicons/icons";
+import { IonBackButton, IonButton, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import parseFileMixin from '@/mixins/parseFileMixin';
 import { showToast, hasError } from '@/utils';
 import { mapGetters, useStore } from "vuex";
 import CreateMappingModal from "@/components/CreateMappingModal.vue";
 import { DateTime } from 'luxon';
 import { UtilService } from '@/services/UtilService'
+import { UploadService } from "@/services/UploadService";
 import logger from "@/logger";
 import emitter from "@/event-bus";
-import { StockService } from "@/services/StockService";
 
 export default defineComponent({
   name: "ScheduledRestock",
   components: {
+    IonBackButton,
     IonButton,
     IonChip,
     IonContent,
@@ -247,10 +222,6 @@ export default defineComponent({
     updateTime() {
       this.isDateTimeModalOpen = true
     },
-    changeRunTime(job) {
-      this.currentJob = job
-      this.isUpdateDateTimeModalOpen = true
-    },
     getTime(time) {
       return DateTime.fromMillis(time, { setZone: true}).toFormat("hh:mm a dd MMM yyyy")
     },
@@ -262,49 +233,6 @@ export default defineComponent({
         return;
       }
       this.schedule = setTime;
-    },
-    changeJobRunTime(event) {
-      const currentTime = DateTime.now().toMillis();
-      const setTime = DateTime.fromISO(event.detail.value).toMillis();
-      if (setTime < currentTime) {
-        showToast(translate("Please provide a future date and time"));
-        return;
-      }
-      this.updateJob(setTime)
-    },
-    async updateJob(updatedTime) {
-      let resp;
-      const job = {
-        ...this.currentJob,
-        runTime: updatedTime
-      }
-
-      const payload = {
-        'jobId': job.jobId,
-        'systemJobEnumId': job.systemJobEnumId,
-        'recurrenceTimeZone': this.userProfile.userTimeZone,
-        'tempExprId': job.jobStatus,
-        'statusId': "SERVICE_PENDING",
-        'runTimeEpoch': '',  // when updating a job clearning the epoch time, as job honors epoch time as runTime and the new job created also uses epoch time as runTime
-        'lastModifiedByUserLogin': this.userProfile.userLoginId
-      }
-
-      job?.runTime && (payload['runTime'] = job.runTime)
-      job?.sinceId && (payload['sinceId'] = job.sinceId)
-      job?.jobName && (payload['jobName'] = job.jobName)
-
-      try {
-        resp = await StockService.updateJob(payload)
-        if (!hasError(resp) && resp.data.successMessage) {
-          await this.store.dispatch('stock/fetchJobs')
-          showToast(translate('Service updated successfully'))
-        } else {
-          throw resp.data
-        }
-      } catch (err) {
-        showToast(translate('Failed to update job'))
-        logger.error(err)
-      }
     },
     mapFields(mapping, mappingId) {
       const fieldMapping = JSON.parse(JSON.stringify(mapping));
@@ -344,34 +272,42 @@ export default defineComponent({
         showToast(translate("Please upload a valid reset inventory csv to continue"));
       }
     },
-    async openScheduledRestockPopover(ev, job) {
-      const popover = await popoverController.create({
-        component: ScheduledRestockPopover,
-        event: ev,
-        translucent: true,
-        showBackdrop: false,
-        componentProps: { job }
-      });
-      return popover.present();
-    },
-    async review() {
+    async upload() {
       
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       if (!areAllFieldsSelected) {
         showToast(translate("Select all the fields to continue"));
         return;
       }
-      emitter.emit("presentLoader")
+      
+      if(!this.schedule) {
+        showToast(translate("Please select a schedule time"));
+        return;
+      }
+      
+      if(!this.selectedFacility) {
+        showToast(translate("Please select a facility"));
+        return;
+      }
+      
+      if(!this.selectedProductStoreId) {
+        showToast(translate("Please select a product store"));
+        return;
+      }
+
+      if(!this.selectedShopifyShopId) {
+        showToast(translate("Please select a shopify shop"));
+        return;
+      }
       
       const restockItems = this.content.map(item => {
         return {
-          quantity: item[this.fieldMapping.restockQuantity],
+          quantity: item[this.fieldMapping.quantity],
           identification: item[this.fieldMapping.productIdentification],
           identificationTypeId: this.identificationTypeId,
         }
       })
 
-      await this.store.dispatch('stock/processUpdateRestockItems', restockItems);
       await this.store.dispatch('stock/scheduledStock', {
         productStoreId: this.selectedProductStoreId,
         shopId: this.selectedShopifyShopId,
@@ -379,10 +315,56 @@ export default defineComponent({
         scheduledTime: this.schedule,
         facilityId: this.selectedFacility
       })
-      emitter.emit("dismissLoader")
-      this.router.push({
-        name:'ScheduledRestockReview'
-      })
+
+      const items = await this.store.dispatch('stock/processUpdateRestockItems', restockItems);
+      const destinationFacilityId = this.selectedFacility;
+
+      const uploadData = {
+        payload: {
+          destinationFacilityId: destinationFacilityId,
+          items: items
+        }
+      };
+
+      const alert = await alertController.create({
+        header: translate("Reset inventory"),
+        message: translate("Make sure all the data you have entered is correct."),
+        buttons: [
+          {
+            text: translate("Cancel"),
+            role: 'cancel',
+          },
+          {
+            text: translate("Upload"),
+            handler: async () => {
+              emitter.emit("presentLoader")
+              try {
+                const resp = await UploadService.createIncomingShipment(uploadData)
+                if(!hasError(resp) && resp.data.shipmentId) {
+                  await this.store.dispatch("stock/scheduleService", { 
+                    params: {
+                      shipmentId: resp.data.shipmentId,
+                      shopId: this.selectedShopifyShopId,
+                      productStoreId: this.selectedProductStoreId
+                    },
+                    restockName: this.restockName,
+                    scheduledTime: this.schedule,
+                  })
+                } else {
+                  throw resp.data;
+                }
+              } catch(err) {
+                showToast(translate("Failed to schedule job"))
+                logger.error('Failed to create shipment', err)
+              }
+              emitter.emit("dismissLoader")
+              this.router.push('/scheduled-incoming-inventory')
+            }
+          },
+        ],
+      });
+      emitter.emit('dismissLoader')
+      return alert.present();
     },
     async addFieldMapping() {
       const createMappingModal = await modalController.create({
@@ -414,6 +396,7 @@ export default defineComponent({
       translate,
       addOutline,
       arrowForwardOutline,
+      cloudUploadOutline,
       ellipsisVerticalOutline,
       store,
       DateTime
@@ -434,9 +417,5 @@ main {
 
 label {
   cursor: pointer;
-}
-
-.job-section {
-  margin-bottom: 16px;
 }
 </style>

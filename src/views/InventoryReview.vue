@@ -139,7 +139,8 @@ export default defineComponent({
       facilities: 'util/getFacilities',
       fileName: 'order/getFileName',
       getFacilityLocationsByFacilityId: 'util/getFacilityLocationsByFacilityId',
-      userProfile: 'user/getUserProfile'
+      userProfile: 'user/getUserProfile',
+      exactInventoryType: 'util/getExactInventoryType'
     })
   },
   data() {
@@ -225,18 +226,25 @@ export default defineComponent({
     },
     async save(){
       const uploadData = this.stockItems.parsed.map((item: any) => {
-        return {
+        const data: any = {
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
           "idValue": item.identification,
           "idType": item.identificationTypeId,
           "locationSeqId": item.locationSeqId,
-          "availableQty": item.quantity,
           "comments": `Inventory was modified via the Import App by ${this.userProfile.partyName} using the ${this.fileName} file.`
-        };
+        }
+
+        if(this.exactInventoryType.configId === 'RESET_INVENTORY') {
+          data.resetByAtp = this.exactInventoryType.type === 'atp'
+          data.availableQty = item.quantity
+        } else {
+          data.quantity = item.quantity
+        }
+        return data;
       })
       const params = {
-        "configId": "RESET_INVENTORY"
+        "configId": this.exactInventoryType.configId
       } as any
       const alert = await alertController.create({
         header: translate("Reset inventory"),

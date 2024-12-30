@@ -3,7 +3,8 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ translate("Inventory") }}</ion-title>
+        <ion-back-button default-href="/unified-inventory" slot="start" />
+        <ion-title>{{ exactInventoryType.type === 'atp' ? translate("Exact ATP") : exactInventoryType.type === 'qoh' ? translate("Exact QoH") : translate("Cycle count")  }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -58,7 +59,7 @@
 </template>
 
 <script>
-import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
+import { IonBackButton, IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { mapGetters, useStore } from "vuex";
@@ -71,6 +72,7 @@ import CreateMappingModal from "@/components/CreateMappingModal.vue";
 export default defineComponent({
   name: "Inventory",
   components: {
+    IonBackButton,
     IonChip,
     IonPage,
     IonHeader,
@@ -101,7 +103,8 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings',
-      goodIdentificationTypes: 'util/getGoodIdentificationTypes'
+      goodIdentificationTypes: 'util/getGoodIdentificationTypes',
+      exactInventoryType: 'util/getExactInventoryType'
     })
   },
   mixins:[ parseFileMixin ],

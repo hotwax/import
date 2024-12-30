@@ -86,24 +86,9 @@ export default defineComponent({
     const appPages = [
       {
         title: "Inventory",
-        url: "/inventory",
-        childRoutes: ["/inventory-review"],
+        url: "/unified-inventory",
         iosIcon: albumsOutline,
         mdIcon: albumsOutline
-      },
-      {
-        title: "Scheduled restock",
-        url: "/scheduled-restock",
-        childRoutes: ["/scheduled-restock-review"],
-        iosIcon: timerOutline,
-        mdIcon: timerOutline
-      },
-      {
-        title: "Purchase order",
-        url: "/purchase-order",
-        childRoutes: ["/purchase-order-review"],
-        iosIcon: calendar,
-        mdIcon: calendar
       },
       {
         title: "Saved Mappings",

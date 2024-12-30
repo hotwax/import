@@ -127,7 +127,72 @@ const actions: ActionTree<UtilState, RootState> = {
 
     commit(types.UTIL_PRODUCT_STORES_UPDATED, productStores);
   },
-  
+  // Retrieves service status descriptions 
+  async getServiceStatusDesc ({ commit }) {
+    try{
+      const resp = await UtilService.getServiceStatusDesc({
+        "inputFields": {
+          "statusTypeId": "SERVICE_STATUS",
+          "statusTypeId_op": "equals"
+        },
+        "entityName": "StatusItem",
+        "fieldList": ["statusId", "description"],
+        "noConditionFind": "Y",
+        "viewSize": 20
+      }) 
+      if (resp.status === 200 && !hasError(resp) && resp.data.count) {
+        commit(types.UTIL_SERVICE_STATUS_DESC_UPDATED, resp.data.docs);
+      }
+    } catch(err) {
+      logger.error(err)
+    }
+  },
+  // Fetches shipment items by shipmentId
+  async fetchShipmentItems({ commit }, shipmentId) {
+    let shipmentItems = [];
+
+    try {
+      const resp = await UtilService.fetchShipmentItems(shipmentId);
+      if (!hasError(resp)) {
+        shipmentItems = resp.data.items
+      } else {
+        throw resp.data
+      }
+    } catch (err) {
+        logger.error(err)
+    }
+    commit(types.UTIL_SHIPMENT_ITEMS_UPDATED, shipmentItems);
+  },
+  // Fetches Data Manager configuration details based on the configId
+  async fetchDataManagerConfig({ commit }, configId) {
+    let resp = {} as any
+    let configDetails;
+
+    const payload = {
+      "inputFields":  {
+        "configId": configId
+      },
+      "fieldList": ["configId", "importPath", "multiThreading", "description", "executionModeId"],
+      "noConditionFind": "Y",
+      "viewSize": 1,
+      "entityName": "DataManagerConfig",
+    }
+    
+    try {
+      resp = await UtilService.fetchDataManagerConfig(payload);
+      if (resp.data.docs?.length > 0 && !hasError(resp)) {
+        configDetails = resp.data.docs[0];
+      } else {
+        throw resp.data
+      }
+    } catch (err) {
+      logger.error(err);
+    }
+    commit(types.UTIL_DATA_MANAGER_CONFIG_UPDATED, configDetails);
+  },
+  async updateExactInventoryType({ commit }, type) {
+    commit(types.UTIL_EXACT_INVENTORY_TYPE_UPDATED, type);
+  },
   async clearProductStores({ commit }) {
     commit(types.UTIL_PRODUCT_STORES_UPDATED, []);
   },

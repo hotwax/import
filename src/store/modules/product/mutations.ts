@@ -7,8 +7,13 @@ const mutations: MutationTree <ProductState> = {
     if (payload.products) {
       payload.products.forEach((product: any) => {
         state.cached[product.pseudoId] = product
+        state.productById[product.productId] = product
       });
     }
+  },
+  [types.PRODUCT_LIST_UPDATED](state, payload) {
+    state.list.items = payload.products
+    state.list.total = payload.total
   },
 }
 export default mutations;

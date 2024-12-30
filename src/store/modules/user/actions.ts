@@ -55,6 +55,8 @@ const actions: ActionTree<UserState, RootState> = {
   
         updateToken(token)
         setPermissions(appPermissions);
+        // Getting service status description
+        this.dispatch('util/getServiceStatusDesc')
   
         // TODO user single mutation
         commit(types.USER_PERMISSIONS_UPDATED, appPermissions);

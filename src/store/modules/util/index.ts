@@ -12,7 +12,11 @@ const userModule: Module<UserState, RootState> = {
       facilityLocationsByFacilityId: {},
       goodIdentificationTypes: [],
       isProcessingFile: false,
-      productStores: []
+      productStores: [],
+      exactInventoryType: {},
+      shipmentItems: [],
+      statusDesc: {},
+      configDetails: {}
     },
     getters,
     actions,
