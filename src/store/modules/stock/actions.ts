@@ -150,49 +150,49 @@ const actions: ActionTree<StockState, RootState> = {
   async scheduleService({ dispatch }, { params, restockName, scheduledTime }) {
     let resp;
 
-    const job = await dispatch("fetchDraftJob")
+      const job = await dispatch("fetchDraftJob")
 
-    if(!job.jobId || !job.serviceName || job.serviceName == '_NA_') {
-      showToast(translate("Configuration missing"))
-      return;
-    }
-
-    const payload = {
-      'JOB_NAME': restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
-      'SERVICE_NAME': job.serviceName,
-      'SERVICE_COUNT': '0',
-      'SERVICE_TEMP_EXPR': job.jobStatus,
-      'SERVICE_RUN_AS_SYSTEM':'Y',
-      'jobFields': {
-        'systemJobEnumId': job.systemJobEnumId,
-        'tempExprId': job.jobStatus, // Need to remove this as we are passing frequency in SERVICE_TEMP_EXPR, currently kept it for backward compatibility
-        'parentJobId': job.parentJobId,
-        'runAsUser': 'system', //default system, but empty in run now.  TODO Need to remove this as we are using SERVICE_RUN_AS_SYSTEM, currently kept it for backward compatibility
-        'recurrenceTimeZone': this.state.user.current.userTimeZone,
-        'createdByUserLogin': this.state.user.current.userLoginId,
-        'lastModifiedByUserLogin': this.state.user.current.userLoginId,
-      },
-      'statusId': "SERVICE_PENDING",
-      'systemJobEnumId': job.systemJobEnumId,
-      ...params
-    }
-
-    job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
-    payload['SERVICE_TIME'] = scheduledTime.toString()
-    job?.sinceId && (payload['sinceId'] = job.sinceId)
-
-    try {
-      resp = await StockService.scheduleJob({ ...payload });
-      if (resp.status == 200 && !hasError(resp)) {
-        showToast(translate('Service has been scheduled'));
-      } else {
-        showToast(translate('Something went wrong'))
+      if(!job.jobId || !job.serviceName || job.serviceName == '_NA_') {
+        showToast(translate("Configuration missing"))
+        return;
       }
-    } catch (err) {
-      showToast(translate('Something went wrong'))
-      logger.error(err)
-    }
-    return {};
+
+      const payload = {
+        'JOB_NAME': restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
+        'SERVICE_NAME': job.serviceName,
+        'SERVICE_COUNT': '0',
+        'SERVICE_TEMP_EXPR': job.jobStatus,
+        'SERVICE_RUN_AS_SYSTEM':'Y',
+        'jobFields': {
+          'systemJobEnumId': job.systemJobEnumId,
+          'tempExprId': job.jobStatus, // Need to remove this as we are passing frequency in SERVICE_TEMP_EXPR, currently kept it for backward compatibility
+          'parentJobId': job.parentJobId,
+          'runAsUser': 'system', //default system, but empty in run now.  TODO Need to remove this as we are using SERVICE_RUN_AS_SYSTEM, currently kept it for backward compatibility
+          'recurrenceTimeZone': this.state.user.current.userTimeZone,
+          'createdByUserLogin': this.state.user.current.userLoginId,
+          'lastModifiedByUserLogin': this.state.user.current.userLoginId,
+        },
+        'statusId': "SERVICE_PENDING",
+        'systemJobEnumId': job.systemJobEnumId,
+        ...params
+      }
+
+      job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
+      payload['SERVICE_TIME'] = scheduledTime.toString()
+      job?.sinceId && (payload['sinceId'] = job.sinceId)
+
+      try {
+        resp = await StockService.scheduleJob({ ...payload });
+        if (resp.status == 200 && !hasError(resp)) {
+          showToast(translate('Service has been scheduled'));
+        } else {
+          showToast(translate('Something went wrong'))
+        }
+      } catch (err) {
+        showToast(translate('Something went wrong'))
+        logger.error(err)
+      }
+      return {};
   },
  
   async fetchDraftJob() {
