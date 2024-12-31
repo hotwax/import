@@ -6,12 +6,6 @@ const getters: GetterTree<OrderState, RootState> = {
   getStockItems(state) {
     return JSON.parse(JSON.stringify(state.items));
   },
-  getRestockItems(state) {
-    return JSON.parse(JSON.stringify(state.restockItems))
-  },
-  getScheduledInformation(state) {
-    return state.schedule
-  },
   getShopifyShops(state) {
     return state.shopifyShops
   },

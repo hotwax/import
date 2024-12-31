@@ -18,7 +18,7 @@
           <ion-item lines="none">
             <ion-label slot="start">
               <h1 v-show="!isJobNameUpdating">{{ jobName }}</h1>
-              <ion-input ref="jobNameRef" :class="isJobNameUpdating ? 'name' : ''" v-show="isJobNameUpdating" aria-label="group name" v-model="jobName"></ion-input>
+              <ion-input ref="jobNameRef" :class="isJobNameUpdating ? 'name' : ''" v-show="isJobNameUpdating" aria-label="job name" @ionBlur="cancelRename" v-model="jobName"></ion-input>
             </ion-label>
           </ion-item>
           <ion-item :disabled="currentJob?.statusId === 'SERVICE_FINISHED'" lines="none">
@@ -152,7 +152,7 @@ export default defineComponent({
       this.isJobNameUpdating = !this.isJobNameUpdating
       // Waiting for DOM updations before focus inside the text-area, as it is conditionally rendered in the DOM
       await nextTick()
-      this.$refs.jobNameRef.setFocus();
+      this.$refs.jobNameRef.$el.setFocus();
     },
     async updateJobName() {
       if(!this.jobName?.trim()) {
@@ -163,6 +163,12 @@ export default defineComponent({
         await this.updateJob(this.currentJob.runTime, this.jobName)
       }
       this.isJobNameUpdating = false
+    },
+    cancelRename() {
+      if (this.isJobNameUpdating) {
+        this.jobName = this.currentJob.jobName
+        this.isJobNameUpdating = false
+      }
     },
     getTime(time) {
       return DateTime.fromMillis(time, { setZone: true}).toFormat("hh:mm a dd MMM yyyy")

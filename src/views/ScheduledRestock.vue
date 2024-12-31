@@ -114,7 +114,7 @@ import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { translate } from "@hotwax/dxp-components";
 import { addOutline, arrowForwardOutline, cloudUploadOutline, ellipsisVerticalOutline, informationCircleOutline } from "ionicons/icons";
-import { IonBackButton, IonButton, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
+import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import parseFileMixin from '@/mixins/parseFileMixin';
 import { showToast, hasError } from '@/utils';
 import { mapGetters, useStore } from "vuex";
@@ -130,6 +130,7 @@ export default defineComponent({
   components: {
     IonBackButton,
     IonButton,
+    IonButtons,
     IonChip,
     IonContent,
     IonDatetime,
@@ -311,14 +312,6 @@ export default defineComponent({
           identification: item[this.fieldMapping.productIdentification],
           identificationTypeId: this.identificationTypeId,
         }
-      })
-
-      await this.store.dispatch('stock/scheduledStock', {
-        productStoreId: this.selectedProductStoreId,
-        shopId: this.selectedShopifyShopId,
-        restockName: this.restockName,
-        scheduledTime: this.schedule,
-        facilityId: this.selectedFacility
       })
 
       const items = await this.store.dispatch('stock/processUpdateRestockItems', restockItems);

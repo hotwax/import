@@ -6,14 +6,6 @@ export default interface StockState {
     initial: any,
   }, 
   fileName: string,
-  restockItems: [],
-  schedule: {
-    scheduledTime: any,
-    shopId: any,
-    restockName: any ,
-    productStoreId: any,
-    facilityId: any
-  }
   shopifyShops: any,
   jobs: any
 }

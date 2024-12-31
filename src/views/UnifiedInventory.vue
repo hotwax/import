@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+    <ion-header>
       <ion-toolbar>
         <ion-title>{{ translate("Inventory") }}</ion-title>
         <ion-buttons slot="end">
@@ -82,9 +82,9 @@ export default defineComponent({
   data() {
     return{
       configMapping: [
-        { type: 'atp', configId: "RESET_INVENTORY" },
-        { type: 'qoh', configId: "RESET_INVENTORY" },
-        { type: 'cycleCount', configId: "REC_INV_COUNT" }
+        { type: "atp", configId: "RESET_INVENTORY" },
+        { type: "qoh", configId: "RESET_INVENTORY" },
+        { type: "cycleCount", configId: "REC_INV_COUNT" }
       ]
     }
   },
@@ -113,7 +113,6 @@ export default defineComponent({
 main {
   display: flex;
   justify-content: center;
-  align-items: start;
   gap: var(--spacer-2xl);
   max-width: 990px;
   margin: var(--spacer-base) auto 0;

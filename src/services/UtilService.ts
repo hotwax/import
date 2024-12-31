@@ -44,7 +44,7 @@ const fetchProductStores = async (payload: any): Promise<any> => {
 const fetchProducts = async (query: any): Promise<any> => {
   return api({
     url: "searchProducts",
-    method: "post",
+    method: "POST",
     data: query,
   });
 }
@@ -52,7 +52,7 @@ const fetchProducts = async (query: any): Promise<any> => {
 const getServiceStatusDesc = async (payload: any): Promise<any> => {
   return api({
     url: "performFind",
-    method: "get",
+    method: "GET",
     params: payload,
     cache: true
   });
@@ -61,8 +61,8 @@ const getServiceStatusDesc = async (payload: any): Promise<any> => {
 const fetchShipmentItems = async (query: any): Promise<any> => {
   return api({
     url: "shipment-detail",
-    data: query,
-    method: 'post'
+    method: "POST",
+    data: query
   });
 }
 
@@ -94,7 +94,7 @@ const removeShipmentItem = async (payload: any): Promise<any> => {
 const fetchDataManagerConfig = async (payload: any): Promise <any> => {
   return api ({
     url: "performFind",
-    method: "get",
+    method: "GET",
     params: payload
   })
 }
@@ -102,7 +102,7 @@ const fetchDataManagerConfig = async (payload: any): Promise <any> => {
 const fetchDataManagerLogs = async (payload: any): Promise <any> => {
   return api ({
     url: "performFind",
-    method: "get",
+    method: "GET",
     params: payload
   })
 }
@@ -110,7 +110,7 @@ const fetchDataManagerLogs = async (payload: any): Promise <any> => {
 const fetchDataResource = async (payload: any): Promise <any> => {
   return api ({
     url: "performFind",
-    method: "get",
+    method: "GET",
     params: payload
   })
 }
@@ -118,7 +118,7 @@ const fetchDataResource = async (payload: any): Promise <any> => {
 const fetchFileData = async (payload: any): Promise <any> => {
   return api ({
     url: "DownloadCsvFile",
-    method: "get",
+    method: "GET",
     params: payload
   })
 }
