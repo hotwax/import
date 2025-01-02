@@ -2,7 +2,6 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-menu-button slot="start" />
         <ion-back-button default-href="/scheduled-incoming-inventory" slot="start" />
         <ion-title>{{ translate("Scheduled product launch") }}</ion-title>
         <!-- TODO: We need to discuss what to display on this button click. -->
@@ -115,7 +114,7 @@ import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { translate } from "@hotwax/dxp-components";
 import { addOutline, arrowForwardOutline, cloudUploadOutline, ellipsisVerticalOutline } from "ionicons/icons";
-import { IonBackButton, IonButton, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
+import { IonBackButton, IonButton, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import parseFileMixin from '@/mixins/parseFileMixin';
 import { showToast, hasError } from '@/utils';
 import { mapGetters, useStore } from "vuex";
@@ -142,7 +141,6 @@ export default defineComponent({
     IonLabel,
     IonList,
     IonListHeader,
-    IonMenuButton,
     IonModal,
     IonPage,
     IonSelect,
@@ -283,11 +281,6 @@ export default defineComponent({
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       if (!areAllFieldsSelected) {
         showToast(translate("Select all the fields to continue"));
-        return;
-      }
-      
-      if(!this.schedule) {
-        showToast(translate("Please select a schedule time"));
         return;
       }
       

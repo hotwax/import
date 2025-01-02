@@ -2,7 +2,6 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-menu-button slot="start" />
         <ion-back-button default-href="/unified-inventory" slot="start" />
         <ion-title>{{ translate("Scheduled Incoming Inventory") }}</ion-title>
       </ion-toolbar>
@@ -64,7 +63,7 @@
             </ion-item>
           </template>
         </ion-list>
-        <div v-if="!jobs.length" class="empty-state">
+        <div v-else class="empty-state">
           <p>{{ translate("No jobs are scheduled for incoming inventory") }}</p>
         </div>
       </main>
@@ -82,7 +81,6 @@ import {
   IonPage, 
   IonHeader, 
   IonToolbar, 
-  IonMenuButton, 
   IonTitle, 
   IonContent, 
   IonButton, 
@@ -110,7 +108,6 @@ export default defineComponent({
     IonPage,
     IonHeader,
     IonToolbar,
-    IonMenuButton,
     IonTitle,
     IonContent,
     IonButton,

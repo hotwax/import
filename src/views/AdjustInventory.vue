@@ -2,7 +2,6 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-menu-button slot="start" />
         <ion-back-button default-href="/unified-inventory" slot="start" />
         <ion-title>{{ translate("Adjust Inventory") }}</ion-title>
         <!-- TODO: We need to discuss what to display on this button click. -->
@@ -128,7 +127,7 @@ import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { translate } from "@hotwax/dxp-components";
 import { addOutline, arrowForward, cloudUploadOutline, settingsOutline,  } from "ionicons/icons";
-import { IonBackButton, IonButton, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
+import { IonBackButton, IonButton, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import { jsonToCsv, showToast, hasError } from '@/utils';
 import { mapGetters, useStore } from "vuex";
 import { DateTime } from 'luxon';
@@ -152,7 +151,6 @@ export default defineComponent({
     IonLabel,
     IonList,
     IonListHeader,
-    IonMenuButton,
     IonPage,
     IonSelect,
     IonSelectOption,

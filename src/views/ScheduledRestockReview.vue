@@ -47,7 +47,7 @@
             <ion-item lines="none"> 
               <ion-label>{{ translate("Shopify store") }}</ion-label>
               <ion-label slot="end">
-                <p>{{ currentJob.shopId ? (shopifyShops.find(shop => shop.shopId === currentJob.shopId)?.name || currentJob.shopId) : translate("No shop selected") }}</p>
+                <p>{{ currentJob.shopId ? (getShopNameById(currentJob.shopId) || currentJob.shopId) : translate("No shop selected") }}</p>
               </ion-label>
             </ion-item>
           </ion-list>
@@ -168,6 +168,10 @@ export default defineComponent({
         this.jobName = this.currentJob.jobName
         this.isJobNameUpdating = false
       }
+    },
+    getShopNameById(shopId) {
+      const shop = this.shopifyShops.find(shop => shop.shopId === shopId);
+      return shop?.name;
     },
     getTime(time) {
       return DateTime.fromMillis(time, { setZone: true}).toFormat("hh:mm a dd MMM yyyy")
