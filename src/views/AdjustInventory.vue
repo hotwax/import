@@ -65,25 +65,14 @@
           <ion-icon slot="end" :icon="cloudUploadOutline" />
         </ion-button>
 
-        <ion-item v-if="configDetails.executionModeId === 'DMC_SYNC'" lines="none">
-          {{ translate("Uploaded files will be processed immediately") }}
-          <ion-label slot="end">
-            <p>{{ translate("Sync") }}</p>
-          </ion-label>
-        </ion-item>
-
-        <ion-item v-else-if="configDetails.executionModeId === 'DMC_ASYNC'" lines="none">
-          {{ translate("Uploaded files will be processed asynchronously") }}
-          <ion-label slot="end">
-            <p>{{ translate("Async") }}</p>
-          </ion-label>
-        </ion-item>
-
-        <div v-else>
+        
+        <div v-if="configDetails.executionModeId === 'DMC_QUEUE'">
           <template v-if="hasPendingJobs()">
             <!-- Pending Jobs in Queue -->
             <ion-item lines="none">
-              {{ translate("Uploaded files will be processed in", { runTime: getRunTime() }) }}
+              <ion-label>
+                {{ translate("Uploaded files will be processed in", { runTime: getRunTime() }) }}
+              </ion-label>
               <ion-label slot="end">
                 <p>{{ translate("Queued") }}</p>
               </ion-label>
@@ -96,7 +85,9 @@
           <template v-else>
             <!-- Draft jobs in Queue -->
             <ion-item lines="none">
-              {{ translate("Uploaded files will not be processed until the bulk file processing job is enabled.") }}
+              <ion-label>
+                {{ translate("Uploaded files will not be processed until the bulk file processing job is enabled.") }}
+              </ion-label>
               <ion-label slot="end">
                 <p>{{ translate("Queued") }}</p>
               </ion-label>
@@ -111,6 +102,15 @@
             </ion-item>
           </template>
         </div>
+
+        <ion-item v-else lines="none">
+          <ion-label>
+            {{ translate( configDetails.executionModeId === 'DMC_SYNC' ? "Uploaded files will be processed immediately" : "Uploaded files will be processed asynchronously") }}
+          </ion-label>
+          <ion-label slot="end">
+            <p>{{ translate( configDetails.executionModeId === 'DMC_SYNC' ? "Sync" : "Async") }}</p>
+          </ion-label>
+        </ion-item>
         
         <ion-button color="medium" expand="block" fill="outline" class="review" @click="router.push({ name: 'AdjustInventoryHistory' })">
           {{ translate("View history") }}
@@ -401,9 +401,5 @@ main {
 
 label {
   cursor: pointer;
-}
-
-.job-section {
-  margin-bottom: 16px;
 }
 </style>

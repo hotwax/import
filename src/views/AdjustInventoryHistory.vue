@@ -51,8 +51,8 @@
       <div class="empty-state" v-if="isLoading">
         <ion-spinner name="crescent" />
       </div>
-      <div v-else-if="dataManagerLogList?.length">
-        <div class="list-item" v-for="(log, index) in dataManagerLogList" :key="index">
+      <div v-else-if="filteredDataManagerLogList?.length">
+        <div class="list-item" v-for="(log, index) in filteredDataManagerLogList" :key="index">
           <ion-item lines="none">
             <ion-icon slot="start" :icon="documentTextOutline" />
             <ion-label>
@@ -107,7 +107,6 @@ import { DateTime } from 'luxon'
 import logger from "@/logger";
 import DownloadLogsFilePopover from "@/components/DownloadLogsFilePopover.vue";
 
-
 export default defineComponent ({
   name: "AdjustInventoryHistory",
   components: {
@@ -134,9 +133,9 @@ export default defineComponent ({
         { id: 'FAILED_LOGS', label: 'Failed logs' },
         { id: 'FAILED_RECORDS', label: 'Failed records' }
       ],
-      dataManagerLogList: [],
-      originalLogList: [],
       isLoading: true,
+      dataManagerLogList: [],
+      filteredDataManagerLogList: [],
     }
   },
   computed: {
@@ -148,8 +147,8 @@ export default defineComponent ({
   async ionViewDidEnter() {
     await this.store.dispatch('util/fetchDataManagerConfig', "MDM_INV_VARIANCE");
     await this.fetchDataManagerLogs();
-    if(this.dataManagerLogList) {
-      await this.fetchDataResource(this.dataManagerLogList)
+    if(this.filteredDataManagerLogList) {
+      await this.fetchDataResource(this.filteredDataManagerLogList)
     }
     this.filterDataManagerLogs('ALL');
     this.isLoading = false;
@@ -158,11 +157,11 @@ export default defineComponent ({
     filterDataManagerLogs(id) {
       this.selectedFilter = id;
       if (id === 'ALL') {
-        this.dataManagerLogList = [...this.originalLogList]
+        this.filteredDataManagerLogList = [...this.dataManagerLogList]
       } else if (id === 'FAILED_LOGS') {
-        this.dataManagerLogList = this.originalLogList.filter(log => log.statusId === 'SERVICE_FAILED')
+        this.filteredDataManagerLogList = this.dataManagerLogList.filter(log => log.statusId === 'SERVICE_FAILED')
       } else if (id === 'FAILED_RECORDS') {
-        this.dataManagerLogList = this.originalLogList.filter(log => log.errorRecordContentId !== null)
+        this.filteredDataManagerLogList = this.dataManagerLogList.filter(log => log.errorRecordContentId !== null)
       }
     },
     getExecutionModeLabel(executionModeId) {
@@ -195,8 +194,8 @@ export default defineComponent ({
       try {
         const resp = await UtilService.fetchDataManagerLogs(payload);
         if (resp.data.docs?.length > 0 && !hasError(resp)) {
-          this.originalLogList = resp.data.docs;
-          this.dataManagerLogList = [...this.originalLogList];
+          this.dataManagerLogList = resp.data.docs;
+          this.filteredDataManagerLogList = [...this.dataManagerLogList];
         } else {
           throw resp.data;
         }

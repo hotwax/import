@@ -71,7 +71,6 @@ import { hasError } from "@/adapter";
 import { showToast } from '@/utils';
 import logger from "@/logger";
 
-
 export default defineComponent({
   name: "AddProductModal",
   components: {
@@ -188,8 +187,6 @@ export default defineComponent({
     },
   },
 
-
-
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -205,7 +202,6 @@ export default defineComponent({
       productIdentificationPref,
       router
     }
-
   }
 })
 </script>

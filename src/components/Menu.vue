@@ -87,6 +87,7 @@ export default defineComponent({
       {
         title: "Inventory",
         url: "/unified-inventory",
+        childRoutes: ["/inventory", "/inventory-review", "/adjust-inventory", "/adjust-inventory_history", "/scheduled-incoming-inventory", "/scheduled-restock", "/scheduled-restock-review/:id", "/purchase-order", "/purchase-order-review"],
         iosIcon: albumsOutline,
         mdIcon: albumsOutline
       },

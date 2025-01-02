@@ -90,7 +90,6 @@ const removeShipmentItem = async (payload: any): Promise<any> => {
   });
 }
 
-
 const fetchDataManagerConfig = async (payload: any): Promise <any> => {
   return api ({
     url: "performFind",

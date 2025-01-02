@@ -68,7 +68,6 @@
         </ion-list>
       </main>
     </ion-content>
-
   </ion-page>
 </template>
 
@@ -102,7 +101,6 @@ import ScheduledRestockPopover from "@/components/ScheduledRestockPopover.vue"
 import { showToast, hasError } from '@/utils';
 import { StockService } from "@/services/StockService";
 import logger from "@/logger";
-
 
 export default defineComponent({
   name: "ScheduledIncomingInventory",

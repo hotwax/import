@@ -97,7 +97,6 @@ import { UtilService } from '@/services/UtilService'
 import { useRouter } from "vue-router";
 import AddProductModal from "@/components/AddProductModal.vue"
 
-
 export default defineComponent({
   name: 'ScheduledRestockReview',
   components: {
