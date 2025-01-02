@@ -3,13 +3,13 @@
     <ion-list>
       <ion-list-header>{{ dataManagerLog.logId }}</ion-list-header>
       <ion-item button @click="downloadFile('logFile')">
-        {{ translate("Log file") }}
+        <ion-label>{{ translate("Log file") }}</ion-label>
       </ion-item>
       <ion-item button @click="downloadFile('uploadedFile')">
-        {{ translate("Uploaded file") }}
+        <ion-label>{{ translate("Uploaded file") }}</ion-label>
       </ion-item>
       <ion-item button :disabled="!dataManagerLog?.errorRecordContentId" lines="none" @click="downloadFile('failedRecords')">
-        {{ translate("Failed records") }}
+        <ion-label>{{ translate("Failed records") }}</ion-label>
       </ion-item>
     </ion-list>
   </ion-content>
@@ -19,6 +19,7 @@
 import {
   IonContent,
   IonItem,
+  IonLabel,
   IonList,
   IonListHeader,
   popoverController
@@ -34,6 +35,7 @@ export default defineComponent({
   components: { 
     IonContent,
     IonItem,
+    IonLabel,
     IonList,
     IonListHeader
   },

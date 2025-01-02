@@ -19,7 +19,8 @@
           <template v-if="scheduledJobs.length">
             <ion-list-header>
               <ion-label>{{ translate("Scheduled inventory") }}</ion-label>
-              <ion-button>{{ translate("Show completed launches") }}</ion-button>
+              <!-- TODO: we need to discuss and make this button dynamic -->
+              <!-- <ion-button>{{ translate("Show completed launches") }}</ion-button> -->
             </ion-list-header>
     
             <ion-item v-for="job in scheduledJobs" :key="job.jobId"> 
@@ -51,7 +52,7 @@
             <ion-item-divider color="light">
               <ion-label>{{ translate("Received inventory") }}</ion-label>
             </ion-item-divider>
-            <ion-item v-for="job in receivedJobs" :key="job.jobId">
+            <ion-item button detail v-for="job in receivedJobs" :key="job.jobId" @click="reviewJobItems(job.jobId)">
               <ion-label>
                 <p class="overline">{{ job.jobId }}</p>
                 {{ job.jobName }}
@@ -60,12 +61,12 @@
               <ion-label slot="end">
                 <p>{{ job.runTime ? getTime(job.runTime) : "-" }}</p>
               </ion-label>
-              <ion-button slot="end" @click="reviewJobItems(job.jobId)" fill="clear" color="medium">
-                <ion-icon slot="icon-only" :icon="chevronForwardOutline" />
-              </ion-button>
             </ion-item>
           </template>
         </ion-list>
+        <div v-if="!jobs.length" class="empty-state">
+          <p>{{ translate("No jobs are scheduled for incoming inventory") }}</p>
+        </div>
       </main>
     </ion-content>
   </ion-page>
@@ -95,7 +96,7 @@ import {
   IonIcon, 
   popoverController 
 } from '@ionic/vue';
-import { arrowForwardOutline, chevronForwardOutline, ellipsisVerticalOutline } from "ionicons/icons";
+import { arrowForwardOutline, ellipsisVerticalOutline } from "ionicons/icons";
 import { DateTime } from 'luxon';
 import ScheduledRestockPopover from "@/components/ScheduledRestockPopover.vue"
 import { showToast, hasError } from '@/utils';
@@ -159,7 +160,6 @@ export default defineComponent({
       const popover = await popoverController.create({
         component: ScheduledRestockPopover,
         event: ev,
-        translucent: true,
         showBackdrop: false,
         componentProps: { job }
       });
@@ -219,7 +219,6 @@ export default defineComponent({
     const store = useStore();
     return {
       arrowForwardOutline,
-      chevronForwardOutline,
       ellipsisVerticalOutline,
       router,
       translate,

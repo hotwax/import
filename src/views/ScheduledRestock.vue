@@ -5,11 +5,12 @@
         <ion-menu-button slot="start" />
         <ion-back-button default-href="/scheduled-incoming-inventory" slot="start" />
         <ion-title>{{ translate("Scheduled product launch") }}</ion-title>
-        <ion-buttons slot="end">
+        <!-- TODO: We need to discuss what to display on this button click. -->
+        <!-- <ion-buttons slot="end">
           <ion-button size="medium">
             <ion-icon slot="icon-only" :icon="informationCircleOutline" />
           </ion-button>
-        </ion-buttons>
+        </ion-buttons> -->
       </ion-toolbar>
     </ion-header>
 

@@ -20,12 +20,12 @@
             <ion-item>
               <ion-icon slot="start" :icon="shareSocialOutline" />
               {{ translate("Multithreading") }}
-              <ion-label slot="end">{{ configDetails?.multiThreading ? configDetails?.multiThreading : "-" }}</ion-label>
+              <ion-label slot="end">{{ configDetails?.multiThreading ? configDetails.multiThreading : "-" }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="globeOutline" />
               {{ translate("SFTP") }}
-              <ion-label class="ion-text-wrap" slot="end">{{ configDetails?.importPath ? configDetails?.importPath : "-" }}</ion-label>
+              <ion-label class="ion-text-wrap" slot="end">{{ configDetails?.importPath ? configDetails.importPath : "-" }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="optionsOutline" />
