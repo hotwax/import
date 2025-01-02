@@ -127,8 +127,8 @@
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { translate } from "@hotwax/dxp-components";
-import { addOutline, arrowForward, cloudUploadOutline, informationCircleOutline, settingsOutline,  } from "ionicons/icons";
-import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
+import { addOutline, arrowForward, cloudUploadOutline, settingsOutline,  } from "ionicons/icons";
+import { IonBackButton, IonButton, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import { jsonToCsv, showToast, hasError } from '@/utils';
 import { mapGetters, useStore } from "vuex";
 import { DateTime } from 'luxon';
@@ -143,7 +143,6 @@ export default defineComponent({
   components: {
     IonBackButton,
     IonButton,
-    IonButtons,
     IonChip,
     IonContent,
     IonHeader,
@@ -379,7 +378,6 @@ export default defineComponent({
       addOutline,
       arrowForward,
       cloudUploadOutline,
-      informationCircleOutline,
       settingsOutline,
       store,
     }

@@ -51,8 +51,7 @@
 </template>
 
 <script>
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonToolbar, IonTitle } from "@ionic/vue";
-import { informationCircleOutline } from "ionicons/icons";
+import { IonContent, IonHeader, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonToolbar, IonTitle } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
@@ -61,11 +60,8 @@ import { translate } from "@hotwax/dxp-components";
 export default defineComponent({
   name: "UnifiedInventory",
   components: {
-    IonButton,
-    IonButtons,
     IonContent,
     IonHeader,
-    IonIcon,
     IonItem,
     IonLabel,
     IonList,
@@ -94,7 +90,6 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     return {
-      informationCircleOutline,
       router,
       store,
       translate
