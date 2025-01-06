@@ -33,7 +33,7 @@
           </ion-list>
           <!-- TODO: need to make the enumId for this field mapping -->
           <ion-list v-if="Object.keys(fieldMappings('ADJINV')).length">
-            <ion-list-header>{{ translate("Scheduled restock") }}</ion-list-header>
+            <ion-list-header>{{ translate("Adjust inventory") }}</ion-list-header>
             <ion-item v-for="(mapping, index) in fieldMappings('ADJINV')" :key="index" @click="viewMappingConfiguration(index, 'ADJINV')" detail button>
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>

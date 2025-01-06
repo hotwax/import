@@ -15,14 +15,14 @@
         </ion-button>
   
         <ion-list v-if="jobs.length" class="job-section">
-          <template v-if="scheduledJobs.length">
+          <template v-if="pendingJobs.length">
             <ion-list-header>
               <ion-label>{{ translate("Scheduled inventory") }}</ion-label>
               <!-- TODO: we need to discuss and make this button dynamic -->
               <!-- <ion-button>{{ translate("Show completed launches") }}</ion-button> -->
             </ion-list-header>
     
-            <ion-item v-for="job in scheduledJobs" :key="job.jobId"> 
+            <ion-item v-for="job in pendingJobs" :key="job.jobId"> 
               <ion-label>
                 <p class="overline">{{ job.jobId }}</p>
                 {{ job.jobName }}
@@ -40,6 +40,7 @@
                   id="schedule-datetime"        
                   show-default-buttons 
                   hour-cycle="h23"
+                  :min="DateTime.now().toISO()"
                   :value="currentJob?.runTime ? getDateTime(currentJob.runTime) : getDateTime(DateTime.now().toMillis())"
                   @ionChange="changeJobRunTime($event)"
                 />
@@ -47,11 +48,11 @@
             </ion-modal>
           </template>
 
-          <template v-if="receivedJobs.length">
+          <template v-if="finishedJobs.length">
             <ion-item-divider color="light">
               <ion-label>{{ translate("Received inventory") }}</ion-label>
             </ion-item-divider>
-            <ion-item button detail v-for="job in receivedJobs" :key="job.jobId" @click="reviewJobItems(job.jobId)">
+            <ion-item button detail v-for="job in finishedJobs" :key="job.jobId" @click="reviewJobItems(job.jobId)">
               <ion-label>
                 <p class="overline">{{ job.jobId }}</p>
                 {{ job.jobName }}
@@ -124,8 +125,8 @@ export default defineComponent({
     return {
       currentJob: {},
       isUpdateDateTimeModalOpen: false,
-      scheduledJobs: [],
-      receivedJobs: []
+      pendingJobs: [],
+      finishedJobs: []
     }
   },
   computed: {
@@ -140,8 +141,8 @@ export default defineComponent({
   },
   methods: {
     updateJobsByStatus() {
-      this.scheduledJobs = this.jobs.filter(job => job.statusId === "SERVICE_PENDING");
-      this.receivedJobs = this.jobs.filter(job => job.statusId === "SERVICE_FINISHED");
+      this.pendingJobs = this.jobs.filter(job => job.statusId === "SERVICE_PENDING");
+      this.finishedJobs = this.jobs.filter(job => job.statusId === "SERVICE_FINISHED");
     },
     changeRunTime(job) {
       this.currentJob = job

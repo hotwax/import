@@ -60,7 +60,7 @@
           </ion-item>
         </ion-list>
 
-        <ion-button color="medium" size="large" expand="block" class="review" @click="upload">
+        <ion-button :disabled="!this.content.length" color="medium" size="large" expand="block" class="review" @click="upload">
           {{ translate("Upload") }}
           <ion-icon slot="end" :icon="cloudUploadOutline" />
         </ion-button>
@@ -94,9 +94,9 @@
             </ion-item>
             <ion-item lines="none" class="adjust-buttons">
               <!-- TODO: we need to discuss this button's function & how to enable the job -->
-              <ion-button color="medium" size="medium" fill="outline" @click="enableJob()">
+              <!-- <ion-button color="medium" size="medium" fill="outline" @click="enableJob()">
                 {{ translate("Enable") }}
-              </ion-button>
+              </ion-button> -->
               <ion-button color="medium" size="medium" fill="outline" @click="runNow('draft')">
                 {{ translate("Run once") }}
               </ion-button>
@@ -171,9 +171,10 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
+      configDetails: 'util/getDataManagerConfig',
       fieldMappings: 'user/getFieldMappings',
       goodIdentificationTypes: 'util/getGoodIdentificationTypes',
-      configDetails: 'util/getDataManagerConfig'
+      instanceUrl: 'user/getInstanceUrl',
     })
   },
   mixins:[ parseFileMixin ],

@@ -44,7 +44,7 @@
         </ion-chip>
         <ion-button slot="end" fill="outline" size="medium" @click="router.replace({ name: 'AdjustInventory' })">
           {{ translate("Upload file") }}
-          <ion-icon :icon="cloudUploadOutline"/>
+          <ion-icon slot="end" :icon="cloudUploadOutline"/>
         </ion-button>
       </ion-item>
 
@@ -150,17 +150,17 @@ export default defineComponent ({
     if(this.filteredDataManagerLogList) {
       await this.fetchDataResource(this.filteredDataManagerLogList)
     }
-    this.filterDataManagerLogs('ALL');
+    this.filterDataManagerLogs("ALL");
     this.isLoading = false;
   },
   methods: {
     filterDataManagerLogs(id) {
       this.selectedFilter = id;
-      if (id === 'ALL') {
+      if (id === "ALL") {
         this.filteredDataManagerLogList = [...this.dataManagerLogList]
-      } else if (id === 'FAILED_LOGS') {
+      } else if (id === "FAILED_LOGS") {
         this.filteredDataManagerLogList = this.dataManagerLogList.filter(log => log.statusId === 'SERVICE_FAILED')
-      } else if (id === 'FAILED_RECORDS') {
+      } else if (id === "FAILED_RECORDS") {
         this.filteredDataManagerLogList = this.dataManagerLogList.filter(log => log.errorRecordContentId !== null)
       }
     },

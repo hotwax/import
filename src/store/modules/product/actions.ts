@@ -64,10 +64,9 @@ const actions: ActionTree<ProductState, RootState> = {
       }
     } catch (error) {
       commit(types.PRODUCT_LIST_UPDATED, { products: [], total: 0 });
-    } finally {
-      if (payload.viewIndex === 0) emitter.emit("dismissLoader");
     }
     
+    if (payload.viewIndex === 0) emitter.emit("dismissLoader");
     return resp;
   },
   async clearProducts({ commit }) {

@@ -38,6 +38,7 @@
                     id="schedule-datetime"        
                     show-default-buttons 
                     hour-cycle="h23"
+                    :min="DateTime.now().toISO()"
                     :value="currentJob?.runTime ? getDateTime(currentJob.runTime) : getDateTime(DateTime.now().toMillis())"
                     @ionChange="changeJobRunTime($event)"
                   />

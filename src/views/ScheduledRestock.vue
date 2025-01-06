@@ -68,13 +68,14 @@
           </ion-item-divider>
           <ion-item>
             <ion-label>{{ translate("Schedule") }}</ion-label>   
-            <ion-button slot="end" class="date-time-button" @click="updateTime">{{ schedule ? getTime(schedule) : translate("Select time") }}</ion-button>
+            <ion-button slot="end" class="date-time-button" @click="updateTime()">{{ schedule ? getTime(schedule) : translate("Select time") }}</ion-button>
             <ion-modal class="date-time-modal" :is-open="isDateTimeModalOpen" @didDismiss="() => isDateTimeModalOpen = false">
               <ion-content force-overscroll="false">
                 <ion-datetime    
                   id="schedule-datetime"        
                   show-default-buttons 
                   hour-cycle="h23"
+                  :min="DateTime.now().toISO()"
                   :value="schedule ? getDateTime(schedule) : getDateTime(DateTime.now().toMillis())"
                   @ionChange="updateCustomTime($event)"
                 />
@@ -100,7 +101,7 @@
           </ion-item>
         </ion-list>
         
-        <ion-button :disabled="!this.content.length" color="medium" expand="block" class="review" @click="upload">
+        <ion-button :disabled="!this.content.length" color="medium" expand="block" class="upload-button" @click="upload">
           {{ translate("Upload") }}
           <ion-icon slot="end" :icon="cloudUploadOutline" />
         </ion-button>
@@ -307,7 +308,7 @@ export default defineComponent({
         }
       })
 
-      const items = await this.store.dispatch('stock/processUpdateRestockItems', restockItems);
+      const items = await this.store.dispatch("stock/processUpdateRestockItems", restockItems);
       const destinationFacilityId = this.selectedFacility;
 
       const uploadData = {
@@ -323,7 +324,7 @@ export default defineComponent({
         buttons: [
           {
             text: translate("Cancel"),
-            role: 'cancel',
+            role: "cancel",
           },
           {
             text: translate("Upload"),
@@ -346,10 +347,10 @@ export default defineComponent({
                 }
               } catch(err) {
                 showToast(translate("Failed to schedule job"))
-                logger.error('Failed to create shipment', err)
+                logger.error("Failed to create shipment", err)
               }
               emitter.emit("dismissLoader")
-              this.router.push('/scheduled-incoming-inventory')
+              this.router.push("/scheduled-incoming-inventory")
             }
           },
         ],
@@ -402,7 +403,7 @@ main {
   margin: var(--spacer-sm) auto 0; 
 }
 
-.review {
+.upload-button {
   margin: var(--spacer-base) var(--spacer-sm);
 }
 

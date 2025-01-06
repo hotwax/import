@@ -91,7 +91,7 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: authGuard,
   },
   {
-    path: '/adjust-inventory_history',
+    path: '/adjust-inventory-history',
     name: 'AdjustInventoryHistory',
     component: AdjustInventoryHistory,
     beforeEnter: authGuard,

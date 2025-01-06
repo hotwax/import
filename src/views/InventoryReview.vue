@@ -246,6 +246,7 @@ export default defineComponent({
       const params = {
         "configId": this.exactInventoryType.configId
       } as any
+
       const alert = await alertController.create({
         header: translate("Reset inventory"),
         message: translate("Make sure all the data you have entered is correct."),

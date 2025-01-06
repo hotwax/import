@@ -31,6 +31,9 @@ const mutations: MutationTree <UtilState> = {
           state.statusDesc[status.statusId] = status.description;
         })
     },
+    [types.UTIL_SERVICE_STATUS_DESC_CLEARED] (state) {
+        state.statusDesc = {}
+    },
     [types.UTIL_DATA_MANAGER_CONFIG_UPDATED] (state, payload) {
         state.configDetails = payload;
     }

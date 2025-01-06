@@ -128,7 +128,7 @@ const actions: ActionTree<UtilState, RootState> = {
     commit(types.UTIL_PRODUCT_STORES_UPDATED, productStores);
   },
   // Retrieves service status descriptions 
-  async getServiceStatusDesc ({ commit }) {
+  async getServiceStatusDesc({ commit }) {
     try{
       const resp = await UtilService.getServiceStatusDesc({
         "inputFields": {
@@ -147,6 +147,9 @@ const actions: ActionTree<UtilState, RootState> = {
       logger.error(err)
     }
   },
+  async clearStatusDesc({ commit }) {
+    commit(types.UTIL_SERVICE_STATUS_DESC_CLEARED)
+  },
   // Fetches shipment items by shipmentId
   async fetchShipmentItems({ commit }, shipmentId) {
     let shipmentItems = [];
@@ -159,7 +162,7 @@ const actions: ActionTree<UtilState, RootState> = {
         throw resp.data
       }
     } catch (err) {
-        logger.error(err)
+      logger.error(err)
     }
     commit(types.UTIL_SHIPMENT_ITEMS_UPDATED, shipmentItems);
   },
