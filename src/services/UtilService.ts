@@ -114,6 +114,14 @@ const fetchDataResource = async (payload: any): Promise <any> => {
   })
 }
 
+const updateDataManagerConfig = async (payload: any): Promise <any> => {
+  return api ({
+    url: "service/updateDataManagerConfig",
+    method: "POST",
+    data: payload
+  })
+}
+
 const fetchFileData = async (payload: any): Promise <any> => {
   return api ({
     url: "DownloadCsvFile",
@@ -137,5 +145,6 @@ export const UtilService = {
     getFacilityLocations,
     getServiceStatusDesc,
     removeShipmentItem,
-    updateShipmentItem
+    updateShipmentItem,
+    updateDataManagerConfig
 }

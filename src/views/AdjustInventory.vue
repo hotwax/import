@@ -4,15 +4,15 @@
       <ion-toolbar>
         <ion-back-button default-href="/unified-inventory" slot="start" />
         <ion-title>{{ translate("Adjust Inventory") }}</ion-title>
-        <!-- TODO: We need to discuss what to display on this button click. -->
-        <!-- <ion-buttons slot="end">
-          <ion-button size="medium">
+        <ion-buttons slot="end">
+          <!-- TODO: We need to discuss what to display on this button click. -->
+          <!-- <ion-button size="medium">
             <ion-icon  slot="icon-only" :icon="settingsOutline" />
-          </ion-button>
-          <ion-button size="medium">
+          </ion-button> -->
+          <ion-button size="medium" @click="openHelpModal()">
             <ion-icon slot="icon-only" :icon="informationCircleOutline" />
           </ion-button>
-        </ion-buttons> -->
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -67,7 +67,7 @@
 
         
         <div v-if="configDetails.executionModeId === 'DMC_QUEUE'">
-          <template v-if="hasPendingJobs()">
+          <template v-if="Object.keys(pendingJob).length">
             <!-- Pending Jobs in Queue -->
             <ion-item lines="none">
               <ion-label>
@@ -93,10 +93,9 @@
               </ion-label>
             </ion-item>
             <ion-item lines="none" class="adjust-buttons">
-              <!-- TODO: we need to discuss this button's function & how to enable the job -->
-              <!-- <ion-button color="medium" size="medium" fill="outline" @click="enableJob()">
+              <ion-button color="medium" size="medium" fill="outline" @click="enableJob()">
                 {{ translate("Enable") }}
-              </ion-button> -->
+              </ion-button>
               <ion-button color="medium" size="medium" fill="outline" @click="runNow('draft')">
                 {{ translate("Run once") }}
               </ion-button>
@@ -123,17 +122,18 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import { useRouter } from "vue-router";
-import { translate } from "@hotwax/dxp-components";
-import { addOutline, arrowForward, cloudUploadOutline, settingsOutline,  } from "ionicons/icons";
-import { IonBackButton, IonButton, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
+import { translate, useUserStore } from "@hotwax/dxp-components";
+import { addOutline, arrowForward, cloudUploadOutline, informationCircleOutline, settingsOutline } from "ionicons/icons";
+import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import { jsonToCsv, showToast, hasError } from '@/utils';
 import { mapGetters, useStore } from "vuex";
 import { DateTime } from 'luxon';
 import parseFileMixin from '@/mixins/parseFileMixin';
 import logger from "@/logger";
 import CreateMappingModal from "@/components/CreateMappingModal.vue";
+import HelpModal from "@/components/HelpModal.vue"
 import { StockService } from "@/services/StockService";
 import { UploadService } from "@/services/UploadService";
 
@@ -142,6 +142,7 @@ export default defineComponent({
   components: {
     IonBackButton,
     IonButton,
+    IonButtons,
     IonChip,
     IonContent,
     IonHeader,
@@ -165,7 +166,8 @@ export default defineComponent({
       fieldMapping: {},
       fields: process.env["VUE_APP_MAPPING_ADJINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_ADJINV"]) : {},
       identificationTypeId: "SHOPIFY_PROD_SKU",
-      jobs: [],
+      draftJob: {},
+      pendingJob: {},
       selectedMappingId: ""
     }
   },
@@ -193,9 +195,15 @@ export default defineComponent({
 
   methods: {
     getRunTime() {
-      const pendingJob = this.jobs?.find(job => job.statusId === "SERVICE_PENDING")
-      const runTime = pendingJob?.runTime
+      const runTime = this.pendingJob?.runTime
       return DateTime.fromMillis(runTime).toLocaleString(DateTime.DATETIME_MED);
+    },
+    async openHelpModal() {
+      const helpModal = await modalController.create({
+        component: HelpModal,
+      });
+      
+      return helpModal.present();
     },
     mapFields(mapping, mappingId) {
       const fieldMapping = JSON.parse(JSON.stringify(mapping));
@@ -248,7 +256,7 @@ export default defineComponent({
       }
     },
     async runNow(jobStatus) {
-      const job = this.jobs.find(job => jobStatus === "pending" ? job.statusId === "SERVICE_PENDING" : job.statusId === "SERVICE_DRAFT");
+      const job = jobStatus === "pending" ? this.pendingJob : this.draftJob
 
       const jobAlert = await alertController
         .create({
@@ -262,41 +270,68 @@ export default defineComponent({
             {
               text: translate("Run now"),
               handler: () => {
-                  this.store.dispatch('stock/runServiceNow', job)
+                this.store.dispatch('stock/runServiceNow', job)
               }
             }
           ]
         });
       return jobAlert.present();
     },
-    async fetchJobs () {
-      let resp;
+    async enableJob() {
+      try {
+        const resp = await this.store.dispatch("stock/scheduleService", { bulkFileProcessingJob: this.draftJob });
+        if(resp) {
+          await this.fetchJobs(true);
+        }
+      } catch(error) {
+        logger.error(error);
+      }
+    },
+    async fetchJobs(fetchOnlyPendingJob = false) {
+      const fetchJobRequests = [];
+      
       try{
         const params = {
           "inputFields": {
-            'statusId': ["SERVICE_PENDING", "SERVICE_DRAFT"],
+            'statusId': fetchOnlyPendingJob ? "SERVICE_PENDING" : "SERVICE_DRAFT",
             'systemJobEnumId': "JOB_PRC_PND_DML",
             'systemJobEnumId_op': 'equals',
           },
           "orderBy": "runTime ASC",
           "noConditionFind": "Y",
-          "viewSize": 10
+          "viewSize": 1
         }
-    
-        resp = await StockService.fetchJobInformation(params)
-    
-        if(!hasError(resp) && resp.data.count > 0) {
-          this.jobs = resp.data.docs
-        } else {
-          throw resp.data
-        } 
+        // Fetch draft jobs
+        if (!fetchOnlyPendingJob) {
+          fetchJobRequests.push(StockService.fetchJobInformation(params).catch((err) => {
+            return err;
+          }));
+        }
+
+        // Update params for pending jobs
+        params.inputFields.statusId = "SERVICE_PENDING";
+
+        // Fetch pending jobs
+        fetchJobRequests.push(StockService.fetchJobInformation(params).catch((err) => {
+          return err;
+        }))
+
+        const resp = await Promise.all(fetchJobRequests)
+        resp.map((response) => {
+          if(!hasError(response) && response.data.docs?.length) {          
+            const job = response.data.docs[0]
+            if(job.statusId === "SERVICE_DRAFT") {
+              this.draftJob = job;
+            } else if(job.statusId === "SERVICE_PENDING") {
+              this.pendingJob = job;
+            }
+          } else {
+            throw resp.data
+          }
+        })
       } catch(error) {
         logger.error(error);
       }
-      return resp
-    },
-    hasPendingJobs() {
-      return this.jobs?.some(job => job.statusId === "SERVICE_PENDING");
     },
     async upload() {
       
@@ -371,12 +406,17 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+    const userStore = useUserStore()
+    let currentEComStore = computed(() => userStore.getCurrentEComStore)
+
     return {
       router,
       translate,
       addOutline,
       arrowForward,
       cloudUploadOutline,
+      currentEComStore,
+      informationCircleOutline,
       settingsOutline,
       store,
     }

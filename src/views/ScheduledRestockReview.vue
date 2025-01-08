@@ -165,7 +165,7 @@ export default defineComponent({
       this.isJobNameUpdating = false
     },
     cancelRename() {
-      if (this.isJobNameUpdating) {
+      if(this.isJobNameUpdating) {
         this.jobName = this.currentJob.jobName
         this.isJobNameUpdating = false
       }
@@ -256,13 +256,13 @@ export default defineComponent({
 
               try {
                 const resp = await UtilService.removeShipmentItem(payload)
-                if (!hasError(resp)) {
+                if(!hasError(resp)) {
                   showToast(translate("Product removed successfully"))
                   await this.store.dispatch('util/fetchShipmentItems', { shipmentId: this.currentJob.runtimeData?.shipmentId })
                 } else {
                   throw resp.data;
                 }
-              } catch (err) {
+              } catch(err) {
                 showToast(translate('Failed to remove item from shipment'))
                 logger.error(err)
               }
@@ -299,13 +299,13 @@ export default defineComponent({
               emitter.emit("presentLoader");
               try {
                 const resp = await UtilService.updateShipmentItem(payload)
-                if (!hasError(resp)) {
+                if(!hasError(resp)) {
                   showToast(translate("Shipment item quantity updated successfully"));
                   await this.store.dispatch('util/fetchShipmentItems', { shipmentId: this.currentJob.runtimeData?.shipmentId });
                 } else {
                   throw resp.data;
                 }
-              } catch (err) {
+              } catch(err) {
                 showToast(translate("Failed to update shipment item quantity"))
                 logger.error(err)
               }

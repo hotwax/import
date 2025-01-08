@@ -4,12 +4,11 @@
       <ion-toolbar>
         <ion-back-button default-href="/scheduled-incoming-inventory" slot="start" />
         <ion-title>{{ translate("Scheduled product launch") }}</ion-title>
-        <!-- TODO: We need to discuss what to display on this button click. -->
-        <!-- <ion-buttons slot="end">
-          <ion-button size="medium">
+        <ion-buttons slot="end">
+          <ion-button size="medium" @click="openHelpModal()">
             <ion-icon slot="icon-only" :icon="informationCircleOutline" />
           </ion-button>
-        </ion-buttons> -->
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -114,12 +113,13 @@
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { translate } from "@hotwax/dxp-components";
-import { addOutline, arrowForwardOutline, cloudUploadOutline, ellipsisVerticalOutline } from "ionicons/icons";
-import { IonBackButton, IonButton, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
+import { addOutline, arrowForwardOutline, cloudUploadOutline, ellipsisVerticalOutline, informationCircleOutline } from "ionicons/icons";
+import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import parseFileMixin from '@/mixins/parseFileMixin';
 import { showToast, hasError } from '@/utils';
 import { mapGetters, useStore } from "vuex";
 import CreateMappingModal from "@/components/CreateMappingModal.vue";
+import HelpModal from "@/components/HelpModal.vue"
 import { DateTime } from 'luxon';
 import { UtilService } from '@/services/UtilService'
 import { UploadService } from "@/services/UploadService";
@@ -131,6 +131,7 @@ export default defineComponent({
   components: {
     IonBackButton,
     IonButton,
+    IonButtons,
     IonChip,
     IonContent,
     IonDatetime,
@@ -238,6 +239,13 @@ export default defineComponent({
         return;
       }
       this.schedule = setTime;
+    },
+    async openHelpModal() {
+      const helpModal = await modalController.create({
+        component: HelpModal,
+      });
+      
+      return helpModal.present();
     },
     mapFields(mapping, mappingId) {
       const fieldMapping = JSON.parse(JSON.stringify(mapping));
@@ -390,6 +398,7 @@ export default defineComponent({
       arrowForwardOutline,
       cloudUploadOutline,
       ellipsisVerticalOutline,
+      informationCircleOutline,
       store,
       DateTime
     }

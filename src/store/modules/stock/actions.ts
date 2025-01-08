@@ -6,7 +6,7 @@ import * as types from './mutation-types'
 import { showToast } from '@/utils';
 import { hasError } from "@/adapter";
 import { StockService } from "@/services/StockService";
-import { translate } from "@hotwax/dxp-components";
+import { translate, useUserStore } from "@hotwax/dxp-components";
 import logger from "@/logger";
 import { DateTime } from 'luxon'
 
@@ -147,52 +147,64 @@ const actions: ActionTree<StockState, RootState> = {
     return resp;
   },
   
-  async scheduleService({ dispatch }, { params, restockName, scheduledTime }) {
-    let resp;
+  async scheduleService({ dispatch }, { params, restockName, scheduledTime, bulkFileProcessingJob }) {
+    let resp, job;
 
-      const job = await dispatch("fetchDraftJob")
+    if(bulkFileProcessingJob) {
+      job = bulkFileProcessingJob;
+    } else {
+      job = await dispatch("fetchDraftJob")
+    }
+    
+    if(!job.jobId || !job.serviceName || job.serviceName == '_NA_') {
+      showToast(translate("Configuration missing"))
+      return;
+    }
 
-      if(!job.jobId || !job.serviceName || job.serviceName == '_NA_') {
-        showToast(translate("Configuration missing"))
-        return;
-      }
-
-      const payload = {
-        'JOB_NAME': restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
-        'SERVICE_NAME': job.serviceName,
-        'SERVICE_COUNT': '0',
-        'SERVICE_TEMP_EXPR': job.jobStatus,
-        'SERVICE_RUN_AS_SYSTEM':'Y',
-        'jobFields': {
-          'systemJobEnumId': job.systemJobEnumId,
-          'tempExprId': job.jobStatus, // Need to remove this as we are passing frequency in SERVICE_TEMP_EXPR, currently kept it for backward compatibility
-          'parentJobId': job.parentJobId,
-          'runAsUser': 'system', //default system, but empty in run now.  TODO Need to remove this as we are using SERVICE_RUN_AS_SYSTEM, currently kept it for backward compatibility
-          'recurrenceTimeZone': this.state.user.current.userTimeZone,
-          'createdByUserLogin': this.state.user.current.userLoginId,
-          'lastModifiedByUserLogin': this.state.user.current.userLoginId,
-        },
-        'statusId': "SERVICE_PENDING",
+    let payload = {
+      'JOB_NAME': bulkFileProcessingJob ? job.jobName : restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
+      'SERVICE_NAME': job.serviceName,
+      'SERVICE_COUNT': '0',
+      'SERVICE_TEMP_EXPR': bulkFileProcessingJob ? "EVERY_5_MIN" : job.jobStatus,
+      'SERVICE_RUN_AS_SYSTEM':'Y',
+      'jobFields': {
         'systemJobEnumId': job.systemJobEnumId,
-        ...params
-      }
+        'tempExprId': bulkFileProcessingJob ? "EVERY_5_MIN" : job.jobStatus, // Need to remove this as we are passing frequency in SERVICE_TEMP_EXPR, currently kept it for backward compatibility
+        'parentJobId': job.parentJobId,
+        'runAsUser': 'system', //default system, but empty in run now.  TODO Need to remove this as we are using SERVICE_RUN_AS_SYSTEM, currently kept it for backward compatibility
+        'recurrenceTimeZone': this.state.user.current.userTimeZone,
+        'createdByUserLogin': this.state.user.current.userLoginId,
+        'lastModifiedByUserLogin': this.state.user.current.userLoginId,
+      },
+      'statusId': "SERVICE_PENDING",
+      'systemJobEnumId': job.systemJobEnumId,
+    } as any
+    
+    // If not a bulk file processing job, merge additional parameters of Scheduled Restock
+    if(!bulkFileProcessingJob) {
+      payload = {
+        ...payload,
+        ...params,
+        SERVICE_TIME: scheduledTime.toString(),
+      };
+    }
 
-      job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
-      payload['SERVICE_TIME'] = scheduledTime.toString()
-      job?.sinceId && (payload['sinceId'] = job.sinceId)
+    job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
+    job?.sinceId && (payload['sinceId'] = job.sinceId)
 
-      try {
-        resp = await StockService.scheduleJob({ ...payload });
-        if (resp.status == 200 && !hasError(resp)) {
-          showToast(translate('Service has been scheduled'));
-        } else {
-          showToast(translate('Something went wrong'))
-        }
-      } catch (err) {
-        showToast(translate('Something went wrong'))
-        logger.error(err)
+    try {
+      resp = await StockService.scheduleJob({ ...payload });
+        if(resp.status == 200 && !hasError(resp)) {
+        showToast(translate('Service has been scheduled'));
+        return resp.data;
+      } else {
+        throw resp.data
       }
-      return {};
+    } catch(err) {
+      showToast(translate('Something went wrong'))
+      logger.error(err)
+    }
+    return {};
   },
  
   async fetchDraftJob() {
@@ -237,11 +249,13 @@ const actions: ActionTree<StockState, RootState> = {
 
   async fetchJobs ({ commit }) {
     let resp;
+    const currentEComStore: any = useUserStore().getCurrentEComStore
 
     try{
       const params = {
         "inputFields": {
           "statusId": ["SERVICE_PENDING", "SERVICE_FINISHED"],
+          "productStoreId": currentEComStore.productStoreId,
           'systemJobEnumId': "JOB_SCHEDULED_RSTK",
           'systemJobEnumId_op': 'equals',
         },

@@ -11,7 +11,7 @@
   </ion-header>
   <ion-content ref="contentRef" :scroll-events="true" @ionScroll="enableScrolling()">
     <ion-searchbar v-model="queryString" :placeholder="translate('Search SKU or product name')" @keyup.enter="handleSearch" @ionInput="handleInput"/>
-     
+
     <template v-if="products.length">
       <ion-list v-for="product in products" :key="product.productId">
         <ion-item lines="none">
@@ -124,7 +124,7 @@ export default defineComponent({
       }
     },
     async handleSearch() {
-      if (!this.queryString) {
+      if(!this.queryString) {
         this.isSearching = false; 
         store.dispatch("product/clearProducts");
         return;
@@ -141,7 +141,7 @@ export default defineComponent({
         viewIndex,
         queryString: this.queryString
       }
-      if (this.queryString) {
+      if(this.queryString) {
         await this.store.dispatch("product/findProduct", payload);
       }
     },
@@ -165,13 +165,13 @@ export default defineComponent({
       }
       try {
         resp = await UtilService.addProductToShipment(payload)
-        if (!hasError(resp)) {
+        if(!hasError(resp)) {
           showToast(translate("Product added successfully"));
           await this.store.dispatch('util/fetchShipmentItems', { shipmentId: this.shipmentId });
         } else {
           throw resp.data;
         }
-      } catch (err) {
+      } catch(err) {
         showToast(translate("Failed to add product to shipment"))
         logger.error(err)
       }
@@ -180,7 +180,7 @@ export default defineComponent({
       modalController.dismiss({ dismissed: true });
     },
     handleInput() {
-      if (!this.queryString) {
+      if(!this.queryString) {
         this.isSearching = false;
         store.dispatch("product/clearProducts");
       }

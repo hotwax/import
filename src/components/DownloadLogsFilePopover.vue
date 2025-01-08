@@ -44,24 +44,24 @@ export default defineComponent({
     async downloadFile(type: string) {
       let dataResource = {} as any;
 
-      if (type === 'logFile') {
+      if(type === 'logFile') {
         dataResource.dataResourceId = this.dataManagerLog.logFileDataResourceId
         dataResource.name = this.dataManagerLog.logFileContentName
-      } else if (type === 'uploadedFile') {
+      } else if(type === 'uploadedFile') {
         dataResource.name = this.dataManagerLog.contentName
         dataResource.dataResourceId = this.dataManagerLog.dataResourceId
-      } else if (type === 'failedRecords') {
+      } else if(type === 'failedRecords') {
         dataResource.dataResourceId = this.dataManagerLog.errorRecordDataResourceId
         dataResource.name = this.dataManagerLog.errorRecordContentName
       }
 
-      if (dataResource.dataResourceId) {
+      if(dataResource.dataResourceId) {
         try {
           const response = await UtilService.fetchFileData({
             dataResourceId: dataResource.dataResourceId
           });
           saveDataFile(response.data, dataResource.name);
-        } catch (error) {
+        } catch(error) {
           showToast(translate("Error downloading file"))
           logger.error(error)
         }

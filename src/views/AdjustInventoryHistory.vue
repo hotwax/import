@@ -29,8 +29,11 @@
             </ion-item>
             <ion-item>
               <ion-icon slot="start" :icon="optionsOutline" />
-              {{ translate("Mode") }}
-              <ion-label slot="end">{{ translate(getExecutionModeLabel(configDetails?.executionModeId)) }}</ion-label>
+              <ion-select :label="translate('Mode')" interface="popover" :value="configDetails?.executionModeId" @ionChange="updateDataManagerExecutionMode($event.detail.value)">
+                <ion-select-option value="DMC_SYNC">{{ translate("Sync") }}</ion-select-option>
+                <ion-select-option value="DMC_ASYNC">{{ translate("Async") }}</ion-select-option>
+                <ion-select-option value="DMC_QUEUE">{{ translate("Queued") }}</ion-select-option>
+              </ion-select>
             </ion-item>
           </ion-list>
         </section>
@@ -42,10 +45,11 @@
           <ion-label>{{ filter.label }}</ion-label>
           <ion-icon v-if="selectedFilter === filter.id" :icon="checkmarkOutline" />
         </ion-chip>
-        <ion-button slot="end" fill="outline" size="medium" @click="router.replace({ name: 'AdjustInventory' })">
+        <!-- TODO: Discuss the functionality of this button.. -->
+        <!-- <ion-button slot="end" fill="outline" size="medium" @click="router.replace({ name: 'AdjustInventory' })">
           {{ translate("Upload file") }}
           <ion-icon slot="end" :icon="cloudUploadOutline"/>
-        </ion-button>
+        </ion-button> -->
       </ion-item>
 
       <div class="empty-state" v-if="isLoading">
@@ -96,13 +100,13 @@
 
 <script>
 import { checkmarkOutline, cloudDownloadOutline, cloudUploadOutline, documentTextOutline, ellipsisVerticalOutline, globeOutline, optionsOutline, shareSocialOutline } from "ionicons/icons";
-import { IonBackButton, IonBadge, IonButton, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonSpinner, IonTitle, IonToolbar, popoverController } from "@ionic/vue";
+import { IonBackButton, IonBadge, IonButton, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonSelect, IonSelectOption, IonSpinner, IonTitle, IonToolbar, popoverController } from "@ionic/vue";
 import { defineComponent } from 'vue'
 import { mapGetters, useStore } from 'vuex'
 import { translate } from '@hotwax/dxp-components'
 import { UtilService } from "@/services/UtilService"
 import { useRouter } from "vue-router";
-import { hasError, saveDataFile } from '@/utils'
+import { hasError, saveDataFile, showToast } from '@/utils'
 import { DateTime } from 'luxon'
 import logger from "@/logger";
 import DownloadLogsFilePopover from "@/components/DownloadLogsFilePopover.vue";
@@ -121,6 +125,8 @@ export default defineComponent ({
     IonLabel,
     IonList,
     IonPage,
+    IonSelect,
+    IonSelectOption, 
     IonSpinner,
     IonTitle,
     IonToolbar,
@@ -156,24 +162,12 @@ export default defineComponent ({
   methods: {
     filterDataManagerLogs(id) {
       this.selectedFilter = id;
-      if (id === "ALL") {
+      if(id === "ALL") {
         this.filteredDataManagerLogList = [...this.dataManagerLogList]
-      } else if (id === "FAILED_LOGS") {
+      } else if(id === "FAILED_LOGS") {
         this.filteredDataManagerLogList = this.dataManagerLogList.filter(log => log.statusId === 'SERVICE_FAILED')
-      } else if (id === "FAILED_RECORDS") {
+      } else if(id === "FAILED_RECORDS") {
         this.filteredDataManagerLogList = this.dataManagerLogList.filter(log => log.errorRecordContentId !== null)
-      }
-    },
-    getExecutionModeLabel(executionModeId) {
-      switch (executionModeId) {
-        case "DMC_SYNC":
-          return "Sync";
-        case "DMC_ASYNC":
-          return "Async";
-        case "DMC_QUEUE":
-          return "Queued";
-        default:
-          return "-";
       }
     },
     getDateTime(time) {
@@ -193,13 +187,13 @@ export default defineComponent ({
 
       try {
         const resp = await UtilService.fetchDataManagerLogs(payload);
-        if (resp.data.docs?.length > 0 && !hasError(resp)) {
+        if(resp.data.docs?.length > 0 && !hasError(resp)) {
           this.dataManagerLogList = resp.data.docs;
           this.filteredDataManagerLogList = [...this.dataManagerLogList];
         } else {
           throw resp.data;
         }
-      } catch (err) {
+      } catch(err) {
         logger.error(err);
       }
     },
@@ -220,23 +214,41 @@ export default defineComponent ({
     
       try {
         const resp = await UtilService.fetchDataResource(payload);
-        if (resp.data.docs?.length > 0 && !hasError(resp)) {
+        if(resp.data.docs?.length > 0 && !hasError(resp)) {
           dataManagerLogList.forEach((log) => {
             const logFileDataResource = resp.data.docs.find((doc) => doc.coContentId === log.logFileContentId);
-            if (logFileDataResource) {
+            if(logFileDataResource) {
               log.logFileDataResourceId = logFileDataResource.coDataResourceId;
               log.logFileContentName = logFileDataResource.coContentName;
             }
     
             const errorRecordDataResource = resp.data.docs.find((doc) => doc.coContentId === log.errorRecordContentId);
-            if (errorRecordDataResource) {
+            if(errorRecordDataResource) {
               log.errorRecordDataResourceId = errorRecordDataResource.coDataResourceId;
               log.errorRecordContentName = errorRecordDataResource.coContentName;
             }
           });
         }
-      } catch (err) {
+      } catch(err) {
         logger.error(err);
+      }
+    },
+    async updateDataManagerExecutionMode(mode) {
+
+      try {
+        const resp = await UtilService.updateDataManagerConfig({
+          configId: this.configDetails.configId,
+          executionModeId: mode
+        })
+
+        if(!hasError(resp)) {
+          showToast(translate("Execution mode updated successfully"))
+        } else {
+          throw resp.data;
+        }
+      } catch(err) {
+        showToast(translate("Failed to update execution mode"))
+        logger.error(err)
       }
     },
     async openDownloadLogsFilePopover(dataManagerLog, event) {
@@ -250,13 +262,13 @@ export default defineComponent ({
     },
     async downloadErrorRecordFile(dataManagerLog) {
       try {
-        if (dataManagerLog?.errorRecordDataResourceId) {
+        if(dataManagerLog?.errorRecordDataResourceId) {
           const response = await UtilService.fetchFileData({
             dataResourceId: dataManagerLog.errorRecordDataResourceId
           });
           saveDataFile(response.data, dataManagerLog?.errorRecordContentName);
         }
-      } catch (error) {
+      } catch(error) {
         logger.error(error);
       }
     }
