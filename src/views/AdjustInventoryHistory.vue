@@ -181,19 +181,27 @@ export default defineComponent ({
         },
         "fieldList": ["statusId", "logId", "createdDate", "startDateTime", "finishDateTime", "logFileContentId", "errorRecordContentId", "contentName", "dataResourceId"],
         "noConditionFind": "Y",
-        "viewSize": 250,
+        "viewSize": 200,
         "entityName": "DataManagerLogAndContent",
       }
 
+      let fetchedLogs = [], viewIndex = 0, resp;
+
       try {
-        const resp = await UtilService.fetchDataManagerLogs(payload);
-        if(resp.data.docs?.length > 0 && !hasError(resp)) {
-          this.dataManagerLogList = resp.data.docs;
-          this.filteredDataManagerLogList = [...this.dataManagerLogList];
-        } else {
-          throw resp.data;
-        }
-      } catch(err) {
+        do {
+          const currentPayload = { ...payload, viewIndex };
+          resp = await UtilService.fetchDataManagerLogs(currentPayload);
+          if(!hasError(resp) && resp.data.docs?.length > 0) {
+            fetchedLogs = fetchedLogs.concat(resp.data.docs)
+            viewIndex++
+          } else {
+            throw resp.data
+          }
+        } while(resp.data.docs?.length >= 200)
+        // After fetching all logs, update the state
+        this.dataManagerLogList = fetchedLogs;
+        this.filteredDataManagerLogList = [...this.dataManagerLogList];
+      } catch (err) {
         logger.error(err);
       }
     },

@@ -137,10 +137,10 @@ export default defineComponent({
   },
   async ionViewDidEnter() {
     await this.store.dispatch('stock/fetchJobs')
-    this.updateJobsByStatus();
+    this.filterJobsByStatus();
   },
   methods: {
-    updateJobsByStatus() {
+    filterJobsByStatus() {
       this.pendingJobs = this.jobs.filter(job => job.statusId === "SERVICE_PENDING");
       this.finishedJobs = this.jobs.filter(job => job.statusId === "SERVICE_FINISHED");
     },
@@ -201,7 +201,7 @@ export default defineComponent({
         if(!hasError(resp) && resp.data.successMessage) {
           await this.store.dispatch('stock/fetchJobs')
           showToast(translate('Service updated successfully'))
-          this.updateJobsByStatus();
+          this.filterJobsByStatus();
         } else {
           throw resp.data
         }
