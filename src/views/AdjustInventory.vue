@@ -359,48 +359,48 @@ export default defineComponent({
         header: translate("Adjust Inventory"),
         message: translate("Make sure all the data you have entered is correct."),
         buttons: [
-            {
-              text: translate("Cancel"),
-              role: "cancel",
-            },
-            {
-              text: translate("Upload"),
-              handler: () => {
-                const data = jsonToCsv(uploadData)
-                const formData = new FormData();
-                formData.append("uploadedFile", data, this.file.name);
+          {
+            text: translate("Cancel"),
+            role: "cancel",
+          },
+          {
+            text: translate("Upload"),
+            handler: () => {
+              const data = jsonToCsv(uploadData)
+              const formData = new FormData();
+              formData.append("uploadedFile", data, this.file.name);
 
-                if(Object.keys(params)) {
-                  for(const key in params) {
-                    formData.append(key, params[key]);
-                  }
+              if(Object.keys(params)) {
+                for(const key in params) {
+                  formData.append(key, params[key]);
+                }
+              }
+
+              UploadService.uploadAndImportFile({
+                data: formData,
+                headers: {
+                  'Content-Type': 'multipart/form-data;'
+                }
+              }).then((resp) => {
+                if(hasError(resp)) {
+                  throw resp.data
                 }
 
-                UploadService.uploadAndImportFile({
-                  data: formData,
-                  headers: {
-                    'Content-Type': 'multipart/form-data;'
+                showToast(translate("The inventory has been updated successfully"), [{
+                  text: translate("View"),
+                  role: "view",
+                  handler: () => {
+                    const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=MDM_INV_VARIANCE`
+                    window.open(omsURL, '_blank');
                   }
-                }).then((resp) => {
-                  if(hasError(resp)) {
-                    throw resp.data
-                  }
-
-                  showToast(translate("The inventory has been updated successfully"), [{
-                    text: translate("View"),
-                    role: "view",
-                    handler: () => {
-                      const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=MDM_INV_VARIANCE`
-                      window.open(omsURL, '_blank');
-                    }
-                  }])
-                }).catch(() => {
-                  showToast(translate("Something went wrong, please try again"));
-                })
-              },
+                }])
+              }).catch(() => {
+                showToast(translate("Something went wrong, please try again"));
+              })
             },
-          ],
-        });
+          },
+        ],
+      });
       return alert.present();  
     },
   },

@@ -27,12 +27,7 @@ const mutations: MutationTree <UtilState> = {
         state.shipmentItems = payload;
     },
     [types.UTIL_SERVICE_STATUS_DESC_UPDATED] (state, payload) {
-        payload.map((status: any) => {
-          state.statusDesc[status.statusId] = status.description;
-        })
-    },
-    [types.UTIL_SERVICE_STATUS_DESC_CLEARED] (state) {
-        state.statusDesc = {}
+        state.statusDesc = payload
     },
     [types.UTIL_DATA_MANAGER_CONFIG_UPDATED] (state, payload) {
         state.configDetails = payload;

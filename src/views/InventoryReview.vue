@@ -251,51 +251,51 @@ export default defineComponent({
         header: translate("Reset inventory"),
         message: translate("Make sure all the data you have entered is correct."),
         buttons: [
-            {
-              text: translate("Cancel"),
-              role: 'cancel',
-            },
-            {
-              text: translate("Upload"),
-              handler: () => {
-                const data = jsonToCsv(uploadData)
-                const formData = new FormData();
-                formData.append("uploadedFile", data, this.fileName);
+          {
+            text: translate("Cancel"),
+            role: 'cancel',
+          },
+          {
+            text: translate("Upload"),
+            handler: () => {
+              const data = jsonToCsv(uploadData)
+              const formData = new FormData();
+              formData.append("uploadedFile", data, this.fileName);
 
-                if(Object.keys(params)) {
-                  for(const key in params) {
-                    formData.append(key, params[key]);
-                  }
+              if(Object.keys(params)) {
+                for(const key in params) {
+                  formData.append(key, params[key]);
+                }
+              }
+
+              UploadService.uploadAndImportFile({
+                data: formData,
+                headers: {
+                  'Content-Type': 'multipart/form-data;'
+                }
+              }).then((resp: any) => {
+                if(hasError(resp)) {
+                  throw resp.data
                 }
 
-                UploadService.uploadAndImportFile({
-                  data: formData,
-                  headers: {
-                    'Content-Type': 'multipart/form-data;'
+                this.isCsvUploadedSuccessfully = true;
+                showToast(translate("The inventory has been updated successfully"), [{
+                  text: translate('View'),
+                  role: 'view',
+                  handler: () => {
+                    const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=RESET_INVENTORY`
+                    window.open(omsURL, '_blank');
                   }
-                }).then((resp: any) => {
-                  if(hasError(resp)) {
-                    throw resp.data
-                  }
-
-                  this.isCsvUploadedSuccessfully = true;
-                  showToast(translate("The inventory has been updated successfully"), [{
-                    text: translate('View'),
-                    role: 'view',
-                    handler: () => {
-                      const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=RESET_INVENTORY`
-                      window.open(omsURL, '_blank');
-                    }
-                  }])
-                  this.router.push("/inventory");
-                  this.store.dispatch('stock/clearStockItems');
-                }).catch(() => {
-                  showToast(translate("Something went wrong, please try again"));
-                })
-              },
+                }])
+                this.router.push("/inventory");
+                this.store.dispatch('stock/clearStockItems');
+              }).catch(() => {
+                showToast(translate("Something went wrong, please try again"));
+              })
             },
-          ],
-        });
+          },
+        ],
+      });
       return alert.present();  
     },
     async openProductPopover(ev: Event, id: any, isVirtual: boolean, item: any, type: string) {

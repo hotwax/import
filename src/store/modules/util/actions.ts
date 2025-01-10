@@ -139,16 +139,20 @@ const actions: ActionTree<UtilState, RootState> = {
         "fieldList": ["statusId", "description"],
         "noConditionFind": "Y",
         "viewSize": 20
-      }) 
-      if(resp.status === 200 && !hasError(resp) && resp.data.count) {
-        commit(types.UTIL_SERVICE_STATUS_DESC_UPDATED, resp.data.docs);
+      })
+      if(!hasError(resp) && resp.data.count) {
+        const statusDesc = {} as any;
+        resp.data.docs.map((status: any) => {
+          statusDesc[status.statusId] = status.description;
+        });
+        commit(types.UTIL_SERVICE_STATUS_DESC_UPDATED, statusDesc);
       }
     } catch(err) {
       logger.error(err)
     }
   },
   async clearStatusDesc({ commit }) {
-    commit(types.UTIL_SERVICE_STATUS_DESC_CLEARED)
+    commit(types.UTIL_SERVICE_STATUS_DESC_UPDATED, {})
   },
   // Fetches shipment items by shipmentId
   async fetchShipmentItems({ commit }, shipmentId) {
