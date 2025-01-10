@@ -11,7 +11,11 @@
   </ion-header>
 
   <ion-content>
-    <ion-list>
+    <div v-if="!Object.keys(itemsByFacilityId).length" class="empty-state ion-margin-top">
+      {{ translate("No missing facilities found") }}
+    </div>
+
+    <ion-list v-else>
       <ion-item v-for="(items, facilityId) in itemsByFacilityId" :key="facilityId" lines="full">
         <ion-select interface="popover" :placeholder="translate('Map facility')" @ionChange="updateFacility($event, facilityId)">
           <ion-label slot="label">
