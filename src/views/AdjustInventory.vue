@@ -71,7 +71,7 @@
             <!-- Pending Jobs in Queue -->
             <ion-item lines="none">
               <ion-label>
-                {{ translate("Uploaded files will be processed in", { runTime: getRunTime() }) }}
+                {{ translate("Uploaded files will be processed", { runTime: getRunTime() }) }}
               </ion-label>
               <ion-label slot="end">
                 <p>{{ translate("Queued") }}</p>
@@ -196,7 +196,8 @@ export default defineComponent({
   methods: {
     getRunTime() {
       const runTime = this.pendingJob?.runTime
-      return DateTime.fromMillis(runTime).toLocaleString(DateTime.DATETIME_MED);
+      const timeDiff = DateTime.fromMillis(runTime).diff(DateTime.local());
+      return DateTime.local().plus(timeDiff).toRelative();
     },
     async openHelpModal() {
       const helpModal = await modalController.create({

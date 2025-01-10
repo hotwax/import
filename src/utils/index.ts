@@ -137,7 +137,7 @@ const handleDateTimeInput = (dateTimeValue: any) => {
 const saveDataFile = async (response: any, fileName: string) => {
   let data;
 
-  if (typeof response === 'object') {
+  if(typeof response === 'object') {
     data = JSON.stringify(response)
   } else {
     data = response

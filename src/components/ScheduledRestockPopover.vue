@@ -18,7 +18,7 @@
           </ion-content>
         </ion-modal>
       </ion-item>
-      <ion-item button @click="cancelJob">
+      <ion-item button @click="cancelJob()">
         {{ translate("Cancel") }}
       </ion-item>
       <ion-item button @click="reviewJobItems" lines="none">

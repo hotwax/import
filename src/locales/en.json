@@ -283,7 +283,7 @@
   "Upload a file": "Upload a file",
   "Uploaded files will be processed asynchronously": "Uploaded files will be processed asynchronously",
   "Uploaded files will be processed immediately": "Uploaded files will be processed immediately",
-  "Uploaded files will be processed in": "Uploaded files will be processed in {runTime}",
+  "Uploaded files will be processed": "Uploaded files will be processed {runTime}",
   "Uploaded files will not be processed until the bulk file processing job is enabled.": "Uploaded files will not be processed until the bulk file processing job is enabled.",
   "Upload purchase order": "Upload purchase order",
   "Username": "Username",

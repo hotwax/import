@@ -169,7 +169,7 @@ export default defineComponent({
     changeJobRunTime(event) {
       const currentTime = DateTime.now().toMillis();
       const setTime = DateTime.fromISO(event.detail.value).toMillis();
-      if (setTime < currentTime) {
+      if(setTime < currentTime) {
         showToast(translate("Please provide a future date and time"));
         return;
       }
@@ -198,14 +198,14 @@ export default defineComponent({
 
       try {
         resp = await StockService.updateJob(payload)
-        if (!hasError(resp) && resp.data.successMessage) {
+        if(!hasError(resp) && resp.data.successMessage) {
           await this.store.dispatch('stock/fetchJobs')
           showToast(translate('Service updated successfully'))
           this.updateJobsByStatus();
         } else {
           throw resp.data
         }
-      } catch (err) {
+      } catch(err) {
         showToast(translate('Failed to update job'))
         logger.error(err)
       }

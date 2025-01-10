@@ -129,7 +129,7 @@ const actions: ActionTree<UtilState, RootState> = {
   },
   // Retrieves service status descriptions 
   async getServiceStatusDesc({ commit }) {
-    try{
+    try {
       const resp = await UtilService.getServiceStatusDesc({
         "inputFields": {
           "statusTypeId": "SERVICE_STATUS",
@@ -140,7 +140,7 @@ const actions: ActionTree<UtilState, RootState> = {
         "noConditionFind": "Y",
         "viewSize": 20
       }) 
-      if (resp.status === 200 && !hasError(resp) && resp.data.count) {
+      if(resp.status === 200 && !hasError(resp) && resp.data.count) {
         commit(types.UTIL_SERVICE_STATUS_DESC_UPDATED, resp.data.docs);
       }
     } catch(err) {
@@ -156,12 +156,12 @@ const actions: ActionTree<UtilState, RootState> = {
 
     try {
       const resp = await UtilService.fetchShipmentItems(shipmentId);
-      if (!hasError(resp)) {
+      if(!hasError(resp)) {
         shipmentItems = resp.data.items
       } else {
         throw resp.data
       }
-    } catch (err) {
+    } catch(err) {
       logger.error(err)
     }
     commit(types.UTIL_SHIPMENT_ITEMS_UPDATED, shipmentItems);
@@ -183,12 +183,12 @@ const actions: ActionTree<UtilState, RootState> = {
     
     try {
       resp = await UtilService.fetchDataManagerConfig(payload);
-      if (resp.data.docs?.length > 0 && !hasError(resp)) {
+      if(resp.data.docs?.length > 0 && !hasError(resp)) {
         configDetails = resp.data.docs[0];
       } else {
         throw resp.data
       }
-    } catch (err) {
+    } catch(err) {
       logger.error(err);
     }
     commit(types.UTIL_DATA_MANAGER_CONFIG_UPDATED, configDetails);
