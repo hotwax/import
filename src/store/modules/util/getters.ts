@@ -17,7 +17,18 @@ const getters: GetterTree <UtilState, RootState> = {
     },
     getProductStores(state) {
         return state.productStores;
+    },
+    getExactInventoryType(state) {
+        return state.exactInventoryType
+    },
+    getShipmentItems(state) {
+        return state.shipmentItems;
+    },
+    getStatusDesc: (state) => (statusId: any) => {
+        return state.statusDesc[statusId] ? state.statusDesc[statusId] : "-";
+    },
+    getDataManagerConfig(state) {
+        return state.configDetails
     }
-
 }
 export default getters;

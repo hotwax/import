@@ -134,4 +134,17 @@ const handleDateTimeInput = (dateTimeValue: any) => {
   return DateTime.fromISO(dateTime).toMillis()
 }
 
-export { showToast, hasError , parseCsv , jsonToCsv, JsonToCsvOption, handleDateTimeInput }
+const saveDataFile = async (response: any, fileName: string) => {
+  let data;
+
+  if(typeof response === 'object') {
+    data = JSON.stringify(response)
+  } else {
+    data = response
+  }
+
+  const blob = new Blob([data], {type: "text/plain;charset=utf-8"})
+  saveAs(blob, fileName);
+}
+
+export { showToast, hasError , parseCsv , jsonToCsv, JsonToCsvOption, handleDateTimeInput, saveDataFile }

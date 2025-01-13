@@ -3,7 +3,13 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start" />
-        <ion-title>{{ translate("Inventory") }}</ion-title>
+        <ion-back-button default-href="/unified-inventory" slot="start" />
+        <ion-title>{{ exactInventoryType.type === 'atp' ? translate("Exact ATP") : exactInventoryType.type === 'qoh' ? translate("Exact QoH") : translate("Cycle count")  }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button size="medium" @click="openHelpModal()">
+            <ion-icon slot="icon-only" :icon="informationCircleOutline" />
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -58,19 +64,23 @@
 </template>
 
 <script>
-import { IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
+import { IonBackButton, IonButton, IonButtons, IonChip, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonSelect, IonSelectOption, IonIcon, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
 import { mapGetters, useStore } from "vuex";
 import { showToast } from '@/utils';
 import { translate } from "@hotwax/dxp-components";
-import { addOutline, arrowForwardOutline } from 'ionicons/icons';
+import { addOutline, arrowForwardOutline, informationCircleOutline } from 'ionicons/icons';
 import parseFileMixin from '@/mixins/parseFileMixin';
 import CreateMappingModal from "@/components/CreateMappingModal.vue";
+import HelpModal from "@/components/HelpModal.vue"
 
 export default defineComponent({
   name: "Inventory",
   components: {
+    IonBackButton,
+    IonButton, 
+    IonButtons,
     IonChip,
     IonPage,
     IonHeader,
@@ -79,7 +89,6 @@ export default defineComponent({
     IonContent,
     IonItem,
     IonLabel,
-    IonButton,
     IonMenuButton,
     IonSelect,
     IonSelectOption,
@@ -101,7 +110,8 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       fieldMappings: 'user/getFieldMappings',
-      goodIdentificationTypes: 'util/getGoodIdentificationTypes'
+      goodIdentificationTypes: 'util/getGoodIdentificationTypes',
+      exactInventoryType: 'util/getExactInventoryType'
     })
   },
   mixins:[ parseFileMixin ],
@@ -153,6 +163,13 @@ export default defineComponent({
         showToast(translate("Please upload a valid reset inventory csv to continue"));
       }
     },
+    async openHelpModal() {
+      const helpModal = await modalController.create({
+        component: HelpModal,
+      });
+      
+      return helpModal.present();
+    },
     review() {
       const areAllFieldsSelected = Object.values(this.fieldMapping).every(field => field !== "");
       
@@ -197,6 +214,7 @@ export default defineComponent({
     return {
       addOutline,
       arrowForwardOutline,
+      informationCircleOutline,
       router,
       store,
       translate

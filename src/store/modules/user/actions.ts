@@ -55,6 +55,8 @@ const actions: ActionTree<UserState, RootState> = {
   
         updateToken(token)
         setPermissions(appPermissions);
+        // Getting service status description
+        this.dispatch('util/getServiceStatusDesc')
   
         // TODO user single mutation
         commit(types.USER_PERMISSIONS_UPDATED, appPermissions);
@@ -117,7 +119,7 @@ const actions: ActionTree<UserState, RootState> = {
     this.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
     this.dispatch('util/clearFacilities');
     this.dispatch('util/clearProductStores');
-    this.dispatch('stock/clearScheduledStock')
+    this.dispatch('util/clearStatusDesc');
     // clearing field mappings and current mapping when the user logout
     commit(types.USER_FIELD_MAPPINGS_UPDATED, {})
     commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', mappingType: '', name: '', value: {}})

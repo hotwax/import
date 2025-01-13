@@ -1,13 +1,17 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
+import AdjustInventory from '@/views/AdjustInventory.vue';
+import AdjustInventoryHistory from '@/views/AdjustInventoryHistory.vue';
 import PurchaseOrder from '@/views/PurchaseOrder.vue'
 import Inventory from '@/views/Inventory.vue'
 import InventoryReview from '@/views/InventoryReview.vue'
 import PurchaseOrderReview from '@/views/PurchaseOrderReview.vue';
 import SavedMappings from '@/views/SavedMappings.vue'
 import Settings from "@/views/Settings.vue"
+import ScheduledIncomingInventory from '@/views/ScheduledIncomingInventory.vue';
 import ScheduledRestock from "@/views/ScheduledRestock.vue";
 import ScheduledRestockReview from "@/views/ScheduledRestockReview.vue"
+import UnifiedInventory from '@/views/UnifiedInventory.vue';
 import store from '@/store'
 import MappingDetail from '@/views/MappingDetail.vue'
 import { DxpLogin, translate, useAuthStore } from '@hotwax/dxp-components';
@@ -45,7 +49,7 @@ const loginGuard = (to: any, from: any, next: any) => {
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/purchase-order'
+    redirect: '/unified-inventory'
   },
   {
     path: '/purchase-order',
@@ -69,6 +73,30 @@ const routes: Array<RouteRecordRaw> = [
     }
   },
   {
+    path: '/unified-inventory',
+    name: 'UnifiedInventory',
+    component: UnifiedInventory,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/scheduled-incoming-inventory',
+    name: 'ScheduledIncomingInventory',
+    component: ScheduledIncomingInventory,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/adjust-inventory',
+    name: 'AdjustInventory',
+    component: AdjustInventory,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/adjust-inventory-history',
+    name: 'AdjustInventoryHistory',
+    component: AdjustInventoryHistory,
+    beforeEnter: authGuard,
+  },
+  {
     path: '/inventory-review',
     name: 'InventoryDetail',
     component: InventoryReview,
@@ -81,7 +109,7 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: authGuard
   },
   {
-    path: '/scheduled-restock-review',
+    path: '/scheduled-restock-review/:id',
     name: 'ScheduledRestockReview',
     component: ScheduledRestockReview,
     beforeEnter: authGuard

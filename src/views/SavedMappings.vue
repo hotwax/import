@@ -31,6 +31,13 @@
               <ion-label>{{ mapping.name }}</ion-label>
             </ion-item>
           </ion-list>
+          <!-- TODO: need to make the enumId for this field mapping -->
+          <ion-list v-if="Object.keys(fieldMappings('ADJINV')).length">
+            <ion-list-header>{{ translate("Adjust inventory") }}</ion-list-header>
+            <ion-item v-for="(mapping, index) in fieldMappings('ADJINV')" :key="index" @click="viewMappingConfiguration(index, 'ADJINV')" detail button>
+              <ion-label>{{ mapping.name }}</ion-label>
+            </ion-item>
+          </ion-list>
         </section>
 
         <aside class="desktop-only" v-if="isDesktop" v-show="currentMapping.id != ''">

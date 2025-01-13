@@ -11,14 +11,18 @@
               id="schedule-datetime"        
               show-default-buttons 
               hour-cycle="h23"
+              :min="DateTime.now().toISO()"
               :value="job.runTime ? getDateTime(job.runTime) : getDateTime(DateTime.now().toMillis())"
               @ionChange="changeJobRunTime($event)"
             />
           </ion-content>
         </ion-modal>
       </ion-item>
-      <ion-item button @click="cancelJob()" lines="none">
+      <ion-item button @click="cancelJob()">
         {{ translate("Cancel") }}
+      </ion-item>
+      <ion-item button @click="reviewJobItems" lines="none">
+        {{ translate("View details") }}
       </ion-item>
     </ion-list>
   </ion-content>
@@ -35,12 +39,13 @@ import {
   IonItem,
   IonList,
   IonListHeader,
-  IonModal
+  IonModal,
+  popoverController
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useStore, mapGetters } from "vuex";
+import { useRouter } from "vue-router";
 import { DateTime } from 'luxon';
-import { popoverController } from "@ionic/core";
   
 export default defineComponent({
   name: "ScheduledRestockPopover",
@@ -65,6 +70,10 @@ export default defineComponent({
   },
   props: ["job"],
   methods: {
+    reviewJobItems() {
+      popoverController.dismiss()
+      this.router.push({ name: 'ScheduledRestockReview', params: { id: this.job.jobId } });
+    },
     async cancelJob() {
       let resp;
       try {
@@ -138,8 +147,11 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
+
     return {
       store,
+      router,
       translate
     }
   },

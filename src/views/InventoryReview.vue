@@ -139,7 +139,8 @@ export default defineComponent({
       facilities: 'util/getFacilities',
       fileName: 'order/getFileName',
       getFacilityLocationsByFacilityId: 'util/getFacilityLocationsByFacilityId',
-      userProfile: 'user/getUserProfile'
+      userProfile: 'user/getUserProfile',
+      exactInventoryType: 'util/getExactInventoryType'
     })
   },
   data() {
@@ -225,68 +226,76 @@ export default defineComponent({
     },
     async save(){
       const uploadData = this.stockItems.parsed.map((item: any) => {
-        return {
+        const data: any = {
           "facilityId": item.facilityId,
           "externalFacilityId": item.externalFacilityId,
           "idValue": item.identification,
           "idType": item.identificationTypeId,
           "locationSeqId": item.locationSeqId,
-          "availableQty": item.quantity,
           "comments": `Inventory was modified via the Import App by ${this.userProfile.partyName} using the ${this.fileName} file.`
-        };
+        }
+
+        if(this.exactInventoryType.configId === 'RESET_INVENTORY') {
+          data.resetByAtp = this.exactInventoryType.type === 'atp'
+          data.availableQty = item.quantity
+        } else {
+          data.quantity = item.quantity
+        }
+        return data;
       })
       const params = {
-        "configId": "RESET_INVENTORY"
+        "configId": this.exactInventoryType.configId
       } as any
+
       const alert = await alertController.create({
         header: translate("Reset inventory"),
         message: translate("Make sure all the data you have entered is correct."),
         buttons: [
-            {
-              text: translate("Cancel"),
-              role: 'cancel',
-            },
-            {
-              text: translate("Upload"),
-              handler: () => {
-                const data = jsonToCsv(uploadData)
-                const formData = new FormData();
-                formData.append("uploadedFile", data, this.fileName);
+          {
+            text: translate("Cancel"),
+            role: 'cancel',
+          },
+          {
+            text: translate("Upload"),
+            handler: () => {
+              const data = jsonToCsv(uploadData)
+              const formData = new FormData();
+              formData.append("uploadedFile", data, this.fileName);
 
-                if(Object.keys(params)) {
-                  for(const key in params) {
-                    formData.append(key, params[key]);
-                  }
+              if(Object.keys(params)) {
+                for(const key in params) {
+                  formData.append(key, params[key]);
+                }
+              }
+
+              UploadService.uploadAndImportFile({
+                data: formData,
+                headers: {
+                  'Content-Type': 'multipart/form-data;'
+                }
+              }).then((resp: any) => {
+                if(hasError(resp)) {
+                  throw resp.data
                 }
 
-                UploadService.uploadAndImportFile({
-                  data: formData,
-                  headers: {
-                    'Content-Type': 'multipart/form-data;'
+                this.isCsvUploadedSuccessfully = true;
+                showToast(translate("The inventory has been updated successfully"), [{
+                  text: translate('View'),
+                  role: 'view',
+                  handler: () => {
+                    const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=RESET_INVENTORY`
+                    window.open(omsURL, '_blank');
                   }
-                }).then((resp: any) => {
-                  if(hasError(resp)) {
-                    throw resp.data
-                  }
-
-                  this.isCsvUploadedSuccessfully = true;
-                  showToast(translate("The inventory has been updated successfully"), [{
-                    text: translate('View'),
-                    role: 'view',
-                    handler: () => {
-                      const omsURL = (this.instanceUrl.startsWith('http') ? this.instanceUrl.replace(/\/api\/?|\/$/, "") : `https://${this.instanceUrl}.hotwax.io`) + `/commerce/control/ImportData?configId=RESET_INVENTORY`
-                      window.open(omsURL, '_blank');
-                    }
-                  }])
-                  this.router.push("/inventory");
-                  this.store.dispatch('stock/clearStockItems');
-                }).catch(() => {
-                  showToast(translate("Something went wrong, please try again"));
-                })
-              },
+                }])
+                this.router.push("/inventory");
+                this.store.dispatch('stock/clearStockItems');
+              }).catch(() => {
+                showToast(translate("Something went wrong, please try again"));
+              })
             },
-          ],
-        });
+          },
+        ],
+      });
       return alert.present();  
     },
     async openProductPopover(ev: Event, id: any, isVirtual: boolean, item: any, type: string) {

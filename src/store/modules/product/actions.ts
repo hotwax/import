@@ -4,7 +4,9 @@ import ProductState from './ProductState'
 import * as types from './mutation-types'
 import { fetchProducts, isError } from "@/adapter";
 import logger from "@/logger";
-
+import emitter from "@/event-bus";
+import { hasError } from "@/utils";
+import { UtilService } from '@/services/UtilService'
 
 const actions: ActionTree<ProductState, RootState> = {
 
@@ -40,6 +42,35 @@ const actions: ActionTree<ProductState, RootState> = {
     }
     // TODO Handle specific error
     return state.cached;
+  },
+  async findProduct({ commit, state }, payload) {
+    let resp;
+    if(payload.viewIndex === 0) emitter.emit("presentLoader");
+    try {
+      resp = await UtilService.fetchProducts({
+        "keyword": payload.queryString,
+        "viewSize": payload.viewSize,
+        "viewIndex": payload.viewIndex
+      })
+      if(!hasError(resp)) {
+        let products = resp.data.response.docs;
+        const total = resp.data.response.numFound;
+
+        if(payload.viewIndex && payload.viewIndex > 0) products = state.list.items.concat(products)
+        commit(types.PRODUCT_LIST_UPDATED, { products, total });
+        commit(types.PRODUCT_ADD_TO_CACHED_MULTIPLE, { products });
+      } else {
+        throw resp.data.docs;
+      }
+    } catch(error) {
+      commit(types.PRODUCT_LIST_UPDATED, { products: [], total: 0 });
+    }
+    
+    if(payload.viewIndex === 0) emitter.emit("dismissLoader");
+    return resp;
+  },
+  async clearProducts({ commit }) {
+    commit(types.PRODUCT_LIST_UPDATED, { products: [], total: 0 });
   },
 }
 

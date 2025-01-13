@@ -290,6 +290,10 @@ http://ionicframework.com/docs/theming/ */
   --border-radius: 8px;
 }
 
+ion-input.name {
+  --background: var(--ion-color-light);
+}
+
 @media (min-width: 991px) {
   .desktop-only {
     display: unset;
