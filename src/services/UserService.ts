@@ -142,37 +142,11 @@ const getUserPermissions = async (payload: any, token: any): Promise<any> => {
   }
 }
 
-async function getEComStores(): Promise<any> {
-  const params = {
-    "viewSize": 200,
-    "fieldList": ["productStoreId", "storeName"],
-    "entityName": "ProductStore",
-    "distinct": "Y",
-    "noConditionFind": "Y"
-  };
-
-  try {
-    const resp = await api({
-      url: "performFind",
-      method: "get",
-      params
-    }) as any;
-    if(!hasError(resp)) {
-      return Promise.resolve(resp.data.docs?.length ? resp.data.docs : []);
-    } else {
-      throw resp.data
-    }
-  } catch(error) {
-    logger.error(error)
-    return Promise.resolve([])
-  }
-}
 
 export const UserService = {
     createFieldMapping,
     deleteFieldMapping,
     login,
-    getEComStores,
     getFieldMappings,
     getProfile,
     getUserPermissions,

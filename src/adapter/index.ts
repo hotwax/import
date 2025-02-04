@@ -17,6 +17,7 @@ import {
   updateInstanceUrl,
   setUserTimeZone,
   getAvailableTimeZones,
+  getEComStores,
   setProductIdentificationPref,
   setUserPreference
 } from '@hotwax/oms-api'
@@ -40,6 +41,7 @@ export {
   updateInstanceUrl,
   setUserTimeZone,
   getAvailableTimeZones,
+  getEComStores,
   setProductIdentificationPref,
   setUserPreference
 }
