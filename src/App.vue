@@ -108,9 +108,9 @@ export default defineComponent({
       await useProductIdentificationStore().getIdentificationPref(currentEComStore.productStoreId)
         .catch((error) => logger.error(error));
     }
-    if (this.userProfile) {
+    if(this.userProfile && this.userProfile.userTimeZone) {
       // Luxon timezone should be set with the user's selected timezone
-      this.userProfile.userTimeZone && (Settings.defaultZone = this.userProfile.userTimeZone);
+      Settings.defaultZone = this.userProfile.userTimeZone
     }
   },
   created() {
