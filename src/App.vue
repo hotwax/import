@@ -17,6 +17,7 @@ import { initialise, resetConfig } from '@/adapter'
 import { showToast } from "@/utils";
 import { translate, useProductIdentificationStore, useUserStore } from "@hotwax/dxp-components";
 import { useRouter } from 'vue-router';
+import { Settings } from 'luxon'
 import logger from '@/logger';
 
 export default defineComponent({
@@ -107,6 +108,10 @@ export default defineComponent({
       await useProductIdentificationStore().getIdentificationPref(currentEComStore.productStoreId)
         .catch((error) => logger.error(error));
     }
+    if(this.userProfile && this.userProfile.userTimeZone) {
+      // Luxon timezone should be set with the user's selected timezone
+      Settings.defaultZone = this.userProfile.userTimeZone
+    }
   },
   created() {
     initialise({
@@ -138,6 +143,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
+      userProfile: 'user/getUserProfile',
       userToken: 'user/getUserToken',
       instanceUrl: 'user/getInstanceUrl'
     })

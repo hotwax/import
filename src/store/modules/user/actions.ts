@@ -14,6 +14,8 @@ import {
   resetPermissions,
   setPermissions
 } from '@/authorization'
+import { Settings } from 'luxon'
+import store from '@/store'
 
 const actions: ActionTree<UserState, RootState> = {
 
@@ -63,6 +65,11 @@ const actions: ActionTree<UserState, RootState> = {
         commit(types.USER_TOKEN_CHANGED, { newToken: token })
   
         await dispatch('getProfile')
+
+        const userProfile = store.getters['user/getUserProfile']
+        if (userProfile.userTimeZone) {
+          Settings.defaultZone = userProfile.userTimeZone;
+        }
         dispatch('setPreferredDateTimeFormat', process.env.VUE_APP_DATE_FORMAT ? process.env.VUE_APP_DATE_FORMAT : 'MM/dd/yyyy');
 
         const ecomStores = await UserService.getEComStores()
@@ -165,6 +172,7 @@ const actions: ActionTree<UserState, RootState> = {
     const current: any = state.current;
     current.userTimeZone = timeZoneId;
     commit(types.USER_INFO_UPDATED, current);
+    Settings.defaultZone = current.userTimeZone;
   },
 
   /**
