@@ -165,7 +165,7 @@ export default defineComponent({
       fileColumns: [],
       fieldMapping: {},
       fields: process.env["VUE_APP_MAPPING_ADJINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_ADJINV"]) : {},
-      identificationTypeId: "SHOPIFY_PROD_SKU",
+      identificationTypeId: "SKU",
       draftJob: {},
       pendingJob: {},
       selectedMappingId: ""
