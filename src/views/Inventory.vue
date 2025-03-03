@@ -103,7 +103,7 @@ export default defineComponent({
       fieldMapping: {},
       fileColumns: [],
       fields: process.env["VUE_APP_MAPPING_RSTINV"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTINV"]) : {},
-      identificationTypeId: "SHOPIFY_PROD_SKU",
+      identificationTypeId: "SKU",
       selectedMappingId: ""
     }
   },

@@ -157,7 +157,7 @@ export default defineComponent({
       fileColumns: [],
       fieldMapping: {},
       fields: process.env["VUE_APP_MAPPING_RSTSTK"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTSTK"]) : {},
-      identificationTypeId: "SHOPIFY_PROD_SKU",
+      identificationTypeId: "SKU",
       schedule: '',
       isDateTimeModalOpen: false,
       shopifyShops: [],

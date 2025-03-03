@@ -89,7 +89,7 @@ export default defineComponent({
       mappingName: "",
       fieldMapping: {} as any,
       fileColumns: [] as any,
-      identificationTypeId: 'SHOPIFY_PROD_SKU'
+      identificationTypeId: 'SKU'
     }
   },
   props: ["content", "seletedFieldMapping", "mappingType"],
