@@ -133,7 +133,7 @@ export default defineComponent({
           return {
             orderId: item[this.fieldMapping.orderId],
             identification: item[this.fieldMapping.productSku],
-            identificationTypeId: "SHOPIFY_PROD_SKU",
+            identificationTypeId: "SKU",
             arrivalDate: item[this.fieldMapping.orderDate],
             quantityOrdered: item[this.fieldMapping.quantity],
             facilityId: '',
