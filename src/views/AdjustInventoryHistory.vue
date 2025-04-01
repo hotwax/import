@@ -30,7 +30,7 @@
             <ion-item>
               <ion-icon slot="start" :icon="optionsOutline" />
               <ion-select :label="translate('Mode')" interface="popover" :value="configDetails?.executionModeId" @ionChange="updateDataManagerExecutionMode($event.detail.value)">
-                <ion-select-option value="DMC_SYNC">{{ translate("Sync") }}</ion-select-option>
+                <ion-select-option v-if="configDetails?.multiThreading !== 'Y'" value="DMC_SYNC">{{ translate("Sync") }}</ion-select-option>
                 <ion-select-option value="DMC_ASYNC">{{ translate("Async") }}</ion-select-option>
                 <ion-select-option value="DMC_QUEUE">{{ translate("Queued") }}</ion-select-option>
               </ion-select>
