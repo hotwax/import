@@ -47,7 +47,7 @@
               </ion-select>
             </template>
             <template v-else>
-              <ion-select :label="translate(fieldValues.label)" interface="popover" v-if="content.length" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
+              <ion-select :label="translate(fieldValues.label)" interface="popover" :disabled="!content.length" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
                 <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
               </ion-select>
             </template>
