@@ -287,7 +287,7 @@ export default defineComponent({
                     window.open(omsURL, '_blank');
                   }
                 }])
-                this.router.replace("/inventory");
+                this.router.go(-1);
                 this.store.dispatch('stock/clearStockItems');
               }).catch(() => {
                 showToast(translate("Something went wrong, please try again"));

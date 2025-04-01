@@ -292,7 +292,7 @@ export default defineComponent({
                     window.open(omsURL, '_blank');
                   }
                 }])
-                this.router.push("/purchase-order");
+                this.router.go(-1);
                 this.store.dispatch('order/updatePurchaseOrders', {parsed: {}, original: {}, unidentifiedItems: []});
               }).catch(() => {
                 showToast(translate("Something went wrong, please try again"));
