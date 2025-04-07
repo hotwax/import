@@ -42,12 +42,12 @@
               <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "translate('Select')" v-model="identificationTypeId">
                 <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" :value="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
               </ion-select>
-              <ion-select aria-label="identification-type-value" interface="popover" v-if="content.length" :placeholder = "translate('Select')" slot="end" v-model="fieldMapping['productIdentification']">
+              <ion-select aria-label="identification-type-value" interface="popover" :disabled="!content.length" :placeholder = "translate('Select')" slot="end" v-model="fieldMapping['productIdentification']">
                 <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
               </ion-select>
             </template>
             <template v-else>
-              <ion-select :label="translate(fieldValues.label)" interface="popover" v-if="content.length" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
+              <ion-select :label="translate(fieldValues.label)" interface="popover" :disabled="!content.length" :placeholder = "translate('Select')" v-model="fieldMapping[field]">
                 <ion-select-option :key="index" v-for="(prop, index) in fileColumns">{{ prop }}</ion-select-option>
               </ion-select>
             </template>
