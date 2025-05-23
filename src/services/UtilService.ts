@@ -33,6 +33,23 @@ const fetchShopifyShop = async (payload: any): Promise<any> => {
   })
 }
 
+const fetchProductSelectorPref = async (payload: any): Promise<any> => {
+  return api({
+    url: "performFind",
+    method: "GET",
+    params: payload,
+    cache: true
+  })
+}
+
+const updateProductSelectorPref = async (payload: any): Promise<any> => {
+  return api({
+    url: "service/updateProductStoreSetting",
+    method: "POST",
+    data: payload
+  })
+}
+
 const fetchProductStores = async (payload: any): Promise<any> => {
   return api({
     url: "/performFind",
@@ -137,6 +154,7 @@ export const UtilService = {
     fetchDataResource,
     fetchFileData,
     fetchProducts,
+    fetchProductSelectorPref,
     fetchProductStores,
     fetchShipmentItems,
     fetchGoodIdentificationTypes,
@@ -146,5 +164,6 @@ export const UtilService = {
     getServiceStatusDesc,
     removeShipmentItem,
     updateShipmentItem,
-    updateDataManagerConfig
+    updateDataManagerConfig,
+    updateProductSelectorPref
 }
