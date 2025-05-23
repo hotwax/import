@@ -197,6 +197,52 @@ const actions: ActionTree<UtilState, RootState> = {
     }
     commit(types.UTIL_DATA_MANAGER_CONFIG_UPDATED, configDetails);
   },
+  async fetchProductSelectorPref({ commit, dispatch }, eComStore){
+    let productSelectorPref = "";
+    const payload = {
+      "inputFields": {
+        "productStoreId": eComStore.productStoreId,
+        "settingTypeEnumId": "PRD_SELECTOR_PREF"
+      },
+      "entityName": "ProductStoreSetting",
+      "fieldList": ["settingValue", "settingTypeEnumId"],
+      "viewSize": 1
+    }
+
+    try {
+      const resp = await UtilService.fetchProductSelectorPref(payload)
+      if(!hasError(resp) && resp.data.docs[0].settingValue) {
+        productSelectorPref = resp.data.docs[0].settingValue
+      } else {
+        throw resp.data
+      }
+    } catch(err) {
+      console.error(err)
+    }
+    commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
+  },
+  async updateProductSelectorPref({ commit }, payload) {
+    const params = {
+      "productStoreId": payload.productStoreId,
+      "settingTypeEnumId": "PRD_SELECTOR_PREF",
+      "settingValue": payload.productSelectorPref
+    }
+
+    try {
+      const resp = await UtilService.updateProductSelectorPref(params)
+      if(!hasError(resp)) {
+        const productSelectorPref = payload.productSelectorPref
+        commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
+      } else {
+        throw resp.data
+      }
+    } catch(err) {
+      console.error(err)
+    }
+  },
+  async updateDefaultProductStoreSelector({ commit }, payload) {
+    commit(types.PRODUCT_STORE_SELECTOR_UPDATED, payload);
+  },
   async updateExactInventoryType({ commit }, type) {
     commit(types.UTIL_EXACT_INVENTORY_TYPE_UPDATED, type);
   },

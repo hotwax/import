@@ -16,7 +16,9 @@ const userModule: Module<UserState, RootState> = {
       exactInventoryType: {},
       shipmentItems: [],
       statusDesc: {},
-      configDetails: {}
+      configDetails: {},
+      productSelectorPref: [],
+      useDefaultProductStoreIdentifier: false
     },
     getters,
     actions,
