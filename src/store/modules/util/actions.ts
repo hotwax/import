@@ -233,13 +233,15 @@ const actions: ActionTree<UtilState, RootState> = {
       const resp = await UtilService.updateProductSelectorPref(params)
       if(!hasError(resp)) {
         productSelectorPref = payload.productSelectorPref
+        commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
+        return true;
       } else {
         throw resp.data
       }
     } catch(err) {
       console.error(err)
+      return false;
     }
-    commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
   },
   async updateDefaultProductStoreIdentifier({ commit }, payload) {
     commit(types.PRODUCT_STORE_DEFAULT_IDENTIFIER_UPDATED, payload);

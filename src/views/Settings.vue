@@ -94,7 +94,7 @@
             </ion-toggle>
           </ion-item>
           <ion-item>
-            <ion-select :label="translate('Upload Identifier')" interface="popover" :placeholder = "translate('Select')" :value="productSelectorPref" @ionChange="updateProductSelectorPref($event.detail.value)">
+            <ion-select :label="translate('Upload Identifier')" interface="popover" :placeholder = "translate('Select')" :value="productSelectorPref" @ionChange="updateProductSelectorPref($event)">
               <ion-select-option :key="identification.goodIdentificationTypeId" :value="identification.goodIdentificationTypeId" v-for="identification in goodIdentificationTypes">{{ identification.description ? identification.description : identification.goodIdentificationTypeId }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -105,8 +105,9 @@
 </template>
 
 <script lang="ts">
-import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToggle, IonToolbar } from '@ionic/vue';
 import { computed, defineComponent } from 'vue';
+import { showToast } from "@/utils";
 import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline, saveOutline, timeOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
@@ -134,7 +135,10 @@ export default defineComponent({
     IonLabel, 
     IonMenuButton,
     IonPage,
-    IonTitle, 
+    IonSelect,
+    IonSelectOption,
+    IonTitle,
+    IonToggle,
     IonToolbar,
     Image
   },
@@ -197,11 +201,20 @@ export default defineComponent({
         .catch((error) => logger.error(error));
       await this.store.dispatch('util/fetchProductSelectorPref', selectedProductStore)
     },
-    updateProductSelectorPref(value: string) {
-      this.store.dispatch('util/updateProductSelectorPref', {
+    async updateProductSelectorPref(event: any) {
+      const value = event.detail.value;
+
+      const resp = await this.store.dispatch('util/updateProductSelectorPref', {
         productStoreId: this.currentEComStore.productStoreId,
         productSelectorPref: value
       });
+
+      if(resp) {
+        showToast(translate("Product upload identifier updated successfully."));
+      } else {
+        event.target.value = this.productSelectorPref || '';
+        showToast(translate("Failed to update product upload identifier."));
+      }
     },
   },
   setup(){
