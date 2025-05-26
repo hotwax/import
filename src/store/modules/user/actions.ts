@@ -76,6 +76,10 @@ const actions: ActionTree<UserState, RootState> = {
         useUserStore().eComStores = ecomStores
         await useUserStore().getEComStorePreference("SELECTED_BRAND")
         const preferredStore: any = useUserStore().getCurrentEComStore
+        // If the user's preferred store has a productIdentifierEnumId, set the default identifier value in the state
+        if(!preferredStore?.productIdentifierEnumId) {
+          this.dispatch('util/updateDefaultProductStoreIdentifier', false);
+        }
 
         await useProductIdentificationStore().getIdentificationPref(preferredStore.productStoreId)
           .catch((error) => logger.error(error));
@@ -127,6 +131,7 @@ const actions: ActionTree<UserState, RootState> = {
     this.dispatch('util/clearFacilities');
     this.dispatch('util/clearProductStores');
     this.dispatch('util/clearStatusDesc');
+    this.dispatch('util/clearDefaultProductStoreIdentifier');
     // clearing field mappings and current mapping when the user logout
     commit(types.USER_FIELD_MAPPINGS_UPDATED, {})
     commit(types.USER_CURRENT_FIELD_MAPPING_UPDATED, {id: '', mappingType: '', name: '', value: {}})
