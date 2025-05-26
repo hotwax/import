@@ -358,7 +358,7 @@ export default defineComponent({
                 logger.error("Failed to create shipment", err)
               }
               emitter.emit("dismissLoader")
-              this.router.push("/scheduled-incoming-inventory")
+              this.router.go(-1)
             }
           },
         ],
