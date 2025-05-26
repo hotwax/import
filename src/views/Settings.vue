@@ -161,16 +161,13 @@ export default defineComponent({
     this.parseSampleDateTime();
     await this.store.dispatch('util/fetchGoodIdentificationTypes')
     await this.store.dispatch('util/fetchProductSelectorPref', this.currentEComStore)
-    if(this.currentEComStore.productIdentifierEnumId) {
-      this.store.dispatch('util/updateDefaultProductStoreSelector', true);
-    }
   },
   methods: {
     getIdentificationDesp(enumId: string) {
       return (this.goodIdentificationTypes.find((identification: any) => identification.goodIdentificationTypeId === enumId)?.description) || enumId;
     },
     toggleProductStoreEnumId(value: boolean) {
-      this.store.dispatch('util/updateDefaultProductStoreSelector', value);
+      this.store.dispatch('util/updateDefaultProductStoreIdentifier', value);
     },
     updateDateTimeFormat(){
       this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat

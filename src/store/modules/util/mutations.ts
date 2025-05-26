@@ -35,7 +35,7 @@ const mutations: MutationTree <UtilState> = {
     [types.PRODUCT_SELECTOR_PREF_UPDATED](state, payload) {
         state.productSelectorPref = payload
     },
-    [types.PRODUCT_STORE_SELECTOR_UPDATED](state, payload) {
+    [types.PRODUCT_STORE_DEFAULT_IDENTIFIER_UPDATED](state, payload) {
         state.useDefaultProductStoreIdentifier = payload
     }
 }

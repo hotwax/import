@@ -197,7 +197,7 @@ const actions: ActionTree<UtilState, RootState> = {
     }
     commit(types.UTIL_DATA_MANAGER_CONFIG_UPDATED, configDetails);
   },
-  async fetchProductSelectorPref({ commit, dispatch }, eComStore){
+  async fetchProductSelectorPref({ commit }, eComStore){
     let productSelectorPref = "";
     const payload = {
       "inputFields": {
@@ -222,6 +222,7 @@ const actions: ActionTree<UtilState, RootState> = {
     commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
   },
   async updateProductSelectorPref({ commit }, payload) {
+    let productSelectorPref = "";
     const params = {
       "productStoreId": payload.productStoreId,
       "settingTypeEnumId": "PRD_SELECTOR_PREF",
@@ -231,17 +232,17 @@ const actions: ActionTree<UtilState, RootState> = {
     try {
       const resp = await UtilService.updateProductSelectorPref(params)
       if(!hasError(resp)) {
-        const productSelectorPref = payload.productSelectorPref
-        commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
+        productSelectorPref = payload.productSelectorPref
       } else {
         throw resp.data
       }
     } catch(err) {
       console.error(err)
     }
+    commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
   },
-  async updateDefaultProductStoreSelector({ commit }, payload) {
-    commit(types.PRODUCT_STORE_SELECTOR_UPDATED, payload);
+  async updateDefaultProductStoreIdentifier({ commit }, payload) {
+    commit(types.PRODUCT_STORE_DEFAULT_IDENTIFIER_UPDATED, payload);
   },
   async updateExactInventoryType({ commit }, type) {
     commit(types.UTIL_EXACT_INVENTORY_TYPE_UPDATED, type);
@@ -249,7 +250,9 @@ const actions: ActionTree<UtilState, RootState> = {
   async clearProductStores({ commit }) {
     commit(types.UTIL_PRODUCT_STORES_UPDATED, []);
   },
-
+  async clearDefaultProductStoreIdentifier({ commit }) {
+    commit(types.PRODUCT_STORE_DEFAULT_IDENTIFIER_UPDATED, true);
+  },
   async updateFileProcessingStatus({ commit }, status){
     commit(types.UTIL_FILE_PROCESSING_STATUS_UPDATED, { status });
   },

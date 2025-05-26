@@ -41,7 +41,7 @@
           </ion-item-divider>
           <ion-item :key="field" v-for="(fieldValues, field) in fields">
             <template v-if="field === 'productIdentification'">
-              <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "translate('Select')" :value="productSelectorPref || (isDefaultProductStoreIdentifierSelected ? (currentEComStore.productIdentifierEnumId || 'SKU') : 'SKU')" :selected-text="!productSelectorPref && isDefaultProductStoreIdentifierSelected ? getIdentificationDesp(currentEComStore.productIdentifierEnumId) : ''">
+              <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "translate('Select')" v-model="identificationTypeId" :selected-text="getIdentificationDesp(identificationTypeId)">
                 <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" :value="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
               </ion-select>
               <ion-select aria-label="identification-type-value" interface="popover" :disabled="!content.length" :placeholder = "translate('Select')" slot="end" v-model="fieldMapping['productIdentification']">
@@ -157,7 +157,7 @@ export default defineComponent({
       fileColumns: [],
       fieldMapping: {},
       fields: process.env["VUE_APP_MAPPING_RSTSTK"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTSTK"]) : {},
-      identificationTypeId: "SKU",
+      identificationTypeId: "",
       schedule: '',
       isDateTimeModalOpen: false,
       shopifyShops: [],
@@ -199,6 +199,7 @@ export default defineComponent({
     this.selectedFacility = ""
     await Promise.allSettled([this.store.dispatch('util/fetchFacilities'), this.store.dispatch('stock/fetchJobs'), this.store.dispatch('util/fetchProductStores'), this.store.dispatch('util/fetchGoodIdentificationTypes')])
     if(!this.productSelectorPref.length) await this.store.dispatch('util/fetchProductSelectorPref', this.currentEComStore)
+    this.identificationTypeId = this.productSelectorPref || (this.isDefaultProductStoreIdentifierSelected ? this.currentEComStore.productIdentifierEnumId : 'SKU')
   },
 
   methods: {
