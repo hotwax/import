@@ -6,7 +6,7 @@ import * as types from './mutation-types'
 import { showToast } from '@/utils';
 import { hasError } from "@/adapter";
 import { StockService } from "@/services/StockService";
-import { translate, useUserStore } from "@hotwax/dxp-components";
+import { translate } from "@hotwax/dxp-components";
 import logger from "@/logger";
 import { DateTime } from 'luxon'
 
@@ -127,7 +127,8 @@ const actions: ActionTree<StockState, RootState> = {
         'parentJobId': job.parentJobId,
         'recurrenceTimeZone': this.state.user.current.userTimeZone,
         'createdByUserLogin': this.state.user.current.userLoginId,
-        'lastModifiedByUserLogin': this.state.user.current.userLoginId
+        'lastModifiedByUserLogin': this.state.user.current.userLoginId,
+        'instanceOfProductId': job.systemJobEnumId
       },
       'statusId': "SERVICE_PENDING",
       'systemJobEnumId': job.systemJobEnumId,
@@ -175,6 +176,8 @@ const actions: ActionTree<StockState, RootState> = {
         'recurrenceTimeZone': this.state.user.current.userTimeZone,
         'createdByUserLogin': this.state.user.current.userLoginId,
         'lastModifiedByUserLogin': this.state.user.current.userLoginId,
+        'instanceOfProductId': job.systemJobEnumId,
+        'productStoreId': params?.productStoreId
       },
       'statusId': "SERVICE_PENDING",
       'systemJobEnumId': job.systemJobEnumId,
@@ -249,13 +252,12 @@ const actions: ActionTree<StockState, RootState> = {
 
   async fetchJobs ({ commit }) {
     let resp;
-    const currentEComStore: any = useUserStore().getCurrentEComStore
 
     try{
       const params = {
         "inputFields": {
           "statusId": ["SERVICE_PENDING", "SERVICE_FINISHED"],
-          "productStoreId": currentEComStore.productStoreId,
+          "productStoreId_op": "not-empty",
           'systemJobEnumId': "JOB_SCHEDULED_RSTK",
           'systemJobEnumId_op': 'equals',
         },
