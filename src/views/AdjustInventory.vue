@@ -344,9 +344,9 @@ export default defineComponent({
       
       const uploadData = this.content.map(item => {
         return {
-          identification: item[this.fieldMapping.productIdentification],
-          identificationTypeId: this.identificationTypeId,
-          quantity: item[this.fieldMapping.quantity],
+          idValue: item[this.fieldMapping.productIdentification],
+          idType: this.identificationTypeId,
+          availableDelta: item[this.fieldMapping.quantity],
           facilityId: '',
           externalFacilityId: item[this.fieldMapping.facility],
           locationSeqId: item[this.fieldMapping.locationSeqId]
