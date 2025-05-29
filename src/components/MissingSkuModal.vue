@@ -29,10 +29,10 @@
       <!-- If two different POs contain same missing SKU then in MissingSkuModal, both the products will be selected. -->
       <ion-radio-group @ionChange="updatedSku = $event.detail.value; hasSkuUpdated = false; isSkuInvalid = false;" v-model="unidentifiedProductSku">
         <ion-list v-if="segmentSelected === 'pending'">
-          <ion-item v-for="item in getPendingItems()" :key="item.shopifyProductSKU">
-            <ion-radio :value="item.shopifyProductSKU">
+          <ion-item v-for="item in getPendingItems()" :key="item.identification">
+            <ion-radio :value="item.identification">
               <ion-label>
-                {{ item.shopifyProductSKU }}
+                {{ item.identification }}
                 <p>{{ item.orderId }}</p>
               </ion-label>
             </ion-radio>
@@ -40,7 +40,7 @@
         </ion-list>
 
         <ion-list v-if="segmentSelected === 'completed'">
-          <ion-item v-for="item in getCompletedItems()" :key="item.shopifyProductSKU">
+          <ion-item v-for="item in getCompletedItems()" :key="item.identification">
             <ion-thumbnail slot="start">
               <DxpShopifyImg :src="item.imageUrl" size="small" />
             </ion-thumbnail>
@@ -163,16 +163,27 @@ export default defineComponent({
       const payload = {
         viewSize: 1,
         viewIndex: 0,
-        productIds: [this.updatedSku]
+        productIdentificationIds: [this.updatedSku],
+        identificationTypeId: this.unidentifiedItems[0]?.identificationTypeId
       }
       const products = await this.store.dispatch("product/fetchProducts", payload);
-      const product = products[this.updatedSku];
+
+      // Create a mapping from identification value to pseudoId
+      let pseudoId = '';
+      Object.values(products).forEach((product: any) => {
+        const matchingIdentifier = product.identifications?.find((id: any) => id.productIdTypeEnumId ===  this.unidentifiedItems[0]?.identificationTypeId);
+        if(matchingIdentifier && matchingIdentifier.idValue === this.updatedSku) {
+          pseudoId = product.pseudoId;        
+        }
+      });
+
+      const product = products[pseudoId];
       if (!product) {
         this.isSkuInvalid = true;
         return;
       }
       
-      const unidentifiedItem = this.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.shopifyProductSKU === this.unidentifiedProductSku || unidentifiedItem.updatedSku === this.unidentifiedProductSku );
+      const unidentifiedItem = this.unidentifiedItems.find((unidentifiedItem: any) => unidentifiedItem.identification === this.unidentifiedProductSku || unidentifiedItem.updatedSku === this.unidentifiedProductSku );
       
       unidentifiedItem.updatedSku = this.updatedSku;
       unidentifiedItem.parentProductId = product.parent.id;

@@ -7,22 +7,30 @@ import * as types from './mutation-types'
 
 const actions: ActionTree<OrderState, RootState> = {
   async fetchOrderDetails ({commit, rootGetters}, items) {
-    const productIds = items.filter((item: any) => item.identification).map((item: any) => {
-      return item.identification
-    })
-    const viewSize = productIds.length;
-    const viewIndex = 0;
+    const productIdentificationIds = Array.from(new Set(items.filter((item: any) => item.identification).map((item: any) => item.identification)));
+    const viewSize = productIdentificationIds.length, viewIndex = 0;
     const payload = {
       viewSize,
       viewIndex,
-      productIds,
+      productIdentificationIds,
       identificationTypeId: items[0]?.identificationTypeId
     }
-    await store.dispatch("product/fetchProducts", payload);
-    const unidentifiedItems = [] as any;
 
+    const products = await store.dispatch("product/fetchProducts", payload);
+
+    // Create a mapping from identification value to pseudoId
+    const identificationToPseudoId = {} as any;
+    Object.values(products).forEach((product: any) => {
+      const matchingIdentifier = product.identifications?.find((id: any) => id.productIdTypeEnumId.toLowerCase() === items[0]?.identificationTypeId.toLowerCase());
+      if(matchingIdentifier && productIdentificationIds.includes(matchingIdentifier.idValue)) {
+        identificationToPseudoId[matchingIdentifier.idValue] = product.pseudoId;
+      }
+    });
+
+    const unidentifiedItems = [] as any;
     items = items.filter((item: any) => item.identification).map((item: any) => {
-      const product = rootGetters['product/getProduct'](item.identification)
+      const pseudoId = identificationToPseudoId[item.identification];
+      const product = rootGetters['product/getProduct'](pseudoId)
 
       if (Object.keys(product).length > 0) {
         item.parentProductId = product?.parent?.id;
@@ -57,8 +65,7 @@ const actions: ActionTree<OrderState, RootState> = {
     let original = state.purchaseOrders.original as any;
     const unidentifiedItems = payload.unidentifiedItems.map((item: any) => {
       if(item.updatedSku) {
-        item.initialSKU = item.shopifyProductSKU;
-        item.shopifyProductSKU = item.updatedSku;
+        item.identification = item.updatedSku;
         parsed[item.orderId] ? parsed[item.orderId].push(item) : parsed[item.orderId] = [item];
         original[item.orderId] ? original[item.orderId].push(item) : original[item.orderId] = [item];
       } else {
