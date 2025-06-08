@@ -107,7 +107,7 @@ export default defineComponent({
       let orderBufferOverflow = false;
       Object.values(this.purchaseOrders.parsed).flat().map((item: any) => {
         if (item.isSelected) {
-          if(item.quantityOrdered <= this.orderBuffer) {
+          if(+item.quantityOrdered <= +this.orderBuffer) {
             item.quantityOrdered = 1;
             orderBufferOverflow = true;
           } else item.quantityOrdered -= this.orderBuffer;
