@@ -29,6 +29,12 @@ const getters: GetterTree <UtilState, RootState> = {
     },
     getDataManagerConfig(state) {
         return state.configDetails
+    },
+    getProductSelectorPref: (state) => {
+        return state.productSelectorPref;
+    },
+    isDefaultProductStoreIdentifierSelected: (state) => {
+        return state.useDefaultProductStoreIdentifier;
     }
 }
 export default getters;
