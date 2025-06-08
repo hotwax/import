@@ -111,10 +111,8 @@ export default defineComponent({
       this.purchaseOrders.parsed[this.poId] = this.purchaseOrders.parsed[this.poId].map(element => {
         if(element.parentProductId === this.id) {
           const item = original[this.poId].find(item => {
-            // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
-              // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
-            // shopifyProductSKU check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
-            return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
+            // identification check prevents reverting all the items of parent product to the first one as all the products have same parent product Id. 
+            return item.parentProductId === this.id && item.identification === element.identification;
           })
           element = item;
         }
@@ -127,7 +125,7 @@ export default defineComponent({
       this.stockItems.parsed = this.stockItems.parsed.map(element => {
         if(element.parentProductId === this.id) {
           const item = original.find(item => {
-            return item.parentProductId === this.id && item.shopifyProductSKU === element.shopifyProductSKU;
+            return item.parentProductId === this.id && item.identification === element.identification;
           })
           element = item;
         }

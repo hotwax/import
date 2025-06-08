@@ -15,7 +15,7 @@ const actions: ActionTree<StockState, RootState> = {
     this.dispatch('util/updateFileProcessingStatus', true);
 
     //Fetching only top 
-    const productIds = items.slice(0, process.env['VUE_APP_VIEW_SIZE']).map((item: any) => item.identification);
+    const productIdentificationIds = items.slice(0, process.env['VUE_APP_VIEW_SIZE']).map((item: any) => item.identification);
 
     // We are getting external facilityId from CSV, extract facilityId and pass for getting locations
     const externalFacilityIds = [...new Set(items.map((item: any) => item.externalFacilityId))]
@@ -29,12 +29,12 @@ const actions: ActionTree<StockState, RootState> = {
     }).filter((facilityId: any) => facilityId)
     store.dispatch('util/fetchFacilityLocations', facilityIds);
     
-    const viewSize = productIds.length;
+    const viewSize = productIdentificationIds.length;
     const viewIndex = 0;
     const payload = {
       viewSize,
       viewIndex,
-      productIds,
+      productIdentificationIds,
       identificationTypeId: items[0]?.identificationTypeId //fetching identificationTypeId from first item, as all the items will have one identification type
     }
     const cachedProducts = await store.dispatch("product/fetchProducts", payload);
@@ -78,10 +78,10 @@ const actions: ActionTree<StockState, RootState> = {
   },
   async processUpdateRestockItems({ commit }, items) {
   
-    const productIds = items.map((item: any) => item.identification);
+    const productIdentificationIds = items.map((item: any) => item.identification);
   
     const payload = {
-      productIds,
+      productIdentificationIds,
       identificationTypeId: items[0]?.identificationTypeId
     };
   
