@@ -33,7 +33,7 @@ import logger from './logger';
 import { dxpComponents } from '@hotwax/dxp-components'
 import { login, logout, loader } from './user-utils';
 import localeMessages from './locales';
-import { fetchGoodIdentificationTypes, getAvailableTimeZones, getConfig, getEComStoresByFacility, getProductIdentificationPref, getUserPreference, initialise, setProductIdentificationPref, setUserPreference, setUserTimeZone } from '@/adapter'
+import { fetchGoodIdentificationTypes, getAvailableTimeZones, getConfig, getEComStores, getEComStoresByFacility, getProductIdentificationPref, getUserPreference, initialise, setProductIdentificationPref, setUserPreference, setUserTimeZone } from '@/adapter'
 
 const app = createApp(App)
   .use(IonicVue, {
@@ -58,6 +58,7 @@ const app = createApp(App)
     appLoginUrl: process.env.VUE_APP_LOGIN_URL as string,
     fetchGoodIdentificationTypes,
     getConfig,
+    getEComStores,
     getEComStoresByFacility,
     getProductIdentificationPref,
     getUserPreference,
