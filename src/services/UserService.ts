@@ -142,7 +142,7 @@ const getUserPermissions = async (payload: any, token: any): Promise<any> => {
   }
 }
 
-async function getEComStores(): Promise<any> {
+async function getProductStores(): Promise<any> {
   const params = {
     "viewSize": 200,
     "fieldList": ["productStoreId", "storeName"],
@@ -172,7 +172,7 @@ export const UserService = {
     createFieldMapping,
     deleteFieldMapping,
     login,
-    getEComStores,
+    getProductStores,
     getFieldMappings,
     getProfile,
     getUserPermissions,

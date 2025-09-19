@@ -249,13 +249,13 @@ const actions: ActionTree<StockState, RootState> = {
 
   async fetchJobs ({ commit }) {
     let resp;
-    const currentEComStore: any = useUserStore().getCurrentEComStore
+    const currentProductStore: any = useUserStore().getCurrentEComStore
 
     try{
       const params = {
         "inputFields": {
           "statusId": ["SERVICE_PENDING", "SERVICE_FINISHED"],
-          "productStoreId": currentEComStore.productStoreId,
+          "productStoreId": currentProductStore.productStoreId,
           'systemJobEnumId': "JOB_SCHEDULED_RSTK",
           'systemJobEnumId_op': 'equals',
         },

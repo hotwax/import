@@ -104,8 +104,8 @@ export default defineComponent({
     emitter.on('playAnimation', this.playAnimation);
     
     if(this.userToken) {
-      const currentEComStore : any = useUserStore().getCurrentEComStore;
-      await useProductIdentificationStore().getIdentificationPref(currentEComStore.productStoreId)
+      const currentProductStore : any = useUserStore().getCurrentEComStore;
+      await useProductIdentificationStore().getIdentificationPref(currentProductStore.productStoreId)
         .catch((error) => logger.error(error));
     }
     if(this.userProfile && this.userProfile.userTimeZone) {
