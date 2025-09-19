@@ -408,7 +408,7 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     const userStore = useUserStore()
-    let currentEComStore = computed(() => userStore.getCurrentEComStore)
+    let currentProductStore = computed(() => userStore.getCurrentEComStore)
 
     return {
       router,
@@ -416,7 +416,7 @@ export default defineComponent({
       addOutline,
       arrowForward,
       cloudUploadOutline,
-      currentEComStore,
+      currentProductStore,
       informationCircleOutline,
       settingsOutline,
       store,
