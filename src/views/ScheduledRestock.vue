@@ -198,7 +198,7 @@ export default defineComponent({
     this.selectedShopifyShopId = ""
     this.selectedFacility = ""
     await Promise.allSettled([this.store.dispatch('util/fetchFacilities'), this.store.dispatch('stock/fetchJobs'), this.store.dispatch('util/fetchProductStores'), this.store.dispatch('util/fetchGoodIdentificationTypes')])
-    if(!this.productSelectorPref.length) await this.store.dispatch('util/fetchProductSelectorPref', this.currentEComStore)
+    if(!this.productSelectorPref) await this.store.dispatch('util/fetchProductSelectorPref', this.currentEComStore)
     this.identificationTypeId = this.productSelectorPref || (this.isDefaultProductStoreIdentifierSelected ? this.currentEComStore.productIdentifierEnumId : 'SKU')
   },
 

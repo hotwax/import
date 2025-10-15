@@ -35,7 +35,7 @@ const fetchShopifyShop = async (payload: any): Promise<any> => {
 
 const fetchProductSelectorPref = async (payload: any): Promise<any> => {
   return api({
-    url: "performFind",
+    url: "/performFind",
     method: "GET",
     params: payload,
     cache: true

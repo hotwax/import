@@ -17,7 +17,7 @@ const userModule: Module<UserState, RootState> = {
       shipmentItems: [],
       statusDesc: {},
       configDetails: {},
-      productSelectorPref: [],
+      productSelectorPref: '',
       useDefaultProductStoreIdentifier: true
     },
     getters,

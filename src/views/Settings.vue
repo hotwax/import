@@ -86,7 +86,7 @@
             {{ translate("Choosing an identifier to map products by when uploading documents. If not explicitly specified Import will default to the identifier used during product import from Shopify.") }}
           </ion-card-content>
           <ion-item>
-            <ion-toggle :disabled="!currentEComStore.productIdentifierEnumId || productSelectorPref.length" :checked="isDefaultProductStoreIdentifierSelected && !!currentEComStore.productIdentifierEnumId" @ionChange="toggleProductStoreEnumId($event.detail.checked)">
+            <ion-toggle :disabled="!currentEComStore.productIdentifierEnumId || productSelectorPref" :checked="isDefaultProductStoreIdentifierSelected && !!currentEComStore.productIdentifierEnumId" @ionChange="toggleProductStoreEnumId($event.detail.checked)">
               <ion-label>
                 {{ translate("Use default identifier") }}
                 <p v-if="currentEComStore.productIdentifierEnumId">{{ translate("Currently set to", { productIdentifierEnumId: getIdentificationDesp(currentEComStore.productIdentifierEnumId) }) }}</p>

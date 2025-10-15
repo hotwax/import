@@ -211,7 +211,7 @@ const actions: ActionTree<UtilState, RootState> = {
 
     try {
       const resp = await UtilService.fetchProductSelectorPref(payload)
-      if(!hasError(resp) && resp.data.docs[0].settingValue) {
+      if(!hasError(resp) && resp.data.docs?.length && resp.data.docs[0].settingValue) {
         productSelectorPref = resp.data.docs[0].settingValue
       } else {
         throw resp.data
