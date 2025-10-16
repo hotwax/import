@@ -29,7 +29,7 @@
                 <p>{{ job?.runtimeData?.shipmentId }}</p>
               </ion-label>          
               <ion-button class="date-time-button" @click="changeRunTime(job)">{{ job.runTime ? getTime(job.runTime) : translate("Select time") }}</ion-button>
-              <ion-button fill="clear" color="medium" @click="openScheduledRestockPopover($event, job)">
+              <ion-button size="default" fill="clear" color="medium" @click="openScheduledRestockPopover($event, job)">
                 <ion-icon slot="icon-only" :icon="ellipsisVerticalOutline" />
               </ion-button> 
             </ion-item>
