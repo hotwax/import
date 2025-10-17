@@ -32,10 +32,10 @@ const mutations: MutationTree <UtilState> = {
     [types.UTIL_DATA_MANAGER_CONFIG_UPDATED] (state, payload) {
         state.configDetails = payload;
     },
-    [types.PRODUCT_SELECTOR_PREF_UPDATED](state, payload) {
+    [types.UTIL_SELECTOR_PREF_UPDATED](state, payload) {
         state.productSelectorPref = payload
     },
-    [types.PRODUCT_STORE_DEFAULT_IDENTIFIER_UPDATED](state, payload) {
+    [types.UTIL_STORE_DEFAULT_IDENTIFIER_UPDATED](state, payload) {
         state.useDefaultProductStoreIdentifier = payload
     }
 }

@@ -219,7 +219,7 @@ const actions: ActionTree<UtilState, RootState> = {
     } catch(err) {
       console.error(err)
     }
-    commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
+    commit(types.UTIL_SELECTOR_PREF_UPDATED, productSelectorPref);
   },
   async updateProductSelectorPref({ commit }, payload) {
     let productSelectorPref = "";
@@ -233,7 +233,7 @@ const actions: ActionTree<UtilState, RootState> = {
       const resp = await UtilService.updateProductSelectorPref(params)
       if(!hasError(resp)) {
         productSelectorPref = payload.productSelectorPref
-        commit(types.PRODUCT_SELECTOR_PREF_UPDATED, productSelectorPref);
+        commit(types.UTIL_SELECTOR_PREF_UPDATED, productSelectorPref);
         return true;
       } else {
         throw resp.data
@@ -244,7 +244,7 @@ const actions: ActionTree<UtilState, RootState> = {
     }
   },
   async updateDefaultProductStoreIdentifier({ commit }, payload) {
-    commit(types.PRODUCT_STORE_DEFAULT_IDENTIFIER_UPDATED, payload);
+    commit(types.UTIL_STORE_DEFAULT_IDENTIFIER_UPDATED, payload);
   },
   async updateExactInventoryType({ commit }, type) {
     commit(types.UTIL_EXACT_INVENTORY_TYPE_UPDATED, type);
@@ -253,7 +253,7 @@ const actions: ActionTree<UtilState, RootState> = {
     commit(types.UTIL_PRODUCT_STORES_UPDATED, []);
   },
   async clearDefaultProductStoreIdentifier({ commit }) {
-    commit(types.PRODUCT_STORE_DEFAULT_IDENTIFIER_UPDATED, true);
+    commit(types.UTIL_STORE_DEFAULT_IDENTIFIER_UPDATED, true);
   },
   async updateFileProcessingStatus({ commit }, status){
     commit(types.UTIL_FILE_PROCESSING_STATUS_UPDATED, { status });
