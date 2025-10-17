@@ -169,9 +169,11 @@ export default defineComponent({
     const router = useRouter();
 
     return {
+      Actions,
       codeWorkingOutline,
       ellipsisVertical,
       personCircleOutline,
+      hasPermission,
       openOutline,
       saveOutline,
       store,
