@@ -76,20 +76,44 @@
             <ion-icon slot="end" :icon="saveOutline" />
           </ion-button>
         </ion-card>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              {{ translate("Product Upload Identifier") }}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            {{ translate("Choosing an identifier to map products by when uploading documents. If not explicitly specified Import will default to the identifier used during product import from Shopify.") }}
+          </ion-card-content>
+          <ion-item>
+            <ion-toggle :disabled="!currentEComStore.productIdentifierEnumId || productSelectorPref" :checked="isDefaultProductStoreIdentifierSelected && !!currentEComStore.productIdentifierEnumId" @ionChange="toggleProductStoreEnumId($event.detail.checked)">
+              <ion-label>
+                {{ translate("Use default identifier") }}
+                <p v-if="currentEComStore.productIdentifierEnumId">{{ translate("Currently set to", { productIdentifierEnumId: getIdentificationDesp(currentEComStore.productIdentifierEnumId) }) }}</p>
+              </ion-label>
+            </ion-toggle>
+          </ion-item>
+          <ion-item>
+            <ion-select :label="translate('Upload Identifier')" interface="popover" :placeholder = "translate('Select')" :value="productSelectorPref" @ionChange="updateProductSelectorPref($event)">
+              <ion-select-option :key="identification.goodIdentificationTypeId" :value="identification.goodIdentificationTypeId" v-for="identification in goodIdentificationTypes">{{ identification.description ? identification.description : identification.goodIdentificationTypeId }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-card>
       </section>  
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import { defineComponent } from 'vue';
+import { IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader,IonIcon, IonItem, IonInput, IonLabel, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToggle, IonToolbar } from '@ionic/vue';
+import { computed, defineComponent } from 'vue';
+import { showToast } from "@/utils";
 import { codeWorkingOutline, ellipsisVertical, personCircleOutline, openOutline, saveOutline, timeOutline } from 'ionicons/icons'
 import { mapGetters, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import Image from '@/components/Image.vue';
-import { translate, useProductIdentificationStore } from '@hotwax/dxp-components';
+import { translate, useProductIdentificationStore, useUserStore } from '@hotwax/dxp-components';
 import logger from '@/logger';
 
 export default defineComponent({
@@ -111,7 +135,10 @@ export default defineComponent({
     IonLabel, 
     IonMenuButton,
     IonPage,
-    IonTitle, 
+    IonSelect,
+    IonSelectOption,
+    IonTitle,
+    IonToggle,
     IonToolbar,
     Image
   },
@@ -127,14 +154,25 @@ export default defineComponent({
     ...mapGetters({
       userProfile: 'user/getUserProfile',
       currentDateTimeFormat: 'user/getPreferredDateTimeFormat',
-      pwaState: 'user/getPwaState'
+      pwaState: 'user/getPwaState',
+      productSelectorPref: 'util/getProductSelectorPref',
+      goodIdentificationTypes: 'util/getGoodIdentificationTypes',
+      isDefaultProductStoreIdentifierSelected: 'util/isDefaultProductStoreIdentifierSelected'
     })
   },
-  mounted(){
+  async mounted(){
     this.dateTimeFormat = this.currentDateTimeFormat
     this.parseSampleDateTime();
+    await this.store.dispatch('util/fetchGoodIdentificationTypes')
+    await this.store.dispatch('util/fetchProductSelectorPref', this.currentEComStore)
   },
   methods: {
+    getIdentificationDesp(enumId: string) {
+      return (this.goodIdentificationTypes.find((identification: any) => identification.goodIdentificationTypeId === enumId)?.description) || enumId;
+    },
+    toggleProductStoreEnumId(value: boolean) {
+      this.store.dispatch('util/updateDefaultProductStoreIdentifier', value);
+    },
     updateDateTimeFormat(){
       this.dateTimeFormat = this.dateTimeFormat ? this.dateTimeFormat : this.defaultDateTimeFormat
       this.store.dispatch('user/setPreferredDateTimeFormat', this.dateTimeFormat);
@@ -161,14 +199,33 @@ export default defineComponent({
     async updateEComStore(selectedProductStore: any) {
       await useProductIdentificationStore().getIdentificationPref(selectedProductStore.productStoreId)
         .catch((error) => logger.error(error));
+      await this.store.dispatch('util/fetchProductSelectorPref', selectedProductStore)
+    },
+    async updateProductSelectorPref(event: any) {
+      const value = event.detail.value;
+
+      const resp = await this.store.dispatch('util/updateProductSelectorPref', {
+        productStoreId: this.currentEComStore.productStoreId,
+        productSelectorPref: value
+      });
+
+      if(resp) {
+        showToast(translate("Product upload identifier updated successfully."));
+      } else {
+        event.target.value = this.productSelectorPref || '';
+        showToast(translate("Failed to update product upload identifier."));
+      }
     },
   },
   setup(){
     const store = useStore();
     const router = useRouter();
+    const userStore = useUserStore()
+    let currentEComStore = computed(() => userStore.getCurrentEComStore) as any;
 
     return {
       codeWorkingOutline,
+      currentEComStore,
       ellipsisVertical,
       personCircleOutline,
       openOutline,

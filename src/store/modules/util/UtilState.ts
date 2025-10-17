@@ -8,4 +8,6 @@ export default interface UserState {
     shipmentItems: [],
     statusDesc: any;
     configDetails: {}
+    productSelectorPref: string;
+    useDefaultProductStoreIdentifier: boolean;
 }

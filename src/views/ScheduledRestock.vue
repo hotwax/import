@@ -41,7 +41,7 @@
           </ion-item-divider>
           <ion-item :key="field" v-for="(fieldValues, field) in fields">
             <template v-if="field === 'productIdentification'">
-              <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "translate('Select')" v-model="identificationTypeId">
+              <ion-select aria-label="identification-type-id" interface="popover" :placeholder = "translate('Select')" v-model="identificationTypeId" :selected-text="getIdentificationDesp(identificationTypeId)">
                 <ion-select-option :key="goodIdentificationType.goodIdentificationTypeId" :value="goodIdentificationType.goodIdentificationTypeId" v-for="goodIdentificationType in goodIdentificationTypes">{{ goodIdentificationType.description }}</ion-select-option>
               </ion-select>
               <ion-select aria-label="identification-type-value" interface="popover" :disabled="!content.length" :placeholder = "translate('Select')" slot="end" v-model="fieldMapping['productIdentification']">
@@ -110,9 +110,9 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
-import { translate } from "@hotwax/dxp-components";
+import { translate, useUserStore } from "@hotwax/dxp-components";
 import { addOutline, arrowForwardOutline, cloudUploadOutline, ellipsisVerticalOutline, informationCircleOutline } from "ionicons/icons";
 import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonModal, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, modalController, alertController } from "@ionic/vue";
 import parseFileMixin from '@/mixins/parseFileMixin';
@@ -157,7 +157,7 @@ export default defineComponent({
       fileColumns: [],
       fieldMapping: {},
       fields: process.env["VUE_APP_MAPPING_RSTSTK"] ? JSON.parse(process.env["VUE_APP_MAPPING_RSTSTK"]) : {},
-      identificationTypeId: "SKU",
+      identificationTypeId: "",
       schedule: '',
       isDateTimeModalOpen: false,
       shopifyShops: [],
@@ -179,6 +179,8 @@ export default defineComponent({
       productStores: 'util/getProductStores',
       userProfile: 'user/getUserProfile',
       facilities: 'util/getFacilities',
+      productSelectorPref: 'util/getProductSelectorPref',
+      isDefaultProductStoreIdentifierSelected: 'util/isDefaultProductStoreIdentifierSelected',
     })
   },
   mixins:[ parseFileMixin ],
@@ -196,11 +198,16 @@ export default defineComponent({
     this.selectedShopifyShopId = ""
     this.selectedFacility = ""
     await Promise.allSettled([this.store.dispatch('util/fetchFacilities'), this.store.dispatch('stock/fetchJobs'), this.store.dispatch('util/fetchProductStores'), this.store.dispatch('util/fetchGoodIdentificationTypes')])
+    if(!this.productSelectorPref) await this.store.dispatch('util/fetchProductSelectorPref', this.currentEComStore)
+    this.identificationTypeId = this.productSelectorPref || (this.isDefaultProductStoreIdentifierSelected ? this.currentEComStore.productIdentifierEnumId : 'SKU')
   },
 
   methods: {
     getPlaceholder() {
       return `Created ${this.getTime(this.schedule ? this.schedule : DateTime.now().toMillis())}`
+    },
+    getIdentificationDesp(enumId) {
+      return enumId ? (this.goodIdentificationTypes.find((identification) => identification.goodIdentificationTypeId === enumId)?.description) || enumId : "SKU";
     },
     async fetchShopifyShops(productStoreId) {
       let shopifyShops = []
@@ -391,12 +398,16 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
+    const userStore = useUserStore()
+    let currentEComStore = computed(() => userStore.getCurrentEComStore);
+
     return {
       router,
       translate,
       addOutline,
       arrowForwardOutline,
       cloudUploadOutline,
+      currentEComStore,
       ellipsisVerticalOutline,
       informationCircleOutline,
       store,

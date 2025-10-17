@@ -197,13 +197,64 @@ const actions: ActionTree<UtilState, RootState> = {
     }
     commit(types.UTIL_DATA_MANAGER_CONFIG_UPDATED, configDetails);
   },
+  async fetchProductSelectorPref({ commit }, eComStore){
+    let productSelectorPref = "";
+    const payload = {
+      "inputFields": {
+        "productStoreId": eComStore.productStoreId,
+        "settingTypeEnumId": "PRD_SELECTOR_PREF"
+      },
+      "entityName": "ProductStoreSetting",
+      "fieldList": ["settingValue", "settingTypeEnumId"],
+      "viewSize": 1
+    }
+
+    try {
+      const resp = await UtilService.fetchProductSelectorPref(payload)
+      if(!hasError(resp) && resp.data.docs?.length && resp.data.docs[0].settingValue) {
+        productSelectorPref = resp.data.docs[0].settingValue
+      } else {
+        throw resp.data
+      }
+    } catch(err) {
+      console.error(err)
+    }
+    commit(types.UTIL_SELECTOR_PREF_UPDATED, productSelectorPref);
+  },
+  async updateProductSelectorPref({ commit }, payload) {
+    let productSelectorPref = "";
+    const params = {
+      "productStoreId": payload.productStoreId,
+      "settingTypeEnumId": "PRD_SELECTOR_PREF",
+      "settingValue": payload.productSelectorPref
+    }
+
+    try {
+      const resp = await UtilService.updateProductSelectorPref(params)
+      if(!hasError(resp)) {
+        productSelectorPref = payload.productSelectorPref
+        commit(types.UTIL_SELECTOR_PREF_UPDATED, productSelectorPref);
+        return true;
+      } else {
+        throw resp.data
+      }
+    } catch(err) {
+      console.error(err)
+      return false;
+    }
+  },
+  async updateDefaultProductStoreIdentifier({ commit }, payload) {
+    commit(types.UTIL_STORE_DEFAULT_IDENTIFIER_UPDATED, payload);
+  },
   async updateExactInventoryType({ commit }, type) {
     commit(types.UTIL_EXACT_INVENTORY_TYPE_UPDATED, type);
   },
   async clearProductStores({ commit }) {
     commit(types.UTIL_PRODUCT_STORES_UPDATED, []);
   },
-
+  async clearDefaultProductStoreIdentifier({ commit }) {
+    commit(types.UTIL_STORE_DEFAULT_IDENTIFIER_UPDATED, true);
+  },
   async updateFileProcessingStatus({ commit }, status){
     commit(types.UTIL_FILE_PROCESSING_STATUS_UPDATED, { status });
   },

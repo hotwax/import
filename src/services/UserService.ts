@@ -145,7 +145,7 @@ const getUserPermissions = async (payload: any, token: any): Promise<any> => {
 async function getEComStores(): Promise<any> {
   const params = {
     "viewSize": 200,
-    "fieldList": ["productStoreId", "storeName"],
+    "fieldList": ["productStoreId", "storeName", "productIdentifierEnumId"],
     "entityName": "ProductStore",
     "distinct": "Y",
     "noConditionFind": "Y"
