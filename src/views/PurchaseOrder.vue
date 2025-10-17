@@ -100,6 +100,7 @@ export default defineComponent({
     ionViewDidEnter() {
       this.file = {}
       this.content = []
+      this.selectedMappingId = ""
       this.fieldMapping = Object.keys(this.fields).reduce((fieldMapping, field) => {
         fieldMapping[field] = ""
         return fieldMapping;
