@@ -100,24 +100,23 @@ export default defineComponent({
     ionViewDidEnter() {
       this.file = {}
       this.content = []
-      this.selectedMappingId = ""
-      this.fieldMapping = Object.keys(this.fields).reduce((fieldMapping, field) => {
-        fieldMapping[field] = ""
-        return fieldMapping;
-      }, {})
+      this.resetMappingState();
       this.$refs.file.value = null;
     },
     methods: {
+      resetMappingState() {
+        this.selectedMappingId = "";
+        this.fieldMapping = Object.keys(this.fields).reduce((map, field) => {
+          map[field] = "";
+          return map;
+        }, {});
+      },
       async parse(event) {
         const file = event.target.files[0];
         try {
           if (file) {
             this.file = file;
-            this.selectedMappingId = "";
-            this.fieldMapping = Object.keys(this.fields).reduce((map, field) => {
-              map[field] = "";
-              return map;
-            }, {});
+            this.resetMappingState();
             this.content = await this.parseCsv(this.file);
             this.fileColumns = Object.keys(this.content[0]);
             showToast(translate("File uploaded successfully"));
