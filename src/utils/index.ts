@@ -147,4 +147,9 @@ const saveDataFile = async (response: any, fileName: string) => {
   saveAs(blob, fileName);
 }
 
-export { showToast, hasError , parseCsv , jsonToCsv, JsonToCsvOption, handleDateTimeInput, saveDataFile }
+const getHardcodedToken = () => {
+  return "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODU4NDI1NzksImV4cCI6MTc4NTg0OTc3OSwiaXNzIjoiaXA2LWxvY2FsaG9zdCIsInVzZXJMb2dpbklkIjoiaG90d2F4LnVzZXIiLCJ1c2VySWQiOiJIT1RXQVhfVVNFUiJ9.NnEkFd-69NT3FZ2cQJk4n364DroqDXnT3xF4LqV-BnNvGEEqvF-8WLF2jYFoVphpdnW4XrrwpsLA1iL_ntz0nA";
+}
+
+export { showToast, hasError , parseCsv , jsonToCsv, JsonToCsvOption, handleDateTimeInput, saveDataFile, getHardcodedToken }
+

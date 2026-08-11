@@ -212,17 +212,10 @@ export default defineComponent({
     async fetchShopifyShops(productStoreId) {
       let shopifyShops = []
       try {
-        const resp = await UtilService.fetchShopifyShop({
-          entityName: "ShopifyShop",
-          fieldList: ['name', 'shopId'],
-          inputFields: {
-            productStoreId
-          },
-          viewSize: 100
-        })
+        const resp = await UtilService.fetchShopifyShop({productStoreId})
 
         if (!hasError(resp)) {
-          shopifyShops = resp.data.docs
+          shopifyShops = resp.data.docs || resp.data.shopifyShopAndConfigs || resp.data.shopifyShops || (Array.isArray(resp.data) ? resp.data : []);
         } else {
           throw resp.data
         }

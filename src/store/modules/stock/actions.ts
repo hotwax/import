@@ -149,7 +149,7 @@ const actions: ActionTree<StockState, RootState> = {
   },
   
   async scheduleService({ dispatch }, { params, restockName, scheduledTime, bulkFileProcessingJob }) {
-    let resp, job;
+    let resp, job, res;
 
     if(bulkFileProcessingJob) {
       job = bulkFileProcessingJob;
@@ -162,40 +162,41 @@ const actions: ActionTree<StockState, RootState> = {
       return;
     }
 
-    let payload = {
-      'JOB_NAME': bulkFileProcessingJob ? job.jobName : restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
-      'SERVICE_NAME': job.serviceName,
-      'SERVICE_COUNT': '0',
-      'SERVICE_TEMP_EXPR': bulkFileProcessingJob ? "EVERY_5_MIN" : job.jobStatus,
-      'SERVICE_RUN_AS_SYSTEM':'Y',
-      'jobFields': {
-        'systemJobEnumId': job.systemJobEnumId,
-        'tempExprId': bulkFileProcessingJob ? "EVERY_5_MIN" : job.jobStatus, // Need to remove this as we are passing frequency in SERVICE_TEMP_EXPR, currently kept it for backward compatibility
-        'parentJobId': job.parentJobId,
-        'runAsUser': 'system', //default system, but empty in run now.  TODO Need to remove this as we are using SERVICE_RUN_AS_SYSTEM, currently kept it for backward compatibility
-        'recurrenceTimeZone': this.state.user.current.userTimeZone,
-        'createdByUserLogin': this.state.user.current.userLoginId,
-        'lastModifiedByUserLogin': this.state.user.current.userLoginId,
-        'instanceOfProductId': job.systemJobEnumId,
-        'productStoreId': params?.productStoreId
+    const jobName = job.jobId || job.jobName || job.systemJobEnumId || "JOB_SCHEDULED_RSTK";
+
+    const payload: any = {
+      jobName,
+      serviceName: job.serviceName,
+      description: bulkFileProcessingJob ? job.jobName : restockName || `Created ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}`,
+      cronExpression: bulkFileProcessingJob ? "EVERY_5_MIN" : (job.jobStatus || job.cronExpression),
+      paused: "N",
+      parameters: {
+        shipmentId: params.shipmentId,
+        shopId: params.shopId
       },
-      'statusId': "SERVICE_PENDING",
-      'systemJobEnumId': job.systemJobEnumId,
-    } as any
+      fromDate : scheduledTime.toString(),
+      repeatedCount : '0'
+    };
     
     // If not a bulk file processing job, merge additional parameters of Scheduled Restock
-    if(!bulkFileProcessingJob) {
-      payload = {
-        ...payload,
-        ...params,
-        SERVICE_TIME: scheduledTime.toString(),
-      };
+    if (!bulkFileProcessingJob && scheduledTime) {
+      payload.fromDate = scheduledTime.toString();
     }
-
     job?.priority && (payload['SERVICE_PRIORITY'] = job.priority.toString())
     job?.sinceId && (payload['sinceId'] = job.sinceId)
 
     try {
+      if (payload.parameters) {
+        for (const [parameterName, parameterValue] of Object.entries(payload.parameters)) {
+          if (parameterValue) {
+            await StockService.updateJob({
+              jobName: payload.jobName,
+              parameterName,
+              parameterValue: String(parameterValue)
+            });
+          }
+        }
+      }
       resp = await StockService.scheduleJob({ ...payload });
         if(resp.status == 200 && !hasError(resp)) {
         showToast(translate('Service has been scheduled'));
@@ -214,37 +215,33 @@ const actions: ActionTree<StockState, RootState> = {
     let resp, job: any = {};
 
     const payload = {
-      "inputFields": {
-        "statusId": "SERVICE_DRAFT",
-        "statusId_op": "equals",
-        "systemJobEnumId": "JOB_SCHEDULED_RSTK",
-        "systemJobEnumId_op": "equals"
-      },
-      "fieldList": [ "systemJobEnumId", "runTime", "tempExprId", "parentJobId", "serviceName", "jobId", "jobName", "currentRetryCount", "statusId", "runtimeDataId", "productStoreId", "priority"],
-      "noConditionFind": "Y",
-      "viewSize": 1,
-      "orderBy": "runTime ASC"
+      "jobName": "JOB_SCHEDULED_RSTK",
+      "jobTypeEnumId": "JOB_SCHEDULED_RSTK",
+      "systemJobEnumId": "JOB_SCHEDULED_RSTK"
     }
 
     try {
       resp = await StockService.fetchJobInformation(payload)
 
-      if(!hasError(resp) && resp.data.docs.length) {
-        job = resp.data.docs[0]
-
+      const jobsList = resp.data.docs || resp.data.serviceJobList || resp.data.serviceJobs || resp.data.jobs || (Array.isArray(resp.data) ? resp.data : []);
+      if(!hasError(resp) && jobsList.length) {
+        const rawJob = jobsList[0];
         job = {
-          ...job,
-          status: job.statusId,
-          enumId: job.systemJobEnumId,
-          frequency: job.tempExprId,
-          id: job.jobId
+          ...rawJob,
+          jobId: rawJob.jobId || rawJob.jobName,
+          serviceName: rawJob.serviceName,
+          status: rawJob.statusId,
+          systemJobEnumId: rawJob.jobTypeEnumId || rawJob.systemJobEnumId || "JOB_SCHEDULED_RSTK",
+          frequency: rawJob.tempExprId || rawJob.cronExpression,
+          jobStatus: rawJob.tempExprId || rawJob.cronExpression || rawJob.jobStatus || '',
+          id: rawJob.jobId || rawJob.jobName
         }
       } else {
-        throw resp.data
+        throw resp.data;
       }
     } catch(err) {
-      logger.error('Failed to fetch draft job')
-      job = {}
+      logger.error('Failed to fetch draft job', err);
+      job = {};
     }
 
     return job;
