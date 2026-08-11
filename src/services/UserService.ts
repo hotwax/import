@@ -2,6 +2,7 @@ import { api, client } from '@/adapter'
 import store from '@/store';
 import { hasError } from '@/adapter';
 import logger from '@/logger';
+import {getHardcodedToken} from "@/utils";
 
 const login = async (username: string, password: string): Promise <any> => {
   return api({
@@ -22,10 +23,16 @@ const getProfile = async (): Promise <any>  => {
 }
 
 const createFieldMapping = async (payload: any): Promise <any> => {
-  return api({
-    url: "/service/createDataManagerMapping",
+  const token = getHardcodedToken();
+  return client({
+    baseURL: "http://localhost:8080/rest/s1",
+    url: "/admin/dataManagerMapping",
     method: "POST",
-    data: payload
+    data: payload,
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    }
   });
 }
 
@@ -46,10 +53,16 @@ const deleteFieldMapping = async (payload: any): Promise <any> => {
 }
 
 const getFieldMappings = async (payload: any): Promise <any> => {
-  return api({
-    url: "/performFind",
-    method: "POST",
-    data: payload
+  const token = getHardcodedToken();
+  return client({
+    baseURL: "http://localhost:8080/rest/s1",
+    url: "/admin/dataManagerMapping",
+    method: "GET",
+    params: payload,
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    }
   });
 }
 

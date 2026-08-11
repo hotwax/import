@@ -1,5 +1,7 @@
 import { api } from '@/adapter';
 import { UploadRequest } from '@/types'
+import { client } from "@hotwax/oms-api";
+import { getHardcodedToken } from '@/utils';
 
 const uploadJsonFile = async (payload: any): Promise <any>  => {
     return api({
@@ -18,10 +20,16 @@ const uploadAndImportFile = async (payload: any): Promise <any>  => {
 }
 
 const createIncomingShipment = async (payload: any): Promise <any>  => {
-  return api({
-    url: "/service/createIncomingShipment",
+  const token = getHardcodedToken();
+  return client({
+    baseURL: "http://localhost:8080/rest/s1",
+    url: "/poorti/createIncomingShipment",
     method: "post",
-    data: payload
+    data: payload,
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    }
   });
 }
 

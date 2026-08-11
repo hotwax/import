@@ -25,7 +25,8 @@ const actions: ActionTree<UtilState, RootState> = {
     try {
       const resp = await UtilService.getFacilities(payload);
       if(resp.status === 200 && !hasError(resp)){
-        commit(types.UTIL_FACILITIES_UPDATED, resp.data.docs);
+        const facilitiesList = resp.data.docs || resp.data.facilities || (Array.isArray(resp.data) ? resp.data : []);
+        commit(types.UTIL_FACILITIES_UPDATED, facilitiesList);
       } else {
         logger.error(resp)
         commit(types.UTIL_FACILITIES_UPDATED, []);
@@ -95,8 +96,9 @@ const actions: ActionTree<UtilState, RootState> = {
     }
     try {
       const resp = await UtilService.fetchGoodIdentificationTypes(payload);
-      if (!hasError(resp) && resp.data.count > 0) {
-        commit(types.UTIL_GOOD_IDENTIFICATION_TYPES_UPDATED, resp.data.docs);
+      if (!hasError(resp)) {
+        const typesList = resp.data.docs || resp.data.goodIdentificationTypes || (Array.isArray(resp.data) ? resp.data : []);
+        commit(types.UTIL_GOOD_IDENTIFICATION_TYPES_UPDATED, typesList);
       } else {
         throw resp.data;
       }
@@ -117,7 +119,7 @@ const actions: ActionTree<UtilState, RootState> = {
     try {
       const resp = await UtilService.fetchProductStores(payload);
       if (!hasError(resp)) {
-        productStores = resp.data.docs;
+        productStores = resp.data.docs || resp.data.productStores || (Array.isArray(resp.data) ? resp.data : []);
       } else {
         throw resp.data;
       }
@@ -211,8 +213,9 @@ const actions: ActionTree<UtilState, RootState> = {
 
     try {
       const resp = await UtilService.fetchProductSelectorPref(payload)
-      if(!hasError(resp) && resp.data.docs?.length && resp.data.docs[0].settingValue) {
-        productSelectorPref = resp.data.docs[0].settingValue
+      const settingsList = resp.data.docs || resp.data.settings || resp.data.productStoreSettings || (Array.isArray(resp.data) ? resp.data : []);
+      if (!hasError(resp) && settingsList.length && settingsList[0].settingValue) {
+        productSelectorPref = settingsList[0].settingValue;
       } else {
         throw resp.data
       }
